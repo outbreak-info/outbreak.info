@@ -1,13 +1,15 @@
 <template>
   <div>
-    <h4 class="">Citing this report</h4>
-    <section class="my-3 border-top pt-3" id="outbreak-citation">
+    <h4 class="">
+      Citing this report
+    </h4>
+    <section id="outbreak-citation" class="my-3 border-top pt-3">
       <p class="m-0">
         <b>{{ title }}</b>
         . {{ mutationAuthors }}. outbreak.info, (available at {{ url }}).
         Accessed {{ today }}.
       </p>
-      <p class="mt-2" v-html="genomicsCitation"></p>
+      <p class="mt-2" v-html="genomicsCitation" />
     </section>
     <section id="gisaid-citation">
       <b>GISAID’s Role in Pandemic Response</b>

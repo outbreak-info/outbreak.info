@@ -1,7 +1,7 @@
 <template>
   <div
-    class="d-flex flex-column align-items-center w-100"
     id="report-cum-totals"
+    class="d-flex flex-column align-items-center w-100"
   >
     <div class="">
       <div class="d-flex align-items-center justify-content-end">
@@ -21,9 +21,15 @@
         <div class="d-flex align-items-center justify-content-end">
           sort by
           <select v-model="sortVar" class="ml-2">
-            <option value="proportion">prevalence</option>
-            <option value="cum_total_count">total sequenced</option>
-            <option value="country">name</option>
+            <option value="proportion">
+              prevalence
+            </option>
+            <option value="cum_total_count">
+              total sequenced
+            </option>
+            <option value="country">
+              name
+            </option>
           </select>
         </div>
       </div>
@@ -33,7 +39,9 @@
         :class="[stacked ? 'justify-content-center' : 'justify-content-center']"
       >
         <div class="d-flex flex-column" :class="{ 'mr-5': !stacked }">
-          <h5 class="my-5 my-sm-4 my-md-2"><b>Prevalence by location</b></h5>
+          <h5 class="my-5 my-sm-4 my-md-2">
+            <b>Prevalence by location</b>
+          </h5>
 
           <!-- LEGEND -->
           <div
@@ -41,21 +49,21 @@
           >
             <!-- scale bar with gradient -->
             <ClassedLegend
-              :colorScale="colorScale"
+              :color-scale="colorScale"
               :horizontal="false"
-              :includeNulls="false"
+              :include-nulls="false"
               :label="label"
-              :countThreshold="25"
-              :mutationName="mutationName"
-              nullColor="#EFEFEF"
-              filteredColor="#A5A5A5"
-              strokeColor="#2c3e50"
-              maxCount="maxEstFormatted"
+              :count-threshold="25"
+              :mutation-name="mutationName"
+              null-color="#EFEFEF"
+              filtered-color="#A5A5A5"
+              stroke-color="#2c3e50"
+              max-count="maxEstFormatted"
             />
 
             <div class="d-flex  align-items-center">
               <svg id="legend" width="15" height="15" class="mr-2">
-                <line x1="0" x2="15" y1="8" y2="8" class="ci-legend"></line>
+                <line x1="0" x2="15" y1="8" y2="8" class="ci-legend" />
               </svg>
               <small class="text-muted">95% confidence interval</small>
             </div>
@@ -67,10 +75,10 @@
           </div>
 
           <svg
+            ref="svg_dot"
             :width="width"
             :height="height + margin.bottom + margin.top"
             class="dotplot-prevalence prevalence-by-location"
-            ref="svg_dot"
             :name="title"
           >
             <!-- <svg :width="width" :height="height + margin.bottom + margin.top" class="dotplot-prevalence prevalence-by-location" ref="svg_dot" :name="title" :subtitle="subtitle"> -->
@@ -100,31 +108,31 @@
               </filter>
             </defs>
             <g
+              id="dot-axis-top"
+              ref="xAxis"
               :transform="`translate(${margin.left}, ${25})`"
               class="prevalence-axis axis--x"
-              ref="xAxis"
-              id="dot-axis-top"
               :hidden="!data.length"
-            ></g>
+            />
             <g
+              id="dot-axis-bottom"
+              ref="xAxis2"
               :transform="
                 `translate(${margin.left}, ${height + margin.top + 5})`
               "
               class="prevalence-axis axis--x"
-              ref="xAxis2"
-              id="dot-axis-bottom"
               :hidden="!data.length"
-            ></g>
+            />
             <g
+              ref="yAxis"
               :transform="`translate(${margin.left}, ${margin.top})`"
               class="prevalence-location-axis prevalence-axis axis--y"
-              ref="yAxis"
-            ></g>
+            />
             <g
-              ref="dotplot"
               id="dotplot"
+              ref="dotplot"
               :transform="`translate(${margin.left}, ${margin.top})`"
-            ></g>
+            />
           </svg>
         </div>
 
@@ -139,7 +147,7 @@
               <div
                 class="rect-legend mr-2"
                 :style="{ background: accentColor }"
-              ></div>
+              />
               <small class="text-muted">
                 {{ mutationName }}-positive samples
               </small>
@@ -149,7 +157,7 @@
               <div
                 class="rect-legend mr-2"
                 :style="{ background: baseColor }"
-              ></div>
+              />
               <small class="text-muted">all sequenced samples</small>
             </div>
           </div>
@@ -159,62 +167,62 @@
           </div>
 
           <svg
+            ref="svg_count"
             :width="barWidth"
             :height="height + margin.bottom + margin.top"
             class="sequencing-count prevalence-by-location"
-            ref="svg_count"
             :name="title"
           >
             <g
+              id="bar-axis-top"
+              ref="xAxisBar"
               :transform="`translate(${margin.left}, ${25})`"
               class="count-axis axis--x"
-              ref="xAxisBar"
-              id="bar-axis-top"
               :hidden="!data.length"
-            ></g>
+            />
             <g
+              id="bar-axis-top"
+              ref="xAxisBar2"
               :transform="
                 `translate(${margin.left}, ${height + margin.top + 5})`
               "
               class="count-axis axis--x"
-              ref="xAxisBar2"
-              id="bar-axis-top"
               :hidden="!data.length"
-            ></g>
+            />
             <g
+              ref="yAxisBar"
               :transform="`translate(${margin.left}, ${margin.top})`"
               class="prevalence-location-axis count-axis axis--y"
-              ref="yAxisBar"
-            ></g>
+            />
             <g
-              ref="bargraph"
               id="bargraph"
+              ref="bargraph"
               :transform="`translate(${margin.left}, ${margin.top})`"
-            ></g>
+            />
           </svg>
         </div>
       </div>
     </div>
 
     <div
+      id="tooltip_chart"
       ref="tooltip_chart"
       class="tooltip-basic box-shadow"
-      id="tooltip_chart"
     >
-      <h5 id="location-name"></h5>
+      <h5 id="location-name" />
       <em id="no-sequencing">No reported sequencing</em>
       <div class="d-flex align-items-center">
-        <b id="proportion" class="font-size-2"></b>
-        <span id="confidence-interval" class="text-muted ml-2"></span>
+        <b id="proportion" class="font-size-2" />
+        <span id="confidence-interval" class="text-muted ml-2" />
       </div>
-      <div id="sequencing-count"></div>
+      <div id="sequencing-count" />
     </div>
 
     <DownloadReportData
       :data="data"
-      figureRef="prevalence-by-location"
+      figure-ref="prevalence-by-location"
       class="mt-2"
-      dataType="Mutation Prevelance by Location Dot Plot"
+      data-type="Mutation Prevelance by Location Dot Plot"
     />
   </div>
 </template>
@@ -256,36 +264,6 @@ export default Vue.extend({
     location: String,
     locationName: String,
     colorScale: Function,
-  },
-  watch: {
-    width() {
-      this.updatePlot();
-    },
-    data() {
-      this.updatePlot();
-    },
-    sortVar() {
-      this.updatePlot();
-    },
-    includeNotDetected() {
-      this.updatePlot();
-    },
-  },
-  computed: {
-    title() {
-      return this.location === 'Worldwide'
-        ? `Cumulative ${this.mutationName} prevalence by country`
-        : `Cumulative ${this.mutationName} prevalence in ${this.location}`;
-    },
-    subtitle() {
-      return this.location === 'Worldwide'
-        ? `Since ${this.mutationName} identification`
-        : `Since ${this.mutationName} identification in ${this.location}`;
-    },
-    maxEstFormatted() {
-      const formatter = format('.0%');
-      return this.maxEst ? formatter(this.maxEst) : null;
-    },
   },
   data() {
     return {
@@ -329,7 +307,37 @@ export default Vue.extend({
       numXTicks: 4,
     };
   },
-  created: () => {
+  computed: {
+    title() {
+      return this.location === 'Worldwide'
+        ? `Cumulative ${this.mutationName} prevalence by country`
+        : `Cumulative ${this.mutationName} prevalence in ${this.location}`;
+    },
+    subtitle() {
+      return this.location === 'Worldwide'
+        ? `Since ${this.mutationName} identification`
+        : `Since ${this.mutationName} identification in ${this.location}`;
+    },
+    maxEstFormatted() {
+      const formatter = format('.0%');
+      return this.maxEst ? formatter(this.maxEst) : null;
+    },
+  },
+  watch: {
+    width() {
+      this.updatePlot();
+    },
+    data() {
+      this.updatePlot();
+    },
+    sortVar() {
+      this.updatePlot();
+    },
+    includeNotDetected() {
+      this.updatePlot();
+    },
+  },
+  created() {
     this.debounceSetDims = this.debounce(this.setDims, 150);
   },
   mounted() {

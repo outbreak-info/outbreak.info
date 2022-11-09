@@ -1,7 +1,7 @@
 <template>
   <div
-    class="d-flex flex-column align-items-center w-100"
     id="report-prevalence"
+    class="d-flex flex-column align-items-center w-100"
   >
     <!-- zoom btns -->
     <div
@@ -27,11 +27,11 @@
 
     <div class="d-flex flex-column">
       <!-- LEGEND -->
-      <div class="d-flex flex-column ml-5 mt-3" id="legend">
+      <div id="legend" class="d-flex flex-column ml-5 mt-3">
         <!-- legend: rolling average -->
         <div class="d-flex">
           <svg width="15" height="15" class="mr-2">
-            <line x1="0" x2="15" y1="8" y2="8" class="trace-legend"></line>
+            <line x1="0" x2="15" y1="8" y2="8" class="trace-legend" />
           </svg>
           <small class="text-muted">
             7 day rolling average of percent of {{ mutationName }}-positive
@@ -41,7 +41,7 @@
 
         <!-- legend: confidence interval -->
         <div class="d-flex align-items-center">
-          <div class="ci-legend mr-2" :style="{ background: CIColor }"></div>
+          <div class="ci-legend mr-2" :style="{ background: CIColor }" />
           <small class="text-muted">95% confidence interval</small>
           <svg width="15" height="15" class="ml-4 mr-2">
             <rect
@@ -50,7 +50,7 @@
               :width="15"
               :height="15"
               fill="url(#diagonalHatchLight)"
-            ></rect>
+            />
           </svg>
           <small class="text-muted">missing recent data</small>
         </div>
@@ -58,15 +58,15 @@
 
       <!-- SVGs -->
       <div
-        class="d-flex flex-column align-items-start mt-2"
         id="report-prevalence-svg"
+        class="d-flex flex-column align-items-start mt-2"
       >
         <!-- TIME TRACE -->
         <svg
+          ref="svg"
           :width="width"
           :height="height"
           class="prevalence-curve"
-          ref="svg"
           :name="title"
         >
           <defs>
@@ -103,20 +103,20 @@
           </defs>
 
           <g
+            ref="xAxis"
             :transform="`translate(${margin.left}, ${height - margin.bottom})`"
             class="prevalence-axis axis--x"
-            ref="xAxis"
-          ></g>
+          />
           <g
+            ref="yAxis"
             :transform="`translate(${margin.left}, ${margin.top})`"
             class="prevalence-axis axis--y"
-            ref="yAxis"
-          ></g>
+          />
           <g
             ref="chart"
             :transform="`translate(${margin.left}, ${margin.top})`"
-          ></g>
-          <g id="no-data" v-if="!data.length">
+          />
+          <g v-if="!data.length" id="no-data">
             <text
               font-size="24px"
               fill="#888888"
@@ -128,7 +128,7 @@
               No sequences found
             </text>
           </g>
-          <g id="no-data" v-if="data.length < lengthThreshold && data.length">
+          <g v-if="data.length < lengthThreshold && data.length" id="no-data">
             <text
               font-size="24px"
               fill="#888888"
@@ -170,51 +170,51 @@
               fill="none"
               :d="`M ${width - margin.right - 75} 20 c 10 10, 20 20, 50 20`"
               marker-end="url(#arrow)"
-            ></path>
+            />
           </g>
           <g
+            v-if="data"
+            id="brush-zoom"
             ref="brush"
             class="brush"
-            id="brush-zoom"
             :transform="`translate(${margin.left},${margin.top})`"
-            v-if="data"
             :class="{ hidden: !zoomAllowed }"
-          ></g>
+          />
         </svg>
 
         <SequencingHistogram
           :data="data"
-          :xInput="x"
+          :x-input="x"
           :width="width"
-          :svgTitle="title"
+          :svg-title="title"
           :margin="margin"
-          :mutationName="mutationName"
-          className="prevalence-curve prevalence-curve-counts"
+          :mutation-name="mutationName"
+          class-name="prevalence-curve prevalence-curve-counts"
         />
       </div>
     </div>
 
     <!-- TOOLTIPS -->
     <div
+      id="tooltip-prevalence"
       ref="tooltip_prevalence"
       class="tooltip-basic box-shadow"
-      id="tooltip-prevalence"
     >
-      <h5 id="date"></h5>
+      <h5 id="date" />
       <div class="d-flex align-items-center">
-        <b id="proportion" class="font-size-2"></b>
-        <span id="confidence-interval" class="text-muted ml-2"></span>
+        <b id="proportion" class="font-size-2" />
+        <span id="confidence-interval" class="text-muted ml-2" />
       </div>
 
-      <div id="sequencing-count"></div>
-      <div id="sequencing-count-rolling"></div>
+      <div id="sequencing-count" />
+      <div id="sequencing-count-rolling" />
     </div>
 
     <DownloadReportData
       :data="data"
-      figureRef="prevalence-curve"
-      :isVertical="true"
-      dataType="Mutation Report Prevalence over Time"
+      figure-ref="prevalence-curve"
+      :is-vertical="true"
+      data-type="Mutation Report Prevalence over Time"
     />
   </div>
 </template>
@@ -260,6 +260,11 @@ library.add(faSearchPlus, faCompressArrowsAlt);
 
 export default Vue.extend({
   name: 'ReportPrevalence',
+  components: {
+    SequencingHistogram,
+    DownloadReportData,
+    FontAwesomeIcon,
+  },
   props: {
     data: Array,
     mutationName: String,
@@ -274,21 +279,6 @@ export default Vue.extend({
     routeName: {
       type: String,
       default: 'MutationReport',
-    },
-  },
-  components: {
-    SequencingHistogram,
-    DownloadReportData,
-    FontAwesomeIcon,
-  },
-  computed: {
-    title() {
-      return this.location === 'Worldwide'
-        ? `${this.mutationName} prevalence over time worldwide`
-        : `${this.mutationName} prevalence over time in ${this.location}`;
-    },
-    countTitle() {
-      return `Total samples sequenced by collection date in ${this.location}`;
     },
   },
   data() {
@@ -328,28 +318,38 @@ export default Vue.extend({
       chart: null,
     };
   },
+  computed: {
+    title() {
+      return this.location === 'Worldwide'
+        ? `${this.mutationName} prevalence over time worldwide`
+        : `${this.mutationName} prevalence over time in ${this.location}`;
+    },
+    countTitle() {
+      return `Total samples sequenced by collection date in ${this.location}`;
+    },
+  },
   watch: {
     width() {
       this.setXScale();
       this.updateBrush();
       this.updatePlot();
     },
-    setWidth: () => {
+    setWidth() {
       this.setDims();
     },
-    data: () => {
+    data() {
       this.xMin = timeParse('%Y-%m-%d')(this.xmin);
       this.xMax = timeParse('%Y-%m-%d')(this.xmax);
       this.setXScale();
       this.updatePlot();
     },
-    xmin: () => {
+    xmin() {
       this.xMin = timeParse('%Y-%m-%d')(this.xmin);
       this.xMax = timeParse('%Y-%m-%d')(this.xmax);
       this.setXScale();
       this.updatePlot();
     },
-    xmax: () => {
+    xmax() {
       this.xMin = timeParse('%Y-%m-%d')(this.xmin);
       this.xMax = timeParse('%Y-%m-%d')(this.xmax);
       this.setXScale();
@@ -368,7 +368,7 @@ export default Vue.extend({
     this.setupPlot();
     this.updatePlot();
   },
-  created: () => {
+  created() {
     this.debounceSetDims = this.debounce(this.setDims, 150);
     this.debounceZoom = this.debounce(this.zoom, 150);
   },

@@ -1,6 +1,8 @@
 <template>
   <div class="d-flex flex-column w-100 align-items-center mt-3">
-    <h5 class="">{{ tableTitle }}</h5>
+    <h5 class="">
+      {{ tableTitle }}
+    </h5>
     <table>
       <thead>
         <tr class="border-bottom">

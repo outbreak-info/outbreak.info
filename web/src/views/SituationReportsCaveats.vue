@@ -32,7 +32,9 @@
 
       <h3>Known sources of bias</h3>
       <div class="border-bottom pb-2">
-        <h5 class="m-0 mb-1">Uneven rates of sequencing across locations</h5>
+        <h5 class="m-0 mb-1">
+          Uneven rates of sequencing across locations
+        </h5>
         <p>
           Sequencing rates between locations are highly variable, complicating
           comparisons between places. Wherever possible, we have added
@@ -46,7 +48,9 @@
       </div>
 
       <div class="border-bottom py-2">
-        <h5 class="m-0 mb-1">Greater sequencing of older samples</h5>
+        <h5 class="m-0 mb-1">
+          Greater sequencing of older samples
+        </h5>
         <p>
           For all sequencing data, there is a lag between when the sample was
           acquired from the patient, when the sample was processed and
@@ -61,7 +65,9 @@
       </div>
 
       <div class="border-bottom py-2">
-        <h5 class="m-0 mb-1">Selective sampling</h5>
+        <h5 class="m-0 mb-1">
+          Selective sampling
+        </h5>
         <p>
           The samples submitted for sequencing are often not a random sample of
           all cases. These samples are often from:
@@ -85,7 +91,9 @@
       </div>
 
       <div class="border-bottom py-2">
-        <h5 class="m-0 mb-1">Sequencing techniques</h5>
+        <h5 class="m-0 mb-1">
+          Sequencing techniques
+        </h5>
         <p class="m-0">
           Sequencing techniques can heavily bias this sampling. For instance,
           the majority of
@@ -110,7 +118,9 @@
       </div>
 
       <div class="my-5">
-        <h3 id="delta">New lineages &amp; how lineages are assigned</h3>
+        <h3 id="delta">
+          New lineages &amp; how lineages are assigned
+        </h3>
         <p>
           The mutations associated with new lineages classified by the
           <a target="_blank" href="https://www.pango.network/">
@@ -132,7 +142,9 @@
     </section>
     <section id="methods" class="d-flex w-75 justify-content-center my-5">
       <router-link :to="{ name: 'SituationReportMethodology' }">
-        <button class="btn btn-main">View methods</button>
+        <button class="btn btn-main">
+          View methods
+        </button>
       </router-link>
     </section>
 

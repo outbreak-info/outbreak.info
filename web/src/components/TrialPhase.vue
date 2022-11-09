@@ -1,6 +1,6 @@
 <template>
   <div class="my-2 d-flex align-items-center">
-    <span class="mr-3" v-if="includeLabel">Phase</span>
+    <span v-if="includeLabel" class="mr-3">Phase</span>
     <svg :width="width" :height="height">
       <g>
         <polygon
@@ -10,7 +10,7 @@
               triangleWidth},${height / 2} ${phaseWidth -
               2 * triangleWidth},${height} 0,${height}`
           "
-        ></polygon>
+        />
         <text
           class="text-phase"
           :x="(phaseWidth - 1.5 * triangleWidth) / 2"
@@ -20,9 +20,9 @@
         </text>
       </g>
       <g
-        :class="{ 'current-phase': phases.includes(phase) }"
         v-for="(phase, idx) in allPhases"
         :key="idx"
+        :class="{ 'current-phase': phases.includes(phase) }"
         :transform="
           `translate(${(phaseWidth - triangleWidth + spacer) * (idx + 1) -
             triangleWidth},0)`
@@ -36,7 +36,7 @@
               triangleWidth},${height} 0,${height} ${triangleWidth},${height /
               2}`
           "
-        ></polygon>
+        />
         <text class="text-phase" :x="phaseWidth / 2" :y="height / 2">
           {{ phase }}
         </text>
@@ -46,16 +46,16 @@
 </template>
 
 <script>
-import Vue from "vue";
+import Vue from 'vue';
 
 export default Vue.extend({
-  name: "TrialPhase",
+  name: 'TrialPhase',
   props: {
     phases: Array,
     includeLabel: {
       type: Boolean,
-      default: true
-    }
+      default: true,
+    },
   },
   data() {
     return {
@@ -63,16 +63,16 @@ export default Vue.extend({
       triangleWidth: 10,
       allPhases: [1, 2, 3, 4],
       spacer: 7,
-      height: 22
+      height: 22,
     };
   },
-  watch: {},
   computed: {
     width() {
       return this.phaseWidth * 4 + this.spacer * 5;
-    }
+    },
   },
-  methods: {}
+  watch: {},
+  methods: {},
 });
 </script>
 

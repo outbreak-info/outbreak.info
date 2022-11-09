@@ -748,6 +748,127 @@ export default {
     dateMin: String,
     dateMax: String,
   },
+  data() {
+    return {
+      resultsSubscription: null,
+      data: null,
+      dates: null,
+      dateFacet: {
+        expanded: false,
+      },
+      numResults: 0,
+      selectedPage: null,
+      searchInput: null,
+      filterString: null,
+      esQuery: null,
+      facetFilters: [],
+      selectedFilters: [],
+      sortValue: null,
+      numPerPage: null,
+      pageOpts: [5, 10, 50, 100],
+      pieVariables: [
+        'Type',
+        'Source',
+        'Topic',
+        'Funding',
+        'Measurement Technique',
+      ],
+      sortOpts: [
+        {
+          value: '',
+          label: 'best match',
+        },
+        {
+          value: '-date',
+          label: 'date: newest to oldest',
+        },
+        {
+          value: 'date',
+          label: 'date: oldest to newest',
+        },
+        {
+          value: 'name',
+          label: 'A-Z',
+        },
+        {
+          value: '-name',
+          label: 'Z-A',
+        },
+      ],
+
+      resourceTypes: [
+        {
+          //   label: "What's New",
+          //   id: "whats-new"
+          // }, {
+          //   label: "Topics",
+          //   id: "topics"
+          // }, {
+          label: 'Publications',
+          id: 'Publication',
+        },
+        // {
+        //   label: "Analyses",
+        //   id: "Analysis"
+        // },
+        {
+          label: 'Clinical Trials',
+          id: 'ClinicalTrial',
+        },
+        {
+          label: 'Datasets',
+          id: 'Dataset',
+        },
+        {
+          label: 'Protocols',
+          id: 'Protocol',
+        },
+      ],
+      new2Display: 3,
+      newData: null,
+      facetSummary: null,
+    };
+  },
+  computed: {
+    ...mapState('admin', ['loading', 'resources']),
+    lowerLim() {
+      return this.selectedPage * this.numPerPage;
+    },
+    upperLim() {
+      const upper = this.selectedPage * this.numPerPage + this.numPerPage;
+      return upper > this.numResults ? this.numResults : upper;
+    },
+    lastPage() {
+      return this.numResults
+        ? Math.floor(this.numResults / this.numPerPage)
+        : null;
+    },
+    quotedSearch() {
+      return `"${this.searchInput}"`;
+    },
+    showSearchHelper() {
+      return this.searchInput
+        ? this.searchInput.includes(' ') && !this.searchInput.includes('"')
+        : false;
+    },
+  },
+  watch: {
+    searchInput() {
+      this.debounceSearchText();
+    },
+    $route: {
+      immediate: true,
+      handler(to, from) {
+        this.searchInput = this.q ? this.q : null;
+        this.filterString = this.filter ? this.filter : null;
+        this.numPerPage = this.size ? Number(this.size) : 10;
+        this.selectedPage = this.page ? Number(this.page) : 0;
+        this.sortValue = this.sort ? this.sort : '';
+
+        this.getResults();
+      },
+    },
+  },
   created() {
     this.debounceFilterText = debounce(this.selectFilterText, 500);
     this.debounceSearchText = debounce(this.onEnter, 500);
@@ -827,7 +948,7 @@ export default {
         });
       });
     },
-    expandDescription: (item) => {
+    expandDescription(item) {
       item.descriptionExpanded = !item.descriptionExpanded;
     },
     getLogo(curator) {
@@ -872,7 +993,7 @@ export default {
         },
       });
     },
-    selectFilter: (facet, option) => {
+    selectFilter(facet, option) {
       option.checked = !option.checked;
 
       this.filterString = this.filters2String();
@@ -1051,127 +1172,6 @@ export default {
         },
       });
     },
-  },
-  computed: {
-    ...mapState('admin', ['loading', 'resources']),
-    lowerLim() {
-      return this.selectedPage * this.numPerPage;
-    },
-    upperLim() {
-      const upper = this.selectedPage * this.numPerPage + this.numPerPage;
-      return upper > this.numResults ? this.numResults : upper;
-    },
-    lastPage() {
-      return this.numResults
-        ? Math.floor(this.numResults / this.numPerPage)
-        : null;
-    },
-    quotedSearch() {
-      return `"${this.searchInput}"`;
-    },
-    showSearchHelper() {
-      return this.searchInput
-        ? this.searchInput.includes(' ') && !this.searchInput.includes('"')
-        : false;
-    },
-  },
-  watch: {
-    searchInput() {
-      this.debounceSearchText();
-    },
-    $route: {
-      immediate: true,
-      handler(to, from) {
-        this.searchInput = this.q ? this.q : null;
-        this.filterString = this.filter ? this.filter : null;
-        this.numPerPage = this.size ? Number(this.size) : 10;
-        this.selectedPage = this.page ? Number(this.page) : 0;
-        this.sortValue = this.sort ? this.sort : '';
-
-        this.getResults();
-      },
-    },
-  },
-  data() {
-    return {
-      resultsSubscription: null,
-      data: null,
-      dates: null,
-      dateFacet: {
-        expanded: false,
-      },
-      numResults: 0,
-      selectedPage: null,
-      searchInput: null,
-      filterString: null,
-      esQuery: null,
-      facetFilters: [],
-      selectedFilters: [],
-      sortValue: null,
-      numPerPage: null,
-      pageOpts: [5, 10, 50, 100],
-      pieVariables: [
-        'Type',
-        'Source',
-        'Topic',
-        'Funding',
-        'Measurement Technique',
-      ],
-      sortOpts: [
-        {
-          value: '',
-          label: 'best match',
-        },
-        {
-          value: '-date',
-          label: 'date: newest to oldest',
-        },
-        {
-          value: 'date',
-          label: 'date: oldest to newest',
-        },
-        {
-          value: 'name',
-          label: 'A-Z',
-        },
-        {
-          value: '-name',
-          label: 'Z-A',
-        },
-      ],
-
-      resourceTypes: [
-        {
-          //   label: "What's New",
-          //   id: "whats-new"
-          // }, {
-          //   label: "Topics",
-          //   id: "topics"
-          // }, {
-          label: 'Publications',
-          id: 'Publication',
-        },
-        // {
-        //   label: "Analyses",
-        //   id: "Analysis"
-        // },
-        {
-          label: 'Clinical Trials',
-          id: 'ClinicalTrial',
-        },
-        {
-          label: 'Datasets',
-          id: 'Dataset',
-        },
-        {
-          label: 'Protocols',
-          id: 'Protocol',
-        },
-      ],
-      new2Display: 3,
-      newData: null,
-      facetSummary: null,
-    };
   },
 };
 </script>

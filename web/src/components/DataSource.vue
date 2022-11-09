@@ -73,6 +73,13 @@ export default Vue.extend({
     },
     figureRef: String,
   },
+  data() {
+    return {
+      showSnackbar: false,
+      snackbarText: 'copying figure to the clipboard',
+      copyThreshold: 9,
+    };
+  },
   computed: {
     ...mapState('admin', ['sources']),
     filteredSources() {
@@ -97,13 +104,6 @@ export default Vue.extend({
     todayFormatted() {
       return this.formatDate();
     },
-  },
-  data() {
-    return {
-      showSnackbar: false,
-      snackbarText: 'copying figure to the clipboard',
-      copyThreshold: 9,
-    };
   },
   watch: {},
   methods: {

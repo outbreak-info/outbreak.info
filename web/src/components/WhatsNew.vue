@@ -109,15 +109,15 @@ import NewList from '@/components/NewList.vue';
 
 export default {
   name: 'WhatsNew',
+  components: {
+    NewList,
+  },
   props: {
     query: String,
     numResults: {
       type: Number,
       default: 5,
     },
-  },
-  components: {
-    NewList,
   },
   data() {
     return {

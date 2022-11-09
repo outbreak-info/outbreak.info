@@ -1,8 +1,12 @@
 <template>
   <div>
     <div class="bg-main__darker status-banner border-top py-4">
-      <h3 class="m-0 text-grey">SARS-CoV-2 (hCoV-19) Mutation Reports</h3>
-      <h1 class="m-0 status-header font-weight-bold">Current Status</h1>
+      <h3 class="m-0 text-grey">
+        SARS-CoV-2 (hCoV-19) Mutation Reports
+      </h3>
+      <h1 class="m-0 status-header font-weight-bold">
+        Current Status
+      </h1>
     </div>
 
     <!-- LOADING -->
@@ -52,8 +56,8 @@
           >
             <div id="date-updated">
               <div
-                class="text-muted badge bg-grey__lightest mt-1 mr-3"
                 v-if="lastUpdated"
+                class="text-muted badge bg-grey__lightest mt-1 mr-3"
               >
                 <font-awesome-icon
                   class="mr-1 fa-1x"
@@ -63,19 +67,19 @@
               </div>
             </div>
             <div
+              v-if="total"
               id="sequence-count"
               class="ml-2 fa-lg text-highlight"
-              v-if="total"
             >
               {{ total }} total sequences
             </div>
           </div>
           <div
+            v-if="loc && locTotal"
             id="sequence-count"
             class="mt-3 mb-2 fa-lg text-highlight__brighter"
-            v-if="loc && locTotal"
           >
-            <div></div>
+            <div />
             {{ locTotal }} {{ locationTitle }}
             <font-awesome-icon
               class="ml-2 fa-xs pointer"
@@ -87,27 +91,27 @@
             />
             <!-- SELECT LOCATION -->
             <div
-              class="input-group max-width-50 mt-3 collapse"
               id="changeLocation"
+              class="input-group max-width-50 mt-3 collapse"
             >
               <div class="input-group-prepend">
                 <span
-                  class="input-group-text bg-grey text-muted border-0"
                   id="sb"
+                  class="input-group-text bg-grey text-muted border-0"
                 >
                   <font-awesome-icon :icon="['fas', 'search']" />
                 </span>
               </div>
               <TypeaheadSelect
                 class="form-control"
-                :isStandalone="false"
-                :queryFunction="queryLocation"
-                @selected="updateLocation"
-                :apiUrl="this.$genomicsurl"
-                labelVariable="label"
+                :is-standalone="false"
+                :query-function="queryLocation"
+                :api-url="this.$genomicsurl"
+                label-variable="label"
                 placeholder="Change location"
-                totalLabel="total sequences"
-                :removeOnSelect="true"
+                total-label="total sequences"
+                :remove-on-select="true"
+                @selected="updateLocation"
               />
             </div>
           </div>
@@ -156,38 +160,38 @@
             <div class="input-group max-width-50 ml-4">
               <div class="input-group-prepend">
                 <span
-                  class="input-group-text bg-grey text-muted border-0"
                   id="sb"
+                  class="input-group-text bg-grey text-muted border-0"
                 >
                   <font-awesome-icon :icon="['fas', 'search']" />
                 </span>
               </div>
               <TypeaheadSelect
                 class="form-control"
-                :isStandalone="false"
-                :queryFunction="queryLocation"
-                @selected="updateLocation"
-                :apiUrl="this.$genomicsurl"
-                labelVariable="label"
+                :is-standalone="false"
+                :query-function="queryLocation"
+                :api-url="this.$genomicsurl"
+                label-variable="label"
                 placeholder="Change location"
-                totalLabel="total sequences"
-                :removeOnSelect="true"
+                total-label="total sequences"
+                :remove-on-select="true"
+                @selected="updateLocation"
               />
             </div>
           </div>
           <SequencingHistogram
+            v-if="seqCounts"
             :data="seqCounts"
             :width="widthHist"
             :height="250"
             :downward="false"
-            :includeXAxis="true"
+            :include-x-axis="true"
             :margin="marginHist"
-            :mutationName="null"
-            className="sequencing-histogram"
+            :mutation-name="null"
+            class-name="sequencing-histogram"
             title="By collection date"
-            :onlyTotals="true"
-            notDetectedColor="#bab0ab"
-            v-if="seqCounts"
+            :only-totals="true"
+            not-detected-color="#bab0ab"
           />
         </section>
 
@@ -203,22 +207,22 @@
             <div class="input-group max-width-50 ml-4">
               <div class="input-group-prepend">
                 <span
-                  class="input-group-text bg-grey text-muted border-0"
                   id="sb"
+                  class="input-group-text bg-grey text-muted border-0"
                 >
                   <font-awesome-icon :icon="['fas', 'search']" />
                 </span>
               </div>
               <TypeaheadSelect
                 class="form-control"
-                :isStandalone="false"
-                :queryFunction="queryLocation"
-                @selected="updateLocation"
-                :apiUrl="this.$genomicsurl"
-                labelVariable="label"
+                :is-standalone="false"
+                :query-function="queryLocation"
+                :api-url="this.$genomicsurl"
+                label-variable="label"
                 placeholder="Change location"
-                totalLabel="total sequences"
-                :removeOnSelect="true"
+                total-label="total sequences"
+                :remove-on-select="true"
+                @selected="updateLocation"
               />
             </div>
           </div>
@@ -315,36 +319,6 @@ export default Vue.extend({
     loc: String,
     var: String,
   },
-  computed: {
-    ...mapState('genomics', [
-      'locationLoading1',
-      'locationLoading2',
-      'locationLoading3',
-    ]),
-    reportloading() {
-      return (
-        this.locationLoading1 || this.locationLoading2 || this.locationLoading3
-      );
-    },
-    locationTitle() {
-      if (this.selectedLocation) {
-        return `in ${this.selectedLocation.label}`;
-      } else {
-        return 'Worldwide';
-      }
-    },
-  },
-  watch: {
-    selectedSequence() {
-      this.debounceSeqSearch();
-    },
-    loc() {
-      this.updateLocationMd();
-      this.updateSeqCounts();
-      this.updateGap();
-      this.updateMap();
-    },
-  },
   data() {
     return {
       // methods
@@ -379,6 +353,55 @@ export default Vue.extend({
         right: 75,
       },
     };
+  },
+  computed: {
+    ...mapState('genomics', [
+      'locationLoading1',
+      'locationLoading2',
+      'locationLoading3',
+    ]),
+    reportloading() {
+      return (
+        this.locationLoading1 || this.locationLoading2 || this.locationLoading3
+      );
+    },
+    locationTitle() {
+      if (this.selectedLocation) {
+        return `in ${this.selectedLocation.label}`;
+      } else {
+        return 'Worldwide';
+      }
+    },
+  },
+  watch: {
+    selectedSequence() {
+      this.debounceSeqSearch();
+    },
+    loc() {
+      this.updateLocationMd();
+      this.updateSeqCounts();
+      this.updateGap();
+      this.updateMap();
+    },
+  },
+  created() {
+    this.debounceSeqSearch = debounce(this.lookupSequence, 250);
+  },
+  mounted() {
+    this.queryLocation = findLocation;
+    this.totalSubscription = getStatusBasics(
+      this.$genomicsurl,
+      this.loc,
+    ).subscribe((results) => {
+      this.lastUpdated = results.lastUpdated;
+      this.dateUpdated = results.dateUpdated;
+      this.total = results.total;
+    });
+
+    this.updateLocationMd();
+    this.updateSeqCounts();
+    this.updateGap();
+    this.updateMap();
   },
   methods: {
     updateLocation(newLocation) {
@@ -446,25 +469,6 @@ export default Vue.extend({
         this.sequenceFound = found;
       });
     },
-  },
-  created() {
-    this.debounceSeqSearch = debounce(this.lookupSequence, 250);
-  },
-  mounted() {
-    this.queryLocation = findLocation;
-    this.totalSubscription = getStatusBasics(
-      this.$genomicsurl,
-      this.loc,
-    ).subscribe((results) => {
-      this.lastUpdated = results.lastUpdated;
-      this.dateUpdated = results.dateUpdated;
-      this.total = results.total;
-    });
-
-    this.updateLocationMd();
-    this.updateSeqCounts();
-    this.updateGap();
-    this.updateMap();
   },
   beforeDestroyed() {
     if (this.totalSubscription) {

@@ -2,12 +2,14 @@
   <div class="mx-3 my-5">
     <div id="treatments" class="text-left">
       <h3>Resources related to treatments</h3>
-      <Marimekko :data="types" v-if="types" />
+      <Marimekko v-if="types" :data="types" />
       <div v-for="(treatment, idx) in results" :key="idx" class="mb-4">
         <router-link
           :to="{ name: 'Resources', query: { q: treatment.key.query } }"
         >
-          <h6 class="m-0">{{ treatment.key.name }}</h6>
+          <h6 class="m-0">
+            {{ treatment.key.name }}
+          </h6>
         </router-link>
         <small class="text-muted m-0">
           {{ treatment.key.label }}
@@ -29,38 +31,6 @@ export default {
   name: 'Topics',
   components: {
     Marimekko,
-  },
-  mounted() {
-    this.resultSubscription = getQuerySummaries(
-      this.drugs,
-      this.$resourceurl,
-    ).subscribe((results) => {
-      this.results = results;
-    });
-
-    // getCTSummary(this.$resourceurl).subscribe(results => {
-    //   console.log(results)
-    //
-    //   results.forEach(d => {
-    //     d["status"] = d.studyStatus ? d.studyStatus.status: null;
-    //     d["interv"] = d.armGroup ? d.armGroup.map(arm => {
-    //       return arm.intervention ? arm.intervention.map(intervention => intervention.name).join("+") : null;
-    //     }).join(" vs ") : null;
-    //   })
-    //
-    //   const x = d3.nest()
-    //   .key(d => d.interv)
-    //   .entries(results);
-    //   console.log(x)
-    // });
-  },
-  beforeDestroy() {
-    this.resultSubscription.unsubscribe();
-  },
-  computed: {
-    types() {
-      return this.results ? this.results.flatMap((d) => d.types) : null;
-    },
   },
   data() {
     return {
@@ -144,6 +114,38 @@ export default {
         },
       ],
     };
+  },
+  computed: {
+    types() {
+      return this.results ? this.results.flatMap((d) => d.types) : null;
+    },
+  },
+  mounted() {
+    this.resultSubscription = getQuerySummaries(
+      this.drugs,
+      this.$resourceurl,
+    ).subscribe((results) => {
+      this.results = results;
+    });
+
+    // getCTSummary(this.$resourceurl).subscribe(results => {
+    //   console.log(results)
+    //
+    //   results.forEach(d => {
+    //     d["status"] = d.studyStatus ? d.studyStatus.status: null;
+    //     d["interv"] = d.armGroup ? d.armGroup.map(arm => {
+    //       return arm.intervention ? arm.intervention.map(intervention => intervention.name).join("+") : null;
+    //     }).join(" vs ") : null;
+    //   })
+    //
+    //   const x = d3.nest()
+    //   .key(d => d.interv)
+    //   .entries(results);
+    //   console.log(x)
+    // });
+  },
+  beforeDestroy() {
+    this.resultSubscription.unsubscribe();
   },
 };
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-4" id="sublineage-totals">
+  <div id="sublineage-totals" class="mt-4">
     <div class="d-flex align-items-center">
       <h5 class="m-0">Lineage breakdown of {{ title }}</h5>
       <button
@@ -43,23 +43,23 @@
         </marker>
       </defs>
       <g
-        :transform="`translate(${margin.left}, ${margin.top})`"
         ref="horizontal_bargraph"
-      ></g>
+        :transform="`translate(${margin.left}, ${margin.top})`"
+      />
       <g
+        ref="yAxis"
         :transform="`translate(${margin.left}, ${margin.top})`"
         class="horizontal-bargraph-y pointer axis--y"
-        ref="yAxis"
-      ></g>
+      />
       <g class="swoopy-arrow-group">
         <path
-          class="swoopy-arrow"
           id="switch-btn-swoopy-arrow"
+          class="swoopy-arrow"
           marker-end="url(#arrow-sublineage)"
           :d="swoopyPosition"
           :stroke="fill"
           fill="none"
-        ></path>
+        />
         <text
           :x="width - margin.right - 10"
           :y="height - margin.top"
@@ -73,8 +73,8 @@
 
     <div class="d-flex align-items-center mt-3">
       <button
-        id="zeros-filtered"
         v-if="areZerosFiltered || (!areZerosFiltered && !hideZeros)"
+        id="zeros-filtered"
         class="btn btn-main-outline m-0 btn-sublineages mr-3"
         @click="showZeros"
       >
@@ -85,9 +85,9 @@
 
       <DownloadReportData
         :data="data"
-        figureRef="sublineage_counts"
-        dataType="Sublineage breakdown"
-        :fullWidth="false"
+        figure-ref="sublineage_counts"
+        data-type="Sublineage breakdown"
+        :full-width="false"
       />
     </div>
 
@@ -169,25 +169,6 @@ export default Vue.extend({
       default: '#f28e2c',
     },
   },
-  computed: {
-    geographicName() {
-      return this.location === 'Worldwide'
-        ? 'globally'
-        : this.location
-        ? `in ${this.location}`
-        : null;
-    },
-    title() {
-      return this.geographicName
-        ? `${this.lineageName} ${this.geographicName}`
-        : this.lineageName;
-    },
-    swoopyPosition() {
-      return `M ${this.width - this.margin.left - 20} ${this.height -
-        this.margin.top -
-        5} c 0 0, 15 0, 0 -25`;
-    },
-  },
   data() {
     return {
       numXTicks: 4,
@@ -210,11 +191,34 @@ export default Vue.extend({
       yAxis: null,
     };
   },
+  computed: {
+    geographicName() {
+      return this.location === 'Worldwide'
+        ? 'globally'
+        : this.location
+        ? `in ${this.location}`
+        : null;
+    },
+    title() {
+      return this.geographicName
+        ? `${this.lineageName} ${this.geographicName}`
+        : this.lineageName;
+    },
+    swoopyPosition() {
+      return `M ${this.width - this.margin.left - 20} ${this.height -
+        this.margin.top -
+        5} c 0 0, 15 0, 0 -25`;
+    },
+  },
   watch: {
     data() {
       this.preprocessData();
       this.updatePlot();
     },
+  },
+  mounted() {
+    this.setupPlot();
+    this.updatePlot();
   },
   methods: {
     handleLineageClick(lineage) {
@@ -410,10 +414,6 @@ export default Vue.extend({
         .on('mouseleave', () => this.tooltipOff())
         .on('click', (d) => this.handleLineageClick(d[this.yVar]));
     },
-  },
-  mounted() {
-    this.setupPlot();
-    this.updatePlot();
   },
 });
 </script>

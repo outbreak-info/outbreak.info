@@ -2,7 +2,9 @@
   <div
     class="bg-light d-flex flex-column justify-content-center align-items-center my-5"
   >
-    <h1 class="d-block">outbreak.info in the media</h1>
+    <h1 class="d-block">
+      outbreak.info in the media
+    </h1>
     <div id="press" class="text-left w-75">
       <div
         v-for="(article, aIdx) in press"
@@ -33,8 +35,6 @@
 <script>
 import Vue from 'vue';
 import { mapState } from 'vuex';
-
-import { timeFormat } from 'd3';
 
 export default Vue.extend({
   name: 'Press',

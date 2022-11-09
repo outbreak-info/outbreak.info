@@ -31,7 +31,7 @@
           31565258
         </a>
       </div>
-      <div class="my-4" v-if="funding">
+      <div v-if="funding" class="my-4">
         This work was supported by the
         <span v-for="(grant, idx) in funding" :key="idx">
           <span v-if="grant.funder.name">{{ grant.funder.name }}</span>

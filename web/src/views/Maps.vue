@@ -19,8 +19,8 @@
             name: 'Maps',
             query: {
               admin_level: '0',
-              variable: this.selectedVariable.value,
-              date: this.selectedDate,
+              variable: selectedVariable.value,
+              date: selectedDate,
             },
           }"
         >
@@ -36,8 +36,8 @@
               query: {
                 admin_level: '1',
                 location: 'iso3:USA',
-                variable: this.selectedVariable.value,
-                date: this.selectedDate,
+                variable: selectedVariable.value,
+                date: selectedDate,
               },
             }"
           >
@@ -53,8 +53,8 @@
                 query: {
                   admin_level: '1.5',
                   location: 'iso3:USA',
-                  variable: this.selectedVariable.value,
-                  date: this.selectedDate,
+                  variable: selectedVariable.value,
+                  date: selectedDate,
                 },
               }"
             >
@@ -69,8 +69,8 @@
                 query: {
                   admin_level: '2',
                   location: 'iso3:USA',
-                  variable: this.selectedVariable.value,
-                  date: this.selectedDate,
+                  variable: selectedVariable.value,
+                  date: selectedDate,
                 },
               }"
             >
@@ -95,21 +95,21 @@
           <select v-model="selectedVariable" class="select-dropdown">
             <option
               v-for="option in variableOptions"
-              :value="option"
               :key="option.value"
+              :value="option"
               v-html="option.label"
-            ></option>
+            />
           </select>
         </div>
         <div
           class="slidecontainer d-flex align-items-center justify-content-between mt-2"
         >
           <DateSlider
+            v-if="maxDate"
             :date="selectedDate"
             :min="minDate"
             :max="maxDate"
-            :adminLevel="admin_level"
-            v-if="maxDate"
+            :admin-level="admin_level"
           />
         </div>
       </div>
@@ -118,21 +118,21 @@
     <Choropleth
       :data="data"
       :animate="animate"
-      :blankMap="blankMap"
+      :blank-map="blankMap"
       :outline="outline"
-      :selectedMin="selectedMin"
-      :selectedMax="selectedMax"
-      :colorScale="colorScale"
-      :adminLevel="admin_level"
+      :selected-min="selectedMin"
+      :selected-max="selectedMax"
+      :color-scale="colorScale"
+      :admin-level="admin_level"
       :variable="selectedVariable.value"
-      :variableLabel="selectedVariable.choro"
+      :variable-label="selectedVariable.choro"
       :date1="selectedDate"
-      :maxDate="maxDate"
+      :max-date="maxDate"
     />
     <DataSource
       :data="data"
-      dataType="maps"
-      figureRef="epi-map-svg"
+      data-type="maps"
+      figure-ref="epi-map-svg"
       :ids="['NYT', 'JHU']"
     />
   </div>
@@ -177,37 +177,6 @@ export default {
     max: String,
     date: String,
     animate: { type: Boolean, default: true },
-  },
-  watch: {
-    '$route.params': {
-      immediate: true,
-      handler(newRoute, oldRoute) {
-        // update selections based on routes
-        const filtered = this.variableOptions.filter(
-          (d) => d.value === this.variable,
-        );
-        this.selectedVariable = filtered.length === 1 ? filtered[0] : null;
-        // reset selected min/max
-        // If the data already exists, pull out the min/max.
-        this.selectedMin = this.min || this.min === 0 ? +this.min : null;
-        this.selectedMax = this.max || this.max === 0 ? +this.max : null;
-
-        this.selectedDate = this.date;
-
-        this.getData(this.selectedDate);
-      },
-    },
-    selectedVariable() {
-      this.$router.push({
-        path: 'maps',
-        query: {
-          location: this.location,
-          admin_level: this.admin_level,
-          variable: this.selectedVariable.value,
-          date: this.selectedDate,
-        },
-      });
-    },
   },
   data() {
     return {
@@ -278,6 +247,37 @@ export default {
   },
   computed: {
     ...mapState('admin', ['dataloading']),
+  },
+  watch: {
+    '$route.params': {
+      immediate: true,
+      handler(newRoute, oldRoute) {
+        // update selections based on routes
+        const filtered = this.variableOptions.filter(
+          (d) => d.value === this.variable,
+        );
+        this.selectedVariable = filtered.length === 1 ? filtered[0] : null;
+        // reset selected min/max
+        // If the data already exists, pull out the min/max.
+        this.selectedMin = this.min || this.min === 0 ? +this.min : null;
+        this.selectedMax = this.max || this.max === 0 ? +this.max : null;
+
+        this.selectedDate = this.date;
+
+        this.getData(this.selectedDate);
+      },
+    },
+    selectedVariable() {
+      this.$router.push({
+        path: 'maps',
+        query: {
+          location: this.location,
+          admin_level: this.admin_level,
+          variable: this.selectedVariable.value,
+          date: this.selectedDate,
+        },
+      });
+    },
   },
   beforeDestroy() {
     this.dataSubscription.unsubscribe();

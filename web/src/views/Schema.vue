@@ -2,7 +2,9 @@
   <div class="row" style="min-height: 75vh;">
     <div class="col-sm-12 my-5">
       <div class="container text-left mb-5">
-        <h1 class="text-highlight">Schema for Resources</h1>
+        <h1 class="text-highlight">
+          Schema for Resources
+        </h1>
         <section class="my-5">
           <h4>Why did we create outbreak.info schema?</h4>
           <div class="row align-items-start">

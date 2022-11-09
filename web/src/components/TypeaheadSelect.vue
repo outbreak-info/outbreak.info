@@ -70,6 +70,14 @@ export default {
       default: false,
     },
   },
+  data() {
+    return {
+      isOpen: false,
+      current: 0,
+      selected: null,
+      matches: [],
+    };
+  },
   watch: {
     selectedValue() {
       this.selected = this.selectedValue
@@ -79,16 +87,8 @@ export default {
         : null;
     },
   },
-  created: function() {
+  created() {
     this.debounceSearch = debounce(this.change, 250);
-  },
-  data() {
-    return {
-      isOpen: false,
-      current: 0,
-      selected: null,
-      matches: [],
-    };
   },
   methods: {
     enter() {
@@ -118,7 +118,7 @@ export default {
     },
 
     //When the user changes input
-    change: function() {
+    change() {
       if (this.selected.length > 0) {
         this.querySubscription = this.queryFunction(
           this.apiUrl,

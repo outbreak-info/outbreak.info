@@ -4,7 +4,9 @@
       class="d-flex justify-content-between px-3"
       :style="{ width: width + 'px' }"
     >
-      <h5 class="m-0">{{ plotTitle }}</h5>
+      <h5 class="m-0">
+        {{ plotTitle }}
+      </h5>
       <div class="d-flex justify-content-end">
         <button
           class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2"
@@ -28,10 +30,10 @@
     </div>
 
     <svg
+      ref="lineages_by_location"
       :width="width"
       :height="height"
       class="lineages-by-location"
-      ref="lineages_by_location"
       :name="title"
     >
       <defs>
@@ -53,63 +55,63 @@
         </pattern>
       </defs>
 
-      <g :transform="`translate(${margin.left},${margin.top})`" ref="chart"></g>
+      <g ref="chart" :transform="`translate(${margin.left},${margin.top})`" />
 
       <g
-        class="stream-axis axis--x"
         ref="xAxis"
+        class="stream-axis axis--x"
         :transform="`translate(${margin.left},${height - margin.bottom})`"
-      ></g>
+      />
       <g
-        class="stream-axis axis--y"
         ref="yAxis"
+        class="stream-axis axis--y"
         :transform="`translate(${margin.left},${margin.top})`"
-      ></g>
+      />
       <g
+        v-if="data"
+        id="brush-zoom"
         ref="brush"
         class="brush"
-        id="brush-zoom"
         :transform="`translate(${margin.left},${margin.top})`"
-        v-if="data"
         :class="{ hidden: !zoomAllowed }"
-      ></g>
+      />
     </svg>
 
     <!-- Histogram of sequencing counts -->
     <SequencingHistogram
-      :data="seqCounts"
-      :xInput="x"
-      :width="width"
-      :svgTitle="title"
-      :margin="marginHist"
-      :mutationName="mutationName"
-      className="lineages-by-location"
-      :onlyTotals="onlyTotals"
-      detectedColor="#79706E"
-      notDetectedColor="#bab0ab"
       v-if="seqCounts && seqCounts.length && x"
+      :data="seqCounts"
+      :x-input="x"
+      :width="width"
+      :svg-title="title"
+      :margin="marginHist"
+      :mutation-name="mutationName"
+      class-name="lineages-by-location"
+      :only-totals="onlyTotals"
+      detected-color="#79706E"
+      not-detected-color="#bab0ab"
     />
 
     <DownloadReportData
       :data="data"
-      figureRef="lineages-by-location"
-      :isVertical="true"
-      dataType="Mutation Report Prevalence over Time"
+      figure-ref="lineages-by-location"
+      :is-vertical="true"
+      data-type="Mutation Report Prevalence over Time"
     />
 
     <div
+      id="tooltip-streamgraph"
       ref="tooltip_streamgraph"
       class="tooltip-basic box-shadow"
-      id="tooltip-streamgraph"
     >
-      <h5 id="lineage" class="my-1"></h5>
-      <div class="d-flex align-items-center" v-if="tooltipTotal">
+      <h5 id="lineage" class="my-1" />
+      <div v-if="tooltipTotal" class="d-flex align-items-center">
         Total found:
-        <b id="proportion" class="ml-1"></b>
+        <b id="proportion" class="ml-1" />
       </div>
-      <div class="d-flex align-items-center" v-else>
+      <div v-else class="d-flex align-items-center">
         Prevalence in the last {{ recentWindow }} days:
-        <b id="proportion" class="ml-1"></b>
+        <b id="proportion" class="ml-1" />
       </div>
     </div>
   </div>
@@ -198,36 +200,6 @@ export default Vue.extend({
       default: false,
     },
   },
-  computed: {
-    title() {
-      return `Lineage prevalence over time in ${this.location}`;
-    },
-  },
-  watch: {
-    width() {
-      this.setXScale();
-      this.updateBrush();
-      this.updatePlot();
-    },
-    data: () => {
-      this.xMin = timeParse('%Y-%m-%d')(this.xmin);
-      this.xMax = timeParse('%Y-%m-%d')(this.xmax);
-      this.setXScale();
-      this.updatePlot();
-    },
-    xmin: () => {
-      this.xMin = timeParse('%Y-%m-%d')(this.xmin);
-      this.xMax = timeParse('%Y-%m-%d')(this.xmax);
-      this.setXScale();
-      this.updatePlot();
-    },
-    xmax: () => {
-      this.xMin = timeParse('%Y-%m-%d')(this.xmin);
-      this.xMax = timeParse('%Y-%m-%d')(this.xmax);
-      this.setXScale();
-      this.updatePlot();
-    },
-  },
   data() {
     return {
       // dimensions
@@ -271,6 +243,36 @@ export default Vue.extend({
       zoomAllowed: false,
     };
   },
+  computed: {
+    title() {
+      return `Lineage prevalence over time in ${this.location}`;
+    },
+  },
+  watch: {
+    width() {
+      this.setXScale();
+      this.updateBrush();
+      this.updatePlot();
+    },
+    data() {
+      this.xMin = timeParse('%Y-%m-%d')(this.xmin);
+      this.xMax = timeParse('%Y-%m-%d')(this.xmax);
+      this.setXScale();
+      this.updatePlot();
+    },
+    xmin() {
+      this.xMin = timeParse('%Y-%m-%d')(this.xmin);
+      this.xMax = timeParse('%Y-%m-%d')(this.xmax);
+      this.setXScale();
+      this.updatePlot();
+    },
+    xmax() {
+      this.xMin = timeParse('%Y-%m-%d')(this.xmin);
+      this.xMax = timeParse('%Y-%m-%d')(this.xmax);
+      this.setXScale();
+      this.updatePlot();
+    },
+  },
   mounted() {
     this.$nextTick(() => {
       window.addEventListener('resize', this.debounceSetDims);
@@ -283,7 +285,7 @@ export default Vue.extend({
     this.setupPlot();
     this.updatePlot();
   },
-  created: () => {
+  created() {
     this.debounceSetDims = this.debounce(this.setDims, 150);
     this.debounceZoom = this.debounce(this.zoom, 150);
   },

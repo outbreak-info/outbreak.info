@@ -4,10 +4,10 @@
       :animate="false"
       class="mt-2"
       text="Case counts will increase when testing becomes more prevalent. So be careful how you interpret these doubling rates: rate of testing could confound the interpretation of doubling rates."
-    ></Warning>
+    />
     <div class="d-flex flex-wrap align-items-center mx-4">
       <div class="d-flex flex-column align-items-center mr-5">
-        <h3 class="plot-title text-sec py-5" v-if="epi$">
+        <h3 v-if="epi$" class="plot-title text-sec py-5">
           Cumulative number of COVID-19
           <select
             v-model="variable"
@@ -16,8 +16,8 @@
           >
             <option
               v-for="option in variableOptions"
-              :value="option.value"
               :key="option.value"
+              :value="option.value"
             >
               {{ option.label }}
             </option>
@@ -32,27 +32,29 @@
             </router-link>
           </span>
         </h3>
-        <h3 v-else class="pt-5">Select a location</h3>
+        <h3 v-else class="pt-5">
+          Select a location
+        </h3>
         <SearchBar
           class="w-100 mb-3"
-          @location="setLocation"
           :selected="selected"
           placeholder="Change location"
-        ></SearchBar>
+          @location="setLocation"
+        />
         <DoublingCurve
           v-if="epi$"
           :data="epi$"
-          :toFit="toFit"
-          @executeFit="executeFit"
+          :to-fit="toFit"
           :variable="variable"
+          @executeFit="executeFit"
         />
       </div>
       <DoublingTable
-        :data="epi$"
-        :isFitting1="fitting1"
-        :isFitting2="fitting2"
-        @changeFit="changeFit"
         v-if="epi$"
+        :data="epi$"
+        :is-fitting1="fitting1"
+        :is-fitting2="fitting2"
+        @changeFit="changeFit"
       />
     </div>
   </div>
@@ -113,11 +115,23 @@ export default Vue.extend({
       }
     },
   },
+  mounted() {
+    // getAllDoubling(this.$apiurl, this.variable).subscribe(d => console.log(d))
+    this.locationID = this.$route.query.location;
+    this.variable = this.$route.query.variable
+      ? this.$route.query.variable
+      : 'confirmed';
+
+    this.updateData();
+  },
+  beforeDestroy() {
+    this.dataSubscription.unsubscribe();
+  },
   methods: {
-    changeFit: (fitIdx) => {
+    changeFit(fitIdx) {
       this.toFit = fitIdx;
     },
-    changeParams: (newVar) => {
+    changeParams(newVar) {
       this.updateData();
       this.$router.push({
         path: 'doubling-rates',
@@ -127,10 +141,10 @@ export default Vue.extend({
         },
       });
     },
-    executeFit: (fitIdx) => {
+    executeFit(fitIdx) {
       this[`fitting${fitIdx}`] = !this[`fitting${fitIdx}`];
     },
-    setLocation: (result) => {
+    setLocation(result) {
       this.locationID = result;
       this.updateData();
     },
@@ -143,18 +157,6 @@ export default Vue.extend({
         this.epi$ = results;
       });
     },
-  },
-  mounted() {
-    // getAllDoubling(this.$apiurl, this.variable).subscribe(d => console.log(d))
-    this.locationID = this.$route.query.location;
-    this.variable = this.$route.query.variable
-      ? this.$route.query.variable
-      : 'confirmed';
-
-    this.updateData();
-  },
-  beforeDestroy() {
-    this.dataSubscription.unsubscribe();
   },
 });
 </script>

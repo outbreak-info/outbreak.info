@@ -1,5 +1,5 @@
 <template>
-  <div class="epi-table my-3" v-if="data && colorScale">
+  <div v-if="data && colorScale" class="epi-table my-3">
     <div class="m-auto d-flex justify-content-center py-5">
       <div>
         <h4>Latest Data</h4>
@@ -11,55 +11,55 @@
             <label class="b-contain m-auto pr-3">
               <span>World Bank Regions</span>
               <input
+                v-model.lazy="selectedAdminLevels"
                 type="checkbox"
                 value="-1"
-                v-model.lazy="selectedAdminLevels"
               />
-              <div class="b-input"></div>
+              <div class="b-input" />
             </label>
             <label class="b-contain m-auto pr-3">
               <span>Countries</span>
               <input
+                v-model.lazy="selectedAdminLevels"
                 type="checkbox"
                 value="0"
-                v-model.lazy="selectedAdminLevels"
               />
-              <div class="b-input"></div>
+              <div class="b-input" />
             </label>
             <label class="b-contain m-auto pr-3">
               <span>States/Provinces</span>
               <input
+                v-model.lazy="selectedAdminLevels"
                 type="checkbox"
                 value="1"
-                v-model.lazy="selectedAdminLevels"
               />
-              <div class="b-input"></div>
+              <div class="b-input" />
             </label>
             <label class="b-contain m-auto pr-3">
               <span>U.S. Metropolitan Areas</span>
               <input
+                v-model.lazy="selectedAdminLevels"
                 type="checkbox"
                 value="1.5"
-                v-model.lazy="selectedAdminLevels"
               />
-              <div class="b-input"></div>
+              <div class="b-input" />
             </label>
             <label class="b-contain m-auto pr-3">
               <span>U.S. Counties</span>
               <input
+                v-model.lazy="selectedAdminLevels"
                 type="checkbox"
                 value="2"
-                v-model.lazy="selectedAdminLevels"
               />
-              <div class="b-input"></div>
+              <div class="b-input" />
             </label>
           </div>
           <select
             v-model="numPerPage"
-            @change="changePageNum()"
             class="select-dropdown"
+            @change="changePageNum()"
           >
-            <option v-for="option in pageOpts" :value="option" :key="option">
+            <option v-for="option in pageOpts" :key="option" :value="option">
               {{ option }} results
             </option>
           </select>
@@ -69,8 +69,8 @@
 
     <div class="p-2">
       <table
-        class="m-auto table table-responsive"
         v-if="data && data.length > 0"
+        class="m-auto table table-responsive"
       >
         <tr class="table-header-merged">
           <th
@@ -81,13 +81,13 @@
           >
             {{ column.label }}
           </th>
-          <th></th>
+          <th />
         </tr>
         <tr class="table-header">
           <th
             v-for="(column, idx) in columns"
-            :key="idx"
             :id="`th-${column.value}`"
+            :key="idx"
             :class="{
               sortable: column.sorted,
               'd-none d-md-table-cell': !column.essential,
@@ -101,20 +101,20 @@
                 :icon="['fas', 'sort']"
               />
               <font-awesome-icon
+                v-if="column.sorted === 1"
                 class="sort-btn"
                 :icon="['fas', 'arrow-up']"
-                v-if="column.sorted === 1"
               />
               <font-awesome-icon
+                v-if="column.sorted === -1"
                 class="sort-btn"
                 :icon="['fas', 'arrow-down']"
-                v-if="column.sorted === -1"
               />
             </div>
           </th>
         </tr>
 
-        <tr v-for="row in data" class="table-data" :key="row.location_id">
+        <tr v-for="row in data" :key="row.location_id" class="table-data">
           <td
             v-for="(column, idx) in columns"
             :key="idx"
@@ -128,12 +128,12 @@
             <span v-if="column.label === 'location'">
               <!-- if routable -->
               <router-link
+                v-if="routable"
                 :to="{
                   name: 'Epidemiology',
                   query: { location: row.location_id },
                 }"
                 class="router-link font-weight-bold"
-                v-if="routable"
               >
                 {{
                   row.admin_level == 2
@@ -155,7 +155,7 @@
               </span>
             </span>
             <!-- spacer -->
-            <span v-else-if="column.value === ''" class="spacer px-2"></span>
+            <span v-else-if="column.value === ''" class="spacer px-2" />
             <!-- sparklines -->
             <span
               v-else-if="column.value === 'confirmed_sparkline'"
@@ -163,33 +163,33 @@
             >
               {{ row[column.value] }}
               <Sparkline
+                :id="row.location_id"
                 :data="[row.longitudinal]"
                 variable="confirmed"
                 :width="80"
                 :height="23"
-                :id="row.location_id"
                 :color="row.color"
               />
             </span>
             <span v-else-if="column.value === 'dead_sparkline'">
               {{ row[column.value] }}
               <Sparkline
+                :id="row.location_id"
                 :data="[row.longitudinal]"
                 variable="dead"
                 :width="80"
                 :height="23"
-                :id="row.location_id"
                 :color="row.color"
               />
             </span>
             <span v-else-if="column.value === 'recovered_sparkline'">
               {{ row[column.value] }}
               <Sparkline
+                :id="row.location_id"
                 :data="[row.longitudinal]"
                 variable="recovered"
                 :width="80"
                 :height="23"
-                :id="row.location_id"
                 :color="row.color"
               />
             </span>
@@ -444,6 +444,18 @@ export default Vue.extend({
       pageOpts: [5, 10, 50, 100],
     };
   },
+  computed: {
+    lowerLim() {
+      return this.page * this.numPerPage;
+    },
+    upperLim() {
+      const upper = this.page * this.numPerPage + this.numPerPage;
+      return upper > this.total ? this.total : upper;
+    },
+    lastPage() {
+      return this.total ? Math.floor(this.total / this.numPerPage) : null;
+    },
+  },
   watch: {
     data() {
       this.prepData();
@@ -488,18 +500,6 @@ export default Vue.extend({
       this.sparksSubscription.unsubscribe();
     }
   },
-  computed: {
-    lowerLim() {
-      return this.page * this.numPerPage;
-    },
-    upperLim() {
-      const upper = this.page * this.numPerPage + this.numPerPage;
-      return upper > this.total ? this.total : upper;
-    },
-    lastPage() {
-      return this.total ? Math.floor(this.total / this.numPerPage) : null;
-    },
-  },
   methods: {
     sortColumn(variable) {
       // reset other sorting funcs for arrow affordances
@@ -507,9 +507,9 @@ export default Vue.extend({
 
       if (this.columns[idx].sorted || this.columns[idx].sorted === 0) {
         // if the sort variable is the same, switch it.
-        if (this.sortVar == variable) {
+        if (this.sortVar === variable) {
           this.sortVar = `-${variable}`;
-        } else if (this.sortVar == `-${variable}`) {
+        } else if (this.sortVar === `-${variable}`) {
           this.sortVar = variable;
         } else {
           this.sortVar = `-${variable}`;

@@ -130,6 +130,11 @@ import uniq from 'lodash/uniq';
 
 export default {
   name: 'DownloadData',
+  components: {
+    DataUsage,
+    CiteUs,
+    FontAwesomeIcon,
+  },
   props: {
     data: Array,
     type: String,
@@ -153,11 +158,6 @@ export default {
       default:
         'Johns Hopkins University Center for Systems Science and Engineering;The COVID Tracking Project (testing data), updated daily.',
     },
-  },
-  components: {
-    DataUsage,
-    CiteUs,
-    FontAwesomeIcon,
   },
   data() {
     return {
@@ -197,6 +197,37 @@ export default {
         return `outbreakinfo_epidemiology_data_${this.todayFormatted}`;
       }
     },
+  },
+  mounted() {
+    this.progressSubscription = progressState$.subscribe((progress) => {
+      this.progress = progress;
+    });
+
+    this.$nextTick(() => {
+      // window.addEventListener("click", this.closeDialogBox), { passive: true };
+      // Close on escape
+      document.addEventListener(
+        'keyup',
+        (evt) => {
+          if (evt.keyCode === 27) {
+            this.closeDialogBox();
+          }
+        },
+        {
+          passive: true,
+        },
+      );
+    });
+  },
+  destroyed() {
+    if (this.dataSubscription) {
+      this.dataSubscription.unsubscribe();
+    }
+    if (this.progressSubscription) {
+      this.progressSubscription.unsubscribe();
+    }
+    // window.removeEventListener("click", this.closeDialogBox);
+    document.removeEventListener('keyup', this.closeDialogBox);
   },
   methods: {
     formatDate(dateString, formatString = '%Y-%m-%d') {
@@ -452,37 +483,6 @@ ${resourcesString}
         this.filename + '.tsv',
       );
     },
-  },
-  mounted() {
-    this.progressSubscription = progressState$.subscribe((progress) => {
-      this.progress = progress;
-    });
-
-    this.$nextTick(() => {
-      // window.addEventListener("click", this.closeDialogBox), { passive: true };
-      // Close on escape
-      document.addEventListener(
-        'keyup',
-        (evt) => {
-          if (evt.keyCode === 27) {
-            this.closeDialogBox();
-          }
-        },
-        {
-          passive: true,
-        },
-      );
-    });
-  },
-  destroyed() {
-    if (this.dataSubscription) {
-      this.dataSubscription.unsubscribe();
-    }
-    if (this.progressSubscription) {
-      this.progressSubscription.unsubscribe();
-    }
-    // window.removeEventListener("click", this.closeDialogBox);
-    document.removeEventListener('keyup', this.closeDialogBox);
   },
 };
 </script>

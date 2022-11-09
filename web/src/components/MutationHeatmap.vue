@@ -1,9 +1,9 @@
 <template>
   <div class="overflow-auto" :class="{ 'w-75': isOverflow }">
     <svg
+      ref="svg"
       :width="width + margin.left + margin.right"
       :height="height + margin.top + margin.bottom"
-      ref="svg"
       class="mutation-heatmap"
       name="Mutations by lineage"
       :subtitle="gene"
@@ -45,49 +45,47 @@
       <g
         ref="xAxisTop"
         class="axis axis--x"
-        :transform="`translate(${this.margin.left}, ${this.margin.top - 5})`"
-      ></g>
+        :transform="`translate(${margin.left}, ${margin.top - 5})`"
+      />
       <g
         ref="xAxisBottom"
         class="axis axis--x"
-        :transform="
-          `translate(${this.margin.left}, ${this.margin.top + this.height + 5})`
-        "
-      ></g>
+        :transform="`translate(${margin.left}, ${margin.top + height + 5})`"
+      />
       <g
-        ref="heatmapBase"
         id="heatmap-base"
-        :transform="`translate(${this.margin.left}, ${this.margin.top})`"
-      ></g>
+        ref="heatmapBase"
+        :transform="`translate(${margin.left}, ${margin.top})`"
+      />
       <g
-        ref="heatmap"
         id="heatmap"
-        :transform="`translate(${this.margin.left}, ${this.margin.top})`"
-      ></g>
+        ref="heatmap"
+        :transform="`translate(${margin.left}, ${margin.top})`"
+      />
     </svg>
 
     <!-- TOOLTIPS -->
     <div
+      id="tooltip-prevalence"
       ref="tooltip_heatmap"
       class="tooltip-basic tooltip-dark box-shadow"
-      id="tooltip-prevalence"
     >
       <div class="d-flex border-bottom align-items-center">
         <div class="d-flex">
-          <h5 id="mutation"></h5>
-          <div class="fa-sm font-weight-bold" id="mutationOfInterest"></div>
+          <h5 id="mutation" />
+          <div id="mutationOfInterest" class="fa-sm font-weight-bold" />
         </div>
         <span class="mx-2 text-muted">in</span>
         <div class="d-flex">
-          <h5 id="lineage"></h5>
-          <div class="fa-sm font-weight-bold" id="lineageOfInterest"></div>
+          <h5 id="lineage" />
+          <div id="lineageOfInterest" class="fa-sm font-weight-bold" />
         </div>
       </div>
-      <div class="d-flex align-items-center pt-2" id="prevalence">
-        <div id="value" class="fa-lg"></div>
+      <div id="prevalence" class="d-flex align-items-center pt-2">
+        <div id="value" class="fa-lg" />
         <small class="ml-2 text-muted">of all sequences</small>
       </div>
-      <div id="count"></div>
+      <div id="count" />
       <div id="not-detected" class="text-muted">
         not detected
       </div>
@@ -167,27 +165,6 @@ export default Vue.extend({
       default: false,
     },
   },
-  watch: {
-    data() {
-      this.updatePlot();
-    },
-    dark() {
-      this.updatePlot();
-    },
-  },
-  computed: {
-    bgColor() {
-      return this.dark ? '#343a40' : 'none';
-    },
-    textColor() {
-      return this.dark ? '#efefef' : '#555555';
-    },
-    routeToName() {
-      return this.routeTo.includes('GenomicsEmbed')
-        ? 'GenomicsEmbed'
-        : 'MutationReport';
-    },
-  },
   data() {
     return {
       margin: {
@@ -225,6 +202,27 @@ export default Vue.extend({
       plottedData: null,
       xDomain: null,
     };
+  },
+  computed: {
+    bgColor() {
+      return this.dark ? '#343a40' : 'none';
+    },
+    textColor() {
+      return this.dark ? '#efefef' : '#555555';
+    },
+    routeToName() {
+      return this.routeTo.includes('GenomicsEmbed')
+        ? 'GenomicsEmbed'
+        : 'MutationReport';
+    },
+  },
+  watch: {
+    data() {
+      this.updatePlot();
+    },
+    dark() {
+      this.updatePlot();
+    },
   },
   mounted() {
     this.setupPlot();

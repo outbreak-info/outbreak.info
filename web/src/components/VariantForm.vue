@@ -16,15 +16,15 @@
 
         <div class="ml-5 d-flex flex-wrap align-items-center">
           <div
-            class="radio-item mr-3"
             v-for="(opt, oIdx) in typeOptions"
             :key="oIdx"
+            class="radio-item mr-3"
           >
             <input
-              type="radio"
               :id="opt.id"
-              :value="opt"
               v-model="selectedType"
+              type="radio"
+              :value="opt"
               class="mr-2"
             />
             <label :for="opt.id">{{ opt.label }}</label>
@@ -33,12 +33,12 @@
 
         <form
           id="custom-variants"
-          @submit.prevent="submitQuery"
           :class="[minimalistic ? 'mt-2 mb-0' : 'my-3']"
+          @submit.prevent="submitQuery"
         >
           <div
-            class="d-flex align-items-center circle-header"
             v-if="selectedType"
+            class="d-flex align-items-center circle-header"
           >
             <div class="mr-3" :class="[minimalistic ? 'circle-sm' : 'circle']">
               2
@@ -58,13 +58,13 @@
 
           <!-- PANGO Lineage -->
           <div
-            id="pango"
-            class="ml-5"
-            :class="[minimalistic ? 'mb-2' : 'mb-4']"
             v-if="
               selectedType &&
                 (selectedType.id === 'pango' || selectedType.id === 'variant')
             "
+            id="pango"
+            class="ml-5"
+            :class="[minimalistic ? 'mb-2' : 'mb-4']"
           >
             <small>
               Based on
@@ -78,22 +78,22 @@
 
             <div class="flew-row d-flex w-350px">
               <TypeaheadSelect
-                :queryFunction="queryPangolin"
-                :selectedValue="selectedLineage"
-                @selected="updatePangolin"
-                :apiUrl="this.$genomicsurl"
-                :removeOnSelect="false"
+                :query-function="queryPangolin"
+                :selected-value="selectedLineage"
+                :api-url="this.$genomicsurl"
+                :remove-on-select="false"
                 placeholder="Select PANGO lineage"
+                @selected="updatePangolin"
               />
             </div>
           </div>
 
           <!-- MUTATIONS -->
           <div
-            class="d-flex align-items-center mb-1 circle-header"
             v-if="
               selectedType && selectedType.id === 'variant' && selectedLineage
             "
+            class="d-flex align-items-center mb-1 circle-header"
           >
             <div class="mr-3" :class="[minimalistic ? 'circle-sm' : 'circle']">
               3
@@ -107,13 +107,13 @@
           </div>
 
           <div
-            id="mutation-set"
-            class="ml-5"
             v-if="
               selectedType &&
                 (selectedType.id === 'mut' ||
                   (selectedType.id === 'variant' && selectedLineage))
             "
+            id="mutation-set"
+            class="ml-5"
           >
             <div class="d-flex align-items-center">
               <div id="bulk-mutations" class="mr-4 w-350px">
@@ -122,13 +122,13 @@
                   mutation like "S:E484K, S:DEL69/70"
                 </small>
                 <textarea
-                  class="form-control border-theme"
                   v-model="selectedBulkString"
+                  class="form-control border-theme"
                   placeholder='"gene:mutation": e.g. "S:E484K, S:DEL69/70"'
                   @input="debounceBulk"
-                ></textarea>
+                />
               </div>
-              <div class="warning" v-if="badBulkGene && selectedBulkString">
+              <div v-if="badBulkGene && selectedBulkString" class="warning">
                 <p>
                   Add the gene before the mutation, like "S:N501Y"
                 </p>
@@ -136,10 +136,10 @@
                   Separate mutations with commas
                 </p>
               </div>
-              <div class="warning" v-if="badBulkSubstitution">
+              <div v-if="badBulkSubstitution" class="warning">
                 Specify the mutation like "S:N501Y"
               </div>
-              <div class="warning" v-if="badBulkDeletion">
+              <div v-if="badBulkDeletion" class="warning">
                 Specify a deletion like "S:DEL69/70"
               </div>
             </div>
@@ -149,8 +149,8 @@
     </div>
 
     <div
-      class="d-flex align-items-center circle-header"
       v-if="formValid && selectedType"
+      class="d-flex align-items-center circle-header"
     >
       <div class="mr-3" :class="[minimalistic ? 'circle-sm' : 'circle']">
         {{ selectedType.id === 'variant' ? 4 : 3 }}
@@ -160,33 +160,33 @@
         :class="{ 'font-size-2': !minimalistic }"
       >
         Add
-        <span class="text-highlight" v-html="title"></span>
+        <span class="text-highlight" v-html="title" />
       </div>
     </div>
 
     <div
-      class="row flex-column d-flex"
       v-if="
         !minimalistic &&
           selectedType &&
           (selectedType.id === 'mut' || selectedType.id === 'variant')
       "
+      class="row flex-column d-flex"
     >
-      <div class="col-sm-12" v-if="selectedMutations.length">
+      <div v-if="selectedMutations.length" class="col-sm-12">
         <div class="d-flex align-items-start ml-5">
           <div
+            id="selected-mutations"
             class="d-flex flex-wrap mt-1"
             @submit.prevent="submitQuery"
-            id="selected-mutations"
           >
             <button
-              role="button"
-              class="btn chip btn-outline-secondary bg-white d-flex align-items-center py-1 px-2 line-height-1"
               v-for="(mutation, mIdx) in selectedMutations"
               :key="mIdx"
+              role="button"
+              class="btn chip btn-outline-secondary bg-white d-flex align-items-center py-1 px-2 line-height-1"
               @click="deleteMutation(mIdx)"
             >
-              <span v-html="mutation.mutation"></span>
+              <span v-html="mutation.mutation" />
               <font-awesome-icon
                 class="ml-1"
                 :icon="['far', 'times-circle']"
@@ -197,10 +197,10 @@
 
           <div class="w-75">
             <SARSMutationMap
-              :lineageMutations="selectedMutations"
-              :additionalMutations="[]"
-              mutationKey="selected_mutations"
               v-if="selectedMutations.length"
+              :lineage-mutations="selectedMutations"
+              :additional-mutations="[]"
+              mutation-key="selected_mutations"
             />
           </div>
         </div>
@@ -230,6 +230,11 @@ import debounce from 'lodash/debounce';
 
 export default Vue.extend({
   name: 'CustomReportForm',
+  components: {
+    FontAwesomeIcon,
+    TypeaheadSelect,
+    SARSMutationMap,
+  },
   props: {
     selectedLineage: Object,
     selectedMutations: Array,
@@ -239,25 +244,30 @@ export default Vue.extend({
       default: false,
     },
   },
-  components: {
-    FontAwesomeIcon,
-    TypeaheadSelect,
-    SARSMutationMap,
-  },
-  watch: {
-    submitted(newVal, oldVal) {
-      this.clearForm();
-    },
-    selectedType: {
-      immediate: false,
-      handler(newVal, oldVal) {
-        if (this.selectedType && this.selectedType.id === 'variant') {
-          this.$emit('update:submitLabel', 5);
-        } else {
-          this.$emit('update:submitLabel', 4);
-        }
-      },
-    },
+  data() {
+    return {
+      queryPangolin: null,
+      selectedBulkMutations: [],
+      selectedBulkString: null,
+      badBulkGene: false,
+      badBulkSubstitution: false,
+      badBulkDeletion: false,
+      selectedType: null,
+      typeOptions: [
+        {
+          id: 'pango',
+          label: 'PANGO lineage',
+        },
+        {
+          id: 'variant',
+          label: 'PANGO lineage + mutation(s)',
+        },
+        {
+          id: 'mut',
+          label: 'Mutation(s)',
+        },
+      ],
+    };
   },
   computed: {
     title() {
@@ -281,7 +291,22 @@ export default Vue.extend({
       return this.selectedMutations.length > 0 || this.selectedLineage;
     },
   },
-  created: function() {
+  watch: {
+    submitted(newVal, oldVal) {
+      this.clearForm();
+    },
+    selectedType: {
+      immediate: false,
+      handler(newVal, oldVal) {
+        if (this.selectedType && this.selectedType.id === 'variant') {
+          this.$emit('update:submitLabel', 5);
+        } else {
+          this.$emit('update:submitLabel', 4);
+        }
+      },
+    },
+  },
+  created() {
     this.debounceBulk = debounce(this.changeBulk, 500);
   },
   mounted() {
@@ -379,31 +404,6 @@ export default Vue.extend({
       this.$emit('update:selectedLineage', null);
       this.$emit('update:selectedMutations', []);
     },
-  },
-  data() {
-    return {
-      queryPangolin: null,
-      selectedBulkMutations: [],
-      selectedBulkString: null,
-      badBulkGene: false,
-      badBulkSubstitution: false,
-      badBulkDeletion: false,
-      selectedType: null,
-      typeOptions: [
-        {
-          id: 'pango',
-          label: 'PANGO lineage',
-        },
-        {
-          id: 'variant',
-          label: 'PANGO lineage + mutation(s)',
-        },
-        {
-          id: 'mut',
-          label: 'Mutation(s)',
-        },
-      ],
-    };
   },
 });
 </script>

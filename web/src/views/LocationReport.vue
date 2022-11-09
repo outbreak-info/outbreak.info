@@ -19,6 +19,12 @@ import Vue from 'vue';
 
 export default {
   name: 'LocationReport',
+  components: {
+    LocationReportComponent: () =>
+      import(
+        /* webpackPrefetch: true */ '@/components/LocationReportComponent.vue'
+      ),
+  },
   props: {
     loc: String,
     muts: [Array, String],
@@ -35,12 +41,6 @@ export default {
       type: [Array, String],
       default: () => [],
     },
-  },
-  components: {
-    LocationReportComponent: () =>
-      import(
-        /* webpackPrefetch: true */ '@/components/LocationReportComponent.vue'
-      ),
   },
 };
 </script>

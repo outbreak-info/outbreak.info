@@ -137,13 +137,13 @@ export default Vue.extend({
       updatedSubscription: null,
     };
   },
-  watch: {},
   computed: {
     ...mapState('epidata', ['mostCases']),
     mostCasesNames() {
       return this.mostCases.map((d) => d.location_id).join(';');
     },
   },
+  watch: {},
   destroyed() {
     this.dataSubscription.unsubscribe();
     if (this.updatedSubscription) {

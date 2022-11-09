@@ -46,11 +46,11 @@
       <font-awesome-icon class="ml-3" :icon="['fas', 'envelope']" />
     </a>
 
-    <a @click="shareLink" v-if="canShare" aria-label="share">
+    <a v-if="canShare" aria-label="share" @click="shareLink">
       <font-awesome-icon class="share-link ml-3" :icon="['fas', 'share']" />
     </a>
 
-    <a @click="copy2Clipboard" aria-label="copy to clipboard">
+    <a aria-label="copy to clipboard" @click="copy2Clipboard">
       <font-awesome-icon class="share-link ml-3" :icon="['fas', 'link']" />
     </a>
 
@@ -92,12 +92,17 @@ library.add(
 
 export default Vue.extend({
   name: 'ShareReport',
+  components: {
+    FontAwesomeIcon,
+  },
   props: {
     title: String,
     url: String,
   },
-  components: {
-    FontAwesomeIcon,
+  data() {
+    return {
+      showSnackbar: false,
+    };
   },
   computed: {
     outbreakUrl() {
@@ -121,11 +126,6 @@ export default Vue.extend({
     canShare() {
       return !!navigator.share;
     },
-  },
-  data() {
-    return {
-      showSnackbar: false,
-    };
   },
   methods: {
     copy2Clipboard() {

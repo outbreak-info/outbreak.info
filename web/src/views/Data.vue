@@ -9,8 +9,8 @@
     <section class="case-data-table p-1">
       <EpiTable
         :routable="true"
-        :colorScale="regionColorScale"
-        colorVar="wb_region"
+        :color-scale="regionColorScale"
+        color-var="wb_region"
       />
       <DataSource />
     </section>
@@ -67,16 +67,10 @@ export default {
       searchQuery: '',
     };
   },
-  watch: {},
   computed: {
     ...mapState('admin', ['loading']),
   },
-  methods: {
-    regionColorScale: (location) => {
-      const scale = store.getters['colors/getRegionColorFromLocation'];
-      return scale(location);
-    },
-  },
+  watch: {},
   mounted() {
     this.tableSubscription = getEpiTable(
       this.$apiurl,
@@ -89,6 +83,12 @@ export default {
   },
   destroyed() {
     this.tableSubscription.unsubscribe();
+  },
+  methods: {
+    regionColorScale(location) {
+      const scale = store.getters['colors/getRegionColorFromLocation'];
+      return scale(location);
+    },
   },
 };
 </script>

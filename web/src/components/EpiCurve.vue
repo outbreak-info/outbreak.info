@@ -40,18 +40,18 @@
     </div>
 
     <svg
+      ref="svg"
       :width="width"
       :height="height - 45"
       class="epi-curve"
-      ref="svg"
       :name="title"
     >
       <g
         class="tooltip-cover"
         :transform="`translate(${margin.left}, ${margin.top})`"
       >
-        <line class="mouse-line"></line>
-        <rect id="tooltip-cover-rect"></rect>
+        <line class="mouse-line" />
+        <rect id="tooltip-cover-rect" />
       </g>
 
       <defs>
@@ -68,66 +68,66 @@
         </marker>
       </defs>
       <g
+        ref="xAxis"
         :transform="`translate(${margin.left}, ${height - margin.bottom + 5})`"
         class="epi-axis axis--x"
-        ref="xAxis"
-      ></g>
+      />
       <g
+        ref="yAxis"
         :transform="`translate(${margin.left}, ${margin.top})`"
         class="epi-axis axis--y"
-        ref="yAxis"
-      ></g>
+      />
       <g
-        :transform="`translate(${margin.left},${margin.top})`"
         id="epi-curve"
         ref="epi_curve"
-      ></g>
+        :transform="`translate(${margin.left},${margin.top})`"
+      />
       <g
+        v-if="data"
+        id="brush-zoom"
         ref="brush"
         class="brush"
-        id="brush-zoom"
         :transform="`translate(${margin.left},${margin.top})`"
-        v-if="data"
         :class="{ hidden: !zoomAllowed }"
-      ></g>
+      />
     </svg>
 
     <svg
+      ref="svg_arrows"
       :width="width"
       :height="height"
       class="swoopy-arrow-group position-absolute"
-      ref="svg_arrows"
     >
       <g
+        v-if="loggable"
         ref="switchY"
         class="switch-y-button-group"
         transform="translate(5,0)"
-        v-if="loggable"
       >
-        <path class="swoopy-arrow" id="switch-y-btn-swoopy-arrow"></path>
-        <rect class="switch-button-rect" id="switch-y-btn-rect"></rect>
-        <text class="switch-button" id="switch-y-btn-text"></text>
+        <path id="switch-y-btn-swoopy-arrow" class="swoopy-arrow" />
+        <rect id="switch-y-btn-rect" class="switch-button-rect" />
+        <text id="switch-y-btn-text" class="switch-button" />
       </g>
     </svg>
     <div class="tooltip p-2">
-      <p class="date m-0"></p>
-      <div v-for="line in plottedData" :key="line.key" :class="line.key">
-        <h6 class="country-name m-0"></h6>
-        <b class="count-avg m-0"></b>
+      <p class="date m-0" />
+      <div v-for="line1 in plottedData" :key="line1.key" :class="line1.key">
+        <h6 class="country-name m-0" />
+        <b class="count-avg m-0" />
       </div>
     </div>
 
     <div v-if="plottedData && plottedData.length" class="mt-4">
       <router-link
-        v-for="line in plottedData"
-        :key="line.key"
+        v-for="_line in plottedData"
+        :key="_line.key"
         class="btn btn-main mr-2"
         :to="{
           name: 'LocationReports',
-          query: { loc: line.value[0].location_id },
+          query: { loc: _line.value[0].location_id },
         }"
       >
-        View {{ line.value[0].name }} Variant Report
+        View {{ _line.value[0].name }} Variant Report
       </router-link>
     </div>
   </div>
@@ -335,11 +335,11 @@ export default Vue.extend({
       this.numXTicks = this.width < 750 ? 2 : 6;
       this.numYTicks = this.height < 250 ? 2 : 6;
     },
-    colorScale: function(location) {
+    colorScale(location) {
       const scale = store.getters['colors/getColor'];
       return scale(location);
     },
-    lightColorScale: function(location) {
+    lightColorScale(location) {
       const scale = store.getters['colors/getColor'];
       return scale(location, 0.7);
     },
@@ -466,7 +466,7 @@ export default Vue.extend({
         }, delay);
       };
     },
-    tooltipOn: function(d, location_id) {
+    tooltipOn(d, location_id) {
       select(`#tooltip-${d._id}`).attr('display', 'block');
       select(`#${d._id}`).attr('r', this.radius * 2);
 
@@ -480,7 +480,7 @@ export default Vue.extend({
       selectAll(`.${d[location_id]}`).style('opacity', 1);
       selectAll(`#${d[location_id]}`).style('opacity', 1);
     },
-    tooltipOff: function(d) {
+    tooltipOff(d) {
       selectAll('.tooltip--epi-curve').attr('display', 'none');
 
       selectAll('circle').attr('r', this.radius);

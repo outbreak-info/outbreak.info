@@ -1,86 +1,86 @@
 <template>
   <div class="mt-2">
     <!-- health condition -->
-    <div id="condition" v-if="data.healthCondition">
+    <div v-if="data.healthCondition" id="condition">
       {{ data.healthCondition.length === 1 ? 'Condition:' : 'Conditions' }}
       <SearchLink
         :data="data.healthCondition"
-        tooltipLabel="trials"
-        filterField="@type:ClinicalTrial"
-        searchField="healthCondition"
+        tooltip-label="trials"
+        filter-field="@type:ClinicalTrial"
+        search-field="healthCondition"
       />
     </div>
 
     <!-- study type -->
-    <div id="study-type" v-if="data.studyDesign && data.studyDesign.studyType">
+    <div v-if="data.studyDesign && data.studyDesign.studyType" id="study-type">
       Type:
       <SearchLink
         :data="[data.studyDesign.studyType]"
-        tooltipLabel="trials"
-        filterField="@type:ClinicalTrial"
-        searchField="studyDesign.studyType"
+        tooltip-label="trials"
+        filter-field="@type:ClinicalTrial"
+        search-field="studyDesign.studyType"
       />
     </div>
 
     <!-- study type -->
     <div
-      id="study-purpose"
       v-if="data.studyDesign && data.studyDesign.designPrimaryPurpose"
+      id="study-purpose"
     >
       Primary Purpose:
       <SearchLink
         :data="[data.studyDesign.designPrimaryPurpose]"
-        tooltipLabel="trials"
-        filterField="@type:ClinicalTrial"
-        searchField="studyDesign.designPrimaryPurpose"
+        tooltip-label="trials"
+        filter-field="@type:ClinicalTrial"
+        search-field="studyDesign.designPrimaryPurpose"
       />
     </div>
 
     <!-- phase -->
     <div
-      id="study-phase"
       v-if="data.studyDesign && data.studyDesign.phase"
+      id="study-phase"
       class="d-flex flex-wrap align-items-center"
     >
       Phase:
       <TrialPhase
-        :includeLabel="false"
+        :include-label="false"
         :phases="data.studyDesign.phaseNumber"
         class="ml-2"
       />
       <SearchLink
         :data="data.studyDesign.phase"
-        tooltipLabel="trials"
-        filterField="@type:ClinicalTrial"
-        searchField="studyDesign.phase"
+        tooltip-label="trials"
+        filter-field="@type:ClinicalTrial"
+        search-field="studyDesign.phase"
       />
     </div>
 
     <!-- model -->
     <div
-      id="study-model"
       v-if="data.studyDesign && data.studyDesign.designModel"
+      id="study-model"
     >
       Model:
       <SearchLink
         :data="data.studyDesign.designModel"
-        tooltipLabel="trials"
-        filterField="@type:ClinicalTrial"
-        searchField="studyDesign.designModel"
+        tooltip-label="trials"
+        filter-field="@type:ClinicalTrial"
+        search-field="studyDesign.designModel"
       />
     </div>
 
     <!-- allocation -->
     <div
-      id="study-allocation"
       v-if="data.studyDesign && data.studyDesign.designAllocation"
+      id="study-allocation"
     >
       Participant Allocation:
       <SearchLink
         :data="[data.studyDesign.designAllocation]"
-        tooltipLabel="trials"
-        filterField="@type:ClinicalTrial"
-        searchField="studyDesign.designAllocation"
+        tooltip-label="trials"
+        filter-field="@type:ClinicalTrial"
+        search-field="studyDesign.designAllocation"
       />
     </div>
   </div>
@@ -100,12 +100,12 @@ import SearchLink from '@/components/SearchLink.vue';
 
 export default {
   name: 'TrialDesign',
-  props: {
-    data: Object,
-  },
   components: {
     TrialPhase,
     SearchLink,
+  },
+  props: {
+    data: Object,
   },
   data() {
     return {};

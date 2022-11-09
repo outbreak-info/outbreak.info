@@ -37,7 +37,7 @@
         <h5 class="m-0 mr-3 mb-1 border-bottom text-uppercase">
           {{ topic.key }}
         </h5>
-        <p class="text-muted m-0" v-html="topic.value.description"></p>
+        <p class="text-muted m-0" v-html="topic.value.description" />
       </div>
 
       <div
@@ -45,8 +45,10 @@
         :key="subIdx"
         class="mb-2 ml-4"
       >
-        <h6 class="m-0">{{ subtopic.topicCategory }}</h6>
-        <p class="m-0 text-muted" v-html="subtopic.description"></p>
+        <h6 class="m-0">
+          {{ subtopic.topicCategory }}
+        </h6>
+        <p class="m-0 text-muted" v-html="subtopic.description" />
       </div>
     </div>
   </div>
@@ -66,6 +68,9 @@ export default Vue.extend({
       topicArr: [],
     };
   },
+  mounted() {
+    this.getTopics();
+  },
   methods: {
     getTopics() {
       tsv(this.topicUrl).then((data) => {
@@ -83,9 +88,6 @@ export default Vue.extend({
           .sort((a, b) => (a.key < b.key ? -1 : 1));
       });
     },
-  },
-  mounted() {
-    this.getTopics();
   },
 });
 </script>

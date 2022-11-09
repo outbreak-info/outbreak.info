@@ -1,8 +1,8 @@
 <template>
-  <div class="d-flex flex-column text-left" v-if="data">
+  <div v-if="data" class="d-flex flex-column text-left">
     <!-- title -->
     <h3 class="d-flex align-item-center m-0 mb-4">
-      <span class="font-weight-bold text-highlight mr-2" v-if="retractionText">
+      <span v-if="retractionText" class="font-weight-bold text-highlight mr-2">
         RETRACTED:
       </span>
       <b>{{ data.name }}</b>
@@ -14,21 +14,21 @@
         :animate="true"
         class="w-100 mb-2 fa-lg"
         :text="retractionText"
-      ></Warning>
+      />
     </div>
 
     <!-- authors -->
     <div
-      class="author-container d-flex flex-wrap align-items-center my-2"
       v-if="data.author || data.creator"
+      class="author-container d-flex flex-wrap align-items-center my-2"
     >
       <template v-if="data.author && (data.author.length || data.author.name)">
         <template v-if="Array.isArray(data.author)">
           <div
-            class="author font-weight-bold fa-lg line-height-1"
             v-for="(author, idx) in data.author"
-            :key="'author2' + idx"
             id="authors"
+            :key="'author2' + idx"
+            class="author font-weight-bold fa-lg line-height-1"
           >
             <span>
               {{
@@ -39,21 +39,21 @@
                   : ''
               }}
             </span>
-            <span v-if="idx < data.author.length - 2" v-html="',&nbsp;'"></span>
+            <span v-if="idx < data.author.length - 2" v-html="',&nbsp;'" />
             <span
               v-if="idx === data.author.length - 2 && data.author.length === 2"
               v-html="'&nbsp;and&nbsp;'"
-            ></span>
+            />
             <span
               v-if="idx === data.author.length - 2 && data.author.length > 2"
               v-html="',&nbsp;and&nbsp;'"
-            ></span>
+            />
           </div>
         </template>
         <div
-          class="author font-weight-bold fa-lg line-height-1"
           v-else
           id="authors"
+          class="author font-weight-bold fa-lg line-height-1"
         >
           <span>
             {{
@@ -66,28 +66,28 @@
           </span>
         </div>
 
-        <a @click.prevent="showAffiliation = !showAffiliation" href="">
+        <a href="" @click.prevent="showAffiliation = !showAffiliation">
           <small class="text-muted ml-2">
             <span>
               {{ showAffiliation ? 'hide affiliations' : 'view affiliations' }}
             </span>
             <font-awesome-icon
+              v-if="!showAffiliation"
               :icon="['fas', 'angle-double-down']"
               class="mx-1"
-              v-if="!showAffiliation"
             />
             <font-awesome-icon
+              v-if="showAffiliation"
               :icon="['fas', 'angle-double-up']"
               class="mx-1"
-              v-if="showAffiliation"
             />
           </small>
         </a>
 
         <div
+          v-if="showAffiliation && Array.isArray(data.author)"
           id="author-affiliations"
           class="d-flex flex-column w-100 mb-3"
-          v-if="showAffiliation && Array.isArray(data.author)"
         >
           <small
             v-for="(author, idx) in data.author"
@@ -122,9 +122,9 @@
         </div>
 
         <div
+          v-else-if="showAffiliation"
           id="author-affiliations"
           class="d-flex flex-column w-100 mb-3"
-          v-else-if="showAffiliation"
         >
           <small class="text-muted">
             <b>
@@ -154,10 +154,10 @@
 
       <template v-else-if="data.creator">
         <div
-          class="creator"
           v-for="(creator, idx) in data.creator"
-          :key="'creator' + idx"
           id="authors"
+          :key="'creator' + idx"
+          class="creator"
         >
           <span>
             {{
@@ -168,39 +168,39 @@
                 : ''
             }}
           </span>
-          <span v-if="idx < data.creator.length - 2" v-html="',&nbsp;'"></span>
+          <span v-if="idx < data.creator.length - 2" v-html="',&nbsp;'" />
           <span
             v-if="idx === data.creator.length - 2 && !data.creator.length === 2"
             v-html="',&nbsp;and&nbsp;'"
-          ></span>
+          />
           <span
             v-if="idx === data.creator.length - 2 && data.creator.length === 2"
             v-html="'&nbsp;and&nbsp;'"
-          ></span>
+          />
         </div>
 
-        <a @click.prevent="showAffiliation = !showAffiliation" href="">
+        <a href="" @click.prevent="showAffiliation = !showAffiliation">
           <small class="text-muted ml-2">
             <span>
               {{ showAffiliation ? 'hide affiliations' : 'view affiliations' }}
             </span>
             <font-awesome-icon
+              v-if="!showAffiliation"
               :icon="['fas', 'angle-double-down']"
               class="mx-1"
-              v-if="!showAffiliation"
             />
             <font-awesome-icon
+              v-if="showAffiliation"
               :icon="['fas', 'angle-double-up']"
               class="mx-1"
-              v-if="showAffiliation"
             />
           </small>
         </a>
 
         <div
+          v-if="showAffiliation"
           id="creator-affiliations"
           class="d-flex flex-column w-100 mb-3"
-          v-if="showAffiliation"
         >
           <small
             v-for="(creator, idx) in data.creator"
@@ -232,7 +232,7 @@
         </div>
       </template>
     </div>
-    <div class="sponsor text-muted" v-if="data.sponsor" id="sponsor">
+    <div v-if="data.sponsor" id="sponsor" class="sponsor text-muted">
       sponsored by
       <span v-for="(sponsor, idx) in data.sponsor" :key="idx">
         {{ sponsor.name }}
@@ -269,7 +269,7 @@
         "
         class="text-muted"
       >
-        <span class="badge bg-grey__lightest" v-if="data.dateModified">
+        <span v-if="data.dateModified" class="badge bg-grey__lightest">
           <font-awesome-icon class="mr-1" :icon="['far', 'clock']" />
           updated {{ this.formatDate(data.dateModified) }}
         </span>
@@ -277,11 +277,11 @@
         <span v-if="data.datePublished && data.dateModified" class="mx-1">
           &bull;
         </span>
-        <span class="badge bg-grey__lightest" v-if="data.datePublished">
+        <span v-if="data.datePublished" class="badge bg-grey__lightest">
           <font-awesome-icon
+            v-if="!data.dateModified"
             class="mr-1"
             :icon="['far', 'clock']"
-            v-if="!data.dateModified"
           />
           published {{ this.formatDate(data.datePublished) }}
         </span>
@@ -293,11 +293,11 @@
           &bull;
         </span>
 
-        <span class="badge bg-grey__lightest" v-if="data.dateCreated">
+        <span v-if="data.dateCreated" class="badge bg-grey__lightest">
           <font-awesome-icon
+            v-if="!data.datePublished && !data.dateModified"
             class="mr-1"
             :icon="['far', 'clock']"
-            v-if="!data.datePublished && !data.dateModified"
           />
           created {{ this.formatDate(data.dateCreated) }}
         </span>
@@ -313,8 +313,8 @@
           &bull;
         </span>
         <span
-          class="badge bg-grey__lightest"
           v-if="data.curatedBy && data.curatedBy.versionDate"
+          class="badge bg-grey__lightest"
         >
           version {{ this.formatDate(data.curatedBy.versionDate) }}
         </span>
@@ -333,8 +333,8 @@
           &bull;
         </span>
         <span
-          class="badge bg-grey__lightest"
           v-if="data.curatedBy && data.curatedBy.curationDate"
+          class="badge bg-grey__lightest"
         >
           accessed {{ this.formatDate(data.curatedBy.curationDate) }}
         </span>
@@ -342,7 +342,7 @@
     </div>
 
     <!-- source -->
-    <div class="mt-1 mb-1" v-if="data.curatedBy">
+    <div v-if="data.curatedBy" class="mt-1 mb-1">
       <small>
         Record provided by
         <a :href="data.curatedBy.url" target="_blank" rel="noreferrer">
@@ -365,7 +365,7 @@
       </small>
     </div>
 
-    <ClinicalTrialSummary :data="data" v-if="type === 'ClinicalTrial'" />
+    <ClinicalTrialSummary v-if="type === 'ClinicalTrial'" :data="data" />
 
     <!-- topics -->
     <div class="keyword-container flex flex-wrap align-items-center mt-4">
@@ -373,9 +373,9 @@
         <span class="text-muted mr-2">Topics:</span>
         <template v-if="Array.isArray(data.topicCategory)">
           <small
-            class="topic px-2 py-1 mb-1 mr-1"
             v-for="(topic, idx) in data.topicCategory"
             :key="idx"
+            class="topic px-2 py-1 mb-1 mr-1"
             :data-tippy-info="`search ${topic}`"
           >
             <router-link
@@ -391,9 +391,9 @@
         </template>
 
         <small
+          v-else-if="data.topicCategory.name"
           class="topic uppercase px-2 py-1 mb-1 mr-1"
           :data-tippy-info="`search ${data.topicCategory.name}`"
-          v-else-if="data.topicCategory.name"
         >
           <router-link
             :to="{
@@ -407,9 +407,9 @@
         </small>
 
         <small
+          v-else
           class="topic uppercase px-2 py-1 mb-1 mr-1"
           :data-tippy-info="`search ${data.topicCategory}`"
-          v-else
         >
           <router-link
             :to="{
@@ -425,7 +425,7 @@
     </div>
 
     <!-- keywords -->
-    <div class="keyword-container flex flex-wrap mt-2" v-if="data.keywords">
+    <div v-if="data.keywords" class="keyword-container flex flex-wrap mt-2">
       <span class="text-muted mr-2">Keywords:</span>
       <div
         v-for="(keyword, idx) in data.keywords"
@@ -433,8 +433,8 @@
         class="mb-1 mr-1"
       >
         <small
-          class="keyword px-2 py-1"
           v-if="keyword !== ''"
+          class="keyword px-2 py-1"
           :data-tippy-info="`search ${keyword}`"
         >
           <router-link
@@ -451,11 +451,13 @@
     </div>
 
     <!-- description -->
-    <div class="mt-5" id="description">
-      <div v-html="data.description" v-if="data.description"></div>
-      <div v-html="data.abstract" v-else-if="data.abstract"></div>
+    <div id="description" class="mt-5">
+      <div v-if="data.description" v-html="data.description" />
+      <div v-else-if="data.abstract" v-html="data.abstract" />
       <div v-else>
-        <h6 class="m-0 text-muted">Description</h6>
+        <h6 class="m-0 text-muted">
+          Description
+        </h6>
         <small class="text-muted">not provided</small>
       </div>
     </div>
@@ -490,51 +492,23 @@ library.add(faClock, faAngleDoubleDown, faAngleDoubleUp);
 
 export default Vue.extend({
   name: 'ResourceDescription',
-  props: {
-    data: Object,
-    type: String,
-  },
   components: {
     ClinicalTrialSummary,
     Warning,
     FontAwesomeIcon,
+  },
+  props: {
+    data: Object,
+    type: String,
   },
   data() {
     return {
       showAffiliation: false,
     };
   },
-  methods: {
-    getLogo(curator) {
-      const source = this.resources
-        .flatMap((d) => d.sources)
-        .filter(
-          (d) =>
-            d.id === curator.toLowerCase() ||
-            d.name.toLowerCase() === curator.toLowerCase(),
-        );
-      return source.length === 1 ? source[0].img : null;
-    },
-    formatDate(dateStr) {
-      const parseDate = timeParse('%Y-%m-%d');
-      const strictIsoParse = timeParse('%Y-%m-%dT%H:%M:%S.%f');
-      const formatDate = timeFormat('%d %B %Y');
-      if (dateStr) {
-        let parsed = parseDate(dateStr);
-        if (parsed) {
-          return formatDate(parsed);
-        } else {
-          parsed = strictIsoParse(dateStr);
-          return parsed ? formatDate(parsed) : null;
-        }
-      } else {
-        return null;
-      }
-    },
-  },
   computed: {
     ...mapState('admin', ['loading', 'resources']),
-    datePublished: () => {
+    datePublished() {
       return this.formatDate(this.data.dateModified);
     },
     retractionText() {
@@ -604,6 +578,34 @@ export default Vue.extend({
         instance.setContent(info);
       },
     });
+  },
+  methods: {
+    getLogo(curator) {
+      const source = this.resources
+        .flatMap((d) => d.sources)
+        .filter(
+          (d) =>
+            d.id === curator.toLowerCase() ||
+            d.name.toLowerCase() === curator.toLowerCase(),
+        );
+      return source.length === 1 ? source[0].img : null;
+    },
+    formatDate(dateStr) {
+      const parseDate = timeParse('%Y-%m-%d');
+      const strictIsoParse = timeParse('%Y-%m-%dT%H:%M:%S.%f');
+      const formatDate = timeFormat('%d %B %Y');
+      if (dateStr) {
+        let parsed = parseDate(dateStr);
+        if (parsed) {
+          return formatDate(parsed);
+        } else {
+          parsed = strictIsoParse(dateStr);
+          return parsed ? formatDate(parsed) : null;
+        }
+      } else {
+        return null;
+      }
+    },
   },
 });
 </script>

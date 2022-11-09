@@ -1,7 +1,7 @@
 <template>
   <div
-    class="d-flex flex-column align-items-center w-100"
     id="location-report-prevalence"
+    class="d-flex flex-column align-items-center w-100"
   >
     <!-- zoom btns -->
     <div
@@ -30,24 +30,26 @@
       <div class="d-flex flex-column align-items-start">
         <!-- TIME TRACE -->
         <div class="d-flex w-100 justify-content-between">
-          <h5 class="p-0 m-0">{{ title }}</h5>
+          <h5 class="p-0 m-0">
+            {{ title }}
+          </h5>
           <div>
             <label class="b-contain m-auto pr-3">
               <small>show confidence intervals</small>
               <input
-                type="checkbox"
                 v-model="showCI"
+                type="checkbox"
                 :value="showCI"
                 @change="hideCIs"
               />
-              <div class="b-input"></div>
+              <div class="b-input" />
             </label>
           </div>
         </div>
 
         <div class="d-flex">
           <svg width="15" height="15" class="mr-2">
-            <line x1="0" x2="15" y1="8" y2="8" class="trace-legend"></line>
+            <line x1="0" x2="15" y1="8" y2="8" class="trace-legend" />
           </svg>
           <small class="text-muted">
             7 day rolling average of percent sequences with mutation(s)
@@ -56,7 +58,7 @@
 
         <!-- legend: confidence interval -->
         <div class="d-flex">
-          <div class="ci-legend mr-2" :style="{ background: '#999' }"></div>
+          <div class="ci-legend mr-2" :style="{ background: '#999' }" />
           <small class="text-muted">95% confidence interval</small>
           <svg width="15" height="15" class="ml-4 mr-2">
             <rect
@@ -65,16 +67,16 @@
               :width="15"
               :height="15"
               fill="url(#diagonalHatchLight)"
-            ></rect>
+            />
           </svg>
           <small class="text-muted">missing recent data</small>
         </div>
 
         <svg
+          ref="svg"
           :width="width"
           :height="height"
           class="mutation-epi-prevalence"
-          ref="svg"
           :name="title"
         >
           <defs>
@@ -111,28 +113,28 @@
           </defs>
 
           <g
+            ref="xAxis"
             :transform="`translate(${margin.left}, ${height - margin.bottom})`"
             class="mutation-axis axis--x"
-            ref="xAxis"
-          ></g>
+          />
           <g
+            ref="yAxis"
             :transform="`translate(${margin.left}, ${margin.top})`"
             class="mutation-axis axis--y"
-            ref="yAxis"
-          ></g>
+          />
           <g
             ref="chart"
             :transform="`translate(${margin.left}, ${margin.top})`"
-          ></g>
+          />
           <g
+            v-if="data"
+            id="brush2-zoom"
             ref="brush2"
             class="brush"
-            id="brush2-zoom"
             :transform="`translate(${margin.left},${margin.top})`"
-            v-if="data"
             :class="{ hidden: !zoomAllowed }"
-          ></g>
-          <g id="no-data" v-if="noData">
+          />
+          <g v-if="noData" id="no-data">
             <text
               font-size="24px"
               fill="#888888"
@@ -170,23 +172,23 @@
               fill="none"
               :d="`M ${width - margin.right - 75} 20 c 10 10, 20 20, 50 20`"
               marker-end="url(#arrow)"
-            ></path>
+            />
           </g>
         </svg>
 
         <!-- Histogram of sequencing counts -->
         <SequencingHistogram
           :data="seqCounts"
-          :xInput="x"
-          :width="width"
-          :svgTitle="title"
-          :margin="marginHist"
-          :mutationName="mutationName"
-          :onlyTotals="onlyTotals"
-          notDetectedColor="#bab0ab"
-          detectedColor="#79706E"
-          className="mutation-epi-prevalence"
           v-if="seqCounts && seqCounts.length"
+          :x-input="x"
+          :width="width"
+          :svg-title="title"
+          :margin="marginHist"
+          :mutation-name="mutationName"
+          :only-totals="onlyTotals"
+          not-detected-color="#bab0ab"
+          detected-color="#79706E"
+          class-name="mutation-epi-prevalence"
         />
 
         <!-- zoom btns -->
@@ -227,7 +229,7 @@
           </h5>
           <div class="d-flex">
             <svg width="15" height="15" class="mr-2">
-              <line x1="0" x2="15" y1="8" y2="8" class="trace-legend"></line>
+              <line x1="0" x2="15" y1="8" y2="8" class="trace-legend" />
             </svg>
             <small class="text-muted">
               7 day rolling average of confirmed cases
@@ -239,42 +241,42 @@
                 :width="15"
                 :height="15"
                 fill="url(#diagonalHatchLight)"
-              ></rect>
+              />
             </svg>
             <small class="text-muted">missing recent data</small>
           </div>
 
           <svg
+            ref="epi"
             :width="width"
             :height="epiHeight"
             class="mutation-epi-prevalence"
-            ref="epi"
             :name="title"
           >
             <g
+              ref="xEpiAxis"
               :transform="
                 `translate(${margin.left}, ${epiHeight - margin.bottom})`
               "
               class="epi-axis epi-x axis--x"
-              ref="xEpiAxis"
-            ></g>
+            />
             <g
+              ref="yEpiAxis"
               :transform="`translate(${margin.left}, ${margin.top})`"
               class="epi-axis epi-y axis--y"
-              ref="yEpiAxis"
-            ></g>
+            />
             <g
               ref="epiChart"
               :transform="`translate(${margin.left}, ${margin.top})`"
-            ></g>
+            />
             <g
+              v-if="data"
+              id="brush-zoom"
               ref="brush"
               class="brush"
-              id="brush-zoom"
               :transform="`translate(${margin.left},${margin.top})`"
-              v-if="data"
               :class="{ hidden: !zoomAllowed }"
-            ></g>
+            />
           </svg>
         </div>
       </div>
@@ -282,12 +284,12 @@
 
     <!-- TOOLTIPS -->
     <div
+      id="tooltip-mutations"
       ref="tooltip_mutations"
       class="tooltip-basic box-shadow"
-      id="tooltip-mutations"
     >
-      <h5 id="mutation" class="p-2 m-0"></h5>
-      <small id="sublineages" class="line-height-sm"></small>
+      <h5 id="mutation" class="p-2 m-0" />
+      <small id="sublineages" class="line-height-sm" />
     </div>
     <!-- <div ref="tooltip_prevalence" class="tooltip-basic box-shadow" id="tooltip-prevalence">
     <h5 id="date"></h5>
@@ -302,9 +304,9 @@
 
     <DownloadReportData
       :data="data"
-      figureRef="mutation-epi-prevalence"
-      :isVertical="true"
-      dataType="Mutation Report Prevalence over Time"
+      figure-ref="mutation-epi-prevalence"
+      :is-vertical="true"
+      data-type="Mutation Report Prevalence over Time"
     />
   </div>
 </template>
@@ -354,6 +356,11 @@ library.add(faSearchPlus, faCompressArrowsAlt);
 
 export default Vue.extend({
   name: 'ReportPrevalence',
+  components: {
+    DownloadReportData,
+    SequencingHistogram,
+    FontAwesomeIcon,
+  },
   props: {
     data: Array,
     seqCounts: Array,
@@ -376,24 +383,6 @@ export default Vue.extend({
     onlyTotals: {
       type: Boolean,
       default: true,
-    },
-  },
-  components: {
-    DownloadReportData,
-    SequencingHistogram,
-    FontAwesomeIcon,
-  },
-  computed: {
-    noData() {
-      return this.data.flatMap((d) => d.data).length === 0;
-    },
-    title() {
-      return this.locationName === 'Worldwide'
-        ? `Mutation and case prevalence over time worldwide`
-        : `Mutation and case prevalence over time in ${this.locationName}`;
-    },
-    countTitle() {
-      return `Total samples sequenced by collection date in ${this.location}`;
     },
   },
   data() {
@@ -483,25 +472,38 @@ export default Vue.extend({
       brush2Ref: null,
     };
   },
+  computed: {
+    noData() {
+      return this.data.flatMap((d) => d.data).length === 0;
+    },
+    title() {
+      return this.locationName === 'Worldwide'
+        ? `Mutation and case prevalence over time worldwide`
+        : `Mutation and case prevalence over time in ${this.locationName}`;
+    },
+    countTitle() {
+      return `Total samples sequenced by collection date in ${this.location}`;
+    },
+  },
   watch: {
-    width: () => {
+    width() {
       this.setXScale();
       this.updateBrush();
       this.updatePlot();
     },
-    data: () => {
+    data() {
       this.xMin = timeParse('%Y-%m-%d')(this.xmin);
       this.xMax = timeParse('%Y-%m-%d')(this.xmax);
       this.setXScale();
       this.updatePlot();
     },
-    xmin: () => {
+    xmin() {
       this.xMin = timeParse('%Y-%m-%d')(this.xmin);
       this.xMax = timeParse('%Y-%m-%d')(this.xmax);
       this.setXScale();
       this.updatePlot();
     },
-    xmax: () => {
+    xmax() {
       this.xMin = timeParse('%Y-%m-%d')(this.xmin);
       this.xMax = timeParse('%Y-%m-%d')(this.xmax);
       this.setXScale();
@@ -521,7 +523,7 @@ export default Vue.extend({
     this.setupPlot();
     this.updatePlot();
   },
-  created: () => {
+  created() {
     this.debounceSetDims = this.debounce(this.setDims, 150);
     this.debounceZoom = this.debounce(this.zoom, 150);
   },
@@ -611,7 +613,7 @@ export default Vue.extend({
         // update route
         const queryParams = this.$route.query;
 
-        if (this.routeName == 'MutationReport') {
+        if (this.routeName === 'MutationReport') {
           const params = this.$route.params;
           this.$router.push({
             name: this.routeName,
@@ -628,7 +630,7 @@ export default Vue.extend({
               selected: queryParams.selected,
             },
           });
-        } else if (this.routeName == 'GenomicsEmbedVariant') {
+        } else if (this.routeName === 'GenomicsEmbedVariant') {
           const params = this.$route.params;
           this.$router.push({
             name: 'GenomicsEmbed',
@@ -646,7 +648,7 @@ export default Vue.extend({
               selected: queryParams.selected,
             },
           });
-        } else if (this.routeName == 'LocationReport') {
+        } else if (this.routeName === 'LocationReport') {
           this.$router.push({
             name: 'LocationReport',
             params: {
@@ -663,7 +665,7 @@ export default Vue.extend({
               xmax: timeFormat('%Y-%m-%d')(newMax),
             },
           });
-        } else if (this.routeName == 'GenomicsEmbedLocation') {
+        } else if (this.routeName === 'GenomicsEmbedLocation') {
           this.$router.push({
             name: 'GenomicsEmbed',
             params: {
@@ -693,7 +695,7 @@ export default Vue.extend({
       this.xMax = null;
       this.setXScale();
 
-      if (this.routeName == 'MutationReport') {
+      if (this.routeName === 'MutationReport') {
         const params = this.$route.params;
         this.$router.push({
           name: this.routeName,
@@ -709,7 +711,7 @@ export default Vue.extend({
           },
         });
       }
-      if (this.routeName == 'LocationReport') {
+      if (this.routeName === 'LocationReport') {
         this.$router.push({
           name: 'LocationReport',
           params: {
@@ -1227,9 +1229,9 @@ export default Vue.extend({
       }
     },
     debounce(fn, delay) {
-      var timer = null;
+      let timer = null;
       return () => {
-        var context = this,
+        const context = this,
           args = arguments,
           evt = event;
         //we get the D3 event here

@@ -37,9 +37,9 @@
       </marker> -->
       </defs>
       <g
-        :transform="`translate(${margin.left}, ${margin.top})`"
         ref="marimekko"
-      ></g>
+        :transform="`translate(${margin.left}, ${margin.top})`"
+      />
     </svg>
   </div>
 </template>
@@ -94,6 +94,10 @@ export default Vue.extend({
     data() {
       this.updatePlot();
     },
+  },
+  mounted() {
+    this.setupPlot();
+    this.updatePlot();
   },
   methods: {
     setupPlot() {
@@ -216,10 +220,6 @@ export default Vue.extend({
         .attr('stroke', '#bbb')
         .attr('stroke-width', '1.5');
     },
-  },
-  mounted() {
-    this.setupPlot();
-    this.updatePlot();
   },
 });
 </script>

@@ -1,11 +1,11 @@
 <template>
   <div class="doubling-curves d-flex flex-column align-items-center">
-    <div v-if="drawable" style="max-width:700px;" class="m-auto d-flex">
+    <div style="max-width:700px;" v-if="drawable" class="m-auto d-flex">
       <Warning
         :animate="true"
         class="mt-2"
         text="Click on the graph to select new points"
-      />
+      ></Warning>
       <div
         class="alert done-btn p-2 row m-0 rounded-0 mt-2 scale-in-center"
         @click="executeFit"
@@ -29,25 +29,25 @@
         </marker>
       </defs>
       <g
-        ref="xAxis"
         :transform="`translate(${margin.left}, ${height - margin.bottom + 5})`"
         class="epi-axis axis--x"
-      />
+        ref="xAxis"
+      ></g>
       <g
-        ref="yAxis"
         :transform="`translate(${margin.left}, ${margin.top})`"
         class="epi-axis axis--y"
-      />
+        ref="yAxis"
+      ></g>
       <g
-        id="epi-curve"
         :transform="`translate(${margin.left},${margin.top})`"
-      />
+        id="epi-curve"
+      ></g>
     </svg>
     <DataSource
-      v-if="data"
       :ids="['NYT', 'JHU']"
-      data-type="maps"
-      figure-ref="doubling-curve"
+      v-if="data"
+      dataType="maps"
+      figureRef="doubling-curve"
       :data="plottedData"
     />
   </div>
@@ -258,7 +258,7 @@ export default Vue.extend({
         );
       };
 
-      const mouseup = () => {
+      const mouseup = function() {
         select('.doubling-curve').on('mousemove', null);
       };
 
@@ -306,7 +306,7 @@ export default Vue.extend({
     setupPlot() {
       // Event listener for mobile responsiveness
       // $nextTick waits till DOM rendered
-      this.$nextTick(() => {
+      this.$nextTick(function() {
         window.addEventListener('resize', this.setPlotDims);
         // set initial dimensions for the stacked area plots.
         this.setPlotDims();
@@ -408,10 +408,10 @@ export default Vue.extend({
             .attr('x2', (d) => this.x(d.x2))
             .attr('y1', (d) => this.y(d.y1))
             .attr('y2', (d) => this.y(d.y2))
-            .attr('stroke-dasharray', () => {
+            .attr('stroke-dasharray', function() {
               return calcDashArray(this);
             })
-            .attr('stroke-dashoffset', () => {
+            .attr('stroke-dashoffset', function() {
               return this.getTotalLength();
             })
             .call((update) =>
@@ -426,10 +426,10 @@ export default Vue.extend({
             .attr('x2', (d) => this.x(d.x2))
             .attr('y1', (d) => this.y(d.y1))
             .attr('y2', (d) => this.y(d.y2))
-            .attr('stroke-dasharray', () => {
+            .attr('stroke-dasharray', function() {
               return calcDashArray(this);
             })
-            .attr('stroke-dashoffset', () => {
+            .attr('stroke-dashoffset', function() {
               return this.getTotalLength();
             })
             .call((update) =>
@@ -466,10 +466,10 @@ export default Vue.extend({
             .attr('x2', (d) => this.x(d.x2))
             .attr('y1', (d) => this.y(d.y1))
             .attr('y2', (d) => this.y(d.y2))
-            .attr('stroke-dasharray', () => {
+            .attr('stroke-dasharray', function() {
               return calcDashArray(this);
             })
-            .attr('stroke-dashoffset', () => {
+            .attr('stroke-dashoffset', function() {
               return this.getTotalLength();
             })
             .call((update) =>
@@ -485,10 +485,10 @@ export default Vue.extend({
             .attr('x2', (d) => this.x(d.x2))
             .attr('y1', (d) => this.y(d.y1))
             .attr('y2', (d) => this.y(d.y2))
-            .attr('stroke-dasharray', () => {
+            .attr('stroke-dasharray', function() {
               return calcDashArray(this);
             })
-            .attr('stroke-dashoffset', () => {
+            .attr('stroke-dashoffset', function() {
               return this.getTotalLength();
             })
             .call((update) =>

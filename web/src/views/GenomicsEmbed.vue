@@ -12,24 +12,14 @@
               type="radio"
               value="var"
               @change="switchRadioBtn"
-            >
-            <label
-              class="font-weight-bold"
-              for="var"
-            >Lineage Report</label>
+            />
+            <label class="font-weight-bold" for="var">Lineage Report</label>
           </div>
         </div>
 
         <!-- lineage typeahead -->
-        <div
-          v-if="selectedReportType === 'var'"
-          id="search-lineage"
-        >
-          <form
-            id="search-lineage-input"
-            autocomplete="off"
-            class="w-100"
-          >
+        <div v-if="selectedReportType === 'var'" id="search-lineage">
+          <form id="search-lineage-input" autocomplete="off" class="w-100">
             <div class="input-group">
               <div class="input-group-prepend">
                 <span
@@ -59,10 +49,11 @@
               <router-link
                 :to="{
                   name: 'GenomicsEmbed',
-                  query: { alias: 'omicron', type: 'var' }
+                  query: { alias: 'omicron', type: 'var' },
                 }"
                 class="text-light"
-              >Omicron
+              >
+                Omicron
 
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
@@ -71,10 +62,11 @@
               <router-link
                 :to="{
                   name: 'GenomicsEmbed',
-                  query: { alias: 'delta', type: 'var' }
+                  query: { alias: 'delta', type: 'var' },
                 }"
                 class="text-light"
-              >Delta
+              >
+                Delta
 
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
@@ -83,10 +75,11 @@
               <router-link
                 :to="{
                   name: 'GenomicsEmbed',
-                  query: { alias: 'alpha', type: 'var' }
+                  query: { alias: 'alpha', type: 'var' },
                 }"
                 class="text-light"
-              >Alpha / B.1.1.7
+              >
+                Alpha / B.1.1.7
 
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
@@ -106,11 +99,8 @@
               type="radio"
               value="loc"
               @change="switchRadioBtn"
-            >
-            <label
-              class="font-weight-bold"
-              for="loc"
-            >Location Report</label>
+            />
+            <label class="font-weight-bold" for="loc">Location Report</label>
           </div>
         </div>
 
@@ -156,10 +146,11 @@
               <router-link
                 :to="{
                   name: 'GenomicsEmbed',
-                  query: { type: 'loc', loc: 'USA' }
+                  query: { type: 'loc', loc: 'USA' },
                 }"
                 class="text-light"
-              >USA
+              >
+                USA
 
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
@@ -168,10 +159,11 @@
               <router-link
                 :to="{
                   name: 'GenomicsEmbed',
-                  query: { type: 'loc', loc: 'GBR' }
+                  query: { type: 'loc', loc: 'GBR' },
                 }"
                 class="text-light"
-              >U.K.
+              >
+                U.K.
 
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
@@ -180,10 +172,11 @@
               <router-link
                 :to="{
                   name: 'GenomicsEmbed',
-                  query: { type: 'loc', loc: 'USA_US-NY' }
+                  query: { type: 'loc', loc: 'USA_US-NY' },
                 }"
                 class="text-light"
-              >New York
+              >
+                New York
 
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
@@ -192,10 +185,11 @@
               <router-link
                 :to="{
                   name: 'GenomicsEmbed',
-                  query: { type: 'loc', loc: 'USA_US-CA_06073' }
+                  query: { type: 'loc', loc: 'USA_US-CA_06073' },
                 }"
                 class="text-light"
-              >San Diego
+              >
+                San Diego
 
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
@@ -215,11 +209,10 @@
               type="radio"
               value="comp"
               @change="switchRadioBtn"
-            >
-            <label
-              class="font-weight-bold"
-              for="comp"
-            >Lineage Comparison</label>
+            />
+            <label class="font-weight-bold" for="comp">
+              Lineage Comparison
+            </label>
           </div>
         </div>
       </div>
@@ -241,9 +234,9 @@
 
     <!-- Location report component -->
     <LocationReportComponent
+      v-if="selectedReportType === 'loc' && loc"
       :embedded="true"
       :loc="loc"
-      v-if="selectedReportType === 'loc' && loc"
       :dark="dark"
       :muts="muts"
       :pango="pango"
@@ -276,7 +269,7 @@
             height="30"
             class="d-inline-block align-top"
             alt="Outbreak.info"
-          >
+          />
           outbreak.info
         </a>
       </div>
@@ -287,39 +280,37 @@
 <script>
 // @ is an alias to /src
 
-import { findPangolin, findLocation } from "@/api/genomics.js";
+import { findPangolin, findLocation } from '@/api/genomics.js';
 
 // --- font awesome --
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { library } from "@fortawesome/fontawesome-svg-core";
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
 import {
   faAngleDoubleRight,
-  faSearch
-} from "@fortawesome/free-solid-svg-icons";
-import isEqual from "lodash/isEqual";
+  faSearch,
+} from '@fortawesome/free-solid-svg-icons';
+import isEqual from 'lodash/isEqual';
 
 library.add(faAngleDoubleRight, faSearch);
-
 
 export default {
   name: 'GenomicsEmbed',
   components: {
     TypeaheadSelect: () =>
-      import(/* webpackPrefetch: true */ "@/components/TypeaheadSelect.vue"),
+      import(/* webpackPrefetch: true */ '@/components/TypeaheadSelect.vue'),
     SituationReportComponent: () =>
       import(
-        /* webpackPrefetch: true */ "@/components/SituationReportComponent.vue"
+        /* webpackPrefetch: true */ '@/components/SituationReportComponent.vue'
       ),
     LocationReportComponent: () =>
       import(
-        /* webpackPrefetch: true */ "@/components/LocationReportComponent.vue"
+        /* webpackPrefetch: true */ '@/components/LocationReportComponent.vue'
       ),
     LineageComparisonComponent: () =>
       import(
-        /* webpackPrefetch: true */ "@/components/LineageComparisonComponent.vue"
+        /* webpackPrefetch: true */ '@/components/LineageComparisonComponent.vue'
       ),
-    FontAwesomeIcon
-
+    FontAwesomeIcon,
   },
   props: {
     type: String,
@@ -345,11 +336,11 @@ export default {
   },
   computed: {},
   watch: {
-    "$route.query": (newVal, oldVal) => {
+    '$route.query': (newVal, oldVal) => {
       if (!isEqual(newVal, oldVal)) {
         this.selectedReportType = this.type ? this.type : 'var';
       }
-    }
+    },
   },
   mounted() {
     this.selectedReportType = this.type ? this.type : 'var';
@@ -358,16 +349,14 @@ export default {
   },
   methods: {
     switchRadioBtn() {
-      const newSelected = this.selectedReportType === "loc" ? [] : null;
-
+      const newSelected = this.selectedReportType === 'loc' ? [] : null;
 
       this.$router.push({
         name: 'GenomicsEmbed',
         query: {
           type: this.selectedReportType,
-          selected: newSelected
-        }
-
+          selected: newSelected,
+        },
       });
     },
     updatePangolin(selected) {
@@ -393,12 +382,11 @@ export default {
       this.$router.push({
         name: 'GenomicsEmbed',
         query: {
-          type: "loc",
-          loc: selected.id
-        }
+          type: 'loc',
+          loc: selected.id,
+        },
       });
-    }
-
+    },
   },
 };
 </script>

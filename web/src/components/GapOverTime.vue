@@ -71,18 +71,6 @@ export default Vue.extend({
       default: '#9edae5',
     },
   },
-  watch: {
-    data() {
-      this.updatePlot();
-    },
-  },
-  computed: {
-    title() {
-      return this.location
-        ? `Weekly median difference between sample collection and sequence submission in days ${this.location}`
-        : 'Weekly median difference between sample collection and sequence submission in days';
-    },
-  },
   data() {
     return {
       // dims
@@ -104,6 +92,22 @@ export default Vue.extend({
       line: null,
       area: null,
     };
+  },
+  computed: {
+    title() {
+      return this.location
+        ? `Weekly median difference between sample collection and sequence submission in days ${this.location}`
+        : 'Weekly median difference between sample collection and sequence submission in days';
+    },
+  },
+  watch: {
+    data() {
+      this.updatePlot();
+    },
+  },
+  mounted() {
+    this.setupPlot();
+    this.updatePlot();
   },
   methods: {
     updatePlot() {
@@ -216,10 +220,6 @@ export default Vue.extend({
           ),
       );
     },
-  },
-  mounted() {
-    this.setupPlot();
-    this.updatePlot();
   },
 });
 </script>

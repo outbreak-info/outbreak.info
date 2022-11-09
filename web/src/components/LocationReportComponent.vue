@@ -17,7 +17,7 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
           <div class="modal-content">
             <div class="modal-header border-secondary">
-              <h5 class="modal-title" id="exampleModalLabel">
+              <h5 id="exampleModalLabel" class="modal-title">
                 Select report location
               </h5>
               <button
@@ -32,17 +32,17 @@
             <div class="modal-body">
               <div class="py-3 border-bottom">
                 <div
-                  class="d-flex align-items-center justify-content-center my-3"
                   id="select-location"
+                  class="d-flex align-items-center justify-content-center my-3"
                 >
                   <TypeaheadSelect
-                    :queryFunction="queryLocation"
-                    @selected="updateLocations"
-                    :apiUrl="this.$genomicsurl"
-                    labelVariable="label"
-                    :removeOnSelect="false"
+                    :query-function="queryLocation"
+                    :api-url="this.$genomicsurl"
+                    label-variable="label"
+                    :remove-on-select="false"
                     placeholder="Select location"
-                    totalLabel="total sequences"
+                    total-label="total sequences"
+                    @selected="updateLocations"
                   />
                 </div>
               </div>
@@ -52,8 +52,8 @@
               <button
                 type="button"
                 class="btn btn-primary"
-                @click="submitNewLocation"
                 data-dismiss="modal"
+                @click="submitNewLocation"
               >
                 Create report
               </button>
@@ -71,7 +71,7 @@
         >
           <div class="modal-content">
             <div class="modal-header border-secondary">
-              <h5 class="modal-title" id="exampleModalLabel">
+              <h5 id="exampleModalLabel" class="modal-title">
                 Add custom mutations
               </h5>
               <button
@@ -87,21 +87,21 @@
               <!-- <CustomLocationForm :curated="null" :includeLocation="false" :selectedMutations.sync="newMuts" :selectedLineage.sync="newPango" :formCount.sync="formCount" /> -->
               <VariantForm
                 :minimalistic="false"
-                :selectedLineage.sync="newPango"
-                :selectedMutations.sync="newMuts"
+                :selected-lineage.sync="newPango"
+                :selected-mutations.sync="newMuts"
                 :submitted="submitCount"
               />
 
-              <div class="mx-4 border-top pt-3" v-if="customMutations.length">
+              <div v-if="customMutations.length" class="mx-4 border-top pt-3">
                 <h6 class="font-weight-bold text-muted">
                   Already selected:
                 </h6>
                 <div class="d-flex flex-wrap">
                   <button
-                    role="button"
-                    class="btn chip bg-main__darker text-light d-flex align-items-center py-1 px-2 line-height-1"
                     v-for="(mutation, mIdx) in customMutations"
                     :key="mIdx"
+                    role="button"
+                    class="btn chip bg-main__darker text-light d-flex align-items-center py-1 px-2 line-height-1"
                     @click="deleteMutation(mIdx)"
                   >
                     {{ mutation.label }}
@@ -134,8 +134,8 @@
               <button
                 type="button"
                 class="btn btn-accent"
-                @click="submitNewMutations"
                 data-dismiss="modal"
+                @click="submitNewMutations"
               >
                 Go
               </button>
@@ -147,7 +147,7 @@
 
       <template>
         <!-- SOCIAL MEDIA SHARE, BACK BTN -->
-        <div class="d-flex align-items-center mb-2 mt-3" v-if="!embedded">
+        <div v-if="!embedded" class="d-flex align-items-center mb-2 mt-3">
           <router-link :to="{ name: 'LocationReports' }" class="no-underline">
             <button class="btn py-0 px-2 d-flex align-items-center btn-grey">
               <font-awesome-icon
@@ -170,11 +170,13 @@
 
         <!-- REPORT HEADER -->
         <div
+          v-if="!embedded"
           class="d-flex flex-column text-light location-banner py-3"
           :class="[smallScreen ? 'mx-n2 px-2' : 'mx-n5 px-5']"
-          v-if="!embedded"
         >
-          <h4 class="m-0 mt-n1 text-grey">Location Tracker</h4>
+          <h4 class="m-0 mt-n1 text-grey">
+            Location Tracker
+          </h4>
           <div
             class="d-flex flex-wrap justify-content-between align-items-center"
           >
@@ -210,16 +212,16 @@
               <!-- last updated info -->
               <div class="d-flex align-items-center">
                 <small
-                  class="text-muted badge bg-grey__lightest mt-1"
                   v-if="lastUpdated"
+                  class="text-muted badge bg-grey__lightest mt-1"
                 >
                   <font-awesome-icon class="mr-1" :icon="['far', 'clock']" />
                   Updated {{ lastUpdated }} ago
                 </small>
                 <div
+                  v-if="totalSequences"
                   id="sequence-count"
                   class="text-grey font-size-2 ml-3"
-                  v-if="totalSequences"
                 >
                   with
                   <span class="text-light">{{ totalSequences }} sequences</span>
@@ -262,12 +264,14 @@
 
         <!-- simplified header for embedded options -->
         <div
+          v-else
           class="d-flex flex-column text-light location-banner py-3"
           :class="[smallScreen ? 'mx-n2 px-2' : 'mx-n5 px-5']"
-          v-else
         >
           <div class="d-flex align-items-center">
-            <h4 class="m-0 mt-n1 text-grey">Location Tracker</h4>
+            <h4 class="m-0 mt-n1 text-grey">
+              Location Tracker
+            </h4>
             <a
               href="https://outbreak.info"
               class="ml-4 navbar-brand no-underline text-light"
@@ -288,7 +292,9 @@
           >
             <div class="d-flex flex-column align-items-start">
               <!-- name -->
-              <h1 class="m-0 font-weight-bold location-header">{{ title }}</h1>
+              <h1 class="m-0 font-weight-bold location-header">
+                {{ title }}
+              </h1>
 
               <!-- WHO region -->
               <small
@@ -304,16 +310,16 @@
               <!-- last updated info -->
               <div class="d-flex align-items-center">
                 <small
-                  class="text-muted badge bg-grey__lightest mt-1"
                   v-if="lastUpdated"
+                  class="text-muted badge bg-grey__lightest mt-1"
                 >
                   <font-awesome-icon class="mr-1" :icon="['far', 'clock']" />
                   Updated {{ lastUpdated }} ago
                 </small>
                 <div
+                  v-if="totalSequences"
                   id="sequence-count"
                   class="text-grey font-size-2 ml-3"
-                  v-if="totalSequences"
                 >
                   with
                   <span class="text-light">{{ totalSequences }} sequences</span>
@@ -360,8 +366,8 @@
           </a>
 
           <a
-            href="#geographic"
             v-if="geoData && selectedLocation.admin_level === 0"
+            href="#geographic"
           >
             <button class="btn btn-grey mx-3 py-2">
               <small>Geographic breakdown</small>
@@ -372,7 +378,7 @@
         <!-- REPORT -->
         <div id="location-report">
           <!-- STREAM GRAPHS -->
-          <div id="lineages" v-if="lineageDomain">
+          <div v-if="lineageDomain" id="lineages">
             <div
               class="d-flex w-100 justify-content-between align-items-center bg-white p-2 border-bottom mb-2"
             >
@@ -394,7 +400,7 @@
                 </small>
                 <HorizontalCategoricalLegend
                   :values="lineageDomain"
-                  :colorScale="colorScale"
+                  :color-scale="colorScale"
                 />
               </div>
 
@@ -402,12 +408,12 @@
                 <div class="d-flex align-items-center flex-shrink-0">
                   <small>Show data from last</small>
                   <input
+                    v-model="recentWindow"
                     class="border p-1 mx-2"
                     :style="{
                       'border-color': '#bababa !important;',
                       width: '40px',
                     }"
-                    v-model="recentWindow"
                     placeholder="days"
                   />
                   <small>days</small>
@@ -416,18 +422,18 @@
                 <!-- Histogram of sequencing counts -->
                 <SequencingHistogram
                   :data="seqCountsWindowed"
+                  v-if="seqCountsWindowed && !noRecentData"
                   :width="widthHist"
                   :downward="false"
-                  :includeXAxis="true"
+                  :include-x-axis="true"
                   :margin="marginHist"
-                  :mutationName="null"
-                  className="sequencing-histogram"
+                  :mutation-name="null"
+                  class-name="sequencing-histogram"
                   :title="
                     `Samples sequenced per day over last ${recentWindow} days`
                   "
-                  :onlyTotals="true"
-                  notDetectedColor="#bab0ab"
-                  v-if="seqCountsWindowed && !noRecentData"
+                  :only-totals="true"
+                  not-detected-color="#bab0ab"
                 />
               </div>
             </div>
@@ -436,19 +442,19 @@
               class="d-flex flex-wrap justify-content-center align-items-end"
             >
               <section
+                v-if="lineagesByDay"
                 id="lineages-over-time"
                 class="flex-grow-1 flex-shrink-1"
-                v-if="lineagesByDay"
               >
                 <LineagesByLocation
                   :data="lineagesByDay"
-                  :recentData="mostRecentLineages[0]"
-                  :recentWindow="recentWindow"
+                  :recent-data="mostRecentLineages[0]"
+                  :recent-window="recentWindow"
                   :location="selectedLocation.label"
-                  :recentMin="recentMin"
-                  :seqCounts="seqCounts"
-                  :routeName="routeTo"
-                  :colorScale="colorScale"
+                  :recent-min="recentMin"
+                  :seq-counts="seqCounts"
+                  :route-name="routeTo"
+                  :color-scale="colorScale"
                   :xmin="xmin"
                   :xmax="xmax"
                 />
@@ -467,12 +473,12 @@
                   <div class="px-3 py-2 my-2 bg-white border-top border-bottom">
                     <small>Show data from last</small>
                     <input
+                      v-model="recentWindow"
                       class="border p-1 mx-2"
                       :style="{
                         'border-color': '#bababa !important;',
                         width: '40px',
                       }"
-                      v-model="recentWindow"
                       placeholder="days"
                     />
                     <small>days</small>
@@ -482,11 +488,13 @@
 
               <template v-else>
                 <section
+                  v-if="mostRecentLineages"
                   id="most-recent-lineages"
                   :class="{ 'flex-shrink-0': !mediumScreen }"
-                  v-if="mostRecentLineages"
                 >
-                  <h5 class="mb-0">Common lineages</h5>
+                  <h5 class="mb-0">
+                    Common lineages
+                  </h5>
                   <small class="text-muted">
                     Prevalence over last {{ recentWindow }} days
                   </small>
@@ -496,11 +504,11 @@
                   >
                     <ReportStackedBarGraph
                       :data="mostRecentLineages"
-                      :seqCounts="seqCountsWindowed"
-                      :colorScale="colorScale"
-                      :locationID="selectedLocation.id"
-                      :recentWindow="recentWindow"
-                      :routeTo="routeTo"
+                      :seq-counts="seqCountsWindowed"
+                      :color-scale="colorScale"
+                      :location-i-d="selectedLocation.id"
+                      :recent-window="recentWindow"
+                      :route-to="routeTo"
                     />
                   </div>
                 </section>
@@ -510,9 +518,9 @@
 
           <!-- HEATMAP + LEGEND -->
           <div
+            v-if="recentHeatmap && recentHeatmap.length"
             id="lineage-comparison"
             class="d-flex flex-column align-items-center mt-3"
-            v-if="recentHeatmap && recentHeatmap.length"
           >
             <h5 class="m-0">
               S-gene mutations in &gt; {{ charMutThreshold }} of global
@@ -545,15 +553,15 @@
 
             <!-- OMICRON INSERTION WARNING -->
             <Warning
-              text="<p>Most Omicron sequences also contain a <b>3 amino acid insertion (EPE) at position 214 in the Spike</b> protein.</p> outbreak.info currently only reports substitution and deletion changes, due to the computational challenges with identifying insertions in 5+ million sequences every day. We’re working towards incorporating insertions into our data processing pipeline, and we encourage you to refer back to the sequence data available on GISAID for more information about these insertions."
-              class="fa-sm mt-1 mb-2"
-              :align_left="true"
               v-if="
                 mostRecentDomain &&
                   (mostRecentDomain.includes('Omicron') ||
                     mostRecentDomain.includes('omicron') ||
                     mostRecentDomain.includes('B.1.1.529'))
               "
+              text="<p>Most Omicron sequences also contain a <b>3 amino acid insertion (EPE) at position 214 in the Spike</b> protein.</p> outbreak.info currently only reports substitution and deletion changes, due to the computational challenges with identifying insertions in 5+ million sequences every day. We’re working towards incorporating insertions into our data processing pipeline, and we encourage you to refer back to the sequence data available on GISAID for more information about these insertions."
+              class="fa-sm mt-1 mb-2"
+              :align_left="true"
             />
 
             <div
@@ -571,10 +579,10 @@
                   style="margin-left: 85px; margin-right: 100px;"
                 >
                   <input
-                    class="checkbox"
                     id="checkbox1"
-                    type="checkbox"
                     v-model.lazy="darkMode"
+                    class="checkbox"
+                    type="checkbox"
                     @change="routeDark"
                   />
                   <label for="checkbox1" class="checkbox-label">
@@ -584,8 +592,8 @@
                 </div>
 
                 <GradientLegend
-                  maxValue="100%"
-                  :colorScale="heatmapColorScale"
+                  max-value="100%"
+                  :color-scale="heatmapColorScale"
                   :dark="darkMode"
                   label="Mutation prevalence in lineage"
                   class="mr-3"
@@ -618,7 +626,7 @@
                       rx="4"
                       stroke="#888"
                       stroke-width="0.5"
-                    ></rect>
+                    />
                   </svg>
                   <small
                     class="ml-2"
@@ -644,31 +652,31 @@
               <MutationHeatmap
                 :data="recentHeatmap"
                 gene="S"
-                :locationID="loc"
+                :location-i-d="loc"
                 :voc="voc"
                 :voi="voi"
                 :moc="moc"
                 :moi="moi"
-                :yDomain="mostRecentDomain"
+                :y-domain="mostRecentDomain"
                 :dark="darkMode"
-                :routeTo="routeTo"
+                :route-to="routeTo"
               />
             </div>
             <DownloadReportData
               class="mt-3"
               :data="recentHeatmap"
-              figureRef="mutation-heatmap"
-              dataType="Mutation Report Heatmap"
+              figure-ref="mutation-heatmap"
+              data-type="Mutation Report Heatmap"
             />
           </div>
 
           <!-- TRACKED LINEAGES PREVALENCE -->
           <section
+            v-if="selectedLocation"
             id="lineages-over-time"
             class="my-5"
             py-3
             border-top
-            v-if="selectedLocation"
           >
             <div
               class="d-flex flex-wrap align-items-center justify-content-center mb-3"
@@ -696,23 +704,23 @@
               />
             </div>
             <OverlayLineagePrevalence
-              :routeTo="routeTo"
+              v-if="selectedMutations && selectedMutations.length"
+              :route-to="routeTo"
               :options="selectedMutations"
               :xmin="xmin"
               :xmax="xmax"
-              :seqCounts="seqCounts"
-              :locationID="loc"
-              :locationName="selectedLocation.label"
+              :seq-counts="seqCounts"
+              :location-i-d="loc"
+              :location-name="selectedLocation.label"
               :selected="selected"
-              v-if="selectedMutations && selectedMutations.length"
             />
           </section>
 
           <!-- GEOGRAPHIC CHOROPLETHS -->
           <section
+            v-if="geoData && selectedLocation.admin_level === 0"
             id="geographic"
             class="my-5 py-3 border-top"
-            v-if="geoData && selectedLocation.admin_level === 0"
           >
             <div
               class="d-flex flex-wrap justify-content-between align-items-center"
@@ -744,27 +752,27 @@
                 class="d-flex flex-wrap align-items-center border-top border-bottom bg-white pt-1 px-2 mt-1"
               >
                 <ClassedLegend
-                  :colorScale="choroColorScale"
+                  :color-scale="choroColorScale"
                   :horizontal="false"
                   :label="`Est. prevalence over the last ${recentWindow} days`"
-                  :countThreshold="choroCountThreshold"
-                  :mutationName="null"
+                  :count-threshold="choroCountThreshold"
+                  :mutation-name="null"
                 />
                 <div class="d-flex flex-column">
                   <ThresholdSlider
-                    :countThreshold.sync="choroCountThreshold"
-                    :maxCount="choroMaxCount"
+                    :count-threshold.sync="choroCountThreshold"
+                    :max-count="choroMaxCount"
                     class="mr-3"
                   />
                   <div class="d-flex align-items-center">
                     <small>Show data from last</small>
                     <input
+                      v-model="recentWindow"
                       class="border p-1 mx-2"
                       :style="{
                         'border-color': '#bababa !important;',
                         width: '40px',
                       }"
-                      v-model="recentWindow"
                       placeholder="days"
                     />
                     <small>days</small>
@@ -774,23 +782,23 @@
                 <!-- Histogram of sequencing counts -->
                 <SequencingHistogram
                   :data="seqCountsWindowed"
+                  v-if="seqCountsWindowed && !noRecentData"
                   :width="widthHist"
                   :downward="false"
-                  :includeXAxis="true"
+                  :include-x-axis="true"
                   :margin="marginHist"
-                  :mutationName="null"
-                  className="sequencing-histogram"
+                  :mutation-name="null"
+                  class-name="sequencing-histogram"
                   :title="
                     `Samples sequenced per day over last ${recentWindow} days`
                   "
-                  :onlyTotals="true"
-                  notDetectedColor="#bab0ab"
-                  v-if="seqCountsWindowed && !noRecentData"
+                  :only-totals="true"
+                  not-detected-color="#bab0ab"
                 />
               </div>
             </div>
 
-            <div class="d-flex flex-wrap" v-if="geoData">
+            <div v-if="geoData" class="d-flex flex-wrap">
               <div
                 v-for="(choro, cIdx) in geoData"
                 :key="cIdx"
@@ -829,25 +837,25 @@
                   </div>
                   <ReportChoropleth
                     :report="routeTo"
-                    :showCopy="false"
-                    :smallMultiples="true"
-                    :recentWindow="recentWindow"
-                    :showLegend="false"
+                    :show-copy="false"
+                    :small-multiples="true"
+                    :recent-window="recentWindow"
+                    :show-legend="false"
                     :data="choro.values"
-                    :countThreshold="choroCountThreshold"
-                    :fillMax="1"
+                    :count-threshold="choroCountThreshold"
+                    :fill-max="1"
                     :location="selectedLocation.label"
-                    :colorScale="choroColorScale"
-                    :mutationName="choro.key"
-                    :widthRatio="1"
+                    :color-scale="choroColorScale"
+                    :mutation-name="choro.key"
+                    :width-ratio="1"
                   />
                 </div>
               </div>
               <DownloadReportData
-                :data="geoData"
-                figureRef="report-choropleth"
-                dataType="Variant Report Prevalence over Time"
                 v-if="!noRecentData"
+                :data="geoData"
+                figure-ref="report-choropleth"
+                data-type="Variant Report Prevalence over Time"
               />
             </div>
 
@@ -863,12 +871,12 @@
                 <div class="px-3 py-2 my-2 bg-white border-top border-bottom">
                   <small>Show data from last</small>
                   <input
+                    v-model="recentWindow"
                     class="border p-1 mx-2"
                     :style="{
                       'border-color': '#bababa !important;',
                       width: '40px',
                     }"
-                    v-model="recentWindow"
                     placeholder="days"
                   />
                   <small>days</small>
@@ -880,9 +888,9 @@
 
         <!-- TRACKED LINEAGES TABLE -->
         <section
+          v-if="lineageTable"
           id="variants-of-concern"
           class="my-5 py-3 border-top"
-          v-if="lineageTable"
         >
           <div
             class="d-flex flex-wrap align-items-center justify-content-center"
@@ -910,25 +918,25 @@
             />
           </div>
           <LocationTable
-            :routeTo="routeTo"
+            :route-to="routeTo"
             :data="lineageTable"
-            :locationName="selectedLocation.label"
-            :locationID="selectedLocation.id"
+            :location-name="selectedLocation.label"
+            :location-i-d="selectedLocation.id"
           />
         </section>
 
         <!-- METHODOLOGY -->
-        <section class="mt-3 mb-5 border-top pt-3" id="methods">
+        <section id="methods" class="mt-3 mb-5 border-top pt-3">
           <h4>Methodology</h4>
-          <ReportMethodology :dateUpdated="dateUpdated" :summary="true" />
+          <ReportMethodology :date-updated="dateUpdated" :summary="true" />
           <Warning class="mt-2" :text="disclaimer" />
         </section>
 
         <!-- CITATION -->
         <GenomicsCitation
           :title="title"
-          :mutationAuthors="mutationAuthors"
-          :genomicsCitation="genomicsCitation"
+          :mutation-authors="mutationAuthors"
+          :genomics-citation="genomicsCitation"
           :url="url"
           :today="today"
         />
@@ -1002,28 +1010,6 @@ import uniqBy from 'lodash/uniqBy';
 
 export default {
   name: 'LocationReportComponent',
-  props: {
-    loc: String,
-    embedded: Boolean,
-    muts: [Array, String],
-    pango: [Array, String],
-    alias: [Array, String],
-    variant: [Array, String],
-    xmin: String,
-    xmax: String,
-    dark: {
-      type: [String, Boolean],
-      default: false,
-    },
-    routeTo: {
-      type: String,
-      default: 'LocationReport',
-    },
-    selected: {
-      type: [Array, String],
-      default: () => [],
-    },
-  },
   components: {
     ShareReport: () =>
       import(/* webpackPrefetch: true */ '@/components/ShareReport.vue'),
@@ -1076,24 +1062,147 @@ export default {
       import(/* webpackPrefetch: true */ '@/components/GenomicsCitation.vue'),
     FontAwesomeIcon,
   },
-  watch: {
-    '$route.query': (newVal, oldVal) => {
-      if (newVal.loc !== oldVal.loc) {
-        this.newLocation = null;
-        this.createReport();
-        this.customMutations = this.grabCustomMutations();
-      }
+  props: {
+    loc: String,
+    embedded: Boolean,
+    muts: [Array, String],
+    pango: [Array, String],
+    alias: [Array, String],
+    variant: [Array, String],
+    xmin: String,
+    xmax: String,
+    dark: {
+      type: [String, Boolean],
+      default: false,
     },
-    recentWindow() {
-      if (this.recentWindow) {
-        this.debounceWindowChange();
-      }
+    routeTo: {
+      type: String,
+      default: 'LocationReport',
     },
-    selectedMutations() {
-      this.customMutations = this.grabCustomMutations();
-      this.updateMaps();
-      this.updateTable();
+    selected: {
+      type: [Array, String],
+      default: () => [],
     },
+  },
+  data() {
+    return {
+      smallScreen: false,
+      mediumScreen: false,
+      darkMode: null,
+      currentTime: null,
+      today: null,
+      url: null,
+      disclaimer: `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the mutations but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`,
+      basicSubscription: null,
+      reportSubscription: null,
+      choroSubscription: null,
+      tableSubscription: null,
+      countSubscription: null,
+      // methods
+      queryLocation: null,
+      // variables
+      recentWindow: '60',
+      recentMin: null,
+      otherThresh: 0.03,
+      ndayThresh: 5,
+      dayThresh: 60,
+      totalThresh: 25, // threshold for "unreliable estimate" in the table
+      // location info
+      selectedLocation: null,
+      newLocation: null,
+      // update mutations
+      newMuts: [],
+      newPango: null,
+      customMutations: [],
+      submitCount: 0,
+      // data
+      moi: [],
+      moc: [],
+      voi: null,
+      voc: null,
+      dateUpdated: null,
+      lastUpdated: null,
+      lineagesByDay: null,
+      mostRecentLineages: null,
+      noRecentData: false,
+      lineageTable: null,
+      lineageDomain: [],
+      totalSequences: null,
+      curatedLineages: [],
+      recentHeatmap: null,
+      heatmapColorScale: scaleSequential(interpolateRdPu),
+      mostRecentDomain: null,
+      geoData: null,
+      seqCounts: null,
+      widthHist: 300,
+      marginHist: {
+        left: 55,
+        right: 55,
+        top: 7,
+        bottom: 25,
+      },
+      // selections
+      // scales
+      // mainly Tableau 20: https://jrnold.github.io/ggthemes/reference/tableau_color_pal.html
+      colorScale: null,
+      choroColorDomain: [0.01, 0.05, 0.1, 0.2, 0.35, 0.5, 0.75],
+      choroColorScale: null,
+      choroCountThreshold: 25,
+      choroMaxCount: null,
+      colorPalette: [
+        '#bab0ab', // grey (other)
+        '#4E79A7', // dk blue
+        '#aecBe8', // lt blue
+        '#f28e2b', // orange
+        '#FFBE7D', // lt. orange
+        '#59a14f', // green
+        '#8CD17D', // lt. green
+        '#e15759', // red
+        '#FF9D9A', // lt. red
+        '#499894', // teal
+        '#86BCB6', // lt. teal
+        '#B6992D', // dk yellow
+        '#F1CE63', // yellow
+        '#D37295', // dk pink
+        '#FABFD2', // lt. pink,
+        '#B07AA1', // dk purple
+        '#D4A6C8', // lt. purple
+        '#9D7660', // brown
+        '#D7B5A6', // lt. brown
+        '#bcbd22', // puce
+        '#79706E', // grey
+        '#79706E',
+      ],
+      // [ "#bab0ab", // grey (other)
+      //   "#4E79A7", // dk blue
+      //   // "#1f77b4", // dk blue
+      //   "#f28e2b", // orange
+      //   "#59a14f", // green
+      //   "#e15759", // red
+      //   // "#9edae5", // teal
+      //   "#499894", // teal
+      //   "#B6992D", // dk yellow
+      //   "#D37295", // dk pink
+      //   // "#9467bd", // purple
+      //   "#B07AA1", // dk purple
+      //   "#9D7660", // brown
+      //   // "#8c564b", // brown
+      //   "#aecBe8", // lt blue
+      //   "#FFBE7D", // lt. orange
+      //   "#8CD17D", // lt. green
+      //   "#FF9D9A", // lt. red
+      //   "#86BCB6", // lt. teal
+      //   "#F1CE63", // yellow
+      //   // "#edc949", // yellow
+      //   // "#ff9da7", // pink
+      //   "#FABFD2", // lt. pink,
+      //   "#D4A6C8", // lt. purple
+      //   "#D7B5A6", // lt. brown
+      //   "#bcbd22", // puce
+      //   "#79706E", // grey
+      //   "#79706E"
+      // ])
+    };
   },
   computed: {
     ...mapState('admin', ['mutationAuthors', 'genomicsCitation']),
@@ -1291,6 +1400,25 @@ export default {
       return tracked;
     },
   },
+  watch: {
+    '$route.query': function(newVal, oldVal) {
+      if (newVal.loc !== oldVal.loc) {
+        this.newLocation = null;
+        this.createReport();
+        this.customMutations = this.grabCustomMutations();
+      }
+    },
+    recentWindow() {
+      if (this.recentWindow) {
+        this.debounceWindowChange();
+      }
+    },
+    selectedMutations() {
+      this.customMutations = this.grabCustomMutations();
+      this.updateMaps();
+      this.updateTable();
+    },
+  },
   created() {
     this.debounceWindowChange = debounce(this.updateWindow, 700);
   },
@@ -1344,6 +1472,27 @@ export default {
         instance.setContent(info);
       },
     });
+  },
+  destroyed() {
+    if (this.basicSubscription) {
+      this.basicSubscription.unsubscribe();
+    }
+
+    if (this.reportSubscription) {
+      this.reportSubscription.unsubscribe();
+    }
+
+    if (this.choroSubscription) {
+      this.choroSubscription.unsubscribe();
+    }
+
+    if (this.tableSubscription) {
+      this.tableSubscription.unsubscribe();
+    }
+
+    if (this.countSubscription) {
+      this.countSubscription.unsubscribe();
+    }
   },
   methods: {
     setDims() {
@@ -1651,147 +1800,6 @@ export default {
         this.lineageTable = results;
       });
     },
-  },
-  data() {
-    return {
-      smallScreen: false,
-      mediumScreen: false,
-      darkMode: null,
-      currentTime: null,
-      today: null,
-      url: null,
-      disclaimer: `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the mutations but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`,
-      basicSubscription: null,
-      reportSubscription: null,
-      choroSubscription: null,
-      tableSubscription: null,
-      countSubscription: null,
-      // methods
-      queryLocation: null,
-      // variables
-      recentWindow: '60',
-      recentMin: null,
-      otherThresh: 0.03,
-      ndayThresh: 5,
-      dayThresh: 60,
-      totalThresh: 25, // threshold for "unreliable estimate" in the table
-      // location info
-      selectedLocation: null,
-      newLocation: null,
-      // update mutations
-      newMuts: [],
-      newPango: null,
-      customMutations: [],
-      submitCount: 0,
-      // data
-      moi: [],
-      moc: [],
-      voi: null,
-      voc: null,
-      dateUpdated: null,
-      lastUpdated: null,
-      lineagesByDay: null,
-      mostRecentLineages: null,
-      noRecentData: false,
-      lineageTable: null,
-      lineageDomain: [],
-      totalSequences: null,
-      curatedLineages: [],
-      recentHeatmap: null,
-      heatmapColorScale: scaleSequential(interpolateRdPu),
-      mostRecentDomain: null,
-      geoData: null,
-      seqCounts: null,
-      widthHist: 300,
-      marginHist: {
-        left: 55,
-        right: 55,
-        top: 7,
-        bottom: 25,
-      },
-      // selections
-      // scales
-      // mainly Tableau 20: https://jrnold.github.io/ggthemes/reference/tableau_color_pal.html
-      colorScale: null,
-      choroColorDomain: [0.01, 0.05, 0.1, 0.2, 0.35, 0.5, 0.75],
-      choroColorScale: null,
-      choroCountThreshold: 25,
-      choroMaxCount: null,
-      colorPalette: [
-        '#bab0ab', // grey (other)
-        '#4E79A7', // dk blue
-        '#aecBe8', // lt blue
-        '#f28e2b', // orange
-        '#FFBE7D', // lt. orange
-        '#59a14f', // green
-        '#8CD17D', // lt. green
-        '#e15759', // red
-        '#FF9D9A', // lt. red
-        '#499894', // teal
-        '#86BCB6', // lt. teal
-        '#B6992D', // dk yellow
-        '#F1CE63', // yellow
-        '#D37295', // dk pink
-        '#FABFD2', // lt. pink,
-        '#B07AA1', // dk purple
-        '#D4A6C8', // lt. purple
-        '#9D7660', // brown
-        '#D7B5A6', // lt. brown
-        '#bcbd22', // puce
-        '#79706E', // grey
-        '#79706E',
-      ],
-      // [ "#bab0ab", // grey (other)
-      //   "#4E79A7", // dk blue
-      //   // "#1f77b4", // dk blue
-      //   "#f28e2b", // orange
-      //   "#59a14f", // green
-      //   "#e15759", // red
-      //   // "#9edae5", // teal
-      //   "#499894", // teal
-      //   "#B6992D", // dk yellow
-      //   "#D37295", // dk pink
-      //   // "#9467bd", // purple
-      //   "#B07AA1", // dk purple
-      //   "#9D7660", // brown
-      //   // "#8c564b", // brown
-      //   "#aecBe8", // lt blue
-      //   "#FFBE7D", // lt. orange
-      //   "#8CD17D", // lt. green
-      //   "#FF9D9A", // lt. red
-      //   "#86BCB6", // lt. teal
-      //   "#F1CE63", // yellow
-      //   // "#edc949", // yellow
-      //   // "#ff9da7", // pink
-      //   "#FABFD2", // lt. pink,
-      //   "#D4A6C8", // lt. purple
-      //   "#D7B5A6", // lt. brown
-      //   "#bcbd22", // puce
-      //   "#79706E", // grey
-      //   "#79706E"
-      // ])
-    };
-  },
-  destroyed() {
-    if (this.basicSubscription) {
-      this.basicSubscription.unsubscribe();
-    }
-
-    if (this.reportSubscription) {
-      this.reportSubscription.unsubscribe();
-    }
-
-    if (this.choroSubscription) {
-      this.choroSubscription.unsubscribe();
-    }
-
-    if (this.tableSubscription) {
-      this.tableSubscription.unsubscribe();
-    }
-
-    if (this.countSubscription) {
-      this.countSubscription.unsubscribe();
-    }
   },
 };
 </script>

@@ -10,7 +10,9 @@
         }"
       >
         <div class="d-flex justify-content-between align-items-center">
-          <h5 class="underline m-0">{{ data.name }}</h5>
+          <h5 class="underline m-0">
+            {{ data.name }}
+          </h5>
           <div class="text-muted badge bg-grey__lightest">
             {{ updatedDate }}
           </div>
@@ -68,15 +70,15 @@
                   fill="none"
                   stroke="#6c757d"
                   stroke-width="0.8"
-                ></path>
+                />
               </svg>
               <div class="d-flex flex-column number-changes">
                 <div class="changes">+ {{ casesIncrease }}</div>
                 <div class="changes">
                   <font-awesome-icon
+                    v-if="data.confirmed_pctIncrease > 0"
                     class="increasing"
                     :icon="['fas', 'arrow-up']"
-                    v-if="data.confirmed_pctIncrease > 0"
                   />
                   {{ casesPct }}
                 </div>
@@ -97,8 +99,8 @@
             }"
           >
             <div
-              class="d-flex align-items-end justify-content-start router-link-black mb-ml-2 p-1 mb-pl-2"
               id="deaths"
+              class="d-flex align-items-end justify-content-start router-link-black mb-ml-2 p-1 mb-pl-2"
             >
               <div class="d-flex flex-column text-left">
                 <h6>total deaths</h6>
@@ -136,15 +138,15 @@
                   fill="none"
                   stroke="#6c757d"
                   stroke-width="0.8"
-                ></path>
+                />
               </svg>
               <div class="d-flex flex-column number-changes">
                 <div class="changes">+ {{ deadIncrease }}</div>
                 <div class="changes">
                   <font-awesome-icon
+                    v-if="data.dead_pctIncrease > 0"
                     class="increasing"
                     :icon="['fas', 'arrow-up']"
-                    v-if="data.dead_pctIncrease > 0"
                   />
                   {{ deadPct }}
                 </div>
@@ -158,11 +160,11 @@
           <div class="d-flex flex-column">
             <h6>cumulative cases</h6>
             <Sparkline
+              :id="'glance_' + idx"
               :data="[data.longitudinal]"
               variable="confirmed"
               :width="140"
               :height="40"
-              :id="'glance_' + idx"
               :color="'#126B93'"
             />
           </div>
@@ -180,15 +182,17 @@
                 },
               }"
             >
-              <h6 class="text-dark">new cases per day</h6>
+              <h6 class="text-dark">
+                new cases per day
+              </h6>
               <Bargraph
+                :id="'glance_' + idx"
                 :data="data.longitudinal"
-                :variableObj="{ value: 'confirmed_numIncrease' }"
+                :variable-obj="{ value: 'confirmed_numIncrease' }"
                 :width="140"
                 :height="40"
-                :id="'glance_' + idx"
                 :color="'#126B93'"
-                colorAverage="#D13B62"
+                color-average="#D13B62"
               />
             </router-link>
           </div>
@@ -206,15 +210,17 @@
                 },
               }"
             >
-              <h6 class="text-dark">new deaths per day</h6>
+              <h6 class="text-dark">
+                new deaths per day
+              </h6>
               <Bargraph
+                :id="'glance2_' + idx"
                 :data="data.longitudinal"
-                :variableObj="{ value: 'dead_numIncrease' }"
+                :variable-obj="{ value: 'dead_numIncrease' }"
                 :width="150"
                 :height="40"
-                :id="'glance2_' + idx"
                 :color="'#126B93'"
-                colorAverage="#D13B62"
+                color-average="#D13B62"
               />
             </router-link>
           </div>
@@ -231,11 +237,11 @@
             class="d-flex justify-content-between align-items-center mb-flex"
           >
             Variants of Concern
-            <small class="text-muted" v-if="data.voc">
+            <small v-if="data.voc" class="text-muted">
               Cumulative prevalence since detection
             </small>
           </div>
-          <div class="d-flex flex-wrap" v-if="data.voc">
+          <div v-if="data.voc" class="d-flex flex-wrap">
             <div
               v-for="(variant, vIdx) in data.voc"
               :key="vIdx"
@@ -256,7 +262,7 @@
             </div>
           </div>
 
-          <small class="text-muted" v-else>
+          <small v-else class="text-muted">
             No known sequencing
           </small>
         </div>
@@ -264,8 +270,8 @@
     </div>
 
     <div
-      class="delete-me d-flex align-items-center justify-content-center flex-column"
       v-if="deletable"
+      class="delete-me d-flex align-items-center justify-content-center flex-column"
       @click="removeSummary"
     >
       <font-awesome-icon :icon="['far', 'trash-alt']" class="delete-icon" />
@@ -291,6 +297,11 @@ import Bargraph from '@/components/Bargraph.vue';
 
 export default Vue.extend({
   name: 'GlanceSummary',
+  components: {
+    FontAwesomeIcon,
+    Sparkline,
+    Bargraph,
+  },
   props: {
     data: Object,
     idx: String,
@@ -298,36 +309,6 @@ export default Vue.extend({
   },
   data() {
     return {};
-  },
-  watch: {},
-  components: {
-    FontAwesomeIcon,
-    Sparkline,
-    Bargraph,
-  },
-  methods: {
-    formatPct(pct) {
-      if (!pct) {
-        return null;
-      }
-
-      if (pct < 0) {
-        return 'count corrected';
-      }
-
-      if (pct < 0.005) {
-        return '< 1%';
-      }
-
-      if (!isFinite(pct)) {
-        return '* first reported *';
-      }
-
-      return format('.0%')(pct);
-    },
-    removeSummary() {
-      this.$emit('removed', this.idx);
-    },
   },
   computed: {
     updatedDate() {
@@ -358,6 +339,31 @@ export default Vue.extend({
     },
     deadYesterday() {
       return (this.data.dead - this.data.dead_numIncrease).toLocaleString();
+    },
+  },
+  watch: {},
+  methods: {
+    formatPct(pct) {
+      if (!pct) {
+        return null;
+      }
+
+      if (pct < 0) {
+        return 'count corrected';
+      }
+
+      if (pct < 0.005) {
+        return '< 1%';
+      }
+
+      if (!isFinite(pct)) {
+        return '* first reported *';
+      }
+
+      return format('.0%')(pct);
+    },
+    removeSummary() {
+      this.$emit('removed', this.idx);
     },
   },
 });

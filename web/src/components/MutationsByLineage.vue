@@ -1,15 +1,17 @@
 <template>
   <div class="mutations-by-lineage d-flex flex-column text-left">
-    <h6 class="m-0">{{ title }}</h6>
+    <h6 class="m-0">
+      {{ title }}
+    </h6>
     <div
       class="d-flex justify-content-between align-items-center"
       :style="{ width: width + 'px' }"
     >
       <small class="text-muted">{{ subtitle }}</small>
       <button
+        v-if="otherDataArr.length"
         class="small btn btn-outline-secondary my-1 px-2 py-1"
         @click="expandOther"
-        v-if="otherDataArr.length"
       >
         {{ otherExpanded ? 'hide' : 'expand' }} other
       </button>
@@ -22,19 +24,19 @@
       :name="title"
     >
       <g
-        :transform="`translate(${margin.left}, ${margin.top})`"
         ref="horizontal_bargraph"
-      ></g>
+        :transform="`translate(${margin.left}, ${margin.top})`"
+      />
       <g
+        ref="yAxis"
         :transform="`translate(${margin.left}, ${margin.top})`"
         class="horizontal-bargraph-y pointer axis--y"
-        ref="yAxis"
-      ></g>
+      />
       <g
+        ref="xAxis"
         :transform="`translate(${margin.left}, ${height - margin.bottom})`"
         class="horizontal-bargraph-x axis--x"
-        ref="xAxis"
-      ></g>
+      />
     </svg>
 
     <div
@@ -42,29 +44,29 @@
       :style="{ width: width + 'px' }"
     >
       <button
+        v-if="otherDataArr.length"
         class="small btn btn-outline-secondary my-1 px-2 py-1 flex-shrink-0"
         @click="expandOther"
-        v-if="otherDataArr.length"
       >
         {{ otherExpanded ? 'hide' : 'expand' }} other
       </button>
       <DownloadReportData
         :data="data"
-        figureRef="mutations_by_lineage"
-        dataType="Mutation by Lineage"
+        figure-ref="mutations_by_lineage"
+        data-type="Mutation by Lineage"
         class="mt-3"
       />
     </div>
 
     <!-- TOOLTIPS -->
     <div
+      id="tooltip-by-lineage"
       ref="tooltip_by_lineage"
       class="tooltip-basic box-shadow px-2"
-      id="tooltip-by-lineage"
     >
-      <h5 id="lineage"></h5>
-      <p id="proportion" class="font-size-2 p-0 m-0"></p>
-      <p id="counts" class="text-muted p-0 m-0"></p>
+      <h5 id="lineage" />
+      <p id="proportion" class="font-size-2 p-0 m-0" />
+      <p id="counts" class="text-muted p-0 m-0" />
 
       <div
         id="other_data"
@@ -162,14 +164,18 @@ export default Vue.extend({
       otherExpanded: false,
     };
   },
+  computed: {
+    ...mapState('genomics', ['characteristicThreshold']),
+  },
   watch: {
-    data: () => {
+    data() {
       this.setupPlot();
       this.updatePlot();
     },
   },
-  computed: {
-    ...mapState('genomics', ['characteristicThreshold']),
+  mounted() {
+    this.setupPlot();
+    this.updatePlot();
   },
   methods: {
     handleLineageClick(lineage) {
@@ -239,7 +245,7 @@ export default Vue.extend({
       this.svg = select(this.$refs.horizontal_bargraph);
       this.preprocessData();
     },
-    updatePlot: () => {
+    updatePlot() {
       this.updateAxes();
       this.drawBars();
     },
@@ -480,10 +486,6 @@ export default Vue.extend({
         .on('mouseleave', () => this.tooltipOff())
         .on('click', (d) => this.handleLineageClick(d));
     },
-  },
-  mounted() {
-    this.setupPlot();
-    this.updatePlot();
   },
 });
 </script>

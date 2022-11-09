@@ -1,12 +1,12 @@
 <template>
   <div>
-    <div class="mb-3" v-for="(item, idx) in data" :key="idx">
-      <span class="opacity-40 font-weight-700 mr-2" v-if="item.date">
+    <div v-for="(item, idx) in data" :key="idx" class="mb-3">
+      <span v-if="item.date" class="opacity-40 font-weight-700 mr-2">
         {{ format(item.date) }}
       </span>
       <router-link
-        :to="{ name: 'Resource Page', params: { id: item._id } }"
         v-if="item.name"
+        :to="{ name: 'Resource Page', params: { id: item._id } }"
       >
         {{ item.name }}
       </router-link>

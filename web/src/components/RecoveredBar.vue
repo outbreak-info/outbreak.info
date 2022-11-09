@@ -50,10 +50,12 @@ export default Vue.extend({
     data: Object,
     color: String,
   },
-  watch: {
-    data() {
-      this.updateAxes();
-    },
+  data() {
+    return {
+      width,
+      height,
+      x: null,
+    };
   },
   computed: {
     recoveredWidth() {
@@ -69,12 +71,13 @@ export default Vue.extend({
       return null;
     },
   },
-  data() {
-    return {
-      width,
-      height,
-      x: null,
-    };
+  watch: {
+    data() {
+      this.updateAxes();
+    },
+  },
+  mounted() {
+    this.updateAxes();
   },
   methods: {
     updateAxes() {
@@ -82,9 +85,6 @@ export default Vue.extend({
         .range([0, this.width])
         .domain([0, this.data.confirmed]);
     },
-  },
-  mounted() {
-    this.updateAxes();
   },
 });
 </script>

@@ -28,17 +28,6 @@ export default {
     filterField: String,
     tooltipLabel: String,
   },
-  methods: {
-    searchStr(item) {
-      return this.searchField ? `${this.searchField}:"${item}"` : item;
-    },
-    tooltipText(item) {
-      const ttip = this.tooltipLabel
-        ? `Search for ${item} ${this.tooltipLabel}`
-        : `Search for ${item}`;
-      return ttip;
-    },
-  },
   mounted() {
     tippy('.search-link', {
       content: 'Loading...',
@@ -51,6 +40,16 @@ export default {
         instance.setContent(info);
       },
     });
+  },
+  methods: {
+    searchStr(item) {
+      return this.searchField ? `${this.searchField}:"${item}"` : item;
+    },
+    tooltipText(item) {
+      return this.tooltipLabel
+        ? `Search for ${item} ${this.tooltipLabel}`
+        : `Search for ${item}`;
+    },
   },
 };
 </script>

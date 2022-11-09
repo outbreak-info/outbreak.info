@@ -73,11 +73,6 @@ export default Vue.extend({
       default: '#114068',
     },
   },
-  watch: {
-    data() {
-      this.updatePlot();
-    },
-  },
   data() {
     return {
       // dims
@@ -99,6 +94,15 @@ export default Vue.extend({
       // refs
       chart: null,
     };
+  },
+  watch: {
+    data() {
+      this.updatePlot();
+    },
+  },
+  mounted() {
+    this.setupPlot();
+    this.updatePlot();
   },
   methods: {
     updatePlot() {
@@ -241,10 +245,6 @@ export default Vue.extend({
           ),
       );
     },
-  },
-  mounted() {
-    this.setupPlot();
-    this.updatePlot();
   },
 });
 </script>

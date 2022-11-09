@@ -5,10 +5,7 @@
       :height="height + margin.top + margin.bottom"
       class="date-histogram"
     >
-      <g
-        ref="hist"
-        :transform="`translate(${this.margin.left},${this.margin.top})`"
-      />
+      <g ref="hist" :transform="`translate(${margin.left},${margin.top})`" />
       <g
         ref="axis_x"
         class="axis axis--x"
@@ -23,7 +20,7 @@
       <g
         v-if="x"
         class="slider-handle pointer"
-        :transform="`translate(${this.margin.left},${5})`"
+        :transform="`translate(${margin.left},${5})`"
       >
         <g stroke="#686868" fill="#d6d6d6" stroke-width="0.5">
           <line

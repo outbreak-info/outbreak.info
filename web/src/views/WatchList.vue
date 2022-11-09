@@ -1,8 +1,12 @@
 <template>
   <div>
     <div class="bg-sec__darker py-4 text-light border-top location-banner">
-      <h3 class="m-0 text-grey">SARS-CoV-2 (hCoV-19) Mutation Reports</h3>
-      <h1 class="m-0 font-weight-bold location-header">Watch List</h1>
+      <h3 class="m-0 text-grey">
+        SARS-CoV-2 (hCoV-19) Mutation Reports
+      </h3>
+      <h1 class="m-0 font-weight-bold location-header">
+        Watch List
+      </h1>
     </div>
     <div class="my-2 mx-4 px-4">
       <!-- LOADING -->
@@ -13,7 +17,7 @@
         />
       </div>
       <section id="report-list" class="text-left">
-        <CustomLocationForm :includeMutations="false" />
+        <CustomLocationForm :include-mutations="false" />
         <WatchListTable :location="location" />
       </section>
 
@@ -66,17 +70,17 @@
           <div class="d-flex align-items-center justify-content-between my-3">
             <div id="date-updated" class="mr-2">
               <small
-                class="text-muted badge bg-grey__lightest mt-1"
                 v-if="lastUpdated"
+                class="text-muted badge bg-grey__lightest mt-1"
               >
                 <font-awesome-icon class="mr-1" :icon="['far', 'clock']" />
                 Updated {{ lastUpdated }} ago
               </small>
             </div>
             <div
+              v-if="total"
               id="sequence-count"
               class="ml-2 mr-5 text-highlight"
-              v-if="total"
             >
               {{ total }} sequences
             </div>
@@ -97,7 +101,7 @@
         <!-- <ReportLogos class="my-4"/> -->
       </div>
       <section id="report-list" class="text-left">
-        <CustomLocationForm :includeMutations="false" />
+        <CustomLocationForm :include-mutations="false" />
         <WatchListTable :location="location" />
       </section>
 

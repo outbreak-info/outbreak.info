@@ -64,6 +64,10 @@ export default Vue.extend({
       this.updatePlot();
     },
   },
+  mounted() {
+    this.setupPlot();
+    this.updatePlot();
+  },
   methods: {
     tooltipOn(d) {
       select(this.$refs.circle_tooltip)
@@ -248,10 +252,6 @@ export default Vue.extend({
           .on('click', (d) => this.searchResource(d));
       });
     },
-  },
-  mounted() {
-    this.setupPlot();
-    this.updatePlot();
   },
 });
 </script>

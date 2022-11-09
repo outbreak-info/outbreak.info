@@ -43,7 +43,7 @@
             >
               {{ mutationName }} found
             </th>
-            <th></th>
+            <th />
             <th
               class="text-center padded border-bottom border-secondary"
               colspan="2"
@@ -60,7 +60,7 @@
               cumulative prevalence
               <sup>*</sup>
             </th>
-            <th></th>
+            <th />
             <th class="text-center padded">
               first
             </th>
@@ -78,6 +78,10 @@
           >
             <td>
               <router-link
+                v-if="
+                  location.name !== 'Worldwide' &&
+                    routeTo === 'GenomicsEmbedVariant'
+                "
                 class="bright-hyperlink"
                 :to="{
                   name: 'GenomicsEmbed',
@@ -87,24 +91,20 @@
                     ...locationQueryParams,
                   },
                 }"
-                v-if="
-                  location.name !== 'Worldwide' &&
-                    routeTo === 'GenomicsEmbedVariant'
-                "
               >
                 {{ location.name }}
               </router-link>
               <router-link
+                v-else-if="location.name !== 'Worldwide'"
                 class="bright-hyperlink"
                 :to="{
                   name: 'LocationReport',
                   query: { loc: location.location_id, ...locationQueryParams },
                 }"
-                v-else-if="location.name !== 'Worldwide'"
               >
                 {{ location.name }}
               </router-link>
-              <span class="bright-hyperlink" v-else>{{ location.name }}</span>
+              <span v-else class="bright-hyperlink">{{ location.name }}</span>
             </td>
             <td class="text-center">
               {{ location.lineage_count_formatted }}
@@ -128,7 +128,7 @@
                 {{ location.proportion_formatted }}
               </span>
             </td>
-            <td></td>
+            <td />
             <td class="text-center">
               {{ location.first_detected }}
             </td>
@@ -178,10 +178,10 @@
 
     <!-- GEO SUMMARY -->
     <div
-      id="geo-summary"
       v-if="countries"
-      class="d-flex flex-column"
+      id="geo-summary"
       ref="geo_summary"
+      class="d-flex flex-column"
     >
       <div>
         The
@@ -207,9 +207,9 @@
       <CountryMap
         :countries="countries"
         :width="summaryWidth"
-        :showNames="false"
+        :show-names="false"
         class="align-self-center"
-        mapSource="GADM"
+        map-source="GADM"
       />
       <small class="bright-hyperlink">
         <a href="#geographic">view geographic prevalence</a>

@@ -43,15 +43,15 @@
     <div v-else>
       <div class="d-flex mt-2 mb-3">
         <small
-          class="text-muted badge bg-grey__lightest mt-1"
           v-if="lastUpdated"
+          class="text-muted badge bg-grey__lightest mt-1"
         >
           <font-awesome-icon class="mr-1" :icon="['far', 'clock']" />
           Updated {{ lastUpdated }} (methods)
         </small>
         <small
-          class="text-muted badge bg-grey__lightest mt-1 ml-3"
           v-if="lastUpdated"
+          class="text-muted badge bg-grey__lightest mt-1 ml-3"
         >
           <font-awesome-icon class="mr-1" :icon="['far', 'clock']" />
           Updated {{ updated }} (data)
@@ -60,7 +60,9 @@
 
       <section class="border-top py-2">
         <h2>Sequencing data</h2>
-        <h4 id="pipeline">Sequence alignment</h4>
+        <h4 id="pipeline">
+          Sequence alignment
+        </h4>
         <p>
           All SARS-CoV sequences are received via direct provision from the
           <a href="https://www.gisaid.org/" rel="noreferrer" target="_blank">
@@ -97,7 +99,9 @@
           .
         </p>
 
-        <h4 id="filters">Data processing</h4>
+        <h4 id="filters">
+          Data processing
+        </h4>
         <ul>
           <li>
             Sequences with collection dates specifying only the year or dates in
@@ -117,7 +121,9 @@
           </li>
         </ul>
 
-        <h4 id="prevalence">Prevalence calculation</h4>
+        <h4 id="prevalence">
+          Prevalence calculation
+        </h4>
         <p>
           Mutation prevalence was calculated as a ratio of the count of
           sequences containing a given set of mutations on a day at a particular
@@ -130,16 +136,18 @@
           <span
             class="code"
             v-html="'2.5 quantile of	&beta;(x + 0.5, n - x + 0.5)'"
-          ></span>
+          />
           to
           <span
             class="code"
             v-html="'97.5 quantile of &beta;(x + 0.5, n - x + 0.5)'"
-          ></span>
+          />
           .
         </p>
 
-        <h4 id="dates">Date reporting</h4>
+        <h4 id="dates">
+          Date reporting
+        </h4>
         <p>
           Dates when the lineage, variant, or mutation(s) were first and last
           found are based on the sample collection date, not the sequencing date
@@ -151,7 +159,9 @@
 
       <section class="border-top border-bottom py-2">
         <h2>Lineages</h2>
-        <h4 id="lineages">Lineage assignment</h4>
+        <h4 id="lineages">
+          Lineage assignment
+        </h4>
         <p>
           PANGO lineage classification for each individual sequence was provided
           by GISAID. Note that classifications of newer lineages by the
@@ -171,7 +181,9 @@
           .
         </p>
 
-        <h4 id="sublineages">Sublineage assignment</h4>
+        <h4 id="sublineages">
+          Sublineage assignment
+        </h4>
         <p>
           outbreak.info Variant of Concern (VOC) reports pull all descendants of
           a parent VOC lineage from
@@ -189,7 +201,9 @@
           maintained by the cov-lineages.org team.
         </p>
 
-        <h4 id="characteristic">Characteristic mutations of a lineage</h4>
+        <h4 id="characteristic">
+          Characteristic mutations of a lineage
+        </h4>
 
         <p>
           Characteristic mutations for a lineage are defined as nonsynonymous
@@ -235,21 +249,15 @@ import { format } from 'd3';
 
 export default {
   name: 'ReportMethodology',
+  components: {
+    Warning,
+    FontAwesomeIcon,
+  },
   props: {
     dateUpdated: String,
     summary: {
       type: Boolean,
       default: false,
-    },
-  },
-  components: {
-    Warning,
-    FontAwesomeIcon,
-  },
-  computed: {
-    ...mapState('genomics', ['refSeq', 'characteristicThreshold']),
-    charMutThreshold() {
-      return format('.0%')(this.characteristicThreshold);
     },
   },
   data() {
@@ -260,6 +268,12 @@ export default {
       updated: null,
       updatedSubscription: null,
     };
+  },
+  computed: {
+    ...mapState('genomics', ['refSeq', 'characteristicThreshold']),
+    charMutThreshold() {
+      return format('.0%')(this.characteristicThreshold);
+    },
   },
   mounted() {
     if (this.dateUpdated) {

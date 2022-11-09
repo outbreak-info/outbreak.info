@@ -13,6 +13,12 @@
 <script>
 export default {
   name: 'SituationReportComparison',
+  components: {
+    LineageComparisonComponent: () =>
+      import(
+        /* webpackPrefetch: true */ '@/components/LineageComparisonComponent.vue'
+      ),
+  },
   props: {
     pango: [Array, String],
     threshold: {
@@ -35,12 +41,6 @@ export default {
       type: [Array, String],
       default: () => ['ORF1a', 'ORF1b', 'S'],
     },
-  },
-  components: {
-    LineageComparisonComponent: () =>
-      import(
-        /* webpackPrefetch: true */ '@/components/LineageComparisonComponent.vue'
-      ),
   },
 };
 </script>

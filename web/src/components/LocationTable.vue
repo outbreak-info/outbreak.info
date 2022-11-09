@@ -12,7 +12,7 @@
           >
             lineage found
           </th>
-          <th></th>
+          <th />
           <th
             class="text-center padded border-bottom border-secondary"
             colspan="2"
@@ -29,7 +29,7 @@
             cumulative prevalence
             <sup>*</sup>
           </th>
-          <th></th>
+          <th />
           <th class="text-center padded">
             first
           </th>
@@ -39,8 +39,8 @@
         </tr>
       </thead>
       <tbody v-for="(lineageGroup, gIdx) in data" :key="gIdx">
-        <tr class="padding" v-if="gIdx > 0">
-          <td></td>
+        <tr v-if="gIdx > 0" class="padding">
+          <td />
         </tr>
         <tr
           class="border-top border-bottom"
@@ -68,12 +68,17 @@
           </td>
         </tr>
         <tr
-          class="checkbook"
           v-for="(lineage, lIdx) in lineageGroup.values"
           :key="lIdx"
+          class="checkbook"
         >
           <td class="text-left line-height-1">
             <router-link
+              v-if="
+                routeTo === 'GenomicsEmbedLocation' &&
+                  lineage.params &&
+                  lineage.params.alias
+              "
               class="variant-table"
               :to="{
                 name: 'GenomicsEmbed',
@@ -86,15 +91,11 @@
                 },
               }"
               :data-tippy-info="lineage.tooltip"
-              v-if="
-                routeTo === 'GenomicsEmbedLocation' &&
-                  lineage.params &&
-                  lineage.params.alias
-              "
             >
               {{ lineage.label }}
             </router-link>
             <router-link
+              v-else-if="routeTo === 'GenomicsEmbedLocation'"
               class="variant-table"
               :to="{
                 name: 'GenomicsEmbed',
@@ -106,11 +107,11 @@
                 },
               }"
               :data-tippy-info="lineage.tooltip"
-              v-else-if="routeTo === 'GenomicsEmbedLocation'"
             >
               {{ lineage.label }}
             </router-link>
             <router-link
+              v-else
               class="variant-table"
               :to="{
                 name: 'MutationReport',
@@ -118,7 +119,6 @@
                 query: lineage.route,
               }"
               :data-tippy-info="lineage.tooltip"
-              v-else
             >
               {{ lineage.label }}
             </router-link>
@@ -151,7 +151,7 @@
             </span>
           </td>
 
-          <td class="spacer"></td>
+          <td class="spacer" />
           <td>
             {{ lineage.first_detected }}
           </td>

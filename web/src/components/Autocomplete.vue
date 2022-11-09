@@ -161,11 +161,11 @@ export default Vue.extend({
         });
       });
     },
-    lightColorScale: (location) => {
+    lightColorScale(location) {
       const scale = store.getters['colors/getLightColor'];
       return scale(location);
     },
-    colorScale: (location) => {
+    colorScale(location) {
       const scale = store.getters['colors/getDarkColor'];
       return scale(location);
     },

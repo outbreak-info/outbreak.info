@@ -135,8 +135,8 @@
     </div>
     <div class="d-flex flex-column">
       <HistogramLegend
+        v-if="data && data.length"
         class="ml-2"
-        v-if="this.data && this.data.length"
         :data="data"
         :animate="animate"
         :transition1="transition1"

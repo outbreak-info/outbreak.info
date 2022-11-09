@@ -19,16 +19,16 @@
         </marker>
       </defs>
       <g
+        ref="xAxis"
         :transform="`translate(${margin.left}, ${height - margin.bottom})`"
         class="epi-axis axis--x"
-        ref="xAxis"
-      ></g>
+      />
       <!-- <g :transform="`translate(${margin.left}, ${margin.top})`" class="epi-axis axis--y" ref="yAxis"></g> -->
       <g
+        ref="slopes"
         :transform="`translate(${margin.left},${margin.top})`"
         class="slopes"
-        ref="slopes"
-      ></g>
+      />
     </svg>
   </div>
 </template>

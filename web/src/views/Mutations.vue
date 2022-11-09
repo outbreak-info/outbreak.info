@@ -1,6 +1,6 @@
 <template>
   <div class="container my-5">
-    <div v-html="testHtml"></div>
+    <div v-html="testHtml" />
     <h1 class="text-left">
       SARS-CoV-2 mutation viewer
     </h1>
@@ -18,25 +18,27 @@
 
     <section id="search">
       <div class="my-3">
-        <h5 class="text-left">Nucleotide mutations or amino acid changes</h5>
+        <h5 class="text-left">
+          Nucleotide mutations or amino acid changes
+        </h5>
         <div class="row  d-flex align-items-center">
           <div class="input-group col-sm-6 col-md-4">
             <div class="input-group-prepend">
               <span
-                class="input-group-text bg-grey text-muted border-0"
                 id="sb"
+                class="input-group-text bg-grey text-muted border-0"
               >
                 <font-awesome-icon :icon="['fas', 'search']" />
               </span>
             </div>
             <input
               id="resourceBar"
+              v-model="searchQuery"
               class="form-control border"
               placeholder="Search mutations"
               aria-label="search"
               aria-describedby="sb"
               type="text"
-              v-model="searchQuery"
               @keydown.enter.prevent="submitSearch"
             />
           </div>
@@ -45,20 +47,26 @@
             <div class="btn btn-main ml-3 p-0">
               <div class="d-flex flex-column align-items-center">
                 <small class="w-100 border-bottom">ORF1ab</small>
-                <div class="px-1 font-weight-bold">T1001I</div>
+                <div class="px-1 font-weight-bold">
+                  T1001I
+                </div>
               </div>
             </div>
 
             <div class="btn btn-main ml-3 p-0">
               <div class="d-flex flex-column align-items-center">
                 <small class="w-100 border-bottom">S</small>
-                <div class="px-1 font-weight-bold">N501Y</div>
+                <div class="px-1 font-weight-bold">
+                  N501Y
+                </div>
               </div>
             </div>
             <div class="btn btn-main ml-3 p-0">
               <div class="d-flex flex-column align-items-center">
                 <small class="w-100 border-bottom">S</small>
-                <div class="px-1 font-weight-bold">P681H</div>
+                <div class="px-1 font-weight-bold">
+                  P681H
+                </div>
               </div>
             </div>
           </div>
@@ -66,7 +74,9 @@
       </div>
 
       <div class="my-3">
-        <h5 class="text-left m-0">Phylogenetic lineages</h5>
+        <h5 class="text-left m-0">
+          Phylogenetic lineages
+        </h5>
         <p class="text-left text-helper text-muted m-0">
           Based on
           <a
@@ -81,20 +91,20 @@
           <div class="input-group col-sm-6 col-md-4">
             <div class="input-group-prepend">
               <span
-                class="input-group-text bg-grey text-muted border-0"
                 id="sb"
+                class="input-group-text bg-grey text-muted border-0"
               >
                 <font-awesome-icon :icon="['fas', 'search']" />
               </span>
             </div>
             <input
               id="resourceBar"
+              v-model="searchQuery"
               class="form-control border"
               placeholder="Search lineages"
               aria-label="search"
               aria-describedby="sb"
               type="text"
-              v-model="searchQuery"
               @keydown.enter.prevent="submitSearch"
             />
           </div>
@@ -116,7 +126,9 @@
     </section>
 
     <section id="mutations-by-gene">
-      <h3 class="text-left mt-5">Mutations by gene</h3>
+      <h3 class="text-left mt-5">
+        Mutations by gene
+      </h3>
       <div>all</div>
       <img src="@/assets/test_mut_freq.png" class="w-100" />
       <div>non-synonymous</div>
@@ -159,6 +171,7 @@ export default {
   computed: {
     ...mapState('admin', ['loading']),
   },
+  mounted() {},
   methods: {
     submitSearch() {
       this.$router.push({
@@ -169,7 +182,6 @@ export default {
       });
     },
   },
-  mounted() {},
 };
 </script>
 

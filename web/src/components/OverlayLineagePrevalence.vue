@@ -62,6 +62,10 @@ library.add(faPlusSquare);
 
 export default {
   name: 'OverlayLineagePrevalence',
+  components: {
+    ReportPrevalenceOverlay,
+    FontAwesomeIcon,
+  },
   props: {
     options: Array,
     routeTo: String,
@@ -72,9 +76,15 @@ export default {
     xmax: String,
     selected: [Array, String],
   },
-  components: {
-    ReportPrevalenceOverlay,
-    FontAwesomeIcon,
+  data() {
+    return {
+      // filters
+      numPreselected: 3,
+      selectedMutations: [],
+      // data
+      prevalences: null,
+      epi: null,
+    };
   },
   watch: {
     locationID() {
@@ -85,16 +95,6 @@ export default {
       this.setMutations();
       this.updateMutations();
     },
-  },
-  data() {
-    return {
-      // filters
-      numPreselected: 3,
-      selectedMutations: [],
-      // data
-      prevalences: null,
-      epi: null,
-    };
   },
   created() {
     this.debounceSelectMutation = debounce(this.selectMutation, 250);

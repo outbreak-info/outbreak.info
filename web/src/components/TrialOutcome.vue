@@ -35,6 +35,9 @@ export default {
   props: {
     data: Array,
   },
+  data() {
+    return {};
+  },
   computed: {
     primary() {
       return this.data.filter((d) => d.outcomeType === 'primary');
@@ -42,9 +45,6 @@ export default {
     secondary() {
       return this.data.filter((d) => d.outcomeType !== 'primary');
     },
-  },
-  data() {
-    return {};
   },
 };
 </script>

@@ -206,7 +206,7 @@ export default Vue.extend({
     date1: {
       type: String,
     },
-    include2Week: {
+    include2week: {
       type: Boolean,
       default: false,
     },
@@ -531,7 +531,7 @@ export default Vue.extend({
               ),
           );
 
-          if (this.include2Week && this.x(endDate)) {
+          if (this.include2week && this.x(endDate)) {
             const dateSelector = this.chart
               .selectAll(`.date-annotation_${this.variable}`)
               .data([endDate]);

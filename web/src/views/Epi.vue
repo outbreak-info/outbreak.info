@@ -118,7 +118,7 @@
     <div class="d-flex row m-0 content-wrapper">
       <!-- bar graph -->
       <div
-        v-if="data$ && data$[0] && this.variable.includes('Increase')"
+        v-if="data$ && data$[0] && variable.includes('Increase')"
         class="d-flex flex-column align-items-center"
       >
         <div
@@ -128,6 +128,7 @@
         >
           <Bargraph
             v-for="(countryData, idx) in data$[0]"
+            :id="String(idx)"
             :key="idx"
             class="mr-3 mb-3"
             :data="countryData.value"
@@ -135,7 +136,6 @@
             :variable-obj="variableObj"
             :include-axis="true"
             :width="bargraphWidth"
-            :id="String(idx)"
             :height="bargraphHeight"
             :transform-chart="bargraphTransform"
             :tooltip-idx="'n-' + idx"
@@ -165,7 +165,7 @@
 
       <!-- curve -->
       <template
-        v-if="plottedData && showCurves && !this.variable.includes('Increase')"
+        v-if="plottedData && showCurves && !variable.includes('Increase')"
       >
         <EpiCurve
           id="curveContainer"

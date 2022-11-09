@@ -1,8 +1,12 @@
 <template>
   <div>
     <div class="py-4 border-top location-banner">
-      <h1 class="m-0 text-grey">SARS-CoV-2 (hCoV-19) Mutation Reports</h1>
-      <h2 class="m-0 font-weight-bold location-header">Location Tracker</h2>
+      <h1 class="m-0 text-grey">
+        SARS-CoV-2 (hCoV-19) Mutation Reports
+      </h1>
+      <h2 class="m-0 font-weight-bold location-header">
+        Location Tracker
+      </h2>
     </div>
     <div class="my-2 mx-4 px-4">
       <!-- LOADING -->
@@ -53,14 +57,14 @@
           <div class="d-flex align-items-center justify-content-between my-3">
             <div id="date-updated" class="mr-2">
               <small
-                class="text-muted badge bg-grey__lightest mt-1"
                 v-if="lastUpdated"
+                class="text-muted badge bg-grey__lightest mt-1"
               >
                 <font-awesome-icon class="mr-1" :icon="['far', 'clock']" />
                 Updated {{ lastUpdated }} ago
               </small>
             </div>
-            <div id="sequence-count" class="ml-2 mr-5 text-muted" v-if="total">
+            <div v-if="total" id="sequence-count" class="ml-2 mr-5 text-muted">
               with
               <span class="text-highlight">{{ total }} sequences</span>
               from GISAID

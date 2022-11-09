@@ -1,7 +1,7 @@
 <template>
-  <div class="mb-3 text-muted" v-if="data">
+  <div v-if="data" class="mb-3 text-muted">
     <template v-if="data['@type']">
-      <StripeAccent :className="data['@type']" />
+      <StripeAccent :class-name="data['@type']" />
       <small :class="[data['@type'], 'resource-type', 'mr-2']">
         {{ data['@type'] }}
       </small>
@@ -9,39 +9,39 @@
 
     <template v-if="data.name">
       <router-link
+        v-if="data._id"
         :key="$route.path"
         :to="{ name: 'Resource Page', params: { id: data._id } }"
-        v-if="data._id"
       >
         {{ data.name }}
       </router-link>
-      <a :href="data.url" target="_blank" rel="noreferrer" v-else-if="data.url">
+      <a v-else-if="data.url" :href="data.url" target="_blank" rel="noreferrer">
         {{ data.name }}
       </a>
       <a
+        v-else-if="data.pmid"
         :href="'https://pubmed.ncbi.nlm.nih.gov/' + data.pmid"
         target="_blank"
         rel="noreferrer"
-        v-else-if="data.pmid"
       >
         {{ data.name }}
       </a>
       <a
+        v-else-if="data.doi"
         :href="'https://doi.org/' + data.doi"
         target="_blank"
         rel="noreferrer"
-        v-else-if="data.doi"
       >
         {{ data.name }}
       </a>
-      <span class="text-dark" v-else>{{ data.name }}</span>
+      <span v-else class="text-dark">{{ data.name }}</span>
       .&nbsp;
       <template v-if="data.author">
         <span
-          class="author"
           v-for="(author, idx) in data.author"
-          :key="idx"
           id="authors"
+          :key="idx"
+          class="author"
         >
           <span>
             {{
@@ -50,15 +50,15 @@
                 : author.givenName + ' ' + author.familyName
             }}
           </span>
-          <span v-if="idx < data.author.length - 2" v-html="',&nbsp;'"></span>
+          <span v-if="idx < data.author.length - 2" v-html="',&nbsp;'" />
           <span
             v-if="idx >= data.author.length - 2 && data.author.length === 2"
             v-html="'&nbsp;and&nbsp;'"
-          ></span>
+          />
           <span
             v-if="idx === data.author.length - 2 && data.author.length > 2"
             v-html="',&nbsp;and&nbsp;'"
-          ></span>
+          />
         </span>
         .
       </template>
@@ -70,18 +70,18 @@
       </span>
 
       <!-- dates -->
-      <span class="badge bg-grey__lightest" v-if="data.dateModified">
+      <span v-if="data.dateModified" class="badge bg-grey__lightest">
         <font-awesome-icon class="mr-1" :icon="['far', 'clock']" />
         updated {{ this.formatDate(data.dateModified) }}
       </span>
       <span v-if="data.datePublished && data.dateModified" class="mx-1">
         &bull;
       </span>
-      <span class="badge bg-grey__lightest" v-if="data.datePublished">
+      <span v-if="data.datePublished" class="badge bg-grey__lightest">
         <font-awesome-icon
+          v-if="!data.dateModified"
           class="mr-1"
           :icon="['far', 'clock']"
-          v-if="!data.dateModified"
         />
         published {{ this.formatDate(data.datePublished) }}
       </span>
@@ -89,14 +89,14 @@
 
     <template v-else>
       {{ data.citation }}
-      <a :href="data.url" target="_blank" rel="noreferrer" v-if="data.url">
+      <a v-if="data.url" :href="data.url" target="_blank" rel="noreferrer">
         {{ data.pmid ? 'PMID ' + data.pmid : 'link' }}
       </a>
       <a
+        v-else-if="data.pmid"
         :href="'https://pubmed.ncbi.nlm.nih.gov/' + data.pmid"
         target="_blank"
         rel="noreferrer"
-        v-else-if="data.pmid"
       >
         {{ 'PMID ' + data.pmid }}
       </a>
@@ -120,12 +120,12 @@ library.add(faClock);
 
 export default Vue.extend({
   name: 'Citation',
-  props: {
-    data: Object,
-  },
   components: {
     StripeAccent,
     FontAwesomeIcon,
+  },
+  props: {
+    data: Object,
   },
   methods: {
     formatDate(dateStr) {

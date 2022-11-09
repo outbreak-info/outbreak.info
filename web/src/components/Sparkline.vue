@@ -1,6 +1,6 @@
 <template>
-  <div class="sparkline-group" :id="`sparkline-${id}-${variable}`">
-    <svg :width="width" :height="height" class="epi-sparkline" ref="svg"></svg>
+  <div :id="`sparkline-${id}-${variable}`" class="sparkline-group">
+    <svg ref="svg" :width="width" :height="height" class="epi-sparkline" />
   </div>
 </template>
 
@@ -42,6 +42,10 @@ export default Vue.extend({
     data() {
       this.updatePlot();
     },
+  },
+  mounted() {
+    this.setupPlot();
+    this.updatePlot();
   },
   methods: {
     setupPlot() {
@@ -105,10 +109,6 @@ export default Vue.extend({
         .style('fill', this.color)
         .attr('d', this.area);
     },
-  },
-  mounted() {
-    this.setupPlot();
-    this.updatePlot();
   },
 });
 </script>

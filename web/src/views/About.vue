@@ -11,7 +11,7 @@
             class="w-50 mb-5"
             src="@/assets/logo-full-01.svg"
             alt="Outbreak.info"
-          >
+          />
           <p class="text-left focustext py-2">
             In response to the current outbreak of SARS-CoV-2 (the virus that
             causes COVID-19), researchers worldwide have been generating and
@@ -21,8 +21,9 @@
             and repositories for collecting all this information in one place.
           </p>
           <p class="text-left focustext pt-2">
-            <strong>Outbreak.info</strong> aggregates data across scientific
-            sources, providing tools to meet three major aims:
+            <strong>Outbreak.info</strong>
+            aggregates data across scientific sources, providing tools to meet
+            three major aims:
           </p>
           <ul class="focustext text-left ">
             <li class="large">
@@ -45,11 +46,10 @@
             </router-link>
             <p>
               Outbreak.info collects and visualizes genomic data from the
-              <a
-                href="https://www.gisaid.org/"
-                target="_blank"
-              >GISAID Initiative</a>. With over {{ gisaidCount }} million SARS-CoV-2 sequences
-
+              <a href="https://www.gisaid.org/" target="_blank">
+                GISAID Initiative
+              </a>
+              . With over {{ gisaidCount }} million SARS-CoV-2 sequences
               uploaded to GISAID, Outbreak.info makes this data more accessible,
               providing daily surveillance reports about lineages and mutations,
               countries, states, and counties.
@@ -87,72 +87,56 @@
               href="https://www.scripps.edu/faculty/hughes/"
               rel="noreferrer"
               target="_blank"
-            >Hughes</a>,
-            <a
-              href="http://sulab.org/"
-              rel="noreferrer"
-              target="_blank"
-            >Su</a>,
-            <a
-              href="http://wulab.io/"
-              rel="noreferrer"
-              target="_blank"
-            >Wu</a>,
-            and
+            >
+              Hughes
+            </a>
+            ,
+            <a href="http://sulab.org/" rel="noreferrer" target="_blank">Su</a>
+            ,
+            <a href="http://wulab.io/" rel="noreferrer" target="_blank">Wu</a>
+            , and
             <a
               href="https://andersen-lab.com/"
               rel="noreferrer"
               target="_blank"
-            >Andersen</a>
+            >
+              Andersen
+            </a>
             labs at Scripps Research and is supported
-            <span
-              v-if="funding"
-              class="my-4"
-            >by the
-              <span
-                v-for="(grant, idx) in funding"
-                :key="idx"
-              >
+            <span v-if="funding" class="my-4">
+              by the
+              <span v-for="(grant, idx) in funding" :key="idx">
                 <span v-if="grant.funder.name">{{ grant.funder.name }}</span>
-                ({{ grant.identifier }})<span
-                  v-if="idx < funding.length - 2"
-                >,
-                </span>
-                <span v-if="idx === funding.length - 2">, and </span> </span>.</span>
+                ({{ grant.identifier }})
+                <span v-if="idx < funding.length - 2">,</span>
+                <span v-if="idx === funding.length - 2">, and</span>
+              </span>
+              .
+            </span>
           </p>
 
           <div
             class="d-flex flex-wrap align-items-center justify-content-center"
           >
             <button class="btn btn-main-outline mx-3">
-              <router-link
-                :to="{ name: 'Sources' }"
-                class="text-left"
-              >
+              <router-link :to="{ name: 'Sources' }" class="text-left">
                 data sources
               </router-link>
             </button>
 
             <button class="btn btn-main-outline mx-3">
-              <router-link
-                :to="{ name: 'Latest' }"
-                class="text-left"
-              >
+              <router-link :to="{ name: 'Latest' }" class="text-left">
                 latest changes
               </router-link>
             </button>
 
             <button class="btn btn-main-outline mx-3">
-              <a
-                href="https://github.com/outbreak-info"
-                target="_blank"
-              >Code</a>
+              <a href="https://github.com/outbreak-info" target="_blank">
+                Code
+              </a>
             </button>
 
-            <div
-              id="subscribe"
-              class="mx-3"
-            >
+            <div id="subscribe" class="mx-3">
               <EmailSubscription />
             </div>
           </div>
@@ -176,7 +160,7 @@
               <img
                 :src="require(`@/assets/team/${person.img}`)"
                 class="profile-pic text-"
-              >
+              />
               <span class="mt-1">{{ person.name }}</span>
               <div class="d-flex">
                 <a
@@ -210,10 +194,7 @@
       </div>
 
       <div class="bg-light d-flex justify-content-center align-items-center">
-        <div
-          id="jobs"
-          class="bg-light border-top pt-3 pb-5"
-        >
+        <div id="jobs" class="bg-light border-top pt-3 pb-5">
           <h4 class="mb-4">
             Open positions
           </h4>
@@ -227,7 +208,9 @@
           data-width="500"
           data-height="400"
           href="https://twitter.com/DiseaseOutbreak?ref_src=twsrc%5Etfw"
-        >Tweets by DiseaseOutbreak</a>
+        >
+          Tweets by DiseaseOutbreak
+        </a>
       </div>
 
       <div class="col-sm-12 jumbotron rounded-0 bg-grey__darker mb-0">
@@ -235,19 +218,16 @@
           Notice a bug, know of a COVID-19 data source, or want to suggest a
           feature?
           <svg viewBox="0 0 100 3">
-            <line
-              x1="0"
-              y1="0"
-              x2="100"
-              stroke="#D13B62"
-            />
+            <line x1="0" y1="0" x2="100" stroke="#D13B62" />
           </svg>
           <a
             class="btn btn-outline-light mt-5"
             href="https://github.com/outbreak-info/outbreak.info/issues"
             rel="noreferrer"
             target="_blank"
-          >Submit an issue on Github</a>
+          >
+            Submit an issue on Github
+          </a>
         </h4>
       </div>
     </div>
@@ -255,73 +235,65 @@
 </template>
 
 <script>
-import Vue from "vue";
+import Vue from 'vue';
 
-import {
-  mapState
-} from "vuex";
+import { mapState } from 'vuex';
 
 // --- font awesome --
-import {
-  FontAwesomeIcon
-} from "@fortawesome/vue-fontawesome";
-import {
-  library
-} from "@fortawesome/fontawesome-svg-core";
-import {
-  faClock
-} from "@fortawesome/free-regular-svg-icons";
-import {
-  faAt
-} from "@fortawesome/free-solid-svg-icons";
-import {
-  faTwitter,
-  faLinkedinIn
-} from "@fortawesome/free-brands-svg-icons";
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faClock } from '@fortawesome/free-regular-svg-icons';
+import { faAt } from '@fortawesome/free-solid-svg-icons';
+import { faTwitter, faLinkedinIn } from '@fortawesome/free-brands-svg-icons';
 
 library.add(faAt, faTwitter, faLinkedinIn);
 
-import {
-  getResourceTotal
-} from "@/api/resources.js";
-import {
-  getSequenceCount
-} from "@/api/genomics.js";
+import { getResourceTotal } from '@/api/resources.js';
+import { getSequenceCount } from '@/api/genomics.js';
 
-import EmailSubscription from "@/components/EmailSubscription.vue";
-import Jobs from "@/components/Jobs.vue";
-
+import EmailSubscription from '@/components/EmailSubscription.vue';
+import Jobs from '@/components/Jobs.vue';
 
 export default Vue.extend({
-  name: "About",
-  computed: {
-    ...mapState("admin", ["funding", "team"])
-  },
+  name: 'About',
   components: {
     Jobs,
     FontAwesomeIcon,
-    EmailSubscription
+    EmailSubscription,
   },
   data() {
-    return ({
+    return {
       resourceCount: null,
       gisaidCount: null,
       resourceSubscription: null,
-      genomicsSubscription: null
-    })
+      genomicsSubscription: null,
+    };
+  },
+  computed: {
+    ...mapState('admin', ['funding', 'team']),
   },
   mounted() {
     let twitterScript = document.createElement('script');
-    twitterScript.setAttribute("src", "https://platform.twitter.com/widgets.js");
+    twitterScript.setAttribute(
+      'src',
+      'https://platform.twitter.com/widgets.js',
+    );
     document.head.appendChild(twitterScript);
 
     // get totals from the API
-    this.resourceSubscription = getResourceTotal(this.$resourceurl).subscribe(total => {
-      this.resourceCount = total.floor;
-    })
-    this.genomicsSubscription = getSequenceCount(this.$genomicsurl, null, true, true).subscribe(total => {
+    this.resourceSubscription = getResourceTotal(this.$resourceurl).subscribe(
+      (total) => {
+        this.resourceCount = total.floor;
+      },
+    );
+    this.genomicsSubscription = getSequenceCount(
+      this.$genomicsurl,
+      null,
+      true,
+      true,
+    ).subscribe((total) => {
       this.gisaidCount = total;
-    })
+    });
   },
   destroyed() {
     if (this.resourceSubscription) {
@@ -330,7 +302,7 @@ export default Vue.extend({
     if (this.genomicsSubscription) {
       this.genomicsSubscription.unsubscribe();
     }
-  }
+  },
 });
 </script>
 

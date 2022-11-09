@@ -6,11 +6,11 @@
       <span class="ml-2">
         <template v-if="inclFemale || inclFemale === false">
           <font-awesome-icon
+            v-if="inclFemale"
             class="bright"
             :icon="['far', 'check-square']"
-            v-if="inclFemale"
           />
-          <font-awesome-icon :icon="['far', 'square']" v-else />
+          <font-awesome-icon v-else :icon="['far', 'square']" />
           <font-awesome-icon
             :icon="['fas', 'venus']"
             class="ml-2 mr-4 icon-2x"
@@ -19,11 +19,11 @@
         </template>
         <template v-if="inclMale || inclMale === false">
           <font-awesome-icon
+            v-if="inclMale"
             class="bright"
             :icon="['far', 'check-square']"
-            v-if="inclMale"
           />
-          <font-awesome-icon :icon="['far', 'square']" v-else />
+          <font-awesome-icon v-else :icon="['far', 'square']" />
           <font-awesome-icon
             :icon="['fas', 'mars']"
             class="ml-2 mr-4 icon-2x"
@@ -36,7 +36,7 @@
     <!-- age -->
     <div id="age-eligiblity">
       Age:
-      <span class="text-dark" v-html="acceptedAges"></span>
+      <span class="text-dark" v-html="acceptedAges" />
     </div>
 
     <!-- healthy volunteers -->
@@ -87,22 +87,22 @@
         <small>not specified</small>
       </div>
     </div>
-    <div id="unparsed-criteria" v-if="data.criteriaText">
+    <div v-if="data.criteriaText" id="unparsed-criteria">
       <small class="text-muted">
         Think something looks off with the inclusion/exclusion criteria?
-        <a @click.prevent="showCriteria = !showCriteria" href="">
+        <a href="" @click.prevent="showCriteria = !showCriteria">
           {{ showCriteria ? 'Hide criteria' : 'Show original criteria' }}
           before parsing
         </a>
         <font-awesome-icon
+          v-if="!showCriteria"
           :icon="['fas', 'angle-double-down']"
           class="mx-1"
-          v-if="!showCriteria"
         />
         <font-awesome-icon
+          v-if="showCriteria"
           :icon="['fas', 'angle-double-up']"
           class="mx-1"
-          v-if="showCriteria"
         />
       </small>
 
@@ -138,12 +138,12 @@ library.add(
 
 export default {
   name: 'TrialEligibility',
-  props: {
-    data: Object,
-  },
   components: {
     FontAwesomeIcon,
     // SearchLink
+  },
+  props: {
+    data: Object,
   },
   data() {
     return {

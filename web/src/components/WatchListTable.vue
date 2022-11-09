@@ -106,23 +106,6 @@ export default {
   props: {
     location: String,
   },
-  mounted() {
-    getAllLineagesForMutations(this.$genomicsurl, this.data, 0.75).subscribe(
-      (results) => {
-        this.tableData = results;
-        this.selectedTableData = this.tableData.filter((d) =>
-          this.selectedGenes.includes(d.gene),
-        );
-      },
-    );
-  },
-  methods: {
-    updateGenes() {
-      this.selectedTableData = this.tableData.filter((d) =>
-        this.selectedGenes.includes(d.gene),
-      );
-    },
-  },
   data() {
     return {
       tableData: null,
@@ -403,6 +386,23 @@ export default {
         },
       ],
     };
+  },
+  mounted() {
+    getAllLineagesForMutations(this.$genomicsurl, this.data, 0.75).subscribe(
+      (results) => {
+        this.tableData = results;
+        this.selectedTableData = this.tableData.filter((d) =>
+          this.selectedGenes.includes(d.gene),
+        );
+      },
+    );
+  },
+  methods: {
+    updateGenes() {
+      this.selectedTableData = this.tableData.filter((d) =>
+        this.selectedGenes.includes(d.gene),
+      );
+    },
   },
 };
 </script>

@@ -1,13 +1,13 @@
 <template>
   <div
-    class="d-flex flex-column align-items-center w-100"
     id="report-choropleth"
+    class="d-flex flex-column align-items-center w-100"
   >
     <!-- choropleth -->
     <svg
+      ref="choropleth"
       :width="width"
       :height="height"
-      ref="choropleth"
       class="report-choropleth mt-3"
       :subtitle="subtitle"
       :name="title"
@@ -31,31 +31,31 @@
           />
         </pattern>
       </defs>
-      <g ref="basemap" class="basemap-group"></g>
-      <g ref="regions" class="region-group"></g>
-      <g ref="zero_data" class="zero-group"></g>
-      <g ref="overlay" class="overlay-group"></g>
+      <g ref="basemap" class="basemap-group" />
+      <g ref="regions" class="region-group" />
+      <g ref="zero_data" class="zero-group" />
+      <g ref="overlay" class="overlay-group" />
     </svg>
 
     <div
+      id="tooltip-choro"
       ref="tooltip_choro"
       class="tooltip-basic box-shadow"
-      id="tooltip-choro"
     >
-      <h5 id="location-name"></h5>
+      <h5 id="location-name" />
       <em id="no-sequencing">No reported sequencing</em>
       <div class="d-flex align-items-center">
-        <b id="proportion" class="font-size-2"></b>
-        <span id="confidence-interval" class="text-muted ml-2"></span>
+        <b id="proportion" class="font-size-2" />
+        <span id="confidence-interval" class="text-muted ml-2" />
       </div>
-      <div id="sequencing-count"></div>
+      <div id="sequencing-count" />
     </div>
 
-    <div class="w-75" v-if="showCopy && !noMap">
+    <div v-if="showCopy && !noMap" class="w-75">
       <DownloadReportData
         :data="data"
-        figureRef="report-choropleth"
-        dataType="Mutation Report Choropleth"
+        figure-ref="report-choropleth"
+        data-type="Mutation Report Choropleth"
       />
     </div>
   </div>
@@ -89,6 +89,9 @@ import ADMIN1 from '@/assets/geo/gadm_adm1_simplified.json';
 
 export default {
   name: 'ReportChoropleth',
+  components: {
+    DownloadReportData,
+  },
   props: {
     data: Array,
     mutationName: String,
@@ -113,9 +116,6 @@ export default {
     countThreshold: Number,
     recentWindow: String,
     colorScale: Function,
-  },
-  components: {
-    DownloadReportData,
   },
   data() {
     return {
@@ -152,18 +152,6 @@ export default {
       noMap: true,
     };
   },
-  watch: {
-    data() {
-      this.chooseMap();
-      this.drawMap();
-    },
-    countThreshold() {
-      this.drawMap();
-    },
-    width() {
-      this.drawMap();
-    },
-  },
   computed: {
     maxVal() {
       return this.data
@@ -196,6 +184,18 @@ export default {
         return this.mutationName;
       }
       return null;
+    },
+  },
+  watch: {
+    data() {
+      this.chooseMap();
+      this.drawMap();
+    },
+    countThreshold() {
+      this.drawMap();
+    },
+    width() {
+      this.drawMap();
     },
   },
   created() {

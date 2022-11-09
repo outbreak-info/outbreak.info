@@ -31,11 +31,13 @@
           </div>
 
           <div class="text-left mt-5">
-            <h3 id="geographic" class="pt-4 border-top">Genomic Data</h3>
+            <h3 id="geographic" class="pt-4 border-top">
+              Genomic Data
+            </h3>
             <SourceDescription
+              v-if="sourceMetadata"
               :sources="genomicSources"
               :metadata="sourceMetadata.genomics"
-              v-if="sourceMetadata"
             />
           </div>
 
@@ -44,14 +46,16 @@
               COVID-19 Cases &amp; Deaths Data
             </h3>
             <SourceDescription
+              v-if="sourceMetadata"
               :sources="sources"
               :metadata="sourceMetadata.epi"
-              v-if="sourceMetadata"
             />
           </div>
 
           <div class="text-left mt-5">
-            <h3 id="geographic" class="pt-4 border-top">Geographic Data</h3>
+            <h3 id="geographic" class="pt-4 border-top">
+              Geographic Data
+            </h3>
             <SourceDescription :sources="geoSources" />
           </div>
 
@@ -59,9 +63,11 @@
             <div
               class="mb-3 pt-4 border-top d-flex justify-content-between align-items-center"
             >
-              <h3 id="resources" class="">Resources</h3>
+              <h3 id="resources" class="">
+                Resources
+              </h3>
               <DownloadData
-                downloadLabel="all resources"
+                download-label="all resources"
                 type="resources"
                 query="__all__"
                 :api="$resourceurl"
@@ -76,9 +82,11 @@
               <div
                 class="d-flex justify-content-between align-items-center my-2"
               >
-                <h4 :id="resource.id">{{ resource.category }}</h4>
+                <h4 :id="resource.id">
+                  {{ resource.category }}
+                </h4>
                 <DownloadData
-                  :downloadLabel="`all ${resource.category}`"
+                  :download-label="`all ${resource.category}`"
                   type="resources"
                   :query="`@type:${resource.id}`"
                   :api="$resourceurl"
@@ -86,9 +94,9 @@
               </div>
 
               <SourceDescription
+                v-if="sourceMetadata"
                 :sources="resource.sources"
                 :metadata="sourceMetadata.resources"
-                v-if="sourceMetadata"
               />
             </div>
           </div>
@@ -114,6 +122,12 @@ export default Vue.extend({
     SourceDescription,
     DownloadData,
   },
+  data() {
+    return {
+      metadataSubscription: null,
+      sourceMetadata: null,
+    };
+  },
   computed: {
     ...mapState('admin', [
       'sources',
@@ -121,12 +135,6 @@ export default Vue.extend({
       'genomicSources',
       'resources',
     ]),
-  },
-  data() {
-    return {
-      metadataSubscription: null,
-      sourceMetadata: null,
-    };
   },
   mounted() {
     this.metadataSubscription = getIndivSourcesUpdated(

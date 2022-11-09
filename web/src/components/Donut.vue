@@ -1,10 +1,7 @@
 <template>
   <div :id="`donut-${id}`" class="donut-group d-flex">
     <svg :width="width" :height="width" class="donut">
-      <g
-        ref="pie"
-        :transform="`translate(${this.width / 2},${this.width / 2})`"
-      />
+      <g ref="pie" :transform="`translate(${width / 2},${width / 2})`" />
     </svg>
     <div class="ml-2" style="max-width: 150px;">
       <div

@@ -3,13 +3,13 @@
     <div v-if="data.studyStatus">
       <TrialStatus
         :status="data.studyStatus"
-        :includeDate="true"
+        :include-date="true"
         :locations="data.studyLocation"
-        :mapWidth="500"
+        :map-width="500"
       />
     </div>
 
-    <div class="mt-3 mb-2" v-if="locations && locations.length">
+    <div v-if="locations && locations.length" class="mt-3 mb-2">
       Study Locations
       <ul>
         <li v-for="(location, idx) in locations" :key="idx">
@@ -74,21 +74,21 @@
       </div>
       <div class="update-container">
         <div
-          class="d-flex mb-4"
           v-for="(update, idx) in data.studyEvent"
           :key="idx"
+          class="d-flex mb-4"
         >
-          <span class="update-linker" :class="{ past: update.inPast }"></span>
+          <span class="update-linker" :class="{ past: update.inPast }" />
           <span class="update-date pl-3" :class="{ past: update.inPast }">
             {{ update.dateStr }}
           </span>
           <div class="d-flex text-left">
-            <span class="m-0 mb-1" v-if="update.studyEventDateType">
+            <span v-if="update.studyEventDateType" class="m-0 mb-1">
               <span class="update-type mr-2">
                 {{ update.studyEventDateType }}
               </span>
             </span>
-            <span v-html="update.studyEventType" class="text-muted"></span>
+            <span class="text-muted" v-html="update.studyEventType" />
           </div>
         </div>
       </div>
@@ -103,11 +103,11 @@ import TrialStatus from '@/components/TrialStatus.vue';
 
 export default {
   name: 'TrialEvents',
-  props: {
-    data: Object,
-  },
   components: {
     TrialStatus,
+  },
+  props: {
+    data: Object,
   },
   computed: {
     locations() {
@@ -126,14 +126,6 @@ export default {
       }
     },
   },
-  methods: {
-    formatDate: function(date) {
-      return timeFormat('%e %B %Y')(date);
-    },
-    parseDate: function(date) {
-      return timeParse('%Y-%m-%d')(date);
-    },
-  },
   mounted() {
     const today = new Date();
     if (this.data.studyEvent) {
@@ -145,6 +137,14 @@ export default {
 
       this.data.studyEvent.sort((a, b) => a.date - b.date);
     }
+  },
+  methods: {
+    formatDate(date) {
+      return timeFormat('%e %B %Y')(date);
+    },
+    parseDate(date) {
+      return timeParse('%Y-%m-%d')(date);
+    },
   },
 };
 </script>

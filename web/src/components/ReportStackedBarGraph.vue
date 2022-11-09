@@ -1,38 +1,38 @@
 <template>
   <div>
     <svg
+      ref="stacked_bar"
       :width="width"
       :height="height"
       class="report-stacked-bar"
-      ref="stacked_bar"
       :name="title"
     >
-      <g :transform="`translate(${margin.left},${margin.top})`" ref="chart"></g>
+      <g ref="chart" :transform="`translate(${margin.left},${margin.top})`" />
       <!-- <g class="epi-axis axis--x" ref="xAxis" :transform="`translate(${margin.left},${height - margin.bottom})`"></g> -->
       <g
-        class="epi-axis axis--y"
         ref="yAxis"
+        class="epi-axis axis--y"
         :transform="`translate(${margin.left},${margin.top})`"
-      ></g>
+      />
     </svg>
     <!-- Histogram of sequencing counts -->
     <SequencingHistogram
+      v-if="seqCounts"
       :data="seqCounts"
       :width="width"
-      :svgTitle="title"
+      :svg-title="title"
       :margin="marginHist"
-      :mutationName="null"
-      className="stacked-seq-histogram"
-      :onlyTotals="true"
-      notDetectedColor="#bab0ab"
-      v-if="seqCounts"
+      :mutation-name="null"
+      class-name="stacked-seq-histogram"
+      :only-totals="true"
+      not-detected-color="#bab0ab"
       :title="`Sequences over last ${recentWindow} days`"
     />
 
     <DownloadReportData
       :data="data"
-      figureRef="report-stacked-bar"
-      dataType="Mutation Report Prevalence over Time"
+      figure-ref="report-stacked-bar"
+      data-type="Mutation Report Prevalence over Time"
     />
   </div>
 </template>
@@ -88,21 +88,6 @@ export default Vue.extend({
       default: 25,
     },
   },
-  computed: {
-    title() {
-      return this.locationName
-        ? `Lineage prevalence over time in ${this.locationName}`
-        : 'Lineage prevalence over time';
-    },
-  },
-  watch: {
-    width() {
-      this.updatePlot();
-    },
-    data: () => {
-      this.updatePlot();
-    },
-  },
   data() {
     return {
       // dimensions
@@ -140,6 +125,21 @@ export default Vue.extend({
       legend: null,
     };
   },
+  computed: {
+    title() {
+      return this.locationName
+        ? `Lineage prevalence over time in ${this.locationName}`
+        : 'Lineage prevalence over time';
+    },
+  },
+  watch: {
+    width() {
+      this.updatePlot();
+    },
+    data() {
+      this.updatePlot();
+    },
+  },
   mounted() {
     this.$nextTick(() => {
       window.addEventListener('resize', this.debounceSetDims);
@@ -150,7 +150,7 @@ export default Vue.extend({
     this.setupPlot();
     this.updatePlot();
   },
-  created: () => {
+  created() {
     this.debounceSetDims = this.debounce(this.setDims, 150);
   },
   methods: {

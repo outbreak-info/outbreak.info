@@ -6,8 +6,8 @@
 
     <p v-if="iframeError" class="my-5">
       Your browser does not support iframes.
-      <a :href="reportUrl" target="_blank">Please view the report on GitHub</a>.
-
+      <a :href="reportUrl" target="_blank">Please view the report on GitHub</a>
+      .
     </p>
 
     <button class="btn btn-main-outline my-5">
@@ -32,11 +32,11 @@ export default Vue.extend({
   mounted() {
     axios
       .get(
-        "https://raw.githubusercontent.com/andersen-lab/hCoV19-sitrep/master/curated_lineages.json"
+        'https://raw.githubusercontent.com/andersen-lab/hCoV19-sitrep/master/curated_lineages.json',
       )
-      .then(response => {
+      .then((response) => {
         const report = response.data.filter(
-          d => d.identifier === this.$route.params.mutation
+          (d) => d.identifier === this.$route.params.mutation,
         );
         this.reportUrl = report.length === 1 ? report[0].url : null;
       });
@@ -50,7 +50,6 @@ export default Vue.extend({
       }
     },
   },
-
 });
 </script>
 

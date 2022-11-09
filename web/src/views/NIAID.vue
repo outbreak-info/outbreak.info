@@ -32,8 +32,8 @@
           {{ counts.total }} resources
         </h3>
         <small
-          class="text-muted badge bg-grey__lightest"
           v-if="counts && counts.dateModified"
+          class="text-muted badge bg-grey__lightest"
         >
           <font-awesome-icon class="mr-1" :icon="['far', 'clock']" />
           Updated
@@ -41,20 +41,20 @@
         </small>
 
         <CirclePacking
+          v-if="counts"
           class="circle-packing"
           :data="counts.sources"
           :query="queryString"
-          v-if="counts"
         />
       </div>
-      <HorizontalBargraph :data="authors" title="Top authors" v-if="authors" />
+      <HorizontalBargraph v-if="authors" :data="authors" title="Top authors" />
       <HorizontalBargraph
+        v-if="affiliations"
         :data="affiliations"
         title="Author affiliations"
-        v-if="affiliations"
       />
       <div class="d-flex flex-column">
-        <ResourceTimeline :data="dates" v-if="dates" />
+        <ResourceTimeline v-if="dates" :data="dates" />
       </div>
     </div>
     <WhatsNew :query="queryString" />
@@ -92,6 +92,37 @@ export default {
     HorizontalBargraph,
     ResourceTimeline,
     FontAwesomeIcon,
+  },
+  data() {
+    return {
+      resultSubscription: null,
+      countSubscription: null,
+      counts: null,
+      results: null,
+      dates: null,
+      authors: null,
+      affiliations: null,
+      query: [
+        {
+          terms: [
+            'NIAID',
+            'National Institute of Allergy and Infectious Diseases',
+          ],
+          // 'sponsor.name:"national institute of allergy and infectious diseases (niaid)"']
+          // funding: "Division of Intramural Research, National Institute of Allergy and Infectious Diseases (Division of Intramural Research of the NIAID)", "National Institute of Allergy and Infectious Disease of the National Institutes of Health", "U.S. Department of Health &amp; Human Services | NIH | National Institute of Allergy and Infectious Diseases (NIAID)"
+          // "funding.funder.name:NIAID NIH HHS,National Institutes of Health/National Institute Of Allergy and Infectious Diseases (NIH/NIAID)"]
+        },
+      ],
+    };
+  },
+  computed: {
+    ...mapState('admin', ['loading']),
+    types() {
+      return this.results ? this.results.flatMap((d) => d.types) : null;
+    },
+    queryString() {
+      return this.query.map((d) => `"${d.terms.join('" "')}"`)[0];
+    },
   },
   mounted() {
     this.resultSubscription = getQuerySummaries(
@@ -148,37 +179,6 @@ export default {
   beforeDestroy() {
     this.resultSubscription.unsubscribe();
     this.countSubscription.unsubscribe();
-  },
-  computed: {
-    ...mapState('admin', ['loading']),
-    types() {
-      return this.results ? this.results.flatMap((d) => d.types) : null;
-    },
-    queryString() {
-      return this.query.map((d) => `"${d.terms.join('" "')}"`)[0];
-    },
-  },
-  data() {
-    return {
-      resultSubscription: null,
-      countSubscription: null,
-      counts: null,
-      results: null,
-      dates: null,
-      authors: null,
-      affiliations: null,
-      query: [
-        {
-          terms: [
-            'NIAID',
-            'National Institute of Allergy and Infectious Diseases',
-          ],
-          // 'sponsor.name:"national institute of allergy and infectious diseases (niaid)"']
-          // funding: "Division of Intramural Research, National Institute of Allergy and Infectious Diseases (Division of Intramural Research of the NIAID)", "National Institute of Allergy and Infectious Disease of the National Institutes of Health", "U.S. Department of Health &amp; Human Services | NIH | National Institute of Allergy and Infectious Diseases (NIAID)"
-          // "funding.funder.name:NIAID NIH HHS,National Institutes of Health/National Institute Of Allergy and Infectious Diseases (NIH/NIAID)"]
-        },
-      ],
-    };
   },
 };
 </script>

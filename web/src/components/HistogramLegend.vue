@@ -5,29 +5,29 @@
         {{ variableLabel }}
       </div>
       <small
-        class="d-block text-left text-muted line-height-1 mb-1"
         v-if="isFiltered"
+        class="d-block text-left text-muted line-height-1 mb-1"
       >
-        <span v-html="filterString"></span>
+        <span v-html="filterString" />
       </small>
     </div>
     <svg
+      ref="legend_svg"
       class="epi-map-svg epi-map-legend"
       :subtitle="filterString"
       :width="width"
       :height="height + margin.top + margin.bottom * 2 + 15"
-      ref="legend_svg"
     >
       <g
-        class="legend-bars"
         ref="legend_bars"
+        class="legend-bars"
         :transform="`translate(${margin.left},${margin.top})`"
-      ></g>
+      />
       <g
-        class="axis axis--x"
         ref="axis_x"
+        class="axis axis--x"
         :transform="`translate(${margin.left},${height + margin.top})`"
-      ></g>
+      />
       <g
         class="legend"
         :transform="
@@ -37,16 +37,16 @@
         <!-- <g class="legend" :transform="`translate(${margin.left},${height + margin.bottom + margin.top})`" v-if="legendColors.length && legendColors[0].x0"> -->
         <template v-for="(item, idx) in legendColors">
           <rect
+            v-if="item.width"
+            :id="`legendrect${idx}`"
+            :key="idx"
             x="0"
             y="0"
             :width="item.width"
             height="10"
             :fill="item.fill"
-            :id="`legendrect${idx}`"
             :transform="`translate(${item.x0}, 0)`"
-            :key="idx"
-            v-if="item.width"
-          ></rect>
+          />
         </template>
         <g v-if="isFiltered && x">
           <rect
@@ -57,7 +57,7 @@
             height="10"
             fill="white"
             fill-opacity="0.8"
-          ></rect>
+          />
           <rect
             ref="rect_mask_left"
             x="0"
@@ -66,7 +66,7 @@
             height="10"
             fill="white"
             fill-opacity="0.8"
-          ></rect>
+          />
         </g>
         <rect
           x="0"
@@ -76,9 +76,10 @@
           stroke="black"
           fill="none"
           :stroke-width="0.5"
-        ></rect>
+        />
       </g>
       <g
+        v-if="x"
         class="slider-handle pointer"
         :transform="
           `translate(${margin.left},${height +
@@ -86,7 +87,6 @@
             margin.top +
             17})`
         "
-        v-if="x"
       >
         <g stroke="#686868" fill="#d6d6d6" stroke-width="0.5">
           <line
@@ -100,8 +100,8 @@
           />
           <polygon
             id="slider_left"
-            :transform="`translate(${sliderLeft},0)`"
             ref="slider_left"
+            :transform="`translate(${sliderLeft},0)`"
             points="4.1,10.3 0.1,10.3 0.1,-1.8 1.1,-1.8 4.1,-1.8 8.1,4.1 "
           />
           <polygon
@@ -154,26 +154,6 @@ export default {
     width: Number,
     transition1: Number,
     animate: Boolean,
-  },
-  watch: {
-    data() {
-      this.updatePlot();
-    },
-    variable() {
-      this.updatePlot();
-    },
-    minVal: {
-      immediate: true,
-      handler(newMin, oldMin) {
-        this.updateFilterLimits();
-      },
-    },
-    maxVal: {
-      immediate: true,
-      handler(newMax, oldMax) {
-        this.updateFilterLimits();
-      },
-    },
   },
   data() {
     return {
@@ -245,6 +225,26 @@ export default {
       return filter
         ? `filtered ${filter} ${this.variableLabel}`
         : this.variableLabel;
+    },
+  },
+  watch: {
+    data() {
+      this.updatePlot();
+    },
+    variable() {
+      this.updatePlot();
+    },
+    minVal: {
+      immediate: true,
+      handler(newMin, oldMin) {
+        this.updateFilterLimits();
+      },
+    },
+    maxVal: {
+      immediate: true,
+      handler(newMax, oldMax) {
+        this.updateFilterLimits();
+      },
     },
   },
   mounted() {
@@ -392,7 +392,7 @@ export default {
         },
       });
     },
-    updatePlot: () => {
+    updatePlot() {
       if (this.data && this.colorScale) {
         this.updateAxes();
         this.updateFilterLimits();

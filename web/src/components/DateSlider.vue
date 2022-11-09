@@ -1,6 +1,6 @@
 <template>
   <div id="dateSlider" class="d-flex flex-column">
-    {{ this.formattedDate }}
+    {{ formattedDate }}
     <div class="d-flex align-items-start">
       <div class="d-flex">
         <div

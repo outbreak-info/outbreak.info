@@ -1,10 +1,10 @@
 <template>
   <div class="epidemiology-area">
     <svg
+      :id="id"
       :width="width"
       :height="height"
       class="epi-summary-svg"
-      :id="id"
       :name="title"
     >
       <defs>
@@ -24,15 +24,15 @@
         :transform="`translate(${margin.left},${margin.top})`"
         class="epi-summary"
       >
-        <g class="annotation-group case-def-changed"></g>
+        <g class="annotation-group case-def-changed" />
       </g>
-      <g class="epi-axis axis--x"></g>
-      <g class="epi-axis axis--y"></g>
+      <g class="epi-axis axis--x" />
+      <g class="epi-axis axis--y" />
 
       <g
         :transform="`translate(${margin.left},${-margin.top})`"
         class="legend"
-      ></g>
+      />
     </svg>
   </div>
 </template>
@@ -106,14 +106,14 @@ export default Vue.extend({
     this.updatePlot();
   },
   methods: {
-    handleClick: function(key) {
+    handleClick(key) {
       this.$emit('regionSelected', {
         region: key,
         display: false,
         displayMore: true,
       });
     },
-    handleMouseover: function(d) {
+    handleMouseover(d) {
       selectAll('.legend-group').style('opacity', 0.4);
 
       selectAll('.stacked-area-chart').style('opacity', 0.4);
@@ -136,7 +136,7 @@ export default Vue.extend({
         y: event.y + 10,
       });
     },
-    handleMouseout: function(key) {
+    handleMouseout(key) {
       selectAll('.legend-group').style('opacity', 1);
 
       selectAll('.stacked-area-chart').style('opacity', 1);
@@ -146,7 +146,7 @@ export default Vue.extend({
         display: false,
       });
     },
-    colorScale: function(location) {
+    colorScale(location) {
       const scale = store.getters['colors/getRegionColor'];
       return scale(location);
     },

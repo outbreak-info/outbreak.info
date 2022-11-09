@@ -6,7 +6,7 @@
     </div>
 
     <!-- arms -->
-    <div id="study-arms" v-if="data.armGroup">
+    <div v-if="data.armGroup" id="study-arms">
       <div v-for="(arm, idx) in data.armGroup" :key="idx" class="mb-4">
         <!-- name -->
         <div class="uppercase orange-title">
@@ -16,16 +16,16 @@
           <!-- role -->
           <div class="">
             Role:
-            <span class="text-dark" v-if="arm.role">{{ arm.role }}</span>
+            <span v-if="arm.role" class="text-dark">{{ arm.role }}</span>
             <span v-else><small>not specified</small></span>
           </div>
 
           <!-- description -->
           <div
             v-if="arm.description"
-            v-html="arm.description"
             class="text-dark mt-2 mb-1"
-          ></div>
+            v-html="arm.description"
+          />
 
           <!-- interventions -->
           <div
@@ -36,61 +36,61 @@
             <small class="uppercase bright">
               <span class="mr-2">Intervention {{ iIdx + 1 }}:</span>
               <font-awesome-icon
+                v-if="intervention.category === 'drug'"
                 class="bright"
                 :icon="['fas', 'pills']"
-                v-if="intervention.category === 'drug'"
               />
               <!-- <i class="fas fa-prescription-bottle bright" v-if="intervention.category == 'drug'" /> -->
               <font-awesome-icon
+                v-if="intervention.category === 'genetic'"
                 class="bright"
                 :icon="['fas', 'dna']"
-                v-if="intervention.category === 'genetic'"
               />
               <font-awesome-icon
+                v-if="intervention.category === 'biological'"
                 class="bright"
                 :icon="['fas', 'virus']"
-                v-if="intervention.category === 'biological'"
               />
               <font-awesome-icon
+                v-if="intervention.category === 'combination product'"
                 class="bright"
                 :icon="['fas', 'mortar-pestle']"
-                v-if="intervention.category === 'combination product'"
               />
               <font-awesome-icon
+                v-if="intervention.category === 'behavioral'"
                 class="bright"
                 :icon="['fas', 'notes-medical']"
-                v-if="intervention.category === 'behavioral'"
               />
               <font-awesome-icon
+                v-if="intervention.category === 'device'"
                 class="bright"
                 :icon="['fas', 'tablet-alt']"
-                v-if="intervention.category === 'device'"
               />
               <!-- <i class="fas fa-laptop-medical bright" v-if="intervention.category == 'device'" /> -->
               <font-awesome-icon
+                v-if="intervention.category === 'diagnostic test'"
                 class="bright"
                 :icon="['fas', 'vial']"
-                v-if="intervention.category === 'diagnostic test'"
               />
               <font-awesome-icon
+                v-if="intervention.category === 'dietary supplement'"
                 class="bright"
                 :icon="['fas', 'capsules']"
-                v-if="intervention.category === 'dietary supplement'"
               />
               <font-awesome-icon
+                v-if="intervention.category === 'procedure'"
                 class="bright"
                 :icon="['fas', 'user-nurse']"
-                v-if="intervention.category === 'procedure'"
               />
               <font-awesome-icon
+                v-if="intervention.category === 'radiation'"
                 class="bright"
                 :icon="['fas', 'radiation']"
-                v-if="intervention.category === 'radiation'"
               />
               <SearchLink
                 :data="[intervention.name]"
-                filterField="@type:ClinicalTrial"
-                tooltipLabel="trials"
+                filter-field="@type:ClinicalTrial"
+                tooltip-label="trials"
                 class="bright ml-1"
               />
             </small>
@@ -102,9 +102,9 @@
             <!-- intervention description -->
             <div
               v-if="intervention.description"
-              v-html="intervention.description"
               class="text-dark mb-1"
-            ></div>
+              v-html="intervention.description"
+            />
           </div>
         </div>
       </div>
@@ -147,13 +147,13 @@ library.add(
 
 export default {
   name: 'TrialInterventions',
-  props: {
-    data: Object,
-  },
   components: {
     TrialType,
     SearchLink,
     FontAwesomeIcon,
+  },
+  props: {
+    data: Object,
   },
   data() {
     return {};

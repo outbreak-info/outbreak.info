@@ -1,6 +1,6 @@
 <template>
   <div>
-    <svg :width="width" :height="height" ref="svg" class="locator-map-svg">
+    <svg ref="svg" :width="width" :height="height" class="locator-map-svg">
       <defs>
         <filter id="shadow">
           <feDropShadow
@@ -12,8 +12,9 @@
         </filter>
       </defs>
 
-      <g ref="blank_map" class="blank-map-group"></g>
+      <g ref="blank_map" class="blank-map-group" />
       <circle
+        v-if="coords"
         :cx="coords[0]"
         :cy="coords[1]"
         :r="radius"
@@ -21,8 +22,7 @@
         stroke="#2c3e50"
         stroke-width="0.5"
         filter="url(#shadow)"
-        v-if="coords"
-      ></circle>
+      />
     </svg>
   </div>
 </template>
