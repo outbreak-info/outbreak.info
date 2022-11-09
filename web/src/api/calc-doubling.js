@@ -1,20 +1,18 @@
-import { from } from "rxjs";
-import axios from "axios";
-import { finalize, catchError, pluck, map } from "rxjs/operators";
-import { nest, timeParse } from "d3";
-import { linearRegression } from "datalib";
-import store from "@/store";
-
+import { from } from 'rxjs';
+import axios from 'axios';
+import { finalize, catchError, pluck, map } from 'rxjs/operators';
+import { nest, timeParse } from 'd3';
+import { linearRegression } from 'datalib';
+import store from '@/store';
 
 import { getAll } from '@/api/biothings.js';
 
 export const getDoubling = (
   apiUrl,
   location_id,
-  variable = "confirmed",
-  fitLength = 5
+  variable = 'confirmed',
+  fitLength = 5,
 ) => {
-
   store.state.admin.loading = true;
   const parseDate = timeParse('%Y-%m-%d');
 

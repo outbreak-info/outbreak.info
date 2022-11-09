@@ -608,7 +608,6 @@ export const getReportData = (
   location,
   totalThreshold,
   ndays,
-
   defaultLocations = ['USA', 'USA_US-CA'],
 ) => {
   store.state.admin.reportloading = true;
@@ -724,7 +723,6 @@ export const updateChoroData = (
   mutationArr,
   lineageString,
   location,
-
   ndays,
 ) => {
   store.state.admin.reportloading = true;
@@ -862,7 +860,6 @@ export const updateLocationData = (
   locations,
   location,
   totalThreshold,
-
   ndays,
 ) => {
   // lookup WHO name in curated dictionary
@@ -979,7 +976,6 @@ export const getMutationsByLineage = (
   mutationArr,
   proportionThreshold = 0,
   returnFlat = true,
-
   andLogic = false,
 ) => {
   if (!mutationArr) return of([]);
@@ -1045,7 +1041,6 @@ export const getCharacteristicMutations = (
   lineage,
   prevalenceThreshold = store.state.genomics.characteristicThreshold,
   returnFlat = true,
-
   includeSublineages = false,
 ) => {
   if (!lineage) return of([]);
@@ -1289,7 +1284,6 @@ export const getCumPrevalence = (
   queryStr,
   location,
   totalThreshold,
-
   returnFlat = true,
 ) => {
   const url =
@@ -1455,7 +1449,6 @@ export const getLocationPrevalence = (
   queryStr,
   location,
   ndays = null,
-
   returnFlat = true,
 ) => {
   let url;
@@ -1570,7 +1563,6 @@ export const getTemporalPrevalence = (
   location,
   queryStr,
   indivCall = false,
-
   returnFlat = true,
 ) => {
   store.state.admin.reportloading = true;
@@ -1874,7 +1866,6 @@ export const getCumPrevalenceAllLineages = (
   other_threshold,
   nday_threshold,
   ndays,
-
   window,
 ) => {
   let url = `${apiurl}prevalence-by-location-all-lineages?location_id=${location}&other_threshold=${other_threshold}&nday_threshold=${nday_threshold}&ndays=${ndays}&window=${window}&ndays=${ndays}&cumulative=true`;
@@ -1918,7 +1909,6 @@ export const getPrevalenceAllLineages = (
   location,
   other_threshold,
   nday_threshold,
-
   ndays,
 ) => {
   const dateThreshold = new Date('2020-03-14');
@@ -2057,7 +2047,6 @@ export const getLocationReportData = (
   other_threshold,
   nday_threshold,
   ndays,
-
   window,
 ) => {
   store.state.genomics.locationLoading2 = true;
@@ -2098,7 +2087,6 @@ export const getLocationLineagePrevalences = (
   other_threshold,
   nday_threshold,
   ndays,
-
   window,
 ) => {
   return forkJoin([
@@ -2346,7 +2334,6 @@ export const getEpiMutationPrevalence = (
   epiurl,
   locationID,
   mutations,
-
   epiFields = 'location_id,date,confirmed,mostRecent,confirmed_numIncrease,confirmed_rolling,dead_numIncrease,dead_rolling',
 ) => {
   store.state.genomics.locationLoading4 = true;
@@ -2612,7 +2599,6 @@ export const getComparisonByMutations = (
   lineages,
   prevalenceThreshold,
   mutationArr,
-
   mutationThreshold,
 ) => {
   return getMutationsByLineage(apiurl, mutationArr, mutationThreshold).pipe(
@@ -2642,7 +2628,6 @@ export const getComparisonByLocation = (
   other_threshold,
   nday_threshold,
   ndays,
-
   window,
 ) => {
   return getCumPrevalenceAllLineages(
