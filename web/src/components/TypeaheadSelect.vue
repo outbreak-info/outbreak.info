@@ -2,16 +2,16 @@
   <div :class="wrapperClass">
     <div class="dropdown">
       <input
+        v-model="selected"
         :class="{ 'form-control': isStandalone }"
         :disabled="disabled"
         type="text"
-        v-model="selected"
         :placeholder="placeholder"
         @keydown.enter="enter"
         @keydown.down="down"
         @keydown.up="up"
         @input="debounceSearch"
-      />
+      >
       <div
         class="dropdown-menu overflow-auto"
         :class="{ show: isOpen }"
@@ -38,9 +38,7 @@
 
 <script>
 // cribbed from https://medium.com/@fareez_ahamed/make-your-own-autocomplete-component-quickly-using-vue-js-21a642e8b140
-
 import debounce from 'lodash/debounce';
-
 export default {
   name: 'TypeaheadSelect',
   props: {
@@ -81,10 +79,10 @@ export default {
   watch: {
     selectedValue() {
       this.selected = this.selectedValue
-        ? typeof this.selectedValue == 'string'
-          ? this.selectedValue
-          : this.selectedValue[this.labelVariable]
-        : null;
+          ? typeof this.selectedValue == 'string'
+              ? this.selectedValue
+              : this.selectedValue[this.labelVariable]
+          : null;
     },
   },
   created() {
@@ -101,31 +99,26 @@ export default {
         this.selected = this.selected[this.labelVariable];
       }
     },
-
     // When up pressed while suggestions are open
     up() {
       if (this.current > 0) this.current--;
     },
-
     // When up pressed while suggestions are open
     down() {
       if (this.current < this.matches.length - 1) this.current++;
     },
-
     // For highlighting element
     isActive(index) {
       return index === this.current;
     },
-
     //When the user changes input
     change() {
       if (this.selected.length > 0) {
         this.querySubscription = this.queryFunction(
-          this.apiUrl,
-          this.selected,
+            this.apiUrl,
+            this.selected,
         ).subscribe((results) => {
           this.matches = results;
-
           if (this.isOpen === false) {
             this.isOpen = true;
             this.current = 0;

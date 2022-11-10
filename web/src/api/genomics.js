@@ -29,7 +29,6 @@ import NT_MAP from '@/assets/genomics/sarscov2_NC045512_genes_nt.json';
 import WHO_REGIONS from '@/assets/genomics/who_regions.json';
 import orderBy from 'lodash/orderBy';
 import uniq from 'lodash/uniq';
-
 import store from '@/store';
 
 const parseDate = timeParse('%Y-%m-%d');
@@ -182,12 +181,10 @@ export const lookupLineageDetails = (
 };
 
 const arr2Obj = (arr, keyVar, valVar) => {
-  const transformed = arr.reduce((r, e) => {
+  return arr.reduce((r, e) => {
     r[e[keyVar]] = e[valVar];
     return r;
   }, {});
-
-  return transformed;
 };
 
 // sort the mutations by position within the genes
@@ -289,7 +286,6 @@ export const getSublineageMutations = (
 
         const prevalentMutations = uniq(
           report.mutations
-
             .filter((d) => d.prevalence > prevalenceThreshold)
             .map((d) => d.mutation),
         );
@@ -333,7 +329,6 @@ export const getSublineageMutations = (
         voc: voc,
         voc_parent: voc_parent,
         voi: voi,
-
         voi_parent: voi_parent,
       };
     }),
@@ -476,13 +471,11 @@ export const getReportList = (
 
   return forkJoin([
     getDateUpdated(apiurl),
-
     getCuratedList(apiurl, prevalenceThreshold),
   ]).pipe(
     map(([dateUpdated, md]) => {
       return {
         ...md,
-
         dateUpdated: dateUpdated.lastUpdated,
       };
     }),
@@ -519,14 +512,12 @@ export const getLocationBasics = (apiurl) => {
 
   return forkJoin([
     getSequenceCount(apiurl, null, true),
-
     getDateUpdated(apiurl),
   ]).pipe(
     map(([total, dateUpdated]) => {
       return {
         dateUpdated: dateUpdated.lastUpdated,
         total: total,
-
         curated: curated,
       };
     }),
@@ -592,7 +583,6 @@ const parseStrQuery = (query) => {
 
   return {
     pango: pango,
-
     muts: muts,
   };
 };
@@ -691,9 +681,7 @@ export const getReportData = (
           locPrev: locPrev,
           sublineagePrev: sublineagePrev.data,
           sublineageTotalStacked: sublineagePrev.stacked,
-
           longitudinal: longitudinal[0]['data'],
-
           longitudinalSublineages: longitudinalSublineages.longitudinal,
           lineagesByDay: longitudinalSublineages.streamgraph,
           choroData: choroData,
@@ -702,7 +690,6 @@ export const getReportData = (
           md: md,
           mutations: characteristicMuts,
           mutationDetails: mutationDetails,
-
           mutationsByLineage: mutationsByLineage,
         };
       },
@@ -773,7 +760,6 @@ export const getSublineageTotals = (apiurl, md, location) => {
         });
         return {
           data: results,
-
           stacked: Object.assign(...stacked),
         };
       }),
@@ -835,7 +821,6 @@ export const getSublineagePrevalence = (apiurl, md, location) => {
         nested.sort((a, b) => a.date_time - b.date_time);
         return {
           longitudinal: results,
-
           streamgraph: nested,
         };
       }),
@@ -907,7 +892,6 @@ export const updateLocationData = (
         byLocation,
         locPrev,
         sublineagePrev,
-
         longitudinalSublineages,
       ]) => {
         // attach names to cum prevalences
@@ -920,15 +904,12 @@ export const updateLocationData = (
 
         return {
           locations: locations,
-
           longitudinal: longitudinal[0]['data'],
-
           longitudinalSublineages: longitudinalSublineages.longitudinal,
           lineagesByDay: longitudinalSublineages.streamgraph,
           byCountry: byLocation,
           locPrev: locPrev,
           sublineagePrev: sublineagePrev.data,
-
           sublineageTotalStacked: sublineagePrev.stacked,
         };
       },
@@ -951,24 +932,17 @@ export const getMutationDetails = (apiurl, mutationString) => {
         'Content-Type': 'application/json',
       },
     }),
-  )
-    .pipe(
-      pluck('data', 'results'),
-      map((results) => {
-        return results;
-      }),
-    )
-    .pipe(
-      pluck('data', 'results'),
-      map((results) => {
-        return results;
-      }),
-      catchError((e) => {
-        console.log('%c Error in getting mutation details!', 'color: red');
-        console.log(e);
-        return of([]);
-      }),
-    );
+  ).pipe(
+    pluck('data', 'results'),
+    map((results) => {
+      return results;
+    }),
+    catchError((e) => {
+      console.log('%c Error in getting mutation details!', 'color: red');
+      console.log(e);
+      return of([]);
+    }),
+  );
 };
 
 export const getMutationsByLineage = (
@@ -1081,7 +1055,6 @@ export const getCharacteristicMutations = (
   // convert + to AND to specify lineages + mutations
   const url = `${apiurl}lineage-mutations?pangolin_lineage=${lineage.replace(
     /\+/g,
-
     'AND',
   )}&frequency=${prevalenceThreshold}`;
   return from(
@@ -1353,7 +1326,7 @@ export function getNewTodayAll(apiurl, queryStr, locations) {
   return forkJoin(
     getNewToday(apiurl, queryStr, 'Worldwide', null),
     ...locations
-      .filter((d) => d.type != 'world')
+      .filter((d) => d.type !== 'world')
       .map((d) => getNewToday(apiurl, queryStr, d.name, d.type)),
   ).pipe(
     map((results) => {
@@ -1395,20 +1368,17 @@ export const getNewToday = (apiurl, queryStr, location) => {
         if (timeDiff < 2) {
           return {
             name: location,
-
             date_count_today: format(',')(result.date_count),
           };
         } else {
           return {
             name: location,
-
             date_count_today: 0,
           };
         }
       } else {
         return {
           name: location,
-
           date_count_today: null,
         };
       }
@@ -1437,7 +1407,6 @@ export const getAllLocationPrevalence = (
         variantType: mutation.variantType,
         route: mutation.route,
         params: mutation.params,
-
         values: results,
       };
     }),
@@ -1691,28 +1660,19 @@ export const findLocationMetadata = (apiurl, location) => {
           'Content-Type': 'application/json',
         },
       }),
-    )
-      .pipe(
-        pluck('data', 'results'),
-        map((results) => {
-          results['id'] = location;
-          results['who_region'] = WHO_REGIONS[results.country_id];
-          return results;
-        }),
-      )
-      .pipe(
-        pluck('data', 'results'),
-        map((results) => {
-          results['id'] = location;
-          results['who_region'] = WHO_REGIONS[results.country_id];
-          return results;
-        }),
-        catchError((e) => {
-          console.log('%c Error in getting location metadata!', 'color: red');
-          console.log(e);
-          return of([]);
-        }),
-      );
+    ).pipe(
+      pluck('data', 'results'),
+      map((results) => {
+        results['id'] = location;
+        results['who_region'] = WHO_REGIONS[results.country_id];
+        return results;
+      }),
+      catchError((e) => {
+        console.log('%c Error in getting location metadata!', 'color: red');
+        console.log(e);
+        return of([]);
+      }),
+    );
   } else {
     return of(null);
   }
@@ -1761,24 +1721,17 @@ export const findLocation = (apiurl, queryString) => {
         'Content-Type': 'application/json',
       },
     }),
-  )
-    .pipe(
-      pluck('data', 'results'),
-      map((results) => {
-        return results;
-      }),
-    )
-    .pipe(
-      pluck('data', 'results'),
-      map((results) => {
-        return results;
-      }),
-      catchError((e) => {
-        console.log('%c Error in getting location names!', 'color: red');
-        console.log(e);
-        return of([]);
-      }),
-    );
+  ).pipe(
+    pluck('data', 'results'),
+    map((results) => {
+      return results;
+    }),
+    catchError((e) => {
+      console.log('%c Error in getting location names!', 'color: red');
+      console.log(e);
+      return of([]);
+    }),
+  );
 };
 
 export const findPangolin = (apiurl, queryString) => {
@@ -1786,7 +1739,6 @@ export const findPangolin = (apiurl, queryString) => {
 
   const vocs = CURATED.filter((d) => d.who_name).map((d) => ({
     name: d.who_name,
-
     alias: true,
   }));
 
@@ -1848,7 +1800,6 @@ export const getDateUpdated = (apiurl) => {
 
       return {
         dateUpdated: formatDateTime(dateUpdated),
-
         lastUpdated: lastUpdated,
       };
     }),
@@ -2059,7 +2010,6 @@ export const getLocationReportData = (
     other_threshold,
     nday_threshold,
     ndays,
-
     window,
   ).pipe(
     mergeMap((results) =>
@@ -2095,7 +2045,6 @@ export const getLocationLineagePrevalences = (
       location,
       other_threshold,
       nday_threshold,
-
       ndays,
     ),
     getCumPrevalenceAllLineages(
@@ -2104,7 +2053,6 @@ export const getLocationLineagePrevalences = (
       other_threshold,
       nday_threshold,
       ndays,
-
       window,
     ),
   ]).pipe(
@@ -2127,7 +2075,6 @@ export const getLocationLineagePrevalences = (
           lineagesByDay: lineagesByDay,
           mostRecentLineages: mostRecentLineages,
           lineageDomain: lineageDomain,
-
           recentDomain: recentDomain,
         };
       } else {
@@ -2145,7 +2092,6 @@ export const getLocationLineagePrevalences = (
           lineagesByDay: lineagesByDay,
           mostRecentLineages: mostRecentLineages,
           lineageDomain: lineageDomain,
-
           recentDomain: null,
         };
       }
@@ -2194,7 +2140,6 @@ export const getMutationCumPrevalence = (
     apiurl,
     mutationObj.query,
     location,
-
     totalThreshold,
   ).pipe(
     map((results) => {
@@ -2266,7 +2211,6 @@ export const getLocationTable = (
 ) => {
   store.state.genomics.locationLoading3 = true;
   const pangos = mutations
-
     .filter((d) => d.type && d.type === 'pango')
     .map((d) => d.qParam);
   const vocs = mutations.map((d) => d.bulkQuery);
@@ -2286,7 +2230,6 @@ export const getLocationTable = (
     map(([lineages, variants]) => {
       let results = lineages.concat(variants);
       // add in the labels and the type (VOC, VOI, etc.)
-
       results.forEach((d) => {
         const filtered = mutations.filter(
           (mut) =>
@@ -2307,7 +2250,6 @@ export const getLocationTable = (
 
       results = orderBy(
         results,
-
         [locationTableSorter, 'global_prevalence'],
         ['asc', 'desc'],
       );
@@ -2324,7 +2266,6 @@ export const getLocationTable = (
       console.log(e);
       return of([]);
     }),
-
     finalize(() => (store.state.genomics.locationLoading3 = false)),
   );
 };
@@ -2340,13 +2281,11 @@ export const getEpiMutationPrevalence = (
 
   return forkJoin([
     getEpiTraces(epiurl, [locationID], epiFields),
-
     getAllTemporalPrevalences(apiurl, locationID, mutations),
   ]).pipe(
     map(([epi, mutationTraces]) => {
       epi = epi.length ? epi[0].value : [];
       // weird trailing undefined sometimes?
-
       epi = epi.filter((d) => d.date);
       return {
         epi: epi,
@@ -2361,7 +2300,6 @@ export const getEpiMutationPrevalence = (
       console.log(e);
       return of([]);
     }),
-
     finalize(() => (store.state.genomics.locationLoading4 = false)),
   );
 };
@@ -2384,7 +2322,6 @@ export const getAllTemporalPrevalences = (apiurl, locationID, mutations) => {
         console.log(e);
         return of([]);
       }),
-
       finalize(() => (store.state.genomics.locationLoading4 = false)),
     );
   } else {
@@ -2428,7 +2365,6 @@ export const getSequenceCount = (
         return results;
       }
     }),
-
     catchError((e) => {
       console.log(
         '%c Error in getting total sequences for the location!',
@@ -2446,7 +2382,6 @@ export const getBasicComparisonReportData = (apiurl) => {
 
   const who = CURATED.filter((d) => d.who_name)
     .map((d) => d.who_name)
-
     .sort();
 
   return forkJoin([getDateUpdated(apiurl), getSequenceCount(apiurl)]).pipe(
@@ -2454,7 +2389,6 @@ export const getBasicComparisonReportData = (apiurl) => {
       return {
         dateUpdated: dateUpdated,
         who: who,
-
         total: total,
       };
     }),
@@ -2611,7 +2545,6 @@ export const getComparisonByMutations = (
         map((results) => {
           return {
             ...results,
-
             addedLength: newLineages.length,
           };
         }),
@@ -2636,7 +2569,6 @@ export const getComparisonByLocation = (
     other_threshold,
     nday_threshold,
     ndays,
-
     window,
   ).pipe(
     mergeMap((newLineages) => {
@@ -2649,7 +2581,6 @@ export const getComparisonByLocation = (
         map((results) => {
           return {
             ...results,
-
             addedLength: newLineages.length,
           };
         }),
@@ -2686,7 +2617,6 @@ export const getLineagesComparison = (
     map((results, idx) => {
       const prevalentMutations = uniq(
         results
-
           .flatMap((d) => d)
           .filter((d) => d.prevalence > prevalenceThreshold)
           .map((d) => d.mutation),
@@ -2727,7 +2657,6 @@ export const getLineagesComparison = (
             ? d.mutation
                 .toUpperCase()
                 .split(':')
-
                 .slice(-1)[0]
             : d.mutation;
       });
@@ -2744,7 +2673,6 @@ export const getLineagesComparison = (
         voc: ofInterest.voc,
         voc_parent: ofInterest.voc_parent,
         voi: ofInterest.voi,
-
         voi_parent: ofInterest.voi_parent,
       };
     }),
@@ -2770,7 +2698,6 @@ export const findWHOLineage = (alias) => {
     return filtered.map((curated) => {
       return {
         type: 'pango',
-
         label: curated.label,
         bulkQuery: curated.char_muts_parent_query,
         params: {
@@ -2778,7 +2705,6 @@ export const findWHOLineage = (alias) => {
         },
         query: `pangolin_lineage=${curated.char_muts_parent_query}`,
         pango_descendants: curated.pango_descendants,
-
         tooltip: curated.pango_descendants.join(', '),
         variantType: curated.variantType,
       };
@@ -2806,7 +2732,6 @@ export const getVOCs = () => {
     voc: voc,
     voc_parent: voc_parent,
     voi: voi,
-
     voi_parent: voi_parent,
   };
 };
@@ -2839,14 +2764,12 @@ export const getStatusBasics = (apiurl, location) => {
   return forkJoin([
     getSequenceCount(apiurl, null, true),
     getDateUpdated(apiurl),
-
     findLocationMetadata(apiurl, location),
   ]).pipe(
     map(([total, dateUpdated, location]) => {
       return {
         dateUpdated: dateUpdated.dateUpdated,
         lastUpdated: dateUpdated.lastUpdated,
-
         total: total,
       };
     }),
@@ -2868,13 +2791,11 @@ export const getStatusLocation = (apiurl, location) => {
 
   return forkJoin([
     getSequenceCount(apiurl, location, true),
-
     findLocationMetadata(apiurl, location),
   ]).pipe(
     map(([total, location]) => {
       return {
         total: total,
-
         location: location,
       };
     }),
@@ -2962,7 +2883,6 @@ export const getSeqGaps = (apiurl, location) => {
         data: results,
         gapHist: binned,
         weeklyMedian: weeklyMedian,
-
         median: medianGap,
       };
     }),
@@ -3121,7 +3041,6 @@ export const getVOCTotals = (genomicsUrl, locations, totalThreshold) => {
         0.2,
         0.35,
         0.5,
-
         0.75,
       ]);
 

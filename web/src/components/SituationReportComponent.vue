@@ -73,13 +73,13 @@
                   class="d-flex align-items-center justify-content-center my-3"
                 >
                   <TypeaheadSelect
-                    wrapper-class="w-100"
-                    :query-function="queryLocation"
-                    :api-url="this.$genomicsurl"
-                    label-variable="label"
-                    placeholder="Add location"
-                    total-label="total sequences"
-                    @selected="addLoc2Add"
+                      wrapperClass="w-100"
+                      :queryFunction="queryLocation"
+                      @selected="addLoc2Add"
+                      :apiUrl="this.$genomicsurl"
+                      labelVariable="label"
+                      placeholder="Add location"
+                      totalLabel="total sequences"
                   />
                 </div>
               </div>
