@@ -548,19 +548,6 @@ const routes = [
       ),
   },
   {
-    path: '/watch-list',
-    name: 'WatchList',
-    props: (route) => ({
-      country: route.query.country,
-      division: route.query.division,
-    }),
-    component: () =>
-      import(
-        /* webpackChunkName: "watch-list" */
-        '../views/WatchList.vue'
-      ),
-  },
-  {
     path: '/:catchAll(.*)',
     name: 'NotFound',
 
