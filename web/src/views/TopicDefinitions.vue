@@ -5,9 +5,8 @@
       <p class="m-0">
         To increase the findability of
         <router-link :to="{ name: 'Resource Summary' }">
-          COVID-19 resources
-        </router-link>
-        , we've grouped all the resources into the following categories.
+          COVID-19 resources</router-link>, we've grouped all the
+          resources into the following categories.
       </p>
       <small>
         Suggest changes by submitting a
@@ -26,9 +25,7 @@
           target="_blank"
           rel="noreferrer"
         >
-          categories
-        </a>
-        .
+          categories</a>.
       </small>
     </div>
 

@@ -23,10 +23,8 @@
                 metadata of a resource, but even within a single resource type,
                 different sources use different languages. For instance, one
                 dataset source might refer to the name of a dataset as
-                <b>name</b>
-                , while other sources call it
-                <b>title</b>
-                .
+                <b>name</b>, while other sources call it
+                <b>title</b>.
               </p>
               <p>
                 We created a reusable schema to standardize all resource
@@ -53,11 +51,11 @@
             To make our schema as reusable as possible and consistent with the
             broader community, we worked from existing schemas wherever
             possible. Our schemas are based on
-            <a href="http://schema.org/" target="_blank">Schema.org</a>
-            , which provides a widely accepted format recognizable by major
+            <a href="http://schema.org/" target="_blank">Schema.org</a>,
+             which provides a widely accepted format recognizable by major
             search engines and data portals. We incorporated portions of
-            <a href="https://bioschemas.org/" target="_blank">Bioschemas</a>
-            , which adapts and extends Schema.org schemas for the life sciences.
+            <a href="https://bioschemas.org/" target="_blank">Bioschemas</a>,
+            which adapts and extends Schema.org schemas for the life sciences.
             We also consulted
             <a
               href="https://prsinfo.clinicaltrials.gov/prs-xml-schemas.html"
@@ -90,15 +88,12 @@
                   target="_blank"
                 >
                   Data Discovery Engine
-                </a>
-                , which allows you to view the schema,
+                </a>, which allows you to view the schema,
                 <a
                   href="https://discovery.biothings.io/schema-playground"
                   target="_blank"
                 >
-                  extend or modify it
-                </a>
-                , or create your own schema from scratch.
+                  extend or modify it</a>, or create your own schema from scratch.
               </p>
               <p>
                 We've created schemas for
@@ -106,37 +101,27 @@
                   href="https://discovery.biothings.io/view/outbreak/Analysis"
                   target="_blank"
                 >
-                  analyses
-                </a>
-                ,
+                  analyses</a>,
                 <a
                   href="https://discovery.biothings.io/view/outbreak/ClinicalTrial"
                   target="_blank"
                 >
-                  clinical trials
-                </a>
-                ,
+                  clinical trials</a>,
                 <a
                   href="https://discovery.biothings.io/view/outbreak/Dataset"
                   target="_blank"
                 >
-                  datasets
-                </a>
-                ,
+                  datasets</a>,
                 <a
                   href="https://discovery.biothings.io/view/outbreak/Protocol"
                   target="_blank"
                 >
-                  protocols
-                </a>
-                ,
+                  protocols</a>,
                 <a
                   href="https://discovery.biothings.io/view/outbreak/Publication"
                   target="_blank"
                 >
-                  publications
-                </a>
-                , and others.
+                  publications</a>, and others.
               </p>
             </div>
           </div>

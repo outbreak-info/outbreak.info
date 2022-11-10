@@ -88,13 +88,9 @@
               rel="noreferrer"
               target="_blank"
             >
-              Hughes
-            </a>
-            ,
-            <a href="http://sulab.org/" rel="noreferrer" target="_blank">Su</a>
-            ,
-            <a href="http://wulab.io/" rel="noreferrer" target="_blank">Wu</a>
-            , and
+              Hughes</a>,
+            <a href="http://sulab.org/" rel="noreferrer" target="_blank">Su</a>,
+            <a href="http://wulab.io/" rel="noreferrer" target="_blank">Wu</a>, and
             <a
               href="https://andersen-lab.com/"
               rel="noreferrer"
@@ -107,11 +103,8 @@
               by the
               <span v-for="(grant, idx) in funding" :key="idx">
                 <span v-if="grant.funder.name">{{ grant.funder.name }}</span>
-                ({{ grant.identifier }})
-                <span v-if="idx < funding.length - 2">,</span>
-                <span v-if="idx === funding.length - 2">, and</span>
-              </span>
-              .
+                ({{ grant.identifier }})<span v-if="idx < funding.length - 2">, </span>
+                <span v-if="idx === funding.length - 2">, and </span></span>.
             </span>
           </p>
 
