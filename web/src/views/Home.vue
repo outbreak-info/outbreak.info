@@ -574,25 +574,6 @@
           <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
             <div class="w-100 p-3 card">
               <router-link
-                :to="{ name: 'Doubling Rates' }"
-                class="text-dark h-100 d-flex flex-column"
-              >
-                <h5 class="text-uppercase">
-                  View doubling rates
-                </h5>
-                <div class="h-100 d-flex flex-column justify-content-center">
-                  <img
-                    src="@/assets/home/doubling_example.svg"
-                    alt="Outbreak.info doubling rates"
-                    class="w-100"
-                  />
-                </div>
-              </router-link>
-            </div>
-          </div>
-          <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
-            <div class="w-100 p-3 card">
-              <router-link
                 :to="{ name: 'Data' }"
                 class="text-dark h-100 d-flex flex-column"
               >

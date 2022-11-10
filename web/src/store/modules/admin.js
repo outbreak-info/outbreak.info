@@ -634,6 +634,13 @@ const state = {
       },
     },
     {
+      date: new Date('2022-11-09 0:0'),
+      category: 'deprecation',
+      title: 'Removed cases and deaths doubling rates',
+      description:
+        'Removed cases and deaths doubling rate calculations.',
+    },
+    {
       date: new Date('2020-12-04 0:0'),
       category: 'data',
       title: 'Added COVID-19 Literature Surveillance Team Reports',

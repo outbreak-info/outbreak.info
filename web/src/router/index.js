@@ -259,19 +259,6 @@ const routes = [
     component: () => import(/* webpackChunkName: "epi" */ '../views/Epi.vue'),
   },
   {
-    path: '/doubling-rates',
-    name: 'Doubling Rates',
-    props: (route) => ({
-      location: route.query.location,
-      variable: route.query.variable,
-    }),
-    component: () =>
-      import(
-        /* webpackChunkName: "doubling-rates" */
-        '../views/DoublingRates.vue'
-      ),
-  },
-  {
     path: '/situation-reports',
     name: 'SituationReports',
     props: (route) => ({

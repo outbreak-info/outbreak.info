@@ -126,19 +126,6 @@
                   data-toggle="collapse"
                   data-target=".navbar-collapse"
                   class="nav-link"
-                  :class="{ active: $route.name === 'Doubling Rates' }"
-                  :to="{
-                    name: 'Doubling Rates',
-                    query: { location: 'USA', variable: 'confirmed' }
-                  }"
-                >
-                  View doubling rates
-                </router-link>
-
-                <router-link
-                  data-toggle="collapse"
-                  data-target=".navbar-collapse"
-                  class="nav-link"
                   to="/data"
                   :class="{ active: $route.name === 'Data' }"
                 >
@@ -453,21 +440,6 @@
                 }"
               >
                 Explore regions
-              </router-link>
-            </li>
-            <li class="nav-item px-0 py-1">
-              <router-link
-                data-toggle="collapse"
-                data-target=".navbar-collapse"
-                class="nav-link p-0"
-
-                :class="{ active: $route.name === 'Doubling Rates' }"
-                :to="{
-                  name: 'Doubling Rates',
-                  query: { location: 'USA', variable: 'confirmed' }
-                }"
-              >
-                View doubling rates
               </router-link>
             </li>
             <li class="nav-item px-0 py-1">
