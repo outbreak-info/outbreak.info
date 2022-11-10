@@ -358,40 +358,15 @@
             <small id="sBar-example" class="form-text d-block  text-left ml-5">
               <span class="mr-2">Try:</span>
 
-              <span class="mr-3">
+              <span class="mr-3" v-for='(resource, rId) in resourceExamples' :key='rId'>
                 <router-link
-                  :to="{ name: 'Resources', query: { q: 'E484K' } }"
+                  :to="{ name: resource.route, query: { q: resource.query } }"
                   class="text-light"
-                >
-                  E484K
-
+                >{{resource.label}}
                   <font-awesome-icon :icon="['fas', 'angle-double-right']" />
                 </router-link>
               </span>
-              <span class="mr-3">
-                <router-link
-                  :to="{ name: 'Resources', query: { q: 'Moderna' } }"
-                  class="text-light"
-                >
-                  Moderna
 
-                  <font-awesome-icon :icon="['fas', 'angle-double-right']" />
-                </router-link>
-              </span>
-              <span class="mr-3">
-                <router-link
-                  :to="{ name: 'Resources', query: { q: 'remdesivir' } }"
-                  class="text-light"
-                >
-                  remdesivir
-                  <font-awesome-icon :icon="['fas', 'angle-double-right']" />
-                </router-link>
-              </span>
-              <router-link :to="{ name: 'NIAID' }" class="text-light">
-                NIAID-funded
-
-                <font-awesome-icon :icon="['fas', 'angle-double-right']" />
-              </router-link>
             </small>
           </div>
         </div>
@@ -922,6 +897,9 @@ import { mapState } from 'vuex';
 
 import store from '@/store';
 
+// Example queries
+import RESOURCEEXAMPLES from '@/assets/examples/resources_examples.json';
+
 // --- font awesome --
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
@@ -948,12 +926,15 @@ export default {
       searchQuery: '',
       queryPangolin: null,
       queryLocation: null,
+      resourceExamples: [],
     };
   },
   computed: {
     ...mapState('admin', ['loading']),
   },
   mounted() {
+    this.resourceExamples = RESOURCEEXAMPLES;
+
     const locations = Vue.$cookies.get('custom_locations');
 
     this.queryPangolin = findPangolin;

@@ -83,16 +83,12 @@
                 class="mr-3 d-flex align-items-center"
               >
                 <router-link
-                  :to="{ name: 'Resources', query: { q: demo.query } }"
+                  :to="{ name: demo.route, query: { q: demo.query } }"
                 >
                   {{ demo.label }}
                   <font-awesome-icon :icon="['fas', 'angle-double-right']" />
                 </router-link>
               </span>
-              <router-link :to="{ name: 'NIAID' }">
-                NIAID-related
-                <font-awesome-icon :icon="['fas', 'angle-double-right']" />
-              </router-link>
             </div>
           </div>
 
@@ -127,6 +123,10 @@ import {
 
 library.add(faClock, faAngleDoubleRight, faSearch);
 
+// Example queries
+import RESOURCEEXAMPLES from '@/assets/examples/resources_examples.json';
+
+
 export default {
   name: 'ResourceSummary',
   components: {
@@ -136,25 +136,14 @@ export default {
   },
   data() {
     return {
-      demos: [
-        {
-          label: 'remdesivir',
-          query: 'remdesivir',
-        },
-        {
-          label: 'antibodies',
-          query: 'antibodies',
-        },
-        {
-          label: 'x-ray diffraction',
-          query: '"x-ray diffraction"',
-        },
-      ],
+      demos: [],
       counts: [],
       searchInput: null,
     };
   },
   mounted() {
+    this.demos = RESOURCEEXAMPLES;
+
     this.countSubscription = getSourceSummary(
       this.$resourceurl,
       '__all__',
