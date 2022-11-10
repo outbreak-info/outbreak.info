@@ -30,11 +30,11 @@
                 </span>
               </div>
               <TypeaheadSelect
-                :is-standalone="false"
+                :isStandalone="false"
                 class="form-control border"
-                :query-function="queryPangolin"
-                :api-url="this.$genomicsurl"
-                :remove-on-select="true"
+                :queryFunction="queryPangolin"
+                :apiUrl="this.$genomicsurl"
+                :removeOnSelect="true"
                 placeholder="Search PANGO lineage"
                 @selected="updatePangolin"
               />
@@ -125,14 +125,14 @@
                 </span>
               </div>
               <TypeaheadSelect
-                :is-standalone="false"
+                :isStandalone="false"
                 class="form-control border"
-                :query-function="queryLocation"
-                :api-url="this.$genomicsurl"
-                label-variable="label"
-                :remove-on-select="false"
+                :queryFunction="queryLocation"
+                :apiUrl="this.$genomicsurl"
+                labelVariable="label"
+                :removeOnSelect="false"
                 placeholder="Select location"
-                total-label="total sequences"
+                totalLabel="total sequences"
                 @selected="submitLocation"
               />
             </div>
@@ -229,7 +229,7 @@
       :xmin="xmin"
       :xmax="xmax"
       :selected="selected"
-      route-to="GenomicsEmbedVariant"
+      routeTo="GenomicsEmbedVariant"
     />
 
     <!-- Location report component -->
@@ -245,14 +245,14 @@
       :xmin="xmin"
       :xmax="xmax"
       :selected="selected"
-      route-to="GenomicsEmbedLocation"
+      routeTo="GenomicsEmbedLocation"
     />
 
     <!-- Lineage comparison component -->
     <LineageComparisonComponent
       v-if="selectedReportType === 'comp'"
       :embedded="true"
-      route-to="GenomicsEmbed"
+      routeTo="GenomicsEmbed"
     />
 
     <footer class="bg-main__darker">

@@ -89,8 +89,8 @@
               />
               <SearchLink
                 :data="[intervention.name]"
-                filter-field="@type:ClinicalTrial"
-                tooltip-label="trials"
+                filterField="@type:ClinicalTrial"
+                tooltipLabel="trials"
                 class="bright ml-1"
               />
             </small>

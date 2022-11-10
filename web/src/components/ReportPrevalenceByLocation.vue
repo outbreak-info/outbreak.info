@@ -257,9 +257,9 @@
 
     <DownloadReportData
       :data="data"
-      figure-ref="prevalence-by-location"
+      figureRef="prevalence-by-location"
       class="mt-2"
-      data-type="Mutation Prevelance by Location Dot Plot"
+      dataType="Mutation Prevelance by Location Dot Plot"
     />
   </div>
 </template>

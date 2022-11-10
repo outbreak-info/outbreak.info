@@ -78,10 +78,10 @@
 
             <div class="flew-row d-flex w-350px">
               <TypeaheadSelect
-                :query-function="queryPangolin"
-                :selected-value="selectedLineage"
-                :api-url="this.$genomicsurl"
-                :remove-on-select="false"
+                :queryFunction="queryPangolin"
+                :selectedValue="selectedLineage"
+                :apiUrl="this.$genomicsurl"
+                :removeOnSelect="false"
                 placeholder="Select PANGO lineage"
                 @selected="updatePangolin"
               />
@@ -198,9 +198,9 @@
           <div class="w-75">
             <SARSMutationMap
               v-if="selectedMutations.length"
-              :lineage-mutations="selectedMutations"
-              :additional-mutations="[]"
-              mutation-key="selected_mutations"
+              :lineageMutations="selectedMutations"
+              :additionalMutations="[]"
+              mutationKey="selected_mutations"
             />
           </div>
         </div>

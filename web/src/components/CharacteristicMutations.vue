@@ -67,9 +67,9 @@
 
     <SARSMutationMap
       v-if="mutations || additionalMutations"
-      :mutation-key="mutationName"
-      :lineage-mutations="mutations"
-      :additional-mutations="additionalMutations"
+      :mutationKey="mutationName"
+      :lineageMutations="mutations"
+      :additionalMutations="additionalMutations"
       class="mb-3"
       :copyable="true"
     />
@@ -117,9 +117,9 @@
 
       <DownloadReportData
         :data="mutations"
-        figure-ref="mutation-map"
-        data-type="Mutation Map"
-        :full-width="false"
+        figureRef="mutation-map"
+        dataType="Mutation Map"
+        :fullWidth="false"
       />
     </div>
 
@@ -128,7 +128,7 @@
         <div v-if="lineageName" class="col">
           <MutationTable
             :mutations="mutations"
-            :table-title="`Characteristic mutations of ${lineageName}`"
+            :tableTitle="`Characteristic mutations of ${lineageName}`"
           />
         </div>
         <div
@@ -137,7 +137,7 @@
         >
           <MutationTable
             :mutations="additionalMutations"
-            table-title="Additional Mutations"
+            tableTitle="Additional Mutations"
           />
         </div>
       </div>

@@ -20,19 +20,19 @@
       v-if="seqCounts"
       :data="seqCounts"
       :width="width"
-      :svg-title="title"
+      :svgTitle="title"
       :margin="marginHist"
-      :mutation-name="null"
-      class-name="stacked-seq-histogram"
-      :only-totals="true"
-      not-detected-color="#bab0ab"
+      :mutationName="null"
+      className="stacked-seq-histogram"
+      :onlyTotals="true"
+      notDetectedColor="#bab0ab"
       :title="`Sequences over last ${recentWindow} days`"
     />
 
     <DownloadReportData
       :data="data"
-      figure-ref="report-stacked-bar"
-      data-type="Mutation Report Prevalence over Time"
+      figureRef="report-stacked-bar"
+      dataType="Mutation Report Prevalence over Time"
     />
   </div>
 </template>

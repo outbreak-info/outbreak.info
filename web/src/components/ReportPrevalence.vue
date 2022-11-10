@@ -184,12 +184,12 @@
 
         <SequencingHistogram
           :data="data"
-          :x-input="x"
+          :xInput="x"
           :width="width"
-          :svg-title="title"
+          :svgTitle="title"
           :margin="margin"
-          :mutation-name="mutationName"
-          class-name="prevalence-curve prevalence-curve-counts"
+          :mutationName="mutationName"
+          className="prevalence-curve prevalence-curve-counts"
         />
       </div>
     </div>
@@ -212,9 +212,9 @@
 
     <DownloadReportData
       :data="data"
-      figure-ref="prevalence-curve"
-      :is-vertical="true"
-      data-type="Mutation Report Prevalence over Time"
+      figureRef="prevalence-curve"
+      :isVertical="true"
+      dataType="Mutation Report Prevalence over Time"
     />
   </div>
 </template>

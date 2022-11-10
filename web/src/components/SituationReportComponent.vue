@@ -147,12 +147,12 @@
                 class="d-flex align-items-center justify-content-center my-3"
               >
                 <TypeaheadSelect
-                  wrapper-class="w-100"
-                  :query-function="queryLocation"
-                  :api-url="this.$genomicsurl"
-                  label-variable="label"
+                  wrapperClass="w-100"
+                  :queryFunction="queryLocation"
+                  :apiUrl="this.$genomicsurl"
+                  labelVariable="label"
                   placeholder="Change location"
-                  total-label="total sequences"
+                  totalLabel="total sequences"
                   @selected="updateSelectedLoc"
                 />
               </div>
@@ -560,22 +560,22 @@
             <div id="definition" class="mt-4">
               <CharacteristicMutations
                 v-if="mutations"
-                :mutation-name="reportName"
+                :mutationName="reportName"
                 :mutations="mutations"
-                :report-type="reportType"
-                :definition-label="definitionLabel"
-                :additional-mutations="additionalMutations"
-                :lineage-name="lineageName"
+                :reportType="reportType"
+                :definitionLabel="definitionLabel"
+                :additionalMutations="additionalMutations"
+                :lineageName="lineageName"
                 :sublineages="sublineageOptions"
-                :aquaria-link="aquariaLink"
+                :aquariaLink="aquariaLink"
               />
             </div>
 
             <!-- SUBLINEAGE BREAKDOWN -->
             <SublineageTotals
               v-if="sublineagePrev && sublineagePrev.length"
-              :route-to="routeTo"
-              :lineage-name="lineageName"
+              :routeTo="routeTo"
+              :lineageName="lineageName"
               :location="selectedLocation.label"
               :data="sublineagePrev"
             />
@@ -612,13 +612,13 @@
                 }"
               >
                 <MutationsByLineage
-                  :route-to="routeTo"
+                  :routeTo="routeTo"
                   :title="
                     `Global prevalence of ${mutationName} per PANGO lineage`
                   "
                   subtitle="Since first identification"
                   :lineage="lineageName"
-                  :mutation-name="mutationName"
+                  :mutationName="mutationName"
                   :data="mutationsByLineage"
                 />
               </div>
@@ -631,17 +631,17 @@
             class="d-flex flex-column justify-content-between col-sm-6 col-md-5 p-3 pr-4 summary-box bg-main text-light"
           >
             <ReportSummary
-              :date-updated="dateUpdated"
-              :total-lineage="totalLineage"
-              :small-screen="smallScreen"
-              :mutation-name="reportName"
-              :location-query-params="locationQueryParams"
-              :report-type="reportType"
+              :dateUpdated="dateUpdated"
+              :totalLineage="totalLineage"
+              :smallScreen="smallScreen"
+              :mutationName="reportName"
+              :locationQueryParams="locationQueryParams"
+              :reportType="reportType"
               :selected="selected"
-              :location-totals="locationTotals"
+              :locationTotals="locationTotals"
               :countries="countries"
               :states="states"
-              :route-to="routeTo"
+              :routeTo="routeTo"
             />
           </section>
         </div>
@@ -681,12 +681,12 @@
           </div>
           <ReportPrevalence
             :data="prevalence"
-            :mutation-name="reportName"
+            :mutationName="reportName"
             :xmin="xmin"
             :xmax="xmax"
             :location="selectedLocation.label"
-            :set-width="width"
-            :route-name="routeTo"
+            :setWidth="width"
+            :routeName="routeTo"
           />
         </section>
 
@@ -791,16 +791,16 @@
               v-if="sublineageLongitudinal && sublineageLongitudinal.length"
               :data="sublineageLongitudinal"
               :epi="[]"
-              :route-name="routeTo"
-              :seq-counts="prevalence"
-              :mutation-name="reportName"
-              :only-totals="false"
-              :set-width="width"
+              :routeName="routeTo"
+              :seqCounts="prevalence"
+              :mutationName="reportName"
+              :onlyTotals="false"
+              :setWidth="width"
               :xmin="xmin"
               :xmax="xmax"
-              :location-i-d="selectedLocation.id"
-              :location-name="selectedLocation.label"
-              :set-color-scale="sublineageColorScale"
+              :locationID="selectedLocation.id"
+              :locationName="selectedLocation.label"
+              :setColorScale="sublineageColorScale"
             />
           </div>
 
@@ -808,25 +808,25 @@
           <div v-else id="sublineage-streamgraph">
             <HorizontalCategoricalLegend
               :values="sublineageOptions"
-              :color-scale="sublineageColorScale"
+              :colorScale="sublineageColorScale"
               class="p-2 pt-3 bg-grey__lightest justify-content-center"
             />
 
             <LineagesByLocation
               :data="lineagesByDay"
-              :recent-data="sublineageTotalStacked"
+              :recentData="sublineageTotalStacked"
               :xmin="xmin"
               :xmax="xmax"
               class="d-flex flex-column align-items-center"
-              :route-name="routeTo"
-              :set-width="width"
+              :routeName="routeTo"
+              :setWidth="width"
               :location="selectedLocation.label"
-              :seq-counts="prevalence"
-              :mutation-name="reportName"
-              :only-totals="false"
-              :color-scale="sublineageColorScale"
-              :tooltip-total="true"
-              :plot-title="`Percentage of ${reportName} sequences by lineage`"
+              :seqCounts="prevalence"
+              :mutationName="reportName"
+              :onlyTotals="false"
+              :colorScale="sublineageColorScale"
+              :tooltipTotal="true"
+              :plotTitle="`Percentage of ${reportName} sequences by lineage`"
             />
           </div>
         </section>
@@ -893,18 +893,18 @@
                   class="d-flex flex-wrap justify-content-around align-items-center"
                 >
                   <ClassedLegend
-                    :color-scale="choroColorScale"
+                    :colorScale="choroColorScale"
                     :label="choroLabel"
-                    :count-threshold="choroCountThreshold"
-                    :mutation-name="mutationName"
+                    :countThreshold="choroCountThreshold"
+                    :mutationName="mutationName"
                   />
                 </div>
 
                 <div class="d-flex flex-column flex-wrap">
                   <!-- Total count filter -->
                   <ThresholdSlider
-                    :count-threshold.sync="choroCountThreshold"
-                    :max-count="choroMaxCount"
+                    :countThreshold.sync="choroCountThreshold"
+                    :maxCount="choroMaxCount"
                   />
 
                   <!-- Ndays filter -->
@@ -937,11 +937,11 @@
                 :report="routeTo"
                 class="mb-5"
                 :data="choroData"
-                :mutation-name="reportName"
+                :mutationName="reportName"
                 :location="selectedLocation.label"
-                :color-scale="choroColorScale"
-                :count-threshold="choroCountThreshold"
-                :set-width="width"
+                :colorScale="choroColorScale"
+                :countThreshold="choroCountThreshold"
+                :setWidth="width"
               />
             </template>
 
@@ -973,11 +973,11 @@
               <ReportPrevalenceByLocation
                 :data="choroData"
                 :label="choroLabel"
-                :mutation-name="reportName"
+                :mutationName="reportName"
                 :location="selected"
-                :location-name="selectedLocation.label"
+                :locationName="selectedLocation.label"
                 class="mt-2"
-                :color-scale="choroColorScale"
+                :colorScale="choroColorScale"
               />
             </div>
           </div>
@@ -991,15 +991,15 @@
         <!-- RESOURCES -->
         <section id="resources">
           <ReportResources
-            :mutation-name="reportName"
-            :search-terms="searchTerms"
+            :mutationName="reportName"
+            :searchTerms="searchTerms"
           />
         </section>
 
         <!-- METHODOLOGY -->
         <section id="methods" class="mt-3 mb-5">
           <h4>Methodology</h4>
-          <ReportMethodology :date-updated="dateUpdated" :summary="true" />
+          <ReportMethodology :dateUpdated="dateUpdated" :summary="true" />
           <!-- <small class=""><a @click="downloadGISAID" href="">Download associated GISAID IDs</a></small> -->
           <Warning class="mt-2" :text="disclaimer" />
         </section>
@@ -1007,8 +1007,8 @@
         <!-- CITATION -->
         <GenomicsCitation
           :title="title"
-          :mutation-authors="mutationAuthors"
-          :genomics-citation="genomicsCitation"
+          :mutationAuthors="mutationAuthors"
+          :genomicsCitation="genomicsCitation"
           :url="url"
           :today="today"
         />
@@ -1186,94 +1186,6 @@ export default {
       default: 'MutationReport',
     },
   },
-  computed: {
-    ...mapState('admin', [
-      'mutationAuthors',
-      'genomicsCitation',
-      'reportloading',
-    ]),
-    smallScreen() {
-      return window.innerWidth < 500;
-    },
-    definitionLabel() {
-      return this.reportType === 'lineage'
-        ? 'Characteristic mutations in lineage'
-        : this.reportType === 'lineage with added mutations'
-        ? 'Characteristic mutations in variant'
-        : 'List of mutations';
-    },
-    locationLabel() {
-      if (this.selectedLocation) {
-        return this.selectedLocation.label === 'Worldwide'
-          ? 'globally'
-          : `in ${this.selectedLocation.label}`;
-      } else {
-        return null;
-      }
-    },
-    pangoLink() {
-      return this.lineageName
-        ? `https://cov-lineages.org/lineage.html?lineage=${this.lineageName}`
-        : null;
-    },
-    aquariaLink() {
-      if (this.additionalMutations && this.additionalMutations.length > 0) {
-        const aquariaStub = 'https://aquaria.app/SARS-CoV-2/';
-        return nest()
-          .key((d) => d.gene)
-          .rollup((values) => {
-            return {
-              link:
-                values[0].gene.toLowerCase() === 'orf1b'
-                  ? // convert between ORF1b and ORF1ab: e.g. ORF1b P314L becomes https://aquaria.app/SARS-CoV-2/PP1ab?P4715L
-                    // in general: gene?mutations, separated by &
-                    `${aquariaStub}PP1ab?${values
-                      .map((d) => this.calcORF1bLink(d))
-                      .join('&')}`
-                  : `${aquariaStub}${values[0].gene}?${values
-                      .map((d) =>
-                        d.mutation.replace(d.gene, '').replace(':', ''),
-                      )
-                      .join('&')}`,
-              count: values.length,
-            };
-          })
-          .entries(this.additionalMutations);
-      } else {
-        return null;
-      }
-    },
-    choroplethLocations() {
-      return this.selectedLocations
-        ? this.selectedLocations.filter((d) => d.admin_level < 2)
-        : null;
-    },
-    choroLabel() {
-      return `Est. ${this.reportName} prevalence ${this.choroTimeFrame}`;
-    },
-    choroTimeFrame() {
-      return this.choroNdays
-        ? `last ${this.choroNdays} days`
-        : 'since identification';
-    },
-  },
-  watch: {
-    $route: function(newVal, oldVal) {
-      if (
-        !isEqual(newVal.query.pango, oldVal.query.pango) ||
-        !isEqual(newVal.params.alias, oldVal.params.alias) ||
-        !isEqual(newVal.query.alias, oldVal.query.alias) ||
-        !isEqual(newVal.query.muts, oldVal.query.muts)
-      ) {
-        this.newPangolin = null;
-        this.lineageName = null;
-        this.reportMetadata = null;
-        this.setupReport();
-      } else {
-        this.updateLocations();
-      }
-    },
-  },
   data() {
     return {
       // report details
@@ -1366,6 +1278,94 @@ export default {
       prevalence: [],
       mutationsByLineage: [],
     };
+  },
+  computed: {
+    ...mapState('admin', [
+      'mutationAuthors',
+      'genomicsCitation',
+      'reportloading',
+    ]),
+    smallScreen() {
+      return window.innerWidth < 500;
+    },
+    definitionLabel() {
+      return this.reportType === 'lineage'
+        ? 'Characteristic mutations in lineage'
+        : this.reportType === 'lineage with added mutations'
+        ? 'Characteristic mutations in variant'
+        : 'List of mutations';
+    },
+    locationLabel() {
+      if (this.selectedLocation) {
+        return this.selectedLocation.label === 'Worldwide'
+          ? 'globally'
+          : `in ${this.selectedLocation.label}`;
+      } else {
+        return null;
+      }
+    },
+    pangoLink() {
+      return this.lineageName
+        ? `https://cov-lineages.org/lineage.html?lineage=${this.lineageName}`
+        : null;
+    },
+    aquariaLink() {
+      if (this.additionalMutations && this.additionalMutations.length > 0) {
+        const aquariaStub = 'https://aquaria.app/SARS-CoV-2/';
+        return nest()
+          .key((d) => d.gene)
+          .rollup((values) => {
+            return {
+              link:
+                values[0].gene.toLowerCase() === 'orf1b'
+                  ? // convert between ORF1b and ORF1ab: e.g. ORF1b P314L becomes https://aquaria.app/SARS-CoV-2/PP1ab?P4715L
+                    // in general: gene?mutations, separated by &
+                    `${aquariaStub}PP1ab?${values
+                      .map((d) => this.calcORF1bLink(d))
+                      .join('&')}`
+                  : `${aquariaStub}${values[0].gene}?${values
+                      .map((d) =>
+                        d.mutation.replace(d.gene, '').replace(':', ''),
+                      )
+                      .join('&')}`,
+              count: values.length,
+            };
+          })
+          .entries(this.additionalMutations);
+      } else {
+        return null;
+      }
+    },
+    choroplethLocations() {
+      return this.selectedLocations
+        ? this.selectedLocations.filter((d) => d.admin_level < 2)
+        : null;
+    },
+    choroLabel() {
+      return `Est. ${this.reportName} prevalence ${this.choroTimeFrame}`;
+    },
+    choroTimeFrame() {
+      return this.choroNdays
+        ? `last ${this.choroNdays} days`
+        : 'since identification';
+    },
+  },
+  watch: {
+    $route: function(newVal, oldVal) {
+      if (
+        !isEqual(newVal.query.pango, oldVal.query.pango) ||
+        !isEqual(newVal.params.alias, oldVal.params.alias) ||
+        !isEqual(newVal.query.alias, oldVal.query.alias) ||
+        !isEqual(newVal.query.muts, oldVal.query.muts)
+      ) {
+        this.newPangolin = null;
+        this.lineageName = null;
+        this.reportMetadata = null;
+        this.setupReport();
+      } else {
+        this.updateLocations();
+      }
+    },
   },
   created() {
     this.debounceSetDims = debounce(this.setDims, 150);

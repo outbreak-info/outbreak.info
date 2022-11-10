@@ -52,8 +52,8 @@
       </button>
       <DownloadReportData
         :data="data"
-        figure-ref="mutations_by_lineage"
-        data-type="Mutation by Lineage"
+        figureRef="mutations_by_lineage"
+        dataType="Mutation by Lineage"
         class="mt-3"
       />
     </div>

@@ -1,7 +1,7 @@
 <template>
   <div v-if="data" class="mb-3 text-muted">
     <template v-if="data['@type']">
-      <StripeAccent :class-name="data['@type']" />
+      <StripeAccent :className="data['@type']" />
       <small :class="[data['@type'], 'resource-type', 'mr-2']">
         {{ data['@type'] }}
       </small>

@@ -104,8 +104,8 @@
               :id="place.key"
               :lat="place.lat"
               :lon="place.lon"
-              :color-scale="colorScale"
-              :part-of-u-s-a="place.partOfUSA"
+              :colorScale="colorScale"
+              :partOfUSA="place.partOfUSA"
             />
           </td>
 
@@ -148,9 +148,9 @@
               :data="place.values"
               :control="locationData.values"
               variable="confirmed_rolling_per_100k"
-              :x-domain="xDomain"
-              :y-max="yMaxC"
-              :color-scale="colorScale"
+              :xDomain="xDomain"
+              :yMax="yMaxC"
+              :colorScale="colorScale"
               label="cases"
             />
           </td>
@@ -161,9 +161,9 @@
               :data="place.values"
               :control="locationData.values"
               variable="dead_rolling_per_100k"
-              :x-domain="xDomain"
-              :y-max="yMaxD"
-              :color-scale="colorScale"
+              :xDomain="xDomain"
+              :yMax="yMaxD"
+              :colorScale="colorScale"
               label="deaths"
             />
           </td>

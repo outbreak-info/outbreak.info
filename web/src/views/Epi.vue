@@ -10,7 +10,7 @@
     <!-- autocomplete region selector -->
     <Autocomplete
       class="m-auto"
-      :to-add="addable"
+      :toAdd="addable"
       :selected="selectedPlaces"
       @selected="updateSelected"
     />
@@ -127,26 +127,26 @@
           class="w-100 px-3 d-flex justify-content-center flex-wrap"
         >
           <Bargraph
-            v-for="(countryData, idx) in data$[0]"
-            :id="String(idx)"
-            :key="idx"
-            class="mr-3 mb-3"
-            :data="countryData.value"
-            :title="countryData.value[0].name"
-            :variable-obj="variableObj"
-            :include-axis="true"
-            :width="bargraphWidth"
-            :height="bargraphHeight"
-            :transform-chart="bargraphTransform"
-            :tooltip-idx="'n-' + idx"
-            :include-tooltips="true"
-            :location="location"
-            :log="isLogY"
-            :percapita="isPerCapita"
-            :x-variable-lim="xLim"
-            :fixed-y-max="yMax"
-            :animate="true"
-            :color="colorScale(countryData.key)"
+              v-for="(countryData, idx) in data$[0]"
+              :key="idx"
+              class="mr-3 mb-3"
+              :data="countryData.value"
+              :title="countryData.value[0].name"
+              :variableObj="variableObj"
+              :includeAxis="true"
+              :width="bargraphWidth"
+              :height="bargraphHeight"
+              :transformChart="bargraphTransform"
+              :tooltipIdx="'n-' + idx"
+              :includeTooltips="true"
+              :location="location"
+              :log="isLogY"
+              :percapita="isPerCapita"
+              :xVariableLim="xLim"
+              :fixedYMax="yMax"
+              :animate="true"
+              :id="String(idx)"
+              :color="colorScale(countryData.key)"
           />
         </div>
 
@@ -156,9 +156,9 @@
           v-if="data$"
           class="mx-3"
           :ids="variableObj.sources"
-          data-type="epidemiology"
-          figure-ref="epi-bargraph"
-          :num-svgs="data$[0].length"
+          dataType="epidemiology"
+          figureRef="epi-bargraph"
+          :numSvgs="data$[0].length"
           :data="data$[0]"
         />
       </div>
@@ -173,7 +173,7 @@
           :data="plottedData"
           :percapita="isPerCapita"
           :location="location"
-          :variable-obj="variableObj"
+          :variableObj="variableObj"
           :log="isLogY"
           :loggable="variable !== 'testing_positivity'"
           :percent="variable === 'testing_positivity'"
@@ -187,8 +187,8 @@
           v-if="data$"
           class="col-sm-12"
           :ids="variableObj.sources"
-          data-type="epidemiology"
-          figure-ref="epi-curve"
+          dataType="epidemiology"
+          figureRef="epi-curve"
           :data="data$[0]"
         />
       </template>
@@ -239,8 +239,8 @@
       <EpiTable
         class="row overflow-auto mx-5"
         :locations="selectedPlaces"
-        :color-scale="colorScale"
-        color-var="location_id"
+        :colorScale="colorScale"
+        colorVar="location_id"
       />
     </div>
   </div>
@@ -462,7 +462,7 @@ export default {
         )[0];
       },
     },
-    fixedY() {
+    fixedY(newValue, oldValue) {
       if (newValue === 'true') {
         const varUsed = this.isPerCapita
           ? this.variable + '_per_100k'
@@ -477,19 +477,18 @@ export default {
         this.isFixedY = false;
       }
     },
-    isFixedY() {
+    isFixedY(newValue, oldValue) {
       this.changeVariable();
     },
-    percapita() {
+    percapita(newValue, oldValue) {
       this.isPerCapita = newValue === 'true';
     },
-    isPerCapita() {
+    isPerCapita(newValue, oldValue) {
       this.changeVariable();
     },
-    isOverlay() {
+    isOverlay(newValue, oldValue) {
       if (newValue) {
         this.isOverlay = false;
-
         const newVariable = this.variable.replace('_numIncrease', '_rolling');
         this.$router.push({
           name: 'Epidemiology',
@@ -506,7 +505,7 @@ export default {
         });
       }
     },
-    showAll() {
+    showAll(newValue, oldValue) {
       if (newValue) {
         this.addable = [];
         this.plottedData = this.data$ ? this.data$[0] : null;

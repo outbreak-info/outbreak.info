@@ -67,7 +67,7 @@
                 Resources
               </h3>
               <DownloadData
-                download-label="all resources"
+                downloadLabel="all resources"
                 type="resources"
                 query="__all__"
                 :api="$resourceurl"
@@ -86,7 +86,7 @@
                   {{ resource.category }}
                 </h4>
                 <DownloadData
-                  :download-label="`all ${resource.category}`"
+                  :downloadLabel="`all ${resource.category}`"
                   type="resources"
                   :query="`@type:${resource.id}`"
                   :api="$resourceurl"

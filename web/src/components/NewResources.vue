@@ -15,7 +15,7 @@
               class="no-underline m-0"
               :class="item['@type']"
             >
-              <StripeAccent :class-name="item['@type']" />
+              <StripeAccent :className="item['@type']" />
 
               {{ item['@type'] }}
             </router-link>

@@ -54,8 +54,8 @@
     <div v-if="showCopy && !noMap" class="w-75">
       <DownloadReportData
         :data="data"
-        figure-ref="report-choropleth"
-        data-type="Mutation Report Choropleth"
+        figureRef="report-choropleth"
+        dataType="Mutation Report Choropleth"
       />
     </div>
   </div>
@@ -203,7 +203,7 @@ export default {
     this.debounceSetDims = this.debounce(this.setDims, 150);
   },
   mounted() {
-    this.$nextTick(() => {
+    this.$nextTick(function () {
       window.addEventListener('resize', this.debounceSetDims);
 
       this.$root.$on('update:countThreshold', (newThreshold) => {

@@ -85,9 +85,9 @@
 
       <DownloadReportData
         :data="data"
-        figure-ref="sublineage_counts"
-        data-type="Sublineage breakdown"
-        :full-width="false"
+        figureRef="sublineage_counts"
+        dataType="Sublineage breakdown"
+        :fullWidth="false"
       />
     </div>
 

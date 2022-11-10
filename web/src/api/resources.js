@@ -28,7 +28,6 @@ const filterString2Arr = (filterString) => {
 
 const filterArr2String = (filterArr) => {
   return filterArr
-
     .map((d) => `${d.key}:("${d.values.join('" OR "')}")`)
     .join(' AND ');
 };
@@ -41,7 +40,6 @@ export const getResources = (
   size,
   page,
   dateMin,
-
   dateMax,
 ) => {
   let comboString;
@@ -101,7 +99,6 @@ export const getResources = (
             ? newval
             : {
                 term: obj.term,
-
                 count: 0,
               };
           Object.assign(obj, newval);
@@ -223,7 +220,6 @@ export const getResourceFacets = (
     'topicCategory',
     'interventions.name',
     // "sponsor.name",
-
     'funding.funder.name',
     'measurementTechnique',
     'variableMeasured',
@@ -314,7 +310,6 @@ export const getMostRecent = (
   filterString,
   sortVar = '-date',
   num2Return = 3,
-
   fields = ['@type', 'name', 'author', 'creator', 'date'],
 ) => {
   const today = new Date();
@@ -362,7 +357,6 @@ export const getMostRecentGroup = (
     getMostRecent(
       apiUrl,
       queryString,
-
       '@type:Publication',
       sortVar,
       num2Return,
@@ -382,7 +376,6 @@ export const getMostRecentGroup = (
         Publication: pubs,
         Dataset: datasets,
         ClinicalTrial: trials,
-
         Protocol: protocols,
       };
     }),
@@ -428,11 +421,7 @@ export const getQuerySummary = (
     pluck('data'),
     map((results) => {
       results['types'] = results['facets']['@type']['terms'];
-
-      results['facets']['date']['terms'].forEach((d) => {
-        d['date'] = dateParse(d.term);
-      });
-
+      const dateParse = timeParse('%Y-%m-%dT00:00:00.000Z');
       results['facets']['date']['terms'].forEach((d) => {
         d['date'] = dateParse(d.term);
       });

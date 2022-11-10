@@ -9,8 +9,8 @@
     <section class="case-data-table p-1">
       <EpiTable
         :routable="true"
-        :color-scale="regionColorScale"
-        color-var="wb_region"
+        :colorScale="regionColorScale"
+        colorVar="wb_region"
       />
       <DataSource />
     </section>

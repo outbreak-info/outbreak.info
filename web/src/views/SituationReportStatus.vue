@@ -104,13 +104,13 @@
               </div>
               <TypeaheadSelect
                 class="form-control"
-                :is-standalone="false"
-                :query-function="queryLocation"
-                :api-url="this.$genomicsurl"
-                label-variable="label"
+                :isStandalone="false"
+                :queryFunction="queryLocation"
+                :apiUrl="this.$genomicsurl"
+                labelVariable="label"
                 placeholder="Change location"
-                total-label="total sequences"
-                :remove-on-select="true"
+                totalLabel="total sequences"
+                :removeOnSelect="true"
                 @selected="updateLocation"
               />
             </div>
@@ -168,13 +168,13 @@
               </div>
               <TypeaheadSelect
                 class="form-control"
-                :is-standalone="false"
-                :query-function="queryLocation"
-                :api-url="this.$genomicsurl"
-                label-variable="label"
+                :isStandalone="false"
+                :queryFunction="queryLocation"
+                :apiUrl="this.$genomicsurl"
+                labelVariable="label"
                 placeholder="Change location"
-                total-label="total sequences"
-                :remove-on-select="true"
+                totalLabel="total sequences"
+                :removeOnSelect="true"
                 @selected="updateLocation"
               />
             </div>
@@ -185,13 +185,13 @@
             :width="widthHist"
             :height="250"
             :downward="false"
-            :include-x-axis="true"
+            :includeXAxis="true"
             :margin="marginHist"
-            :mutation-name="null"
-            class-name="sequencing-histogram"
+            :mutationName="null"
+            className="sequencing-histogram"
             title="By collection date"
-            :only-totals="true"
-            not-detected-color="#bab0ab"
+            :onlyTotals="true"
+            notDetectedColor="#bab0ab"
           />
         </section>
 
@@ -215,13 +215,13 @@
               </div>
               <TypeaheadSelect
                 class="form-control"
-                :is-standalone="false"
-                :query-function="queryLocation"
-                :api-url="this.$genomicsurl"
-                label-variable="label"
+                :isStandalone="false"
+                :queryFunction="queryLocation"
+                :apiUrl="this.$genomicsurl"
+                labelVariable="label"
                 placeholder="Change location"
-                total-label="total sequences"
-                :remove-on-select="true"
+                totalLabel="total sequences"
+                :removeOnSelect="true"
                 @selected="updateLocation"
               />
             </div>

@@ -39,12 +39,12 @@
               id="time-trace"
               :data="timeTrace"
               :date1="date1"
-              :include2week="isDiff"
-              :variable-obj="{ value: 'confirmed_numIncrease' }"
+              :include2Week="isDiff"
+              :variableObj="{ value: 'confirmed_numIncrease' }"
               :width="100"
               :height="40"
               :color="'#9f9f9f'"
-              color-average="#2c3e50"
+              colorAverage="#2c3e50"
             />
           </div>
           <div class="d-flex flex-column ml-3">
@@ -89,12 +89,12 @@
               id="time-trace"
               :data="timeTrace"
               :date1="date1"
-              :include2week="isDiff"
-              :variable-obj="{ value: 'dead_numIncrease' }"
+              :include2Week="isDiff"
+              :variableObj="{ value: 'dead_numIncrease' }"
               :width="100"
               :height="40"
               :color="'#9f9f9f'"
-              color-average="#2c3e50"
+              colorAverage="#2c3e50"
             />
           </div>
           <div class="d-flex flex-column ml-3">
@@ -140,12 +140,12 @@
         :data="data"
         :animate="animate"
         :transition1="transition1"
-        :min-val="selectedMin"
-        :max-val="selectedMax"
+        :minVal="selectedMin"
+        :maxVal="selectedMax"
         :width="widthLegend"
         :variable="variable"
-        :variable-label="variableLabel"
-        :color-scale="colorScale"
+        :variableLabel="variableLabel"
+        :colorScale="colorScale"
       />
       <div v-if="filteredData" class="d-flex justify-content-between mt-4">
         <DotPlot
@@ -153,24 +153,24 @@
           :variable="variable"
           :animate="animate"
           :transition1="transition1"
-          :color-scale="colorScale"
-          :sort-asc="false"
+          :colorScale="colorScale"
+          :sortAsc="false"
           :title="variableLabel"
           :width="widthLegend / 2 - 5"
-          :right-align="rightAlignDesc"
-          :var-max="varMax"
+          :rightAlign="rightAlignDesc"
+          :varMax="varMax"
         />
         <DotPlot
           :data="filteredData"
           :variable="variable"
           :animate="animate"
           :transition1="transition1"
-          :color-scale="colorScale"
-          :sort-asc="true"
+          :colorScale="colorScale"
+          :sortAsc="true"
           :title="variableLabel"
           :width="widthLegend / 2 - 5"
-          :right-align="rightAlignAsc"
-          :var-max="varMax"
+          :rightAlign="rightAlignAsc"
+          :varMax="varMax"
         />
       </div>
       <DataUpdated />

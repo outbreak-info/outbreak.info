@@ -178,17 +178,17 @@
 
         <!-- Histogram of sequencing counts -->
         <SequencingHistogram
-          :data="seqCounts"
           v-if="seqCounts && seqCounts.length"
-          :x-input="x"
+          :data="seqCounts"
+          :xInput="x"
           :width="width"
-          :svg-title="title"
+          :svgTitle="title"
           :margin="marginHist"
-          :mutation-name="mutationName"
-          :only-totals="onlyTotals"
-          not-detected-color="#bab0ab"
-          detected-color="#79706E"
-          class-name="mutation-epi-prevalence"
+          :mutationName="mutationName"
+          :onlyTotals="onlyTotals"
+          notDetectedColor="#bab0ab"
+          detectedColor="#79706E"
+          className="mutation-epi-prevalence"
         />
 
         <!-- zoom btns -->
@@ -304,9 +304,9 @@
 
     <DownloadReportData
       :data="data"
-      figure-ref="mutation-epi-prevalence"
-      :is-vertical="true"
-      data-type="Mutation Report Prevalence over Time"
+      figureRef="mutation-epi-prevalence"
+      :isVertical="true"
+      dataType="Mutation Report Prevalence over Time"
     />
   </div>
 </template>

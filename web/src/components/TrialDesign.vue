@@ -5,9 +5,9 @@
       {{ data.healthCondition.length === 1 ? 'Condition:' : 'Conditions' }}
       <SearchLink
         :data="data.healthCondition"
-        tooltip-label="trials"
-        filter-field="@type:ClinicalTrial"
-        search-field="healthCondition"
+        tooltipLabel="trials"
+        filterField="@type:ClinicalTrial"
+        searchField="healthCondition"
       />
     </div>
 
@@ -16,9 +16,9 @@
       Type:
       <SearchLink
         :data="[data.studyDesign.studyType]"
-        tooltip-label="trials"
-        filter-field="@type:ClinicalTrial"
-        search-field="studyDesign.studyType"
+        tooltipLabel="trials"
+        filterField="@type:ClinicalTrial"
+        searchField="studyDesign.studyType"
       />
     </div>
 
@@ -30,9 +30,9 @@
       Primary Purpose:
       <SearchLink
         :data="[data.studyDesign.designPrimaryPurpose]"
-        tooltip-label="trials"
-        filter-field="@type:ClinicalTrial"
-        search-field="studyDesign.designPrimaryPurpose"
+        tooltipLabel="trials"
+        filterField="@type:ClinicalTrial"
+        searchField="studyDesign.designPrimaryPurpose"
       />
     </div>
 
@@ -44,15 +44,15 @@
     >
       Phase:
       <TrialPhase
-        :include-label="false"
+        :includeLabel="false"
         :phases="data.studyDesign.phaseNumber"
         class="ml-2"
       />
       <SearchLink
         :data="data.studyDesign.phase"
-        tooltip-label="trials"
-        filter-field="@type:ClinicalTrial"
-        search-field="studyDesign.phase"
+        tooltipLabel="trials"
+        filterField="@type:ClinicalTrial"
+        searchField="studyDesign.phase"
       />
     </div>
 
@@ -64,9 +64,9 @@
       Model:
       <SearchLink
         :data="data.studyDesign.designModel"
-        tooltip-label="trials"
-        filter-field="@type:ClinicalTrial"
-        search-field="studyDesign.designModel"
+        tooltipLabel="trials"
+        filterField="@type:ClinicalTrial"
+        searchField="studyDesign.designModel"
       />
     </div>
 
@@ -78,9 +78,9 @@
       Participant Allocation:
       <SearchLink
         :data="[data.studyDesign.designAllocation]"
-        tooltip-label="trials"
-        filter-field="@type:ClinicalTrial"
-        search-field="studyDesign.designAllocation"
+        tooltipLabel="trials"
+        filterField="@type:ClinicalTrial"
+        searchField="studyDesign.designAllocation"
       />
     </div>
   </div>

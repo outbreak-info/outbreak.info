@@ -8,13 +8,13 @@
       </div>
       <input
         id="sBar"
+        v-model="search"
         class="form-control"
         :class="[darkMode ? 'border-0' : 'border']"
         :placeholder="placeholder"
         aria-label="search"
         aria-describedby="sb"
         type="text"
-        v-model="search"
         @input="onChange"
         @keydown.down="onArrowDown"
         @keydown.up="onArrowUp"
@@ -24,16 +24,16 @@
         @keydown.meta.65="onSelectAll"
       />
       <ul
-        id="autocomplete-results"
         v-show="isOpen"
+        id="autocomplete-results"
         class="autocomplete-results bg-dark text-light"
       >
         <li class="loading" v-if="isLoading">
           Loading results...
         </li>
         <li
-          v-else
           v-for="(result, i) in results"
+          v-else
           :key="i"
           @click="setResult(result)"
           class="autocomplete-result"

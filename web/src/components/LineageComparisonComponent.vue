@@ -353,9 +353,9 @@
               <div class="d-flex h-100 align-items-center">
                 <div style="width: 170px" class="align-self-middle">
                   <TypeaheadSelect
-                    :query-function="queryPangolin"
-                    :api-url="this.$genomicsurl"
-                    :remove-on-select="true"
+                    :queryFunction="queryPangolin"
+                    :apiUrl="this.$genomicsurl"
+                    :removeOnSelect="true"
                     placeholder="Add lineage"
                     @selected="addPango"
                   />
@@ -493,13 +493,13 @@
                     </span>
                   </label>
                   <TypeaheadSelect
-                    :query-function="queryLocation"
-                    :selected-value="selectedLocation"
-                    :api-url="this.$genomicsurl"
-                    label-variable="label"
-                    :remove-on-select="false"
+                    :queryFunction="queryLocation"
+                    :selectedValue="selectedLocation"
+                    :apiUrl="this.$genomicsurl"
+                    labelVariable="label"
+                    :removeOnSelect="false"
                     placeholder="Select location"
-                    total-label="total sequences"
+                    totalLabel="total sequences"
                     @selected="updateLocation"
                   />
                 </div>
@@ -736,8 +736,8 @@
             :class="{ 'bg-dark': darkMode }"
           >
             <GradientLegend
-              max-value="100%"
-              :color-scale="colorScale"
+              maxValue="100%"
+              :colorScale="colorScale"
               :dark="darkMode"
               label="Mutation prevalence in lineage"
               class="mr-3"
@@ -823,14 +823,14 @@
 
               <MutationHeatmap
                 :data="geneData.values"
-                :y-domain="selectedPango"
+                :yDomain="selectedPango"
                 :gene="geneData.key"
                 :voc="voc"
                 :voi="voi"
                 :moc="moc"
                 :moi="moi"
                 :dark="darkMode"
-                :route-to="routeTo"
+                :routeTo="routeTo"
               />
             </template>
           </div>
@@ -838,9 +838,9 @@
         <DownloadReportData
           class="mt-3"
           :data="downloadableHeatmap"
-          figure-ref="mutation-heatmap"
-          data-type="Mutation Report Heatmap"
-          :dark-mode="darkMode"
+          figureRef="mutation-heatmap"
+          dataType="Mutation Report Heatmap"
+          :darkMode="darkMode"
         />
       </div>
     </div>
@@ -848,15 +848,15 @@
       <!-- METHODOLOGY -->
       <section id="methods" class="mt-3 mb-5 border-top pt-3">
         <h4>Methodology</h4>
-        <ReportMethodology :date-updated="lastUpdated" :summary="true" />
+        <ReportMethodology :dateUpdated="lastUpdated" :summary="true" />
         <Warning class="mt-2" :text="disclaimer" />
       </section>
 
       <!-- CITATION -->
       <GenomicsCitation
         :title="title"
-        :mutation-authors="mutationAuthors"
-        :genomics-citation="genomicsCitation"
+        :mutationAuthors="mutationAuthors"
+        :genomicsCitation="genomicsCitation"
         :url="url"
         :today="today"
       />

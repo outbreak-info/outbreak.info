@@ -109,7 +109,7 @@
             :date="selectedDate"
             :min="minDate"
             :max="maxDate"
-            :admin-level="admin_level"
+            :adminLevel="admin_level"
           />
         </div>
       </div>
@@ -118,21 +118,21 @@
     <Choropleth
       :data="data"
       :animate="animate"
-      :blank-map="blankMap"
+      :blankMap="blankMap"
       :outline="outline"
-      :selected-min="selectedMin"
-      :selected-max="selectedMax"
-      :color-scale="colorScale"
-      :admin-level="admin_level"
+      :selectedMin="selectedMin"
+      :selectedMax="selectedMax"
+      :colorScale="colorScale"
+      :adminLevel="admin_level"
       :variable="selectedVariable.value"
-      :variable-label="selectedVariable.choro"
+      :variableLabel="selectedVariable.choro"
       :date1="selectedDate"
-      :max-date="maxDate"
+      :maxDate="maxDate"
     />
     <DataSource
       :data="data"
-      data-type="maps"
-      figure-ref="epi-map-svg"
+      dataType="maps"
+      figureRef="epi-map-svg"
       :ids="['NYT', 'JHU']"
     />
   </div>

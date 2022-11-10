@@ -207,9 +207,9 @@
       <CountryMap
         :countries="countries"
         :width="summaryWidth"
-        :show-names="false"
+        :showNames="false"
         class="align-self-center"
-        map-source="GADM"
+        mapSource="GADM"
       />
       <small class="bright-hyperlink">
         <a href="#geographic">view geographic prevalence</a>

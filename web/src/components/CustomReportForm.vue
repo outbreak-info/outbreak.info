@@ -2,9 +2,9 @@
   <div>
     <VariantForm
       :minimalistic="minimalistic"
-      :selected-lineage.sync="selectedLineage"
-      :submit-label.sync="submitLabel"
-      :selected-mutations.sync="selectedMutations"
+      :selectedLineage.sync="selectedLineage"
+      :submitLabel.sync="submitLabel"
+      :selectedMutations.sync="selectedMutations"
       :submitted="submitCount"
     />
 

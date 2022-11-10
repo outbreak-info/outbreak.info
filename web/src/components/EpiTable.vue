@@ -136,7 +136,7 @@
                 class="router-link font-weight-bold"
               >
                 {{
-                  row.admin_level == 2
+                  row.admin_level === 2
                     ? row[column.value] + ', ' + row.admin1
                     : row[column.value]
                 }}
@@ -148,7 +148,7 @@
               <!-- not routable location name -->
               <span v-else>
                 {{
-                  row.admin_level == 2
+                  row.admin_level === 2
                     ? row[column.value] + ', ' + row.admin1
                     : row[column.value]
                 }}

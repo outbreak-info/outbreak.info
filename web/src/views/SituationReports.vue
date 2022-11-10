@@ -13,7 +13,10 @@
 
     <div class="my-2 mx-4 px-4">
       <!-- LOADING -->
-      <div v-if="reportloading" class="loader">
+      <div
+        v-if="reportloading"
+        class="loader"
+      >
         <font-awesome-icon
           class="fa-pulse fa-4x text-highlight"
           :icon="['fas', 'spinner']"
@@ -22,7 +25,11 @@
 
       <!-- Header info -->
       <div class="mb-1">
-        <img src="@/assets/sars-virus.svg" alt="map" class="bg-image" />
+        <img
+          src="@/assets/sars-virus.svg"
+          alt="map"
+          class="bg-image"
+        >
         <div
           class="d-flex flex-column justify-content-center align-items-center"
         >
@@ -40,7 +47,7 @@
                   src="@/assets/resources/gisaid.png"
                   class="gisaid-lg ml-2"
                   alt="GISAID Initiative"
-                />
+                >
               </a>
             </div>
           </div>
@@ -48,7 +55,11 @@
           <!-- Select custom reports -->
           <div class="w-75 mt-2 text-left">
             The
-            <a href="https://cvisb.org/" rel="noreferrer" target="_blank">
+            <a
+              href="https://cvisb.org/"
+              rel="noreferrer"
+              target="_blank"
+            >
               CViSB Team
             </a>
             at Scripps Research is tracking the prevalence of SARS-CoV-2
@@ -58,16 +69,26 @@
             with any combination of lineages and/or mutations.
           </div>
           <div class="d-flex align-items-center justify-content-between my-2">
-            <div id="date-updated" class="mr-2">
+            <div
+              id="date-updated"
+              class="mr-2"
+            >
               <small
                 v-if="lastUpdated"
                 class="text-muted badge bg-grey__lightest mt-1"
               >
-                <font-awesome-icon class="mr-1" :icon="['far', 'clock']" />
+                <font-awesome-icon
+                  class="mr-1"
+                  :icon="['far', 'clock']"
+                />
                 Updated {{ lastUpdated }} ago
               </small>
             </div>
-            <div v-if="total" id="sequence-count" class="ml-2 mr-5 text-muted">
+            <div
+              v-if="total"
+              id="sequence-count"
+              class="ml-2 mr-5 text-muted"
+            >
               with
               <span class="text-highlight">{{ total }} sequences</span>
               from GISAID
@@ -80,15 +101,20 @@
             <div class="d-flex flex-wrap">
               View:
               <div class="d-flex flex-wrap flex-column">
-                <router-link class="mx-3 mb-1" :to="{ hash: '#voc' }">
+                <router-link
+                  class="mx-3 mb-1"
+                  :to="{ hash: '#voc' }"
+                >
                   Variants of Concern
                 </router-link>
 
                 <div class="d-flex flex-column mx-3 mb-1">
-                  <router-link :to="{ hash: '#voi' }" class="">
+                  <router-link
+                    :to="{ hash: '#voi' }"
+                    class=""
+                  >
                     Variants of Interest
                   </router-link>
-
                   <div class="text-muted text-size-xs mt-n1">
                     a.k.a. Variants Under Investigation
                   </div>
@@ -97,20 +123,24 @@
 
               <div class="d-flex flex-wrap flex-column mx-3">
                 <div class="d-flex flex-column mx-3 mb-1">
-                  <router-link :to="{ hash: '#previous-voc' }" class="">
+                  <router-link
+                    :to="{ hash: '#previous-voc' }"
+                    class=""
+                  >
                     Previous Variants of Concern
                   </router-link>
-
                   <div class="text-muted text-size-xs mt-n1">
                     VOCs no longer circulating
                   </div>
                 </div>
 
                 <div class="d-flex flex-column mx-3 mb-1">
-                  <router-link :to="{ hash: '#de-escalated' }" class="">
+                  <router-link
+                    :to="{ hash: '#de-escalated' }"
+                    class=""
+                  >
                     De-escalated Variants
                   </router-link>
-
                   <div class="text-muted text-size-xs mt-n1">
                     VOIs/VUMs no longer circulating
                   </div>
@@ -118,11 +148,17 @@
               </div>
 
               <div class="d-flex flex-wrap flex-column mx-3">
-                <router-link class="mx-3 mb-1" :to="{ hash: '#moc' }">
+                <router-link
+                  class="mx-3 mb-1"
+                  :to="{ hash: '#moc' }"
+                >
                   Mutations of Concern
                 </router-link>
 
-                <router-link class="mx-3 mb-1" :to="{ hash: '#moi' }">
+                <router-link
+                  class="mx-3 mb-1"
+                  :to="{ hash: '#moi' }"
+                >
                   Mutations of Interest
                 </router-link>
               </div>
@@ -133,7 +169,10 @@
             </button>
           </div> -->
 
-            <div id="filter-classifiers" class="mt-3 collapse">
+            <div
+              id="filter-classifiers"
+              class="mt-3 collapse"
+            >
               <div class="d-flex flex-wrap align-items-center my-3">
                 <small class="text-muted mr-2">VOC classified by:</small>
                 <label
@@ -144,8 +183,7 @@
                   <img
                     :src="require(`@/assets/${curator.src}`)"
                     class="variant-logo mr-1"
-                    alt="curator"
-                  />
+                  >
                   <span>{{ curator.label }}</span>
                   <input
                     :id="curator.label"
@@ -153,7 +191,7 @@
                     type="checkbox"
                     :value="curator.id"
                     @change="filterVOC()"
-                  />
+                  >
                   <div class="b-input" />
                 </label>
               </div>
@@ -168,8 +206,7 @@
                   <img
                     :src="require(`@/assets/${curator.src}`)"
                     class="variant-logo mr-1"
-                    alt="curator"
-                  />
+                  >
                   <span>{{ curator.label }}</span>
                   <input
                     :id="curator.label"
@@ -177,7 +214,7 @@
                     type="checkbox"
                     :value="curator.id"
                     @change="filterVOC()"
-                  />
+                  >
                   <div class="b-input" />
                 </label>
               </div>
@@ -188,8 +225,7 @@
                   <img
                     :src="require(`@/assets/icon-01.svg`)"
                     class="variant-logo mr-1"
-                    alt="icon-01"
-                  />
+                  >
                   <span>outbreak.info</span>
                   <input
                     id="outbreak.info"
@@ -197,7 +233,7 @@
                     type="checkbox"
                     value="outbreak"
                     @change="filterMOC()"
-                  />
+                  >
                   <div class="b-input" />
                 </label>
               </div>
@@ -208,8 +244,7 @@
                   <img
                     :src="require(`@/assets/icon-01.svg`)"
                     class="variant-logo mr-1"
-                    alt="icon-01"
-                  />
+                  >
                   <span>outbreak.info</span>
                   <input
                     id="outbreak.info"
@@ -217,7 +252,7 @@
                     type="checkbox"
                     value="outbreak"
                     @change="filterMOC()"
-                  />
+                  >
                   <div class="b-input" />
                 </label>
               </div>
@@ -234,7 +269,10 @@
                 </div>
               </div>
 
-              <section id="custom-report" class="collapse text-left">
+              <section
+                id="custom-report"
+                class="collapse text-left"
+              >
                 <CustomReportForm />
               </section>
             </div>
@@ -242,7 +280,10 @@
         </div>
       </div>
 
-      <section id="report-list" class="text-left">
+      <section
+        id="report-list"
+        class="text-left"
+      >
         <!-- lineage groups -->
         <div
           v-for="(group, i) in filteredReports"
@@ -251,13 +292,19 @@
           class="lineage-group my-10"
         >
           <template
-            v-if="group.id !== 'deescalated' && group.id !== 'previous_voc'"
+            v-if="group.id != 'deescalated' && group.id != 'previous_voc'"
           >
             <div class="d-flex justify-content-between">
-              <h2 :id="group.id" class="mb-0">
+              <h2
+                :id="group.id"
+                class="mb-0"
+              >
                 {{ group.key | capitalize }} Reports
               </h2>
-              <div v-if="i === 0" class="d-flex align-items-center text-sec">
+              <div
+                v-if="i === 0"
+                class="d-flex align-items-center text-sec"
+              >
                 <font-awesome-icon
                   class="mr-2"
                   :icon="['fas', 'info-circle']"
@@ -287,13 +334,12 @@
             <template v-if="group.values.length">
               <!-- filter to hide VOCs / VOIs -->
               <div
-                v-if="group.id !== 'vum'"
+                v-if="group.id != 'vum'"
                 class="d-flex flex-wrap align-items-center ml-3 my-3 border-top border-bottom bg-white py-2 justify-content-center"
               >
                 <small class="text-muted mr-2">
                   include {{ group.id.toUpperCase() }}s classified by:
                 </small>
-
                 <label
                   v-for="(curator, idx) in curatorOpts"
                   :key="idx"
@@ -302,25 +348,24 @@
                   <img
                     :src="require(`@/assets/${curator.src}`)"
                     class="variant-logo mr-1"
-                    alt="curator"
-                  />
+                  >
                   <span>{{ curator.label }}</span>
                   <input
-                    v-if="group.id === 'voc'"
+                    v-if="group.id == 'voc'"
                     :id="curator.label"
                     v-model.lazy="selectedVOC"
                     type="checkbox"
                     :value="curator.id"
                     @change="filterVOC()"
-                  />
+                  >
                   <input
-                    v-if="group.id === 'voi'"
+                    v-if="group.id == 'voi'"
                     :id="curator.label"
                     v-model.lazy="selectedVOI"
                     type="checkbox"
                     :value="curator.id"
                     @change="filterVOC()"
-                  />
+                  >
                   <div class="b-input" />
                 </label>
                 <button
@@ -355,7 +400,7 @@
                               aria-describedby="sb"
                               type="text"
                               @input="debounceSearch"
-                            />
+                            >
                             <div class="input-group-prepend">
                               <span
                                 id="sb"
@@ -377,10 +422,10 @@
                     <th>
                       total
                     </th>
-                    <!-- <th>
-                      S-gene Mutations
-                      <sup>*</sup>
-                    </th> -->
+                  <!-- <th>
+                    S-gene Mutations
+                    <sup>*</sup>
+                  </th> -->
                   </tr>
                 </thead>
 
@@ -475,7 +520,7 @@
                             >
                               <h4
                                 v-for="(parentLineage,
-                                pIdx) in report.pangolin_lineage"
+                                        pIdx) in report.pangolin_lineage"
                                 :id="anchorLink(parentLineage)"
                                 :key="pIdx"
                                 class="m-0 parent-lineage"
@@ -530,7 +575,7 @@
                               <template v-if="report.showSublineages">
                                 <span
                                   v-for="(sublineage,
-                                  sIdx) in report.pango_sublineages"
+                                          sIdx) in report.pango_sublineages"
                                   :id="anchorLink(sublineage)"
                                   :key="sIdx"
                                 >
@@ -561,10 +606,10 @@
                               <template v-else>
                                 <span
                                   v-for="(sublineage,
-                                  sIdx) in report.pango_sublineages.slice(
-                                    0,
-                                    sublineageMax,
-                                  )"
+                                          sIdx) in report.pango_sublineages.slice(
+                                            0,
+                                            sublineageMax,
+                                          )"
                                   :id="anchorLink(sublineage)"
                                   :key="sIdx"
                                 >
@@ -582,7 +627,6 @@
                                   >
                                     {{ sublineage }}
                                   </router-link>
-
                                   <span
                                     v-if="
                                       sIdx < report.pango_sublineages.length - 1
@@ -595,7 +639,7 @@
                                     v-if="
                                       sIdx === sublineageMax - 1 &&
                                         sIdx !==
-                                          report.pango_sublineages.length - 1
+                                        report.pango_sublineages.length - 1
                                     "
                                     class="mx-1 opacity-75"
                                   >
@@ -606,7 +650,6 @@
                                           sublineageMax
                                       }}
                                     </span>
-
                                     more
                                     <small>
                                       <a
@@ -688,8 +731,7 @@
                                 <img
                                   :src="require(`@/assets/${curator.src}`)"
                                   class="variant-logo"
-                                  alt="curator"
-                                />
+                                >
                               </th>
                             </tr>
                           </thead>
@@ -718,9 +760,9 @@
                                 :key="cIdx + 'td'"
                                 :class="[
                                   report.classificationTable[variant.id] &&
-                                  report.classificationTable[variant.id][
-                                    curator.id
-                                  ]
+                                    report.classificationTable[variant.id][
+                                      curator.id
+                                    ]
                                     ? variant.id + '-bg'
                                     : 'no-classification',
                                 ]"
@@ -766,49 +808,49 @@
                         {{ report.lineage_count }}
                       </td>
 
-                      <!-- s-gene mutations heatmap -->
-                      <!-- <td>
-                        <div class="d-flex flex-column align-items-center">
-                          <MutationHeatmap
-                            :data="report.mutations"
-                            :dark="false"
-                            gene="S"
-                            :yDomain="report.mutationsYDomain"
-                            :moc="curatedMOC"
-                            :moi="curatedMOI"
-                            v-if="report.mutations.length"
-                          />
-                          <div class="d-flex">
-                            <router-link
-                              class="text-muted"
-                              :to="{
-                                name: 'SituationReportComparison',
-                                query: { pango: report.who_name, sub: true },
-                              }"
-                              v-if="report.mutations.length && report.who_name"
-                            >
-                              <small v-if="report.pango_sublineages.length">
-                                Compare {{ report.who_name }} sublineages
-                              </small>
-                              <small v-else>Explore all genes</small>
-                            </router-link>
-                            <router-link
-                              class="text-muted"
-                              :to="{
-                                name: 'SituationReportComparison',
-                                query: { pango: report.char_muts_query },
-                              }"
-                              v-else-if="report.mutations.length"
-                            >
-                              <small v-if="report.pango_sublineages.length">
-                                Compare
-                                {{ report.pangolin_lineage }} sublineages
-                              </small>
-                              <small v-else>Explore all genes</small>
-                            </router-link>
-                          </div>
+                    <!-- s-gene mutations heatmap -->
+                    <!-- <td>
+                      <div class="d-flex flex-column align-items-center">
+                        <MutationHeatmap
+                          :data="report.mutations"
+                          :dark="false"
+                          gene="S"
+                          :yDomain="report.mutationsYDomain"
+                          :moc="curatedMOC"
+                          :moi="curatedMOI"
+                          v-if="report.mutations.length"
+                        />
+                        <div class="d-flex">
+                          <router-link
+                            class="text-muted"
+                            :to="{
+                              name: 'SituationReportComparison',
+                              query: { pango: report.who_name, sub: true },
+                            }"
+                            v-if="report.mutations.length && report.who_name"
+                          >
+                            <small v-if="report.pango_sublineages.length">
+                              Compare {{ report.who_name }} sublineages
+                            </small>
+                            <small v-else>Explore all genes</small>
+                          </router-link>
+                          <router-link
+                            class="text-muted"
+                            :to="{
+                              name: 'SituationReportComparison',
+                              query: { pango: report.char_muts_query },
+                            }"
+                            v-else-if="report.mutations.length"
+                          >
+                            <small v-if="report.pango_sublineages.length">
+                              Compare
+                              {{ report.pangolin_lineage }} sublineages
+                            </small>
+                            <small v-else>Explore all genes</small>
+                          </router-link>
                         </div>
-                      </td> -->
+                      </div>
+                    </td> -->
                     </tr>
                   </template>
                 </tbody>
@@ -874,8 +916,13 @@
               </div>
             </template>
 
-            <div v-else class="d-flex align-items-center my-3">
-              <h5 class="text-muted m-0">No {{ group.key }} reports found</h5>
+            <div
+              v-else
+              class="d-flex align-items-center my-3"
+            >
+              <h5 class="text-muted m-0">
+                No {{ group.key }} reports found
+              </h5>
               <form
                 autocomplete="off"
                 class="ml-3 fa-sm"
@@ -892,9 +939,12 @@
                     aria-describedby="sb"
                     type="text"
                     @input="debounceSearch"
-                  />
+                  >
                   <div class="input-group-prepend">
-                    <span id="sb" class="input-group-text text-muted border-0">
+                    <span
+                      id="sb"
+                      class="input-group-text text-muted border-0"
+                    >
                       <font-awesome-icon :icon="['fas', 'search']" />
                     </span>
                   </div>
@@ -909,7 +959,10 @@
               </button>
             </div>
           </template>
-          <div v-else-if="group.id === 'previous_voc'" id="previous-voc">
+          <div
+            v-else-if="group.id === 'previous_voc'"
+            id="previous-voc"
+          >
             <h4>Previously Circulating Variants of Concern</h4>
             <div class="text-muted">
               These former VOCs have been de-escalated by public health agencies
@@ -935,7 +988,10 @@
                     }"
                     class="no-underline"
                   >
-                    <h5 :id="anchorLink(report.who_name)" class="m-0">
+                    <h5
+                      :id="anchorLink(report.who_name)"
+                      class="m-0"
+                    >
                       {{ report.label }}/{{
                         Array.isArray(report.pangolin_lineage)
                           ? report.pangolin_lineage.join(' & ')
@@ -955,7 +1011,10 @@
                   }"
                   class="no-underline"
                 >
-                  <h5 :id="anchorLink(report.label)" class="m-0">
+                  <h5
+                    :id="anchorLink(report.label)"
+                    class="m-0"
+                  >
                     {{ report.label }}
                   </h5>
                 </router-link>
@@ -973,14 +1032,20 @@
                   }"
                   class="no-underline"
                 >
-                  <h5 :id="anchorLink(report.pangolin_lineage)" class="m-0">
+                  <h5
+                    :id="anchorLink(report.pangolin_lineage)"
+                    class="m-0"
+                  >
                     {{ report.pangolin_lineage }}
                   </h5>
                 </router-link>
               </div>
             </div>
           </div>
-          <div v-else id="de-escalated">
+          <div
+            v-else
+            id="de-escalated"
+          >
             <h4>De-escalated Variants</h4>
             <div class="text-muted">
               These former VOCs and/or VOIs have been de-escalated by public
@@ -1010,7 +1075,10 @@
                     }"
                     class="no-underline"
                   >
-                    <h5 :id="anchorLink(report.who_name)" class="m-0">
+                    <h5
+                      :id="anchorLink(report.who_name)"
+                      class="m-0"
+                    >
                       {{ report.label }}/{{
                         Array.isArray(report.pangolin_lineage)
                           ? report.pangolin_lineage.join(' & ')
@@ -1030,7 +1098,10 @@
                   }"
                   class="no-underline"
                 >
-                  <h5 :id="anchorLink(report.label)" class="m-0">
+                  <h5
+                    :id="anchorLink(report.label)"
+                    class="m-0"
+                  >
                     {{ report.label }}
                   </h5>
                 </router-link>
@@ -1048,7 +1119,10 @@
                   }"
                   class="no-underline"
                 >
-                  <h5 :id="anchorLink(report.pangolin_lineage)" class="m-0">
+                  <h5
+                    :id="anchorLink(report.pangolin_lineage)"
+                    class="m-0"
+                  >
                     {{ report.pangolin_lineage }}
                   </h5>
                 </router-link>
@@ -1061,7 +1135,11 @@
           <h2 id="moc">
             Mutation of Concern &amp; Interest Reports
           </h2>
-          <button id="moi" class="btn btn-main" @click="getCuratedMutations">
+          <button
+            id="moi"
+            class="btn btn-main"
+            @click="getCuratedMutations"
+          >
             show mutation reports
           </button>
         </template>
@@ -1075,7 +1153,10 @@
             class="mutation-group my-10"
           >
             <div class="d-flex justify-content-between">
-              <h2 :id="group.id" class="mb-0">
+              <h2
+                :id="group.id"
+                class="mb-0"
+              >
                 {{ group.key | capitalize }} Reports
               </h2>
             </div>
@@ -1101,30 +1182,28 @@
                 <small class="text-muted mr-2">
                   include {{ group.id.toUpperCase() }}s classified by:
                 </small>
-
                 <label class="b-contain d-flex align-items-center pr-4 m-0">
                   <img
                     :src="require(`@/assets/icon-01.svg`)"
                     class="variant-logo mr-1"
-                    alt="icon-01"
-                  />
+                  >
                   <span>outbreak.info</span>
                   <input
-                    v-if="group.id === 'moc'"
+                    v-if="group.id == 'moc'"
                     id="outbreak.info"
                     v-model.lazy="selectedMOC"
                     type="checkbox"
                     value="outbreak"
                     @change="filterMOC()"
-                  />
+                  >
                   <input
-                    v-if="group.id === 'moi'"
+                    v-if="group.id == 'moi'"
                     id="outbreak.info"
                     v-model.lazy="selectedMOI"
                     type="checkbox"
                     value="outbreak"
                     @change="filterMOC()"
-                  />
+                  >
                   <div class="b-input" />
                 </label>
                 <button
@@ -1157,7 +1236,7 @@
                               aria-describedby="sb"
                               type="text"
                               @input="debounceSearch"
-                            />
+                            >
                             <div class="input-group-prepend">
                               <span
                                 id="sb"
@@ -1174,7 +1253,6 @@
                       prominent in
                       <sup>**</sup>
                     </th>
-
                     <th>
                       total found
                     </th>
@@ -1252,8 +1330,7 @@
                             src="@/assets/resources/aquaria.svg"
                             style="width: 35px"
                             class="ml-2"
-                            alt="aquaria"
-                          />
+                          >
                           ""
                         </a>
                       </td>
@@ -1269,7 +1346,6 @@
                   <sup class="text-muted mr-1">**</sup>
                   <small class="text-muted">
                     Lineages with the mutation in at least
-
                     {{ charMutThreshold }} of sequences
                   </small>
                 </div>
@@ -1284,8 +1360,13 @@
                 />
               </div> -->
             </template>
-            <div v-else class="d-flex align-items-center my-3">
-              <h5 class="text-muted m-0">No {{ group.key }} reports found</h5>
+            <div
+              v-else
+              class="d-flex align-items-center my-3"
+            >
+              <h5 class="text-muted m-0">
+                No {{ group.key }} reports found
+              </h5>
               <form
                 autocomplete="off"
                 class="ml-3 fa-sm"
@@ -1302,9 +1383,12 @@
                     aria-describedby="sb"
                     type="text"
                     @input="debounceSearch"
-                  />
+                  >
                   <div class="input-group-prepend">
-                    <span id="sb" class="input-group-text text-muted border-0">
+                    <span
+                      id="sb"
+                      class="input-group-text text-muted border-0"
+                    >
                       <font-awesome-icon :icon="['fas', 'search']" />
                     </span>
                   </div>
@@ -1328,6 +1412,8 @@
 </template>
 
 <script>
+import Vue from 'vue';
+
 // import ReportLogos from "@/components/ReportLogos.vue";
 import ReportCard from '@/components/ReportCard.vue';
 import CustomReportForm from '@/components/CustomReportForm.vue';
@@ -1343,7 +1429,6 @@ import 'tippy.js/themes/light.css';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faClock } from '@fortawesome/free-regular-svg-icons';
-
 import {
   faSpinner,
   faInfoCircle,
@@ -1403,25 +1488,25 @@ export default {
           id: 'VOC',
           label: 'Variant of Concern',
           def:
-            'Variants with increased transmissibility, virulence, and/or decreased diagnostic, therapeutic, or vaccine efficacy',
+              'Variants with increased transmissibility, virulence, and/or decreased diagnostic, therapeutic, or vaccine efficacy',
         },
         {
           id: 'VOI',
           label: 'Variant of Interest',
           def:
-            "Variants with mutations suspected or confirmed to cause a change in transmissibility, virulence, or diagnostic / therapeutic / vaccine efficacy, <span class='text-underline'>plus</span> community transmission, a cluster of cases, or detection in multiple countries",
+              "Variants with mutations suspected or confirmed to cause a change in transmissibility, virulence, or diagnostic / therapeutic / vaccine efficacy, <span class='text-underline'>plus</span> community transmission, a cluster of cases, or detection in multiple countries",
         },
         {
           id: 'VUM',
           label: 'Variant Under Monitoring',
           def:
-            'Variants with mutations suspected to cause a change in transmissibility, virulence, or diagnostic / therapeutic / vaccine efficacy',
+              'Variants with mutations suspected to cause a change in transmissibility, virulence, or diagnostic / therapeutic / vaccine efficacy',
         },
         {
           id: 'de-escalated',
           label: 'De-escalated Variant',
           def:
-            'These former VOCs and/or VOIs have been de-escalated by public health agencies based on at least one the following criteria: (1) the variant is no longer circulating, (2) the variant has been circulating for a long time without any impact on the overall epidemiological situation, (3) scientific evidence demonstrates that the variant is not associated with any concerning properties',
+              'These former VOCs and/or VOIs have been de-escalated by public health agencies based on at least one the following criteria: (1) the variant is no longer circulating, (2) the variant has been circulating for a long time without any impact on the overall epidemiological situation, (3) scientific evidence demonstrates that the variant is not associated with any concerning properties',
         },
       ],
       mutationTypes: [
@@ -1429,13 +1514,13 @@ export default {
           id: 'MOC',
           label: 'Mutation of Concern',
           def:
-            "Mutations with evidence of increasing transmissibility or virulence or decreasing therapeutic/vaccine efficacy. <span class='text-underline'>However</span>, the phenotype of a variant depends on <b>all</b> its mutations, not any one particular mutation.",
+              "Mutations with evidence of increasing transmissibility or virulence or decreasing therapeutic/vaccine efficacy. <span class='text-underline'>However</span>, the phenotype of a variant depends on <b>all</b> its mutations, not any one particular mutation.",
         },
         {
           id: 'MOI',
           label: 'Mutation of Interest',
           def:
-            "Mutations suspected of causing a change in transmissibility, virulence, or therapeutic/vaccine efficacy. <span class='text-underline'>However</span>, the phenotype of a variant depends on <b>all</b> its mutations, not any one particular mutation.",
+              "Mutations suspected of causing a change in transmissibility, virulence, or therapeutic/vaccine efficacy. <span class='text-underline'>However</span>, the phenotype of a variant depends on <b>all</b> its mutations, not any one particular mutation.",
         },
       ],
       curatedVOC: null,
@@ -1483,49 +1568,6 @@ export default {
     //   return format('.0%')(this.characteristicThreshold);
     // },
   },
-  mounted() {
-    this.selectedVOC = this.voc
-      ? typeof this.voc == 'string'
-        ? [this.voc]
-        : this.voc
-      : [];
-    this.selectedVOI = this.voi
-      ? typeof this.voi == 'string'
-        ? [this.voi]
-        : this.voi
-      : [];
-    this.selectedMOC = this.moc
-      ? typeof this.moc == 'string'
-        ? [this.moc]
-        : this.moc
-      : [];
-    this.selectedMOI = this.moi
-      ? typeof this.moi == 'string'
-        ? [this.moi]
-        : this.moi
-      : [];
-    this.searchInput = this.name;
-
-    const ofInterest = getBadMutations(true);
-    this.curatedMOC = ofInterest.moc;
-    this.curatedMOI = ofInterest.moi;
-
-    this.curatedSubscription = getReportList(this.$genomicsurl).subscribe(
-      (results) => {
-        this.lastUpdated = results.dateUpdated;
-        this.reports = results.md;
-        this.filterReports();
-      },
-    );
-
-    this.totalSubscription = getSequenceCount(
-      this.$genomicsurl,
-      null,
-      true,
-    ).subscribe((total) => {
-      this.total = total;
-    });
-  },
   created() {
     this.debounceSearch = debounce(this.filterName, 250);
   },
@@ -1555,6 +1597,62 @@ export default {
         instance.setContent(info);
       },
     });
+  },
+  mounted() {
+    this.selectedVOC = this.voc
+        ? typeof this.voc == 'string'
+            ? [this.voc]
+            : this.voc
+        : [];
+    this.selectedVOI = this.voi
+        ? typeof this.voi == 'string'
+            ? [this.voi]
+            : this.voi
+        : [];
+    this.selectedMOC = this.moc
+        ? typeof this.moc == 'string'
+            ? [this.moc]
+            : this.moc
+        : [];
+    this.selectedMOI = this.moi
+        ? typeof this.moi == 'string'
+            ? [this.moi]
+            : this.moi
+        : [];
+    this.searchInput = this.name;
+
+    const ofInterest = getBadMutations(true);
+    this.curatedMOC = ofInterest.moc;
+    this.curatedMOI = ofInterest.moi;
+
+    this.curatedSubscription = getReportList(this.$genomicsurl).subscribe(
+        (results) => {
+          this.lastUpdated = results.dateUpdated;
+          this.reports = results.md;
+          this.filterReports();
+        },
+    );
+
+    this.totalSubscription = getSequenceCount(
+        this.$genomicsurl,
+        null,
+        true,
+    ).subscribe((total) => {
+      this.total = total;
+    });
+  },
+  beforeDestroyed() {
+    if (this.curatedSubscription) {
+      this.curatedSubscription.unsubscribe();
+    }
+
+    if (this.curatedMutationsSubscription) {
+      this.curatedMutationsSubscription.unsubscribe();
+    }
+
+    if (this.totalSubscription) {
+      this.totalSubscription.unsubscribe();
+    }
   },
   methods: {
     clearFilters() {
@@ -1687,9 +1785,9 @@ export default {
       this.filteredMutations = cloneDeep(this.mutationReports);
 
       if (
-        this.selectedVOC.length ||
-        this.selectedVOI.length ||
-        this.searchInput
+          this.selectedVOC.length ||
+          this.selectedVOI.length ||
+          this.searchInput
       ) {
         // filter the selected VOC/VOI reports
         this.filteredReports.forEach((group) => {
@@ -1697,17 +1795,17 @@ export default {
           group.values.forEach((report) => {
             // FILTER OUTBREAK CLASSIFICATIONS
             if (
-              (report.variantType === 'Variant of Concern' &&
-                this.selectedVOC.includes('outbreak')) ||
-              (report.variantType === 'Variant of Interest' &&
-                this.selectedVOI.includes('outbreak'))
+                (report.variantType === 'Variant of Concern' &&
+                    this.selectedVOC.includes('outbreak')) ||
+                (report.variantType === 'Variant of Interest' &&
+                    this.selectedVOI.includes('outbreak'))
             ) {
               // Filter by outbreak VOC/VOI + name
               if (this.searchInput) {
                 if (
-                  report.searchTerms.some((x) =>
-                    x.toLowerCase().includes(this.searchInput.toLowerCase()),
-                  )
+                    report.searchTerms.some((x) =>
+                        x.toLowerCase().includes(this.searchInput.toLowerCase()),
+                    )
                 ) {
                   filtered.push(report);
                 }
@@ -1718,41 +1816,41 @@ export default {
 
               // FILTER BY CLASSICATIONS
             } else if (
-              report.classifications &&
-              (this.selectedVOC.length || this.selectedVOI.length)
+                report.classifications &&
+                (this.selectedVOC.length || this.selectedVOI.length)
             ) {
               // filter name filters
               if (this.searchInput) {
                 if (
-                  report.searchTerms.some((x) =>
-                    x.toLowerCase().includes(this.searchInput.toLowerCase()),
-                  ) &&
-                  (report.classifications.filter(
-                    (x) =>
-                      x.variantType === 'VOC' &&
-                      this.selectedVOC.includes(x.author),
-                  ).length ||
-                    report.classifications.filter(
-                      (x) =>
-                        (x.variantType === 'VOI' || x.variantType === 'VUI') &&
-                        this.selectedVOI.includes(x.author),
-                    ).length)
+                    report.searchTerms.some((x) =>
+                        x.toLowerCase().includes(this.searchInput.toLowerCase()),
+                    ) &&
+                    (report.classifications.filter(
+                            (x) =>
+                                x.variantType === 'VOC' &&
+                                this.selectedVOC.includes(x.author),
+                        ).length ||
+                        report.classifications.filter(
+                            (x) =>
+                                (x.variantType === 'VOI' || x.variantType === 'VUI') &&
+                                this.selectedVOI.includes(x.author),
+                        ).length)
                 ) {
                   filtered.push(report);
                 }
               } else {
                 // filter only the classifications
                 if (
-                  report.classifications.filter(
-                    (x) =>
-                      x.variantType === 'VOC' &&
-                      this.selectedVOC.includes(x.author),
-                  ).length ||
-                  report.classifications.filter(
-                    (x) =>
-                      (x.variantType === 'VOI' || x.variantType === 'VUI') &&
-                      this.selectedVOI.includes(x.author),
-                  ).length
+                    report.classifications.filter(
+                        (x) =>
+                            x.variantType === 'VOC' &&
+                            this.selectedVOC.includes(x.author),
+                    ).length ||
+                    report.classifications.filter(
+                        (x) =>
+                            (x.variantType === 'VOI' || x.variantType === 'VUI') &&
+                            this.selectedVOI.includes(x.author),
+                    ).length
                 ) {
                   filtered.push(report);
                 }
@@ -1760,9 +1858,9 @@ export default {
             } else {
               // no report classifications; just filter by name
               if (
-                report.searchTerms.some((x) =>
-                  x.toLowerCase().includes(this.searchInput.toLowerCase()),
-                )
+                  report.searchTerms.some((x) =>
+                      x.toLowerCase().includes(this.searchInput.toLowerCase()),
+                  )
               ) {
                 filtered.push(report);
               }
@@ -1775,21 +1873,21 @@ export default {
 
       // filter mutation reports
       if (
-        this.selectedMOC.length ||
-        this.selectedMOI.length ||
-        this.searchInput
+          this.selectedMOC.length ||
+          this.selectedMOI.length ||
+          this.searchInput
       ) {
         if (this.searchInput) {
           this.filteredMutations.forEach((group) => {
             let mutFiltered = [];
             group.values.forEach((report) => {
               if (
-                report.mutation_name
-                  .toLowerCase()
-                  .includes(this.searchInput.toLowerCase()) ||
-                report.lineages.some((x) =>
-                  x.toLowerCase().includes(this.searchInput.toLowerCase()),
-                )
+                  report.mutation_name
+                      .toLowerCase()
+                      .includes(this.searchInput.toLowerCase()) ||
+                  report.lineages.some((x) =>
+                      x.toLowerCase().includes(this.searchInput.toLowerCase()),
+                  )
               ) {
                 mutFiltered.push(report);
               }
@@ -1833,9 +1931,9 @@ export default {
 
       // MOC || MOI selected but not VOC / VOI
       if (
-        (this.selectedMOC.length || this.selectedMOI.length) &&
-        !this.selectedVOC.length &&
-        !this.selectedVOI.length
+          (this.selectedMOC.length || this.selectedMOI.length) &&
+          !this.selectedVOC.length &&
+          !this.selectedVOI.length
       ) {
         this.filteredReports.forEach((group) => {
           group.values = [];
@@ -1844,9 +1942,9 @@ export default {
 
       // VOC || VOI selected but not MOC / MOI
       if (
-        (this.selectedVOC.length || this.selectedVOI.length) &&
-        !this.selectedMOC.length &&
-        !this.selectedMOI.length
+          (this.selectedVOC.length || this.selectedVOI.length) &&
+          !this.selectedMOC.length &&
+          !this.selectedMOI.length
       ) {
         this.filteredMutations.forEach((group) => {
           group.values = [];
@@ -1862,36 +1960,22 @@ export default {
     getCuratedMutations() {
       store.commit('admin/setReportLoading', true);
       this.curatedMutationsSubscription = getCuratedMutations(
-        this.$genomicsurl,
-        this.characteristicThreshold,
+          this.$genomicsurl,
+          this.characteristicThreshold,
       ).subscribe((results) => {
         this.curatedVOC = this.reports
-          .filter((d) => d.id === 'voc')[0]
-          ['values'].flatMap((d) => d.pango_descendants)
-          .map((d) => d.toLowerCase());
+            .filter((d) => d.id === 'voc')[0]
+            ['values'].flatMap((d) => d.pango_descendants)
+            .map((d) => d.toLowerCase());
         this.curatedVOI = this.reports
-          .filter((d) => d.id === 'voi')[0]
-          ['values'].flatMap((d) => d.pango_descendants)
-          .map((d) => d.toLowerCase());
-
+            .filter((d) => d.id === 'voi')[0]
+            ['values'].flatMap((d) => d.pango_descendants)
+            .map((d) => d.toLowerCase());
         this.mutationReports = results;
         store.commit('admin/setReportLoading', false);
         this.filterReports();
       });
     },
-  },
-  beforeDestroyed() {
-    if (this.curatedSubscription) {
-      this.curatedSubscription.unsubscribe();
-    }
-
-    if (this.curatedMutationsSubscription) {
-      this.curatedMutationsSubscription.unsubscribe();
-    }
-
-    if (this.totalSubscription) {
-      this.totalSubscription.unsubscribe();
-    }
   },
 };
 </script>

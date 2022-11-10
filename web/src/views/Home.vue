@@ -48,10 +48,10 @@
 
           <div>
             <SearchBar
-              route-to="/epidemiology?"
+              routeTo="/epidemiology?"
               placeholder="Search location"
               class="w-100"
-              :dark-mode="false"
+              :darkMode="false"
             />
             <small id="sBar-example" class="form-text d-block text-left ml-5">
               <span class="mr-2">Try:</span>
@@ -148,11 +148,11 @@
                   </span>
                 </div>
                 <TypeaheadSelect
-                  :is-standalone="false"
+                  :isStandalone="false"
                   class="form-control border"
-                  :query-function="queryPangolin"
-                  :api-url="this.$genomicsurl"
-                  :remove-on-select="true"
+                  :queryFunction="queryPangolin"
+                  :apiUrl="this.$genomicsurl"
+                  :removeOnSelect="true"
                   placeholder="Search PANGO lineage"
                   @selected="updatePangolin"
                 />
@@ -248,14 +248,14 @@
                   </span>
                 </div>
                 <TypeaheadSelect
-                  :is-standalone="false"
+                  :isStandalone="false"
                   class="form-control border"
-                  :query-function="queryLocation"
-                  :api-url="this.$genomicsurl"
-                  label-variable="label"
-                  :remove-on-select="false"
+                  :queryFunction="queryLocation"
+                  :apiUrl="this.$genomicsurl"
+                  labelVariable="label"
+                  :removeOnSelect="false"
                   placeholder="Select location"
-                  total-label="total sequences"
+                  totalLabel="total sequences"
                   @selected="submitLocation"
                 />
               </div>

@@ -661,7 +661,7 @@
                 target="_blank"
               >Submit an issue on Github</a>
             </li>
-            <EmailSubscription :is-footer="true" />
+            <EmailSubscription :isFooter="true" />
           </ul>
         </div>
       </div>

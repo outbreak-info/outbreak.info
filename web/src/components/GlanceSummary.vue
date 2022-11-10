@@ -188,11 +188,11 @@
               <Bargraph
                 :id="'glance_' + idx"
                 :data="data.longitudinal"
-                :variable-obj="{ value: 'confirmed_numIncrease' }"
+                :variableObj="{ value: 'confirmed_numIncrease' }"
                 :width="140"
                 :height="40"
                 :color="'#126B93'"
-                color-average="#D13B62"
+                colorAverage="#D13B62"
               />
             </router-link>
           </div>
@@ -216,11 +216,11 @@
               <Bargraph
                 :id="'glance2_' + idx"
                 :data="data.longitudinal"
-                :variable-obj="{ value: 'dead_numIncrease' }"
+                :variableObj="{ value: 'dead_numIncrease' }"
                 :width="150"
                 :height="40"
                 :color="'#126B93'"
-                color-average="#D13B62"
+                colorAverage="#D13B62"
               />
             </router-link>
           </div>

@@ -36,12 +36,12 @@
                   class="d-flex align-items-center justify-content-center my-3"
                 >
                   <TypeaheadSelect
-                    :query-function="queryLocation"
-                    :api-url="this.$genomicsurl"
-                    label-variable="label"
-                    :remove-on-select="false"
+                    :queryFunction="queryLocation"
+                    :apiUrl="this.$genomicsurl"
+                    labelVariable="label"
+                    :removeOnSelect="false"
                     placeholder="Select location"
-                    total-label="total sequences"
+                    totalLabel="total sequences"
                     @selected="updateLocations"
                   />
                 </div>
@@ -87,8 +87,8 @@
               <!-- <CustomLocationForm :curated="null" :includeLocation="false" :selectedMutations.sync="newMuts" :selectedLineage.sync="newPango" :formCount.sync="formCount" /> -->
               <VariantForm
                 :minimalistic="false"
-                :selected-lineage.sync="newPango"
-                :selected-mutations.sync="newMuts"
+                :selectedLineage.sync="newPango"
+                :selectedMutations.sync="newMuts"
                 :submitted="submitCount"
               />
 
@@ -400,7 +400,7 @@
                 </small>
                 <HorizontalCategoricalLegend
                   :values="lineageDomain"
-                  :color-scale="colorScale"
+                  :colorScale="colorScale"
                 />
               </div>
 
@@ -425,15 +425,15 @@
                   v-if="seqCountsWindowed && !noRecentData"
                   :width="widthHist"
                   :downward="false"
-                  :include-x-axis="true"
+                  :includeXAxis="true"
                   :margin="marginHist"
-                  :mutation-name="null"
-                  class-name="sequencing-histogram"
+                  :mutationName="null"
+                  className="sequencing-histogram"
                   :title="
                     `Samples sequenced per day over last ${recentWindow} days`
                   "
-                  :only-totals="true"
-                  not-detected-color="#bab0ab"
+                  :onlyTotals="true"
+                  notDetectedColor="#bab0ab"
                 />
               </div>
             </div>
@@ -448,13 +448,13 @@
               >
                 <LineagesByLocation
                   :data="lineagesByDay"
-                  :recent-data="mostRecentLineages[0]"
-                  :recent-window="recentWindow"
+                  :recentData="mostRecentLineages[0]"
+                  :recentWindow="recentWindow"
                   :location="selectedLocation.label"
-                  :recent-min="recentMin"
-                  :seq-counts="seqCounts"
-                  :route-name="routeTo"
-                  :color-scale="colorScale"
+                  :recentMin="recentMin"
+                  :seqCounts="seqCounts"
+                  :routeName="routeTo"
+                  :colorScale="colorScale"
                   :xmin="xmin"
                   :xmax="xmax"
                 />
@@ -504,11 +504,11 @@
                   >
                     <ReportStackedBarGraph
                       :data="mostRecentLineages"
-                      :seq-counts="seqCountsWindowed"
-                      :color-scale="colorScale"
-                      :location-i-d="selectedLocation.id"
-                      :recent-window="recentWindow"
-                      :route-to="routeTo"
+                      :seqCounts="seqCountsWindowed"
+                      :colorScale="colorScale"
+                      :locationID="selectedLocation.id"
+                      :recentWindow="recentWindow"
+                      :routeTo="routeTo"
                     />
                   </div>
                 </section>
@@ -592,8 +592,8 @@
                 </div>
 
                 <GradientLegend
-                  max-value="100%"
-                  :color-scale="heatmapColorScale"
+                  maxValue="100%"
+                  :colorScale="heatmapColorScale"
                   :dark="darkMode"
                   label="Mutation prevalence in lineage"
                   class="mr-3"
@@ -652,21 +652,21 @@
               <MutationHeatmap
                 :data="recentHeatmap"
                 gene="S"
-                :location-i-d="loc"
+                :locationID="loc"
                 :voc="voc"
                 :voi="voi"
                 :moc="moc"
                 :moi="moi"
-                :y-domain="mostRecentDomain"
+                :yDomain="mostRecentDomain"
                 :dark="darkMode"
-                :route-to="routeTo"
+                :routeTo="routeTo"
               />
             </div>
             <DownloadReportData
               class="mt-3"
               :data="recentHeatmap"
-              figure-ref="mutation-heatmap"
-              data-type="Mutation Report Heatmap"
+              figureRef="mutation-heatmap"
+              dataType="Mutation Report Heatmap"
             />
           </div>
 
@@ -705,13 +705,13 @@
             </div>
             <OverlayLineagePrevalence
               v-if="selectedMutations && selectedMutations.length"
-              :route-to="routeTo"
+              :routeTo="routeTo"
               :options="selectedMutations"
               :xmin="xmin"
               :xmax="xmax"
-              :seq-counts="seqCounts"
-              :location-i-d="loc"
-              :location-name="selectedLocation.label"
+              :seqCounts="seqCounts"
+              :locationID="loc"
+              :locationName="selectedLocation.label"
               :selected="selected"
             />
           </section>
@@ -752,16 +752,16 @@
                 class="d-flex flex-wrap align-items-center border-top border-bottom bg-white pt-1 px-2 mt-1"
               >
                 <ClassedLegend
-                  :color-scale="choroColorScale"
+                  :colorScale="choroColorScale"
                   :horizontal="false"
                   :label="`Est. prevalence over the last ${recentWindow} days`"
-                  :count-threshold="choroCountThreshold"
-                  :mutation-name="null"
+                  :countThreshold="choroCountThreshold"
+                  :mutationName="null"
                 />
                 <div class="d-flex flex-column">
                   <ThresholdSlider
-                    :count-threshold.sync="choroCountThreshold"
-                    :max-count="choroMaxCount"
+                    :countThreshold.sync="choroCountThreshold"
+                    :maxCount="choroMaxCount"
                     class="mr-3"
                   />
                   <div class="d-flex align-items-center">
@@ -785,15 +785,15 @@
                   v-if="seqCountsWindowed && !noRecentData"
                   :width="widthHist"
                   :downward="false"
-                  :include-x-axis="true"
+                  :includeXAxis="true"
                   :margin="marginHist"
-                  :mutation-name="null"
-                  class-name="sequencing-histogram"
+                  :mutationName="null"
+                  className="sequencing-histogram"
                   :title="
                     `Samples sequenced per day over last ${recentWindow} days`
                   "
-                  :only-totals="true"
-                  not-detected-color="#bab0ab"
+                  :onlyTotals="true"
+                  notDetectedColor="#bab0ab"
                 />
               </div>
             </div>
@@ -837,25 +837,25 @@
                   </div>
                   <ReportChoropleth
                     :report="routeTo"
-                    :show-copy="false"
-                    :small-multiples="true"
-                    :recent-window="recentWindow"
-                    :show-legend="false"
+                    :showCopy="false"
+                    :smallMultiples="true"
+                    :recentWindow="recentWindow"
+                    :showLegend="false"
                     :data="choro.values"
-                    :count-threshold="choroCountThreshold"
-                    :fill-max="1"
+                    :countThreshold="choroCountThreshold"
+                    :fillMax="1"
                     :location="selectedLocation.label"
-                    :color-scale="choroColorScale"
-                    :mutation-name="choro.key"
-                    :width-ratio="1"
+                    :colorScale="choroColorScale"
+                    :mutationName="choro.key"
+                    :widthRatio="1"
                   />
                 </div>
               </div>
               <DownloadReportData
                 v-if="!noRecentData"
                 :data="geoData"
-                figure-ref="report-choropleth"
-                data-type="Variant Report Prevalence over Time"
+                figureRef="report-choropleth"
+                dataType="Variant Report Prevalence over Time"
               />
             </div>
 
@@ -918,25 +918,25 @@
             />
           </div>
           <LocationTable
-            :route-to="routeTo"
+            :routeTo="routeTo"
             :data="lineageTable"
-            :location-name="selectedLocation.label"
-            :location-i-d="selectedLocation.id"
+            :locationName="selectedLocation.label"
+            :locationID="selectedLocation.id"
           />
         </section>
 
         <!-- METHODOLOGY -->
         <section id="methods" class="mt-3 mb-5 border-top pt-3">
           <h4>Methodology</h4>
-          <ReportMethodology :date-updated="dateUpdated" :summary="true" />
+          <ReportMethodology :dateUpdated="dateUpdated" :summary="true" />
           <Warning class="mt-2" :text="disclaimer" />
         </section>
 
         <!-- CITATION -->
         <GenomicsCitation
           :title="title"
-          :mutation-authors="mutationAuthors"
-          :genomics-citation="genomicsCitation"
+          :mutationAuthors="mutationAuthors"
+          :genomicsCitation="genomicsCitation"
           :url="url"
           :today="today"
         />

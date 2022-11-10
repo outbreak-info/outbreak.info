@@ -238,7 +238,7 @@
 
               <div class="d-flex">
                 <DownloadData
-                  download-label="results"
+                  downloadLabel="results"
                   type="resources"
                   :query="esQuery"
                   :api="$resourceurl"
@@ -378,7 +378,7 @@
             >
               <div class="d-flex w-100 resource-title">
                 <div class="d-flex align-items-center">
-                  <StripeAccent :class-name="item['@type']" />
+                  <StripeAccent :className="item['@type']" />
                   <small :class="[item['@type'], 'resource-type', 'mr-3']">
                     {{ item['@type'] }}
                   </small>

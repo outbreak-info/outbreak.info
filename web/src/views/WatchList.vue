@@ -101,7 +101,7 @@
         <!-- <ReportLogos class="my-4"/> -->
       </div>
       <section id="report-list" class="text-left">
-        <CustomLocationForm :include-mutations="false" />
+        <CustomLocationForm :includeMutations="false" />
         <WatchListTable :location="location" />
       </section>
 

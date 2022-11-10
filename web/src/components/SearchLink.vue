@@ -1,6 +1,6 @@
 <template>
   <span>
-    <span v-for="(item, idx) in data" class="text-dark" :key="idx">
+    <span v-for="(item, idx) in data" :key="idx" class="text-dark">
       <router-link
         :to="{
           name: 'Resources',

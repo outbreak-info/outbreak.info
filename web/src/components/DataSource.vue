@@ -29,9 +29,9 @@
       id="download-btn"
       class="ml-3"
       :type="dataType"
-      :figure-ref="figureRef"
+      :figureRef="figureRef"
       :data="data"
-      :source-string="sourceString"
+      :sourceString="sourceString"
     />
 
     <p :class="{ snackbar: true, show: showSnackbar }">

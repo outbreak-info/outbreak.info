@@ -17,7 +17,7 @@
     <div v-if="data.studyStatus">
       <TrialStatus
         :status="data.studyStatus"
-        :include-date="true"
+        :includeDate="true"
         :locations="data.studyLocation"
       />
     </div>

@@ -81,22 +81,22 @@
     <SequencingHistogram
       v-if="seqCounts && seqCounts.length && x"
       :data="seqCounts"
-      :x-input="x"
+      :xInput="x"
       :width="width"
-      :svg-title="title"
+      :svgTitle="title"
       :margin="marginHist"
-      :mutation-name="mutationName"
-      class-name="lineages-by-location"
-      :only-totals="onlyTotals"
-      detected-color="#79706E"
-      not-detected-color="#bab0ab"
+      :mutationName="mutationName"
+      className="lineages-by-location"
+      :onlyTotals="onlyTotals"
+      detectedColor="#79706E"
+      notDetectedColor="#bab0ab"
     />
 
     <DownloadReportData
       :data="data"
-      figure-ref="lineages-by-location"
-      :is-vertical="true"
-      data-type="Mutation Report Prevalence over Time"
+      figureRef="lineages-by-location"
+      :isVertical="true"
+      dataType="Mutation Report Prevalence over Time"
     />
 
     <div
