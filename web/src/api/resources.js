@@ -194,7 +194,6 @@ export const getResourceMetadata = (apiUrl, id) => {
   ).pipe(
     pluck('data', 'hits'),
     map((results) => {
-      console.log(results);
       const metadata = results[0];
 
       if (metadata) {
