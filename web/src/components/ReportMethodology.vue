@@ -14,9 +14,7 @@
           rel="noreferrer"
           target="_blank"
         >
-          Bjorn
-        </a>
-        , which relies heavily on
+          Bjorn</a>, which relies heavily on
         <a
           href="https://github.com/lh3/minimap2/"
           rel="noreferrer"
@@ -30,9 +28,7 @@
           rel="noreferrer"
           target="_blank"
         >
-          datafunk
-        </a>
-        .
+          datafunk</a>.
         <router-link :to="{ name: 'SituationReportMethodology' }">
           View full methods
         </router-link>
@@ -75,8 +71,7 @@
             target="_blank"
           >
             Bjorn
-          </a>
-          , which relies heavily on
+          </a>, which relies heavily on
           <a
             href="https://github.com/lh3/minimap2/"
             rel="noreferrer"
@@ -90,13 +85,10 @@
             rel="noreferrer"
             target="_blank"
           >
-            datafunk
-          </a>
-          . The alignment is based on the reference sequence used by
+            datafunk</a>. The alignment is based on the reference sequence used
+            by
           <a :href="refSeq.url" target="_blank" rel="noreferrer">
-            {{ refSeq.name }}
-          </a>
-          .
+            {{ refSeq.name }}</a>.
         </p>
 
         <h4 id="filters">
@@ -176,9 +168,7 @@
           </a>
           and an explanation about the
           <a href="https://www.pango.network/new-ay-lineages/" target="_blank">
-            AY lineage series
-          </a>
-          .
+            AY lineage series</a>.
         </p>
 
         <h4 id="sublineages">
@@ -188,10 +178,8 @@
           outbreak.info Variant of Concern (VOC) reports pull all descendants of
           a parent VOC lineage from
           <a href="https://cov-lineages.org/index.html" target="_blank">
-            cov-lineages.org
-          </a>
-          . For instance, we define "Omicron" as all B.1.1.529 and all its
-          descendants according to the
+            cov-lineages.org</a>. For instance, we define "Omicron" as all
+            B.1.1.529 and all its descendants according to the
           <a
             href="https://github.com/cov-lineages/lineages-website/blob/master/data/lineages.yml"
             target="_blank"
@@ -218,8 +206,7 @@
           found, the characteristic mutations may change. For applications like
           reagent design which require stringent accuracy, we recommend
           downloading the consensus sequences from
-          <a href="https://www.gisaid.org/" target="_blank">GISAID</a>
-          .
+          <a href="https://www.gisaid.org/" target="_blank">GISAID</a>.
         </p>
       </section>
 

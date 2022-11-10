@@ -8,16 +8,14 @@
       <p class="mt-3">
         To describe the prevalence of sets of mutations in our
         <router-link :to="{ name: 'SituationReports' }">
-          Mutation Situation Reports
-        </router-link>
-        , we rely on shared virus sequences from the
-        <a href="https://www.gisaid.org/" target="_blank">GISAID Initiative</a>
-        . While we apply filters to remove some low quality sequences and
+          Mutation Situation Reports</router-link>, we rely on shared virus
+          sequences from the
+        <a href="https://www.gisaid.org/" target="_blank">GISAID Initiative</a>.
+        While we apply filters to remove some low quality sequences and
         unreasonable metadata as described in our
         <router-link :to="{ name: 'SituationReportMethodology' }">
-          methods
-        </router-link>
-        , we rely on the accuracy of the sequences and sample metadata deposited
+          methods</router-link>, we rely on the accuracy of the sequences and
+          sample metadata deposited
         in GISAID.
       </p>
 
@@ -111,9 +109,7 @@
             href="https://blog.helix.com/b117-variant-updated-data/"
             target="_blank"
           >
-            Helix Research blog
-          </a>
-          .
+            Helix Research blog</a>.
         </p>
       </div>
 
@@ -127,16 +123,14 @@
             Pango nomenclature system
           </a>
           are more dynamic than lineages with thousands of associated sequences
-          and may change as more samples are sequenced.. Read more from the
+          and may change as more samples are sequenced. Read more from the
           Pango team on
           <a href="https://cov-lineages.org/FAQ.html" target="_blank">
             why a lineage assignment might change
           </a>
           and an explanation about the
           <a href="https://www.pango.network/new-ay-lineages/" target="_blank">
-            AY lineage series
-          </a>
-          .
+            AY lineage series</a>.
         </p>
       </div>
     </section>
