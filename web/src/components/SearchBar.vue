@@ -28,7 +28,7 @@
         id="autocomplete-results"
         class="autocomplete-results bg-dark text-light"
       >
-        <li class="loading" v-if="isLoading">
+        <li v-if="isLoading" class="loading">
           Loading results...
         </li>
         <li
@@ -62,6 +62,9 @@ library.add(faSearch);
 
 export default Vue.extend({
   name: 'SearchBar',
+  components: {
+    FontAwesomeIcon,
+  },
   props: {
     items: {
       type: Array,
@@ -89,9 +92,6 @@ export default Vue.extend({
       default: true,
     },
   },
-  components: {
-    FontAwesomeIcon,
-  },
   data() {
     return {
       isOpen: false,
@@ -106,7 +106,7 @@ export default Vue.extend({
     ...mapState('geo', ['allPlaces']),
   },
   watch: {
-    items: (val, oldValue) => {
+    items(val, oldValue) {
       // actually compare them
       if (val.length !== oldValue.length) {
         this.results = val;

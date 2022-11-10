@@ -699,13 +699,13 @@ export default {
     // modified to save the d3. event to vue::this
     debounce(fn, delay) {
       let timer = null;
-      return () => {
+      return function () {
         const context = this,
           args = arguments,
           evt = event;
         //we get the D3 event here
         clearTimeout(timer);
-        timer = setTimeout(() => {
+        timer = setTimeout(function() {
           context.event = evt;
           //and use the reference here
           fn.apply(context, args);

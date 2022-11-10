@@ -336,7 +336,7 @@ export default {
   },
   computed: {},
   watch: {
-    '$route.query': (newVal, oldVal) => {
+    '$route.query': function(newVal, oldVal) {
       if (!isEqual(newVal, oldVal)) {
         this.selectedReportType = this.type ? this.type : 'var';
       }
