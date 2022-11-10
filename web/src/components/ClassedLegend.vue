@@ -229,7 +229,7 @@ export default {
     updateColorLegend() {
       if (this.colorScale) {
         this.colorDomain = this.colorScale.domain();
-        selectAll('.categorical-rect').each(() => {
+        selectAll('.categorical-rect').each(function() {
           const bbox = this.getBBox();
           select(this).attr('width', bbox.width + 1 < 18 ? 18 : bbox.width + 1);
 
