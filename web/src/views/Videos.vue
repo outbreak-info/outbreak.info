@@ -7,11 +7,13 @@
           <div class="row">
             <div class="col-sm-6">
               <h4 class="text-highlight">
-                Explore COVID-19 cases and deaths data
+                outbreak.info overview
               </h4>
               <video class="w-100 mb-3" controls>
-                <source src="@/assets/home/epi_demo.mp4" type="video/mp4" />
-                <!-- <source src="@/assets/home/resources_demo.ogv" type="video/ogg"> -->
+                <source
+                  src="@/assets/home/outbreak_video_v3.mp4"
+                  type="video/mp4"
+                />
                 Your browser does not support the video tag.
               </video>
             </div>

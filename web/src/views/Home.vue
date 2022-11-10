@@ -382,9 +382,9 @@
     <div
       class="col-sm-12 d-flex justify-content-center align-items-center p-0 bg-grey__lightest"
     >
-      <div class="row d-flex align-items-center p-3">
+      <div class="d-flex align-items-center p-3">
         <div
-          class="col-sm-12 col-lg-6 d-flex flex-column align-items-center justify-content-center px-4 large"
+          class="mx-lg-5 mx-sm-0 d-flex flex-column align-items-center justify-content-center px-4 large"
         >
           <p>
             Outbreak.info is a project from the
@@ -414,15 +414,6 @@
           </p>
         </div>
 
-        <div class="col-sm-12 col-lg-6">
-          <video class="w-100 mb-3" controls @play="videoClick">
-            <source
-              src="@/assets/home/outbreak_video_v3.mp4"
-              type="video/mp4"
-            />
-            Your browser does not support the video tag.
-          </video>
-        </div>
       </div>
     </div>
 
@@ -930,12 +921,6 @@ export default {
     ...mapState('admin', ['loading']),
   },
   methods: {
-    videoClick() {
-      this.$gtag.event('video_play', {
-        event_category: `video_play`,
-        event_label: `outbreak.info homepage overview`,
-      });
-    },
     submitLocation(selected) {
       this.$router.push({
         name: 'LocationReport',
