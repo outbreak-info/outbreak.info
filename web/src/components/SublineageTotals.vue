@@ -14,7 +14,7 @@
     <p class="text-muted m-0">
       There are
       <b>{{ data.length }}</b>
-      <a>Pango lineages</a>
+      <a> Pango lineages</a>
       currently associated with the {{ lineageName }} variant:
     </p>
 
