@@ -442,23 +442,6 @@ export const getQuerySummary = (
   );
 };
 
-export const getCTSummary = (apiUrl) => {
-  return from(
-    axios.get(
-      `${apiUrl}query?q=name:%22hydroxychloroquine%22%20OR%20description:%22hydroxychloroquine%22&fields=armGroup.name,armGroup.intervention,dateCreated,%20studyStatus&size=1000`,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      },
-    ),
-  ).pipe(
-    pluck('data', 'hits'),
-    map((results) => {
-      return results;
-    }),
-  );
-};
 
 export const getSourceSummary = (apiUrl, query) => {
   return forkJoin([

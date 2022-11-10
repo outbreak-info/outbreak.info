@@ -146,12 +146,6 @@ const routes = [
       ),
   },
   {
-    path: '/topics',
-    name: 'Topics',
-    component: () =>
-      import(/* webpackChunkName: "topics" */ '../views/Topics.vue'),
-  },
-  {
     path: '/niaid',
     name: 'NIAID',
     component: () =>
