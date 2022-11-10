@@ -78,20 +78,6 @@ const getDateUpdated = (apiurl, label = 'Records') => {
           dateUpdated: dateUpdated,
         };
       }),
-    )
-    .pipe(
-      pluck('data'),
-      map((result) => {
-        const dateUpdated = cleanDate(
-          result.build_date,
-          '%Y-%m-%dT%H:%M:%S.%f%Z',
-        );
-        const count = `${result.stats.total.toLocaleString()} ${label}`;
-        return {
-          count: count,
-          dateUpdated: dateUpdated,
-        };
-      }),
       catchError((e) => {
         console.log('%c Error in getting date updated!', 'color: red');
         console.log(e);
