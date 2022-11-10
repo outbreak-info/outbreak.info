@@ -413,13 +413,9 @@
               rel="noreferrer"
               target="_blank"
             >
-              Hughes
-            </a>
-            ,
-            <a href="http://sulab.org/" target="_blank">Su</a>
-            ,
-            <a href="https://wulab.io/" target="_blank">Wu</a>
-            , and
+              Hughes</a>,
+            <a href="http://sulab.org/" target="_blank">Su</a>,
+            <a href="https://wulab.io/" target="_blank">Wu</a>, and
 
             <a href="https://andersen-lab.com/" target="_blank">Andersen</a>
             labs at Scripps Research to unify COVID-19 and SARS-CoV-2
