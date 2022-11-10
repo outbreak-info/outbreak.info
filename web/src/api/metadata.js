@@ -114,13 +114,6 @@ const getLastUpdated = (apiurl) => {
       map((result) => {
         return cleanDateElapsed(result);
       }),
-    )
-    .pipe(
-      pluck('data', 'build_date'),
-      map((result) => {
-        const dateUpdated = cleanDateElapsed(result);
-        return dateUpdated;
-      }),
       catchError((e) => {
         console.log('%c Error in getting date updated!', 'color: red');
         console.log(e);
@@ -232,7 +225,8 @@ const cleanDateElapsed = (result) => {
     } else {
       lastUpdated = `${Math.round(updatedDiff / 24)}d`;
     }
+
+      return lastUpdated;
   }
 
-  return lastUpdated;
 };
