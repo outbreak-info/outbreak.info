@@ -21,7 +21,7 @@ logging.info("Generating curated_lineages.json")
 
 # --- CONSTANTS: file locations ---
 # location where the Pango sublineages are stored
-lineage_url = "https://raw.githubusercontent.com/cov-lineages/lineages-website/master/data/lineages.yml"
+lineage_url = "lineages.yml"
 
 # location where the Pango recombinants lineage definitions are stored.
 recombinants_url = "https://raw.githubusercontent.com/cov-lineages/pango-designation/master/pango_designation/alias_key.json"
@@ -108,8 +108,8 @@ def getDescendants(row):
         return(list(dict.fromkeys(descendants)))
 
 # Pull the Pango lineages, reshape the descendants into a dict
-lineage_file = request.urlopen(lineage_url)
-lineages = yaml.load(lineage_file, Loader=yaml.BaseLoader)
+# lineage_file = request.urlopen(lineage_url)
+lineages = yaml.load(open(lineage_url), Loader=yaml.BaseLoader)
 lineage_descendants = {}
 for lineage in lineages:
     lineage_descendants[lineage["name"]] = lineage["children"]
