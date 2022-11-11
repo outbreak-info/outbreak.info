@@ -93,23 +93,26 @@ def idRecombinants(voc, recombinants):
 # pull out the sublineages / descendants for all of the parent lineages
 def getDescendants(row):
     lineage = row.pangolin_lineage
-    if(isinstance(lineage, str)):
-        # list the parent first
-        descendants = [lineage]
-        descendants.extend(lineage_descendants[lineage])
-        # de-duplicate
-        unique_desc = list(dict.fromkeys(descendants))
-        # add in any recombinant lineages where all the recombined lineages belong to that VOC/VOI.
-        if((row.include_recombinants  == "True") | (row.include_recombinants  == "true")):
-            recombs = findRecombinants(unique_desc, recombinant_lineages)
-            unique_desc.extend(recombs)
-        return(unique_desc)
+    if((row.include_sublineages is None) | ((row.include_sublineages  != "False") & (row.include_sublineages  != "false"))):
+        if(isinstance(lineage, str)):
+            # list the parent first
+            descendants = [lineage]
+            descendants.extend(lineage_descendants[lineage])
+            # de-duplicate
+            unique_desc = list(dict.fromkeys(descendants))
+            # add in any recombinant lineages where all the recombined lineages belong to that VOC/VOI.
+            if((row.include_recombinants  == "True") | (row.include_recombinants  == "true")):
+                recombs = findRecombinants(unique_desc, recombinant_lineages)
+                unique_desc.extend(recombs)
+            return(unique_desc)
+        else:
+            descendants = lineage.copy()
+            # dealing with the B.1.427/B.1.429 case
+            sublineages = [item for sublist in lineage for item in lineage_descendants[sublist]]
+            descendants.extend(sublineages)
+            return(list(dict.fromkeys(descendants)))
     else:
-        descendants = lineage.copy()
-        # dealing with the B.1.427/B.1.429 case
-        sublineages = [item for sublist in lineage for item in lineage_descendants[sublist]]
-        descendants.extend(sublineages)
-        return(list(dict.fromkeys(descendants)))
+        return([lineage])
 
 # Pull the Pango lineages, reshape the descendants into a dict
 with open('lineages.yml') as f:
