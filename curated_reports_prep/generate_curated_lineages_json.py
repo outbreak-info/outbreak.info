@@ -33,6 +33,7 @@ recombinants_url = "https://raw.githubusercontent.com/cov-lineages/pango-designa
 curated_filename = "curated_lineages.yaml"
 # where to save the resulting .json
 output_file = "../web/src/assets/genomics/curated_lineages.json"
+output_file_examples = "../web/src/assets/examples/genomics_examples.json"
 
 # --- IMPORT CURATED list ---
 # load the curated list
@@ -229,6 +230,7 @@ curated.drop(["dateModified", "dateModifiedFormatted"], axis = 1, inplace=True)
 
 # --- EXPORT ---
 curated.to_json(output_file, orient="records")
+vocs[["who_name", "pangolin_lineage", "short_name"]].to_json(output_file_examples, orient="records")
 
 # --- Write to log file ---
 def getName(row):

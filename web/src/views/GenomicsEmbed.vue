@@ -45,45 +45,25 @@
             class="form-text d-block text-left text-light ml-5"
           >
             <span class="mr-2">Try:</span>
-            <span class="mr-3">
-              <router-link
-                :to="{
-                  name: 'GenomicsEmbed',
-                  query: { alias: 'omicron', type: 'var' },
-                }"
-                class="text-light"
-              >
-                Omicron
 
+            <span class="mr-3" v-for='(example, gIdx) in genomicsExamples' :key='gIdx'>
+            <template v-if="example.who_name">
+              <router-link
+                :to="{ name: 'GenomicsEmbed', query: { alias: example.who_name, type: 'var' } }"
+                class="text-light"
+              >{{example.short_name}}
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
-            </span>
-            <span class="mr-3">
+            </template>
+            <template v-else>
               <router-link
-                :to="{
-                  name: 'GenomicsEmbed',
-                  query: { alias: 'delta', type: 'var' },
-                }"
+                :to="{ name: 'GenomicsEmbed', query: { pango: example.pangolin_lineage, type: 'var' } }"
                 class="text-light"
-              >
-                Delta
-
+              >{{example.short_name}}
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
-            </span>
-            <span class="mr-3">
-              <router-link
-                :to="{
-                  name: 'GenomicsEmbed',
-                  query: { alias: 'alpha', type: 'var' },
-                }"
-                class="text-light"
-              >
-                Alpha / B.1.1.7
-
-                <font-awesome-icon :icon="['fas', 'angle-double-right']" />
-              </router-link>
-            </span>
+            </template>
+          </span>
           </small>
         </div>
       </div>
@@ -293,6 +273,9 @@ import isEqual from 'lodash/isEqual';
 
 library.add(faAngleDoubleRight, faSearch);
 
+// Example queries
+import GENOMICSEXAMPLES from '@/assets/examples/genomics_examples.json';
+
 export default {
   name: 'GenomicsEmbed',
   components: {
@@ -332,6 +315,7 @@ export default {
       queryLocation: null,
       dark: false,
       selectedReportType: null,
+      genomicsExamples: [],
     };
   },
   computed: {},
@@ -343,6 +327,7 @@ export default {
     },
   },
   mounted() {
+    this.genomicsExamples = GENOMICSEXAMPLES;
     this.selectedReportType = this.type ? this.type : 'var';
     this.queryPangolin = findPangolin;
     this.queryLocation = findLocation;
