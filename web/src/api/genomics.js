@@ -2384,10 +2384,20 @@ export const getBasicComparisonReportData = (apiurl) => {
     .map((d) => d.who_name)
     .sort();
 
+  const voc = CURATED.filter((d) => d.variantType === "Variant of Concern")
+  .map((d) => d.label);
+
+  const previous_voc = CURATED.filter((d) => d.variantType === "Previously Circulating Variant of Concern")
+  .map((d) => d.label);
+  // const deescalated = CURATED.filter((d) => d.variantType === "De-escalated").map((d) => d.label);;
+
   return forkJoin([getDateUpdated(apiurl), getSequenceCount(apiurl)]).pipe(
     map(([dateUpdated, total]) => {
       return {
         dateUpdated: dateUpdated,
+        voc: voc,
+        previous_voc: previous_voc,
+        // deescalated: deescalated,
         who: who,
         total: total,
       };

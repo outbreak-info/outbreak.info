@@ -229,43 +229,22 @@
                 <div class="mr-2 circle">
                   1
                 </div>
-                <span class="mr-1">By Variants of Concern &amp; Interest</span>
+                <span class="mr-1">Click to add Variants of Concern</span>
               </h6>
-              <div class="d-flex flex-column align-items-center">
-                <div class="d-flex mt-2 mb-2">
-                  <button
-                    class="ml-2 px-2 py-1 btn btn-sec fa-sm"
-                    @click="addVOCs(false)"
-                  >
-                    <font-awesome-icon class="mr-2" :icon="['fas', 'plus']" />
-                    Add
-                    <b>VOCs</b>
-                  </button>
-                  <button
-                    class="ml-2 px-2 py-1 btn btn-sec fa-sm"
-                    @click="addVOCs(true)"
-                  >
-                    <font-awesome-icon class="mr-2" :icon="['fas', 'sync']" />
-                    clear &amp; add
-                    <b>VOCs</b>
+              <div class="d-flex flex-column">
+                Variants of Concern
+                <div class="d-flex flex-wrap align-items-center">
+                  <button class="ml-2 mt-2 px-2 py-2 btn btn-outline-secondary fa-sm" v-for="(lineage, vIdx) in voc" :key="vIdx" @click="addVOC(lineage)">
+                    {{lineage}}
                   </button>
                 </div>
-                <div class="d-flex pt-2 border-top">
-                  <button
-                    class="ml-2 px-2 py-1 btn btn-sec fa-sm"
-                    @click="addVOIs(false)"
-                  >
-                    <font-awesome-icon class="mr-2" :icon="['fas', 'plus']" />
-                    Add
-                    <b>VOIs</b>
-                  </button>
-                  <button
-                    class="ml-2 px-2 py-1 btn btn-sec fa-sm"
-                    @click="addVOIs(true)"
-                  >
-                    <font-awesome-icon class="mr-2" :icon="['fas', 'sync']" />
-                    clear &amp; add
-                    <b>VOIs</b>
+              </div>
+
+              <div class="d-flex flex-column mt-3">
+                Previously Circulating Variants of Concern
+                <div class="d-flex flex-wrap align-items-center">
+                  <button class="ml-2 mt-2 px-2 py-2 btn btn-outline-secondary fa-sm" v-for="(lineage, pIdx) in previous_voc" :key="pIdx" @click="addVOC(lineage)">
+                    {{lineage}}
                   </button>
                 </div>
               </div>
@@ -995,10 +974,8 @@ export default {
       // selectedNdays: 60,
       selectedWindow: 60,
       queryLocation: null,
-      voi: null, // array of all the VOIs, including sublineages
-      voi_parent: null, // just the main lineages -- one lineage per VOI/VOC, such as Alpha, Beta, Gamma, Delta...
+      previous_voc: null,
       voc: null,
-      voc_parent: null,
       moi: null,
       moc: null,
       countThreshold: null,
@@ -1118,6 +1095,8 @@ export default {
       this.totalSequences = results.total;
       this.lastUpdated = results.dateUpdated.lastUpdated;
       this.whoLineages = results.who;
+      this.voc = results.voc;
+      this.previous_voc = results.previous_voc;
     });
   },
   created() {
@@ -1141,102 +1120,6 @@ export default {
   methods: {
     scrollToTop() {
       window.scrollTo(0, 0);
-    },
-    addVOCs(clear = true) {
-      // remove lineages w/ additional mutations
-      this.selectedPango = clear
-        ? this.voc_parent
-        : this.voc_parent.concat(this.selectedPango);
-      this.selectedPango = uniq(this.selectedPango);
-
-      this.showSnackbar = true;
-      this.snackbarText = 'Variants of Concern added';
-      setTimeout(() => {
-        this.showSnackbar = false;
-      }, 3000);
-
-      if (this.routeTo === 'GenomicsEmbed') {
-        this.$router.push({
-          name: this.routeTo,
-          params: {
-            disableScroll: true,
-          },
-          query: {
-            type: 'comp',
-            pango: this.selectedPango,
-            gene: this.selectedGenes,
-            threshold: this.prevalenceThreshold,
-            nthresh: this.countThreshold,
-            sub: this.includeSublineages,
-            dark: this.darkMode,
-          },
-        });
-      } else {
-        this.$router.push({
-          name: this.routeTo,
-          params: {
-            disableScroll: true,
-          },
-          query: {
-            pango: this.selectedPango,
-            gene: this.selectedGenes,
-            threshold: this.prevalenceThreshold,
-            nthresh: this.countThreshold,
-            sub: this.includeSublineages,
-            dark: this.darkMode,
-          },
-        });
-      }
-
-      this.getData();
-    },
-    addVOIs(clear = true) {
-      // remove lineages w/ additional mutations
-      this.selectedPango = clear
-        ? this.voi_parent
-        : this.voi_parent.concat(this.selectedPango);
-      this.selectedPango = uniq(this.selectedPango);
-
-      this.showSnackbar = true;
-      this.snackbarText = 'Variants of Interest added';
-      setTimeout(() => {
-        this.showSnackbar = false;
-      }, 3000);
-
-      if (this.routeTo === 'GenomicsEmbed') {
-        this.$router.push({
-          name: this.routeTo,
-          params: {
-            disableScroll: true,
-          },
-          query: {
-            type: 'comp',
-            pango: this.selectedPango,
-            gene: this.selectedGenes,
-            threshold: this.prevalenceThreshold,
-            nthresh: this.countThreshold,
-            sub: this.includeSublineages,
-            dark: this.darkMode,
-          },
-        });
-      } else {
-        this.$router.push({
-          name: this.routeTo,
-          params: {
-            disableScroll: true,
-          },
-          query: {
-            pango: this.selectedPango,
-            gene: this.selectedGenes,
-            threshold: this.prevalenceThreshold,
-            nthresh: this.countThreshold,
-            sub: this.includeSublineages,
-            dark: this.darkMode,
-          },
-        });
-      }
-
-      this.getData();
     },
     updateGenes() {
       if (this.routeTo === 'GenomicsEmbed') {
@@ -1309,6 +1192,9 @@ export default {
 
         this.getData();
       }
+    },
+    addVOC(lineage) {
+      this.selectedPango.push(lineage);
     },
     changeCountThreshold() {
       if (this.countThreshold) {
@@ -1467,9 +1353,7 @@ export default {
       );
 
       this.voc = results.voc;
-      this.voc_parent = results.voc_parent;
       this.voi = results.voi;
-      this.voi_parent = results.voi_parent;
     },
     addMutations() {
       const selMutation = this.selectedMutationQuery
@@ -1631,6 +1515,41 @@ export default {
             gene: this.selectedGenes,
             threshold: this.prevalenceThreshold,
             sub: true,
+            dark: this.darkMode,
+          },
+        });
+      }
+      // reset / clear
+      this.selectedWHO = null;
+      this.getData();
+    },
+    submitNewData() {
+      if (this.routeTo === 'GenomicsEmbed') {
+        this.$router.push({
+          name: this.routeTo,
+          params: {
+            disableScroll: true,
+          },
+          query: {
+            type: 'comp',
+            pango: this.selectedPango,
+            gene: this.selectedGenes,
+            threshold: this.prevalenceThreshold,
+            sub: this.includeSublineages,
+            dark: this.darkMode,
+          },
+        });
+      } else {
+        this.$router.push({
+          name: this.routeTo,
+          params: {
+            disableScroll: true,
+          },
+          query: {
+            pango: this.selectedPango,
+            gene: this.selectedGenes,
+            threshold: this.prevalenceThreshold,
+            sub: this.includeSublineages,
             dark: this.darkMode,
           },
         });
