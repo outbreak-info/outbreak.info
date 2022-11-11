@@ -75,9 +75,9 @@ VOC:
           url: https://www.ecdc.europa.eu/en/covid-19/variants-concern
           variantType: VOC
 
-  - who_name: "BQ.1.1* [Omicron (BQ.1.1.X)]"
+  - who_name: "BQ.1.1"
     pangolin_lineage: BQ.1.1
-    include_recombinants: True
+    include_recombinants: False
     dateModified: 2022-11-10
     variantType: Variant of Concern
     classifications:
@@ -98,9 +98,9 @@ VOC:
           url: https://www.ecdc.europa.eu/en/covid-19/variants-concern
           variantType: VOC
 
-  - who_name: "XBB.1* [Omicron (XBB.1.X)]"
+  - who_name: "XBB.1"
     pangolin_lineage: XBB.1
-    include_recombinants: True
+    include_recombinants: False
     dateModified: 2022-11-10
     variantType: Variant of Concern
     classifications:
@@ -121,9 +121,9 @@ VOC:
           url: https://www.ecdc.europa.eu/en/covid-19/variants-concern
           variantType: VOC
 
-  - who_name: "BF.7* [Omicron (BF.7.X)]"
+  - who_name: "BF.7"
     pangolin_lineage: BF.7
-    include_recombinants: True
+    include_recombinants: False
     dateModified: 2022-11-10
     variantType: Variant of Concern
     classifications:
