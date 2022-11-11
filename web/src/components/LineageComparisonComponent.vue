@@ -166,8 +166,9 @@
 
       <div
         id="select-lineages"
-        class="my-3 p-2 bg-white border-top border-bottom collapse"
+        class="my-3 p-2 bg-white border-top border-bottom collapse show"
       >
+      <template v-if="selectedPango.length">
         <div class="d-flex justify-content-between mt-1 mb-2">
           <h4>Selected lineages</h4>
           <font-awesome-icon
@@ -214,6 +215,7 @@
             clear lineages
           </button>
         </div>
+        </template>
 
         <div class="border-top pt-3 my-3 mb-1">
           <h4 class="mb-3">
@@ -591,7 +593,7 @@
       </div>
 
       <!-- LOOP OVER MUTATION HEATMAPS -->
-      <div id="mutation-heatmaps" class="mt-4">
+      <div id="mutation-heatmaps" class="mt-4" v-if="filteredMutationHeatmap">
         <!-- ADJUST PARAMS -->
         <div
           class="d-flex w-100 flex-column bg-white border-top border-bottom py-1 mb-3"
@@ -684,6 +686,20 @@
                   />
                 </div>
               </div>
+
+              <!-- CHANGE LINEAGES -->
+              <button
+                class="btn py-1 px-2 ml-5 my-2 btn-sec flex-shrink-0"
+                data-toggle="collapse"
+                data-target="#select-lineages"
+                @click="scrollToTop"
+              >
+                <font-awesome-icon
+                  class="m-0 mr-2 fa-xs"
+                  :icon="['fas', 'sync']"
+                />
+                <span class="fa-xs">change lineages</span>
+              </button>
             </div>
           </div>
         </div>
@@ -699,18 +715,6 @@
                 <h2 class="m-0">
                   Mutation prevalence across lineages
                 </h2>
-                <button
-                  class="btn py-1 px-2 mx-4 my-2 btn-grey flex-shrink-0"
-                  data-toggle="collapse"
-                  data-target="#select-lineages"
-                  @click="scrollToTop"
-                >
-                  <font-awesome-icon
-                    class="m-0 mr-2 fa-xs"
-                    :icon="['fas', 'sync']"
-                  />
-                  <span class="fa-xs">change lineages</span>
-                </button>
               </div>
               <div class="d-flex flex-wrap">
                 <p class="text-muted line-height-1 m-0 my-1">
@@ -972,7 +976,7 @@ export default {
       filteredMutationHeatmap: null,
       downloadableHeatmap: null,
       selectedGenes: [],
-      selectedPango: null,
+      selectedPango: [],
       selectedMutationQuery: null,
       selectedMutationThreshold: 50,
       colorScale: null,
@@ -1105,7 +1109,6 @@ export default {
     });
 
     // load the initial data
-    this.getData();
     this.queryPangolin = findPangolin;
     this.queryLocation = findLocation;
 
