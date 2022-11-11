@@ -170,15 +170,34 @@
       >
       <template v-if="selectedPango.length">
         <div class="d-flex justify-content-between mt-1 mb-2">
-          <h4>Selected lineages</h4>
-          <font-awesome-icon
-            class="mr-2"
-            :icon="['far', 'times-circle']"
-            :style="{ opacity: '0.6' }"
-            data-toggle="collapse"
-            data-target="#select-lineages"
-          />
-        </div>
+          <div class="d-flex">
+          <h4>Already selected lineages</h4>
+
+                  <button
+                    role="button"
+                    class="btn btn-accent d-flex align-items-center py-2 px-2 mx-3 line-height-1"
+                    @click="submitNewData()"
+                  >
+                    go
+                  </button>
+</div>
+          <button
+          role="button"
+          class="btn btn-outline-secondary"
+          data-toggle="collapse"
+          data-target="#select-lineages"
+                        >
+            hide options
+            <font-awesome-icon
+              class="ml-2"
+              :icon="['far', 'times-circle']"
+              :style="{ opacity: '0.6' }"
+
+            />
+          </button>
+
+      </div>
+
         <div class="d-flex flex-wrap align-items-center">
           <button
             v-for="(lineage, lIdx) in selectedPango"
@@ -209,11 +228,20 @@
 
           <button
             role="button"
+            class="btn btn-accent d-flex align-items-center py-2 px-2 mx-3 line-height-1"
+            @click="submitNewData()"
+          >
+            go
+          </button>
+
+          <button
+            role="button"
             class="btn chip btn-main d-flex align-items-center py-1 px-2 mx-3 line-height-1"
             @click="clearPango()"
           >
             clear lineages
           </button>
+
         </div>
         </template>
 
@@ -1351,9 +1379,6 @@ export default {
           .flatMap((d) => d.values)
           .map((d) => d.pangolin_lineage),
       );
-
-      this.voc = results.voc;
-      this.voi = results.voi;
     },
     addMutations() {
       const selMutation = this.selectedMutationQuery
