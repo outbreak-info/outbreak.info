@@ -6,23 +6,21 @@
       x="0"
       y="0"
       :class="[className, 'light']"
-    ></rect>
+    />
     <polygon
       :points="
-        `0,0 ${this.width},0 ${this.width},${this.height * (2 / 3) -
-          2.5} 0,${this.height * (2 / 3) + 2.5}`
-      "
-      :class="className"
-    ></polygon>
-    <polygon
-      :points="
-        `0,0 ${this.width},0 ${this.width},${this.height / 3 - 2.5} 0,${this
-          .height /
-          3 +
+        `0,0 ${width},0 ${width},${height * (2 / 3) - 2.5} 0,${height *
+          (2 / 3) +
           2.5}`
       "
+      :class="className"
+    />
+    <polygon
+      :points="
+        `0,0 ${width},0 ${width},${height / 3 - 2.5} 0,${height / 3 + 2.5}`
+      "
       :class="[className, 'dark']"
-    ></polygon>
+    />
   </svg>
 </template>
 

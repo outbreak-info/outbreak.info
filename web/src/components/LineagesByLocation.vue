@@ -4,7 +4,9 @@
       class="d-flex justify-content-between px-3"
       :style="{ width: width + 'px' }"
     >
-      <h5 class="m-0">{{ plotTitle }}</h5>
+      <h5 class="m-0">
+        {{ plotTitle }}
+      </h5>
       <div class="d-flex justify-content-end">
         <button
           class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2"
@@ -28,10 +30,10 @@
     </div>
 
     <svg
+      ref="lineages_by_location"
       :width="width"
       :height="height"
       class="lineages-by-location"
-      ref="lineages_by_location"
       :name="title"
     >
       <defs>
@@ -53,30 +55,31 @@
         </pattern>
       </defs>
 
-      <g :transform="`translate(${margin.left},${margin.top})`" ref="chart"></g>
+      <g ref="chart" :transform="`translate(${margin.left},${margin.top})`" />
 
       <g
-        class="stream-axis axis--x"
         ref="xAxis"
+        class="stream-axis axis--x"
         :transform="`translate(${margin.left},${height - margin.bottom})`"
-      ></g>
+      />
       <g
-        class="stream-axis axis--y"
         ref="yAxis"
+        class="stream-axis axis--y"
         :transform="`translate(${margin.left},${margin.top})`"
-      ></g>
+      />
       <g
+        v-if="data"
+        id="brush-zoom"
         ref="brush"
         class="brush"
-        id="brush-zoom"
         :transform="`translate(${margin.left},${margin.top})`"
-        v-if="data"
         :class="{ hidden: !zoomAllowed }"
-      ></g>
+      />
     </svg>
 
     <!-- Histogram of sequencing counts -->
     <SequencingHistogram
+      v-if="seqCounts && seqCounts.length && x"
       :data="seqCounts"
       :xInput="x"
       :width="width"
@@ -87,7 +90,6 @@
       :onlyTotals="onlyTotals"
       detectedColor="#79706E"
       notDetectedColor="#bab0ab"
-      v-if="seqCounts && seqCounts.length && x"
     />
 
     <DownloadReportData
@@ -98,44 +100,40 @@
     />
 
     <div
+      id="tooltip-streamgraph"
       ref="tooltip_streamgraph"
       class="tooltip-basic box-shadow"
-      id="tooltip-streamgraph"
     >
-      <h5 id="lineage" class="my-1"></h5>
-      <div class="d-flex align-items-center" v-if="tooltipTotal">
+      <h5 id="lineage" class="my-1" />
+      <div v-if="tooltipTotal" class="d-flex align-items-center">
         Total found:
-        <b id="proportion" class="ml-1"></b>
+        <b id="proportion" class="ml-1" />
       </div>
-      <div class="d-flex align-items-center" v-else>
+      <div v-else class="d-flex align-items-center">
         Prevalence in the last {{ recentWindow }} days:
-        <b id="proportion" class="ml-1"></b>
+        <b id="proportion" class="ml-1" />
       </div>
     </div>
   </div>
 </template>
 
-<script lang="js">
-import Vue from "vue";
+<script>
+import Vue from 'vue';
 
-import uniq from "lodash/uniq";
+import uniq from 'lodash/uniq';
 
 // --- font awesome --
-import {
-  FontAwesomeIcon
-} from "@fortawesome/vue-fontawesome";
-import {
-  library
-} from "@fortawesome/fontawesome-svg-core";
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
 import {
   faSearchPlus,
-  faCompressArrowsAlt
-} from "@fortawesome/free-solid-svg-icons/";
+  faCompressArrowsAlt,
+} from '@fortawesome/free-solid-svg-icons/';
 
 library.add(faSearchPlus, faCompressArrowsAlt);
 
-import SequencingHistogram from "@/components/SequencingHistogram.vue";
-import DownloadReportData from "@/components/DownloadReportData.vue";
+import SequencingHistogram from '@/components/SequencingHistogram.vue';
+import DownloadReportData from '@/components/DownloadReportData.vue';
 
 import {
   select,
@@ -157,17 +155,17 @@ import {
   extent,
   min,
   max,
-  format
-} from "d3";
+  format,
+} from 'd3';
 
-import cloneDeep from "lodash/cloneDeep";
+import cloneDeep from 'lodash/cloneDeep';
 
 export default Vue.extend({
-  name: "LineagesByLocation",
+  name: 'LineagesByLocation',
   components: {
     SequencingHistogram,
     DownloadReportData,
-    FontAwesomeIcon
+    FontAwesomeIcon,
   },
   props: {
     data: Array,
@@ -183,76 +181,46 @@ export default Vue.extend({
     xmax: String,
     includeToday: {
       type: Boolean,
-      default: true
+      default: true,
     },
     routeName: {
       type: String,
-      default: "LocationReport"
+      default: 'LocationReport',
     },
     plotTitle: {
       type: String,
-      default: "Lineage prevalence over time"
+      default: 'Lineage prevalence over time',
     },
     onlyTotals: {
       type: Boolean,
-      default: true
+      default: true,
     },
     tooltipTotal: {
       type: Boolean,
-      default: false
-    }
-  },
-  computed: {
-    title() {
-      return (`Lineage prevalence over time in ${this.location}`)
-    }
-  },
-  watch: {
-    width: function() {
-      this.setXScale();
-      this.updateBrush();
-      this.updatePlot();
+      default: false,
     },
-    data: function() {
-      this.xMin = timeParse("%Y-%m-%d")(this.xmin);
-      this.xMax = timeParse("%Y-%m-%d")(this.xmax);
-      this.setXScale();
-      this.updatePlot();
-    },
-    xmin: function() {
-      this.xMin = timeParse("%Y-%m-%d")(this.xmin);
-      this.xMax = timeParse("%Y-%m-%d")(this.xmax);
-      this.setXScale();
-      this.updatePlot();
-    },
-    xmax: function() {
-      this.xMin = timeParse("%Y-%m-%d")(this.xmin);
-      this.xMax = timeParse("%Y-%m-%d")(this.xmax);
-      this.setXScale();
-      this.updatePlot();
-    }
   },
   data() {
-    return ({
+    return {
       // dimensions
       margin: {
         top: 18,
         bottom: 30,
         left: 85,
-        right: 135
+        right: 135,
       },
       marginHist: {
         top: 5,
         bottom: 10,
         left: 85,
-        right: 135
+        right: 135,
       },
       width: null,
       minWidth: 450,
       height: 500,
       // variables
-      fillVar: "pangolin_lineage",
-      xVariable: "date_time",
+      fillVar: 'pangolin_lineage',
+      xVariable: 'date_time',
       // axes
       x: null,
       y: scaleLinear(),
@@ -272,23 +240,52 @@ export default Vue.extend({
       chart: null,
       brushRef: null,
       // controls
-      zoomAllowed: false
-    })
+      zoomAllowed: false,
+    };
+  },
+  computed: {
+    title() {
+      return `Lineage prevalence over time in ${this.location}`;
+    },
+  },
+  watch: {
+    width() {
+      this.setXScale();
+      this.updateBrush();
+      this.updatePlot();
+    },
+    data() {
+      this.xMin = timeParse('%Y-%m-%d')(this.xmin);
+      this.xMax = timeParse('%Y-%m-%d')(this.xmax);
+      this.setXScale();
+      this.updatePlot();
+    },
+    xmin() {
+      this.xMin = timeParse('%Y-%m-%d')(this.xmin);
+      this.xMax = timeParse('%Y-%m-%d')(this.xmax);
+      this.setXScale();
+      this.updatePlot();
+    },
+    xmax() {
+      this.xMin = timeParse('%Y-%m-%d')(this.xmin);
+      this.xMax = timeParse('%Y-%m-%d')(this.xmax);
+      this.setXScale();
+      this.updatePlot();
+    },
   },
   mounted() {
-    this.$nextTick(function() {
-      window.addEventListener("resize", this.debounceSetDims);
+    this.$nextTick(() => {
+      window.addEventListener('resize', this.debounceSetDims);
 
       this.updateBrush();
       // set initial dimensions for the plots.
       this.debounceSetDims();
-    })
-
+    });
 
     this.setupPlot();
     this.updatePlot();
   },
-  created: function() {
+  created() {
     this.debounceSetDims = this.debounce(this.setDims, 150);
     this.debounceZoom = this.debounce(this.zoom, 150);
   },
@@ -298,29 +295,34 @@ export default Vue.extend({
       this.brush = brushX()
         .extent([
           [0, 0],
-          [this.width - this.margin.left - this.margin.right, this.height - this.margin.top - this.margin.bottom]
+          [
+            this.width - this.margin.left - this.margin.right,
+            this.height - this.margin.top - this.margin.bottom,
+          ],
         ])
-        .on("end", () => this.debounceZoom(event));
+        .on('end', () => this.debounceZoom(event));
 
-      this.brushRef
-        .call(this.brush)
-        .on("dblclick", this.resetZoom);
+      this.brushRef.call(this.brush).on('dblclick', this.resetZoom);
     },
     setDims() {
       const svgContainer = document.getElementById('most-recent-lineages');
       let containerWidth = svgContainer ? svgContainer.offsetWidth : 500;
-      const pageContainer = document.getElementById('location-report')
+      const pageContainer = document.getElementById('location-report');
       let maxWidth = pageContainer ? pageContainer.offsetWidth : 500;
       const idealWidth = (maxWidth - containerWidth) * 0.95;
 
-      this.width = this.setWidth ? this.setWidth : idealWidth < this.minWidth || idealWidth > maxWidth ? maxWidth * 0.95 : idealWidth;
+      this.width = this.setWidth
+        ? this.setWidth
+        : idealWidth < this.minWidth || idealWidth > maxWidth
+        ? maxWidth * 0.95
+        : idealWidth;
 
       this.numXTicks = this.width < 500 ? 2 : 5;
     },
     setupPlot() {
       // read in the limits from the route params
-      this.xMin = timeParse("%Y-%m-%d")(this.xmin);
-      this.xMax = timeParse("%Y-%m-%d")(this.xmax);
+      this.xMin = timeParse('%Y-%m-%d')(this.xmin);
+      this.xMax = timeParse('%Y-%m-%d')(this.xmax);
 
       this.svg = select(this.$refs.svg);
       this.legend = select(this.$refs.legend);
@@ -328,9 +330,9 @@ export default Vue.extend({
       this.brushRef = select(this.$refs.brush);
 
       this.area = area()
-        .x(d => this.x(d.data[this.xVariable]))
-        .y0(d => this.y(d[0]))
-        .y1(d => this.y(d[1]));
+        .x((d) => this.x(d.data[this.xVariable]))
+        .y0((d) => this.y(d[0]))
+        .y1((d) => this.y(d[1]));
 
       this.setXScale();
     },
@@ -342,10 +344,10 @@ export default Vue.extend({
       } else {
         if (this.includeToday) {
           const today = new Date();
-          this.maxDate = max(this.data, d => d[this.xVariable]);
-          xDomain = [min(this.data, d => d[this.xVariable]), today];
+          this.maxDate = max(this.data, (d) => d[this.xVariable]);
+          xDomain = [min(this.data, (d) => d[this.xVariable]), today];
         } else {
-          xDomain = extent(this.data.map(d => d[this.xVariable]));
+          xDomain = extent(this.data.map((d) => d[this.xVariable]));
         }
 
         if (this.xMin && this.xMin < xDomain[1]) {
@@ -369,27 +371,31 @@ export default Vue.extend({
 
       this.plottedData = cloneDeep(this.data);
 
-      this.plottedData = this.plottedData.filter(d => d[this.xVariable] >= xDomain[0] && d[this.xVariable] <= xDomain[1]);
+      this.plottedData = this.plottedData.filter(
+        (d) =>
+          d[this.xVariable] >= xDomain[0] && d[this.xVariable] <= xDomain[1],
+      );
     },
     updateScales() {
-
       this.y = this.y
         // .range([0, this.height - this.margin.top - this.margin.bottom])
         .range([this.height - this.margin.top - this.margin.bottom, 0])
         .nice()
         .domain([0, 1]);
 
-      this.lineages = Object.keys(this.data[0]).filter(d => d != this.xVariable);
+      this.lineages = Object.keys(this.data[0]).filter(
+        (d) => d !== this.xVariable,
+      );
 
-      this.yAxis = axisLeft(this.y).tickSizeOuter(0)
+      this.yAxis = axisLeft(this.y)
+        .tickSizeOuter(0)
         .ticks(this.numYTicks)
-        .tickFormat(format(".0%"));
+        .tickFormat(format('.0%'));
 
       // stacking
       this.series = stack()
         .keys(this.lineages)
-        .order(stackOrderInsideOut)
-        (this.plottedData)
+        .order(stackOrderInsideOut)(this.plottedData);
 
       select(this.$refs.yAxis).call(this.yAxis);
     },
@@ -403,67 +409,59 @@ export default Vue.extend({
       const ttipShift = 20;
       // turn everything off
       this.chart
-        .selectAll(".stacked-area-chart")
-        .style("stroke", "#BBB")
-        .style("fill-opacity", 0.2);
+        .selectAll('.stacked-area-chart')
+        .style('stroke', '#BBB')
+        .style('fill-opacity', 0.2);
 
-      selectAll(".stacked-bar-chart")
-        .style("fill-opacity", 0.2);
+      selectAll('.stacked-bar-chart').style('fill-opacity', 0.2);
 
-      this.chart.selectAll(".no-data")
-        .style("fill-opacity", 0);
+      this.chart.selectAll('.no-data').style('fill-opacity', 0);
 
       // turn on the selected region
-      this.chart.select(`#area_${key.replace(/\./g, "-")}`)
-        .style("fill-opacity", 1);
+      this.chart
+        .select(`#area_${key.replace(/\./g, '-')}`)
+        .style('fill-opacity', 1);
 
-      select(`#${key.replace(/\./g, "-")}`)
-        .style("fill-opacity", 1);
+      select(`#${key.replace(/\./g, '-')}`).style('fill-opacity', 1);
 
       const ttip = select(this.$refs.tooltip_streamgraph);
 
-      ttip.select("#lineage")
-        .text(key)
+      ttip.select('#lineage').text(key);
 
       const recentPrev = this.recentData[key];
       if (this.tooltipTotal) {
         if (recentPrev) {
-          ttip.select("#proportion")
-            .text(format(",")(recentPrev))
+          ttip.select('#proportion').text(format(',')(recentPrev));
         } else {
-          ttip.select("#proportion")
-            .text('')
+          ttip.select('#proportion').text('');
         }
       } else {
         if (recentPrev) {
-          ttip.select("#proportion")
-            .text(recentPrev < 0.005 ? "< 0.5%" : format(".0%")(recentPrev))
+          ttip
+            .select('#proportion')
+            .text(recentPrev < 0.005 ? '< 0.5%' : format('.0%')(recentPrev));
         } else {
-          ttip.select("#proportion")
-            .text('Grouped into "other" category')
+          ttip.select('#proportion').text('Grouped into "other" category');
         }
       }
 
       // fix location
       ttip
-        .style("left", `${event.clientX + ttipShift}px`)
-        .style("top", `${event.clientY + ttipShift}px`)
-        .style("display", "block");
+        .style('left', `${event.clientX + ttipShift}px`)
+        .style('top', `${event.clientY + ttipShift}px`)
+        .style('display', 'block');
     },
     tooltipOff() {
-      this.chart.selectAll(".no-data")
-        .style("fill-opacity", 1);
+      this.chart.selectAll('.no-data').style('fill-opacity', 1);
 
       this.chart
-        .selectAll(".stacked-area-chart")
-        .style("stroke", "#555")
-        .style("fill-opacity", 1);
+        .selectAll('.stacked-area-chart')
+        .style('stroke', '#555')
+        .style('fill-opacity', 1);
 
-      selectAll(".stacked-bar-chart")
-        .style("fill-opacity", 1);
+      selectAll('.stacked-bar-chart').style('fill-opacity', 1);
 
-      select(this.$refs.tooltip_streamgraph)
-        .style("display", "none");
+      select(this.$refs.tooltip_streamgraph).style('display', 'none');
     },
     zoom(evt) {
       // reset domain to new coords
@@ -477,14 +475,14 @@ export default Vue.extend({
           .range([0, this.width - this.margin.left - this.margin.right])
           .domain([newMin, newMax]);
 
-
         this.plottedData = cloneDeep(this.data);
 
-        this.plottedData = this.plottedData.filter(d => d[this.xVariable] >= newMin && d[this.xVariable] <= newMax);
+        this.plottedData = this.plottedData.filter(
+          (d) => d[this.xVariable] >= newMin && d[this.xVariable] <= newMax,
+        );
 
         // reset the axis
-        this.xAxis = axisBottom(this.x)
-          .ticks(this.numXTicks);
+        this.xAxis = axisBottom(this.x).ticks(this.numXTicks);
 
         select(this.$refs.xAxis).call(this.xAxis);
 
@@ -495,80 +493,78 @@ export default Vue.extend({
 
         // update the url
         const queryParams = this.$route.query;
-        if (this.routeName == "MutationReport") {
+        if (this.routeName === 'MutationReport') {
           const params = this.$route.params;
           this.$router.push({
             name: this.routeName,
             params: {
               disableScroll: true,
-              alias: params.alias
+              alias: params.alias,
             },
             query: {
-              xmin: timeFormat("%Y-%m-%d")(newMin),
-              xmax: timeFormat("%Y-%m-%d")(newMax),
+              xmin: timeFormat('%Y-%m-%d')(newMin),
+              xmax: timeFormat('%Y-%m-%d')(newMax),
               loc: queryParams.loc,
               muts: queryParams.muts,
               pango: queryParams.pango,
-              selected: queryParams.selected
-            }
-          })
-        } else if (this.routeName == "GenomicsEmbedVariant") {
+              selected: queryParams.selected,
+            },
+          });
+        } else if (this.routeName === 'GenomicsEmbedVariant') {
           const params = this.$route.params;
           this.$router.push({
-            name: "GenomicsEmbed",
+            name: 'GenomicsEmbed',
             params: {
-              disableScroll: true
+              disableScroll: true,
             },
             query: {
-              type: "var",
+              type: 'var',
               alias: queryParams.alias,
-              xmin: timeFormat("%Y-%m-%d")(newMin),
-              xmax: timeFormat("%Y-%m-%d")(newMax),
+              xmin: timeFormat('%Y-%m-%d')(newMin),
+              xmax: timeFormat('%Y-%m-%d')(newMax),
               loc: queryParams.loc,
               muts: queryParams.muts,
               pango: queryParams.pango,
-              selected: queryParams.selected
-            }
-          })
-        } else if (this.routeName == "LocationReport") {
+              selected: queryParams.selected,
+            },
+          });
+        } else if (this.routeName === 'LocationReport') {
           this.$router.push({
-            name: "LocationReport",
+            name: 'LocationReport',
             params: {
-              disableScroll: true
+              disableScroll: true,
             },
             query: {
-              xmin: timeFormat("%Y-%m-%d")(newMin),
-              xmax: timeFormat("%Y-%m-%d")(newMax),
+              xmin: timeFormat('%Y-%m-%d')(newMin),
+              xmax: timeFormat('%Y-%m-%d')(newMax),
               loc: queryParams.loc,
               muts: queryParams.muts,
               alias: queryParams.alias,
               pango: queryParams.pango,
               variant: queryParams.variant,
-              selected: queryParams.selected
-            }
-          })
-        } else if (this.routeName == "GenomicsEmbedLocation") {
+              selected: queryParams.selected,
+            },
+          });
+        } else if (this.routeName === 'GenomicsEmbedLocation') {
           this.$router.push({
-            name: "GenomicsEmbed",
+            name: 'GenomicsEmbed',
             params: {
-              disableScroll: true
+              disableScroll: true,
             },
             query: {
-              var: "loc",
-              xmin: timeFormat("%Y-%m-%d")(newMin),
-              xmax: timeFormat("%Y-%m-%d")(newMax),
+              var: 'loc',
+              xmin: timeFormat('%Y-%m-%d')(newMin),
+              xmax: timeFormat('%Y-%m-%d')(newMax),
               loc: queryParams.loc,
               muts: queryParams.muts,
               alias: queryParams.alias,
               pango: queryParams.pango,
               variant: queryParams.variant,
-              selected: queryParams.selected
-            }
-          })
+              selected: queryParams.selected,
+            },
+          });
         }
-
       }
-
     },
     resetZoom() {
       this.brushRef.call(this.brush.move, null);
@@ -578,42 +574,42 @@ export default Vue.extend({
       this.xMax = null;
       this.setXScale();
 
-      if (this.routeName == "MutationReport") {
+      if (this.routeName === 'MutationReport') {
         const params = this.$route.params;
         this.$router.push({
           name: this.routeName,
           params: {
             disableScroll: true,
-            alias: params.alias
+            alias: params.alias,
           },
           query: {
             loc: queryParams.loc,
             muts: queryParams.muts,
             pango: queryParams.pango,
-            selected: queryParams.selected
-          }
-        })
-      } else if (this.routeName == "GenomicsEmbedVariant") {
+            selected: queryParams.selected,
+          },
+        });
+      } else if (this.routeName === 'GenomicsEmbedVariant') {
         const params = this.$route.params;
         this.$router.push({
-          name: "GenomicsEmbed",
+          name: 'GenomicsEmbed',
           params: {
-            disableScroll: true
+            disableScroll: true,
           },
           query: {
-            type: "var",
+            type: 'var',
             alias: queryParams.alias,
             loc: queryParams.loc,
             muts: queryParams.muts,
             pango: queryParams.pango,
-            selected: queryParams.selected
-          }
-        })
-      } else if (this.routeName == "LocationReport") {
+            selected: queryParams.selected,
+          },
+        });
+      } else if (this.routeName === 'LocationReport') {
         this.$router.push({
-          name: "LocationReport",
+          name: 'LocationReport',
           params: {
-            disableScroll: true
+            disableScroll: true,
           },
           query: {
             loc: queryParams.loc,
@@ -621,25 +617,25 @@ export default Vue.extend({
             alias: queryParams.alias,
             pango: queryParams.pango,
             variant: queryParams.variant,
-            selected: queryParams.selected
-          }
-        })
-      } else if (this.routeName == "GenomicsEmbedLocation") {
+            selected: queryParams.selected,
+          },
+        });
+      } else if (this.routeName === 'GenomicsEmbedLocation') {
         this.$router.push({
-          name: "GenomicsEmbed",
+          name: 'GenomicsEmbed',
           params: {
-            disableScroll: true
+            disableScroll: true,
           },
           query: {
-            type: "loc",
+            type: 'loc',
             loc: queryParams.loc,
             muts: queryParams.muts,
             alias: queryParams.alias,
             pango: queryParams.pango,
             variant: queryParams.variant,
-            selected: queryParams.selected
-          }
-        })
+            selected: queryParams.selected,
+          },
+        });
       }
 
       this.updatePlot();
@@ -649,200 +645,208 @@ export default Vue.extend({
     },
     drawPlot() {
       if (this.includeToday) {
-        const noDataSelector = this.chart
-          .selectAll(".no-data")
-          .data([0]);
+        const noDataSelector = this.chart.selectAll('.no-data').data([0]);
 
         noDataSelector.join(
-          enter => {
-            enter.append("rect")
-              .attr("class", "no-data")
-              .attr("x", 0)
-              .attr("width", this.width - this.margin.left - this.margin.right)
-              .attr("height", this.height - this.margin.top - this.margin.bottom)
-              .style("fill", "url(#diagonalHatchLight)")
+          (enter) => {
+            enter
+              .append('rect')
+              .attr('class', 'no-data')
+              .attr('x', 0)
+              .attr('width', this.width - this.margin.left - this.margin.right)
+              .attr(
+                'height',
+                this.height - this.margin.top - this.margin.bottom,
+              )
+              .style('fill', 'url(#diagonalHatchLight)');
           },
-          update => {
+          (update) => {
             update
-              .attr("x", 0)
-              .attr("width", this.width - this.margin.left - this.margin.right)
-              .attr("height", this.height - this.margin.top - this.margin.bottom)
-              .style("fill", "url(#diagonalHatchLight)")
+              .attr('x', 0)
+              .attr('width', this.width - this.margin.left - this.margin.right)
+              .attr(
+                'height',
+                this.height - this.margin.top - this.margin.bottom,
+              )
+              .style('fill', 'url(#diagonalHatchLight)');
           },
-          exit =>
-          exit.call(exit =>
-            exit
-            .transition()
-            .style("opacity", 1e-5)
-            .remove()
-          )
-        )
+          (exit) =>
+            exit.call((exit) =>
+              exit
+                .transition()
+                .style('opacity', 1e-5)
+                .remove(),
+            ),
+        );
       }
 
-
       const areaSelector = this.chart
-        .selectAll(".stacked-area-chart")
+        .selectAll('.stacked-area-chart')
         .data(this.series);
 
-      areaSelector
-        .join(enter => {
-            const selector = enter.append("path")
-              .attr("fill", ({
-                key
-              }) => this.colorScale(key))
-              .attr("class", "stacked-area-chart")
-              .classed("pointer", ({
-                key
-              }) => key.toLowerCase() != "other")
-              .attr("id", ({
-                key
-              }) => `area_${key.replace(/\./g, "-")}`)
-              .attr("d", this.area)
-              .style("stroke", "#555")
-              .style("stroke-width", 0.5)
-          },
-          update => {
-            update
-              .attr("fill", ({
-                key
-              }) => this.colorScale(key))
-              .attr("id", ({
-                key
-              }) => `area_${key.replace(/\./g, "-")}`)
-              .attr("d", this.area);
-          },
-          exit =>
-          exit.call(exit =>
+      areaSelector.join(
+        (enter) => {
+          const selector = enter
+            .append('path')
+            .attr('fill', ({ key }) => this.colorScale(key))
+            .attr('class', 'stacked-area-chart')
+            .classed('pointer', ({ key }) => key.toLowerCase() !== 'other')
+            .attr('id', ({ key }) => `area_${key.replace(/\./g, '-')}`)
+            .attr('d', this.area)
+            .style('stroke', '#555')
+            .style('stroke-width', 0.5);
+        },
+        (update) => {
+          update
+            .attr('fill', ({ key }) => this.colorScale(key))
+            .attr('id', ({ key }) => `area_${key.replace(/\./g, '-')}`)
+            .attr('d', this.area);
+        },
+        (exit) =>
+          exit.call((exit) =>
             exit
-            .transition()
-            .style("opacity", 1e-5)
-            .remove()
-          )
-        )
+              .transition()
+              .style('opacity', 1e-5)
+              .remove(),
+          ),
+      );
 
       // annotation for the most recent date
       if (this.recentMin) {
         const recentSelector = this.chart
-          .selectAll(".recent-date-annotation")
+          .selectAll('.recent-date-annotation')
           .data([this.recentMin]);
 
         const t1 = transition().duration(500);
 
         recentSelector.join(
-          enter => {
-            const grp = enter.append("g")
-              .attr("class", "recent-date-annotation");
+          (enter) => {
+            const grp = enter
+              .append('g')
+              .attr('class', 'recent-date-annotation');
 
-            grp.append("line")
-              .attr("class", "annotation-line")
-              .attr("x1", d => this.x(d))
-              .attr("x2", d => this.x(d))
-              .attr("y1", 0)
-              .attr("y2", this.height)
-              .style("stroke", "white")
-              .style("stroke-dasharray", "6,6");
+            grp
+              .append('line')
+              .attr('class', 'annotation-line')
+              .attr('x1', (d) => this.x(d))
+              .attr('x2', (d) => this.x(d))
+              .attr('y1', 0)
+              .attr('y2', this.height)
+              .style('stroke', 'white')
+              .style('stroke-dasharray', '6,6');
 
-            grp.append("line")
-              .attr("class", "text-line")
-              .attr("x1", d => this.x(d))
-              .attr("x2", d => this.x(d))
-              .attr("y1", 0)
-              .attr("y2", -5)
-              .style("stroke", "#2c3e50")
+            grp
+              .append('line')
+              .attr('class', 'text-line')
+              .attr('x1', (d) => this.x(d))
+              .attr('x2', (d) => this.x(d))
+              .attr('y1', 0)
+              .attr('y2', -5)
+              .style('stroke', '#2c3e50');
 
-            grp.append("text")
-              .attr("x", d => this.x(d))
-              .attr("y", 0)
-              .attr("dy", -8)
+            grp
+              .append('text')
+              .attr('x', (d) => this.x(d))
+              .attr('y', 0)
+              .attr('dy', -8)
               .text(`${this.recentWindow} days`)
-              .style("text-anchor", d => this.x(d) > this.width / 2 ? "end" : "start")
-              .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
-              .style("dominant-baseline", "text-top")
-              .style("font-size", "9pt");
+              .style('text-anchor', (d) =>
+                this.x(d) > this.width / 2 ? 'end' : 'start',
+              )
+              .style(
+                'font-family',
+                "'DM Sans', Avenir, Helvetica, Arial, sans-serif",
+              )
+              .style('dominant-baseline', 'text-top')
+              .style('font-size', '9pt');
           },
-          update => {
-            update.select(".annotation-line")
-              .attr("y1", 0)
-              .attr("y2", this.height)
+          (update) => {
+            update
+              .select('.annotation-line')
+              .attr('y1', 0)
+              .attr('y2', this.height)
               .transition(t1)
-              .attr("x1", d => this.x(d))
-              .attr("x2", d => this.x(d));
+              .attr('x1', (d) => this.x(d))
+              .attr('x2', (d) => this.x(d));
 
-            update.select(".text-line")
+            update
+              .select('.text-line')
               .transition(t1)
-              .attr("x1", d => this.x(d))
-              .attr("x2", d => this.x(d))
+              .attr('x1', (d) => this.x(d))
+              .attr('x2', (d) => this.x(d));
 
-            update.select("text")
+            update
+              .select('text')
               .text(`${this.recentWindow} days`)
-              .style("text-anchor", d => this.x(d) > this.width / 2 ? "end" : "start")
+              .style('text-anchor', (d) =>
+                this.x(d) > this.width / 2 ? 'end' : 'start',
+              )
               .transition(t1)
-              .attr("x", d => this.x(d));
+              .attr('x', (d) => this.x(d));
           },
-          exit =>
-          exit.call(exit =>
-            exit
-            .transition()
-            .style("opacity", 1e-5)
-            .remove()
-          )
-        )
+          (exit) =>
+            exit.call((exit) =>
+              exit
+                .transition()
+                .style('opacity', 1e-5)
+                .remove(),
+            ),
+        );
       }
 
       this.chart
-        .selectAll(".stacked-area-chart")
-        .on("mousemove", ({
-          key
-        }) => this.tooltipOn(key))
-        .on("click", ({
-          key
-        }) => this.route2Mutation(key))
-        .on("mouseleave", this.tooltipOff);
+        .selectAll('.stacked-area-chart')
+        .on('mousemove', ({ key }) => this.tooltipOn(key))
+        .on('click', ({ key }) => this.route2Mutation(key))
+        .on('mouseleave', this.tooltipOff);
     },
     route2Mutation(d) {
-      if (d.toLowerCase() != "other") {
+      if (d.toLowerCase() !== 'other') {
         const queryParams = this.$route.query;
-        console.log(this.routeName)
-        if (this.routeName.includes("GenomicsEmbed")) {
+        console.log(this.routeName);
+        if (this.routeName.includes('GenomicsEmbed')) {
           this.$router.push({
-            name: "GenomicsEmbed",
+            name: 'GenomicsEmbed',
             query: {
-              type: "var",
+              type: 'var',
               pango: d,
               loc: queryParams.loc,
-              selected: queryParams.loc
-            }
-          })
+              selected: queryParams.loc,
+            },
+          });
         } else {
-          const selected = this.routeName == "LocationReport" ? queryParams.loc : queryParams.selected;
+          const selected =
+            this.routeName === 'LocationReport'
+              ? queryParams.loc
+              : queryParams.selected;
           this.$router.push({
-            name: "MutationReport",
+            name: 'MutationReport',
             query: {
               pango: d,
               loc: queryParams.loc,
-              selected: selected
-            }
-          })
+              selected: selected,
+            },
+          });
         }
       }
     },
     debounce(fn, delay) {
-      var timer = null;
-      return function() {
-        var context = this,
+      let timer = null;
+      return () => {
+        const context = this,
           args = arguments,
           evt = event;
         //we get the D3 event here
         clearTimeout(timer);
-        timer = setTimeout(function() {
+        timer = setTimeout(() => {
           context.event = evt;
           //and use the reference here
           fn.apply(context, args);
         }, delay);
       };
-    }
-  }
-})
+    },
+  },
+});
 </script>
 
 <style lang="scss">

@@ -73,11 +73,6 @@ export default Vue.extend({
       default: '#114068',
     },
   },
-  watch: {
-    data() {
-      this.updatePlot();
-    },
-  },
   data() {
     return {
       // dims
@@ -100,6 +95,15 @@ export default Vue.extend({
       chart: null,
     };
   },
+  watch: {
+    data() {
+      this.updatePlot();
+    },
+  },
+  mounted() {
+    this.setupPlot();
+    this.updatePlot();
+  },
   methods: {
     updatePlot() {
       if (this.data) {
@@ -108,7 +112,7 @@ export default Vue.extend({
       }
     },
     setupPlot() {
-      this.$nextTick(function() {
+      this.$nextTick(() => {
         window.addEventListener('resize', this.setDims);
 
         // set initial dimensions for the plots.
@@ -241,10 +245,6 @@ export default Vue.extend({
           ),
       );
     },
-  },
-  mounted() {
-    this.setupPlot();
-    this.updatePlot();
   },
 });
 </script>

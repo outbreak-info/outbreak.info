@@ -34,13 +34,13 @@ import 'tippy.js/themes/light.css';
 
 export default {
   name: 'ClinicalTrialSummary',
-  props: {
-    data: Object,
-  },
   components: {
     TrialPhase,
     TrialStatus,
     TrialType,
+  },
+  props: {
+    data: Object,
   },
   data() {
     return {};

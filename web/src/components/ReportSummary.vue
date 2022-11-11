@@ -5,13 +5,13 @@
       <span class="font-size-2">
         <span v-if="dateUpdated">As of {{ dateUpdated }},</span>
         <b>{{ totalLineage }}</b>
-        <span v-if="reportType == 'lineage'">
+        <span v-if="reportType === 'lineage'">
           sequences in the
           <b>{{ mutationName }}</b>
           {{ reportType }} have been detected since the {{ reportType }} was
           identified:
         </span>
-        <span v-else-if="reportType == 'lineage with added mutations'">
+        <span v-else-if="reportType === 'lineage with added mutations'">
           sequences with the
           <b>{{ mutationName }}</b>
           have been detected since the lineage was identified:
@@ -43,7 +43,7 @@
             >
               {{ mutationName }} found
             </th>
-            <th></th>
+            <th />
             <th
               class="text-center padded border-bottom border-secondary"
               colspan="2"
@@ -60,7 +60,7 @@
               cumulative prevalence
               <sup>*</sup>
             </th>
-            <th></th>
+            <th />
             <th class="text-center padded">
               first
             </th>
@@ -74,10 +74,14 @@
           <tr
             v-for="(location, lIdx) in locationTotals"
             :key="lIdx"
-            :class="{ 'font-weight-bold': location.location_id == selected }"
+            :class="{ 'font-weight-bold': location.location_id === selected }"
           >
             <td>
               <router-link
+                v-if="
+                  location.name !== 'Worldwide' &&
+                    routeTo === 'GenomicsEmbedVariant'
+                "
                 class="bright-hyperlink"
                 :to="{
                   name: 'GenomicsEmbed',
@@ -87,24 +91,20 @@
                     ...locationQueryParams,
                   },
                 }"
-                v-if="
-                  location.name != 'Worldwide' &&
-                    routeTo == 'GenomicsEmbedVariant'
-                "
               >
                 {{ location.name }}
               </router-link>
               <router-link
+                v-else-if="location.name !== 'Worldwide'"
                 class="bright-hyperlink"
                 :to="{
                   name: 'LocationReport',
                   query: { loc: location.location_id, ...locationQueryParams },
                 }"
-                v-else-if="location.name != 'Worldwide'"
               >
                 {{ location.name }}
               </router-link>
-              <span class="bright-hyperlink" v-else>{{ location.name }}</span>
+              <span v-else class="bright-hyperlink">{{ location.name }}</span>
             </td>
             <td class="text-center">
               {{ location.lineage_count_formatted }}
@@ -112,7 +112,8 @@
             <td class="text-center">
               <span
                 :class="{
-                  'no-estimate': location.proportion_formatted == 'no estimate',
+                  'no-estimate':
+                    location.proportion_formatted === 'no estimate',
                 }"
                 :data-tippy-info="
                   `Prevalence estimates are unreliable since only ${
@@ -127,7 +128,7 @@
                 {{ location.proportion_formatted }}
               </span>
             </td>
-            <td></td>
+            <td />
             <td class="text-center">
               {{ location.first_detected }}
             </td>
@@ -177,17 +178,17 @@
 
     <!-- GEO SUMMARY -->
     <div
-      id="geo-summary"
       v-if="countries"
-      class="d-flex flex-column"
+      id="geo-summary"
       ref="geo_summary"
+      class="d-flex flex-column"
     >
       <div>
         The
         {{
-          reportType == 'mutation'
+          reportType === 'mutation'
             ? 'mutation has'
-            : reportType == 'variant'
+            : reportType === 'variant'
             ? 'mutations have'
             : 'strain has'
         }}
@@ -264,7 +265,7 @@ export default {
   mounted() {
     this.setDims();
 
-    this.$nextTick(function() {
+    this.$nextTick(() => {
       window.addEventListener('resize', this.setDims);
     });
 

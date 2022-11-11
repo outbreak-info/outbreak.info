@@ -6,7 +6,7 @@
         :icon="['fas', 'spinner']"
       />
     </div>
-    <section id="world_total" v-if="total" class="container my-5">
+    <section v-if="total" id="world_total" class="container my-5">
       <div class="row">
         <!-- EPI CURVE SUMMARIES -->
 
@@ -16,14 +16,15 @@
             <select v-model="variableObj" class="select-dropdown">
               <option
                 v-for="option in totalOptions"
-                :value="option"
                 :key="option.value"
+                :value="option"
               >
                 {{ option.label }}
               </option>
             </select>
           </h3>
           <Bargraph
+            id="world-cases"
             :data="total.total"
             :title="null"
             :variableObj="variableObj"
@@ -38,17 +39,16 @@
             :transformChart="bargraphTransform"
             tooltipIdx="n-main"
             :animate="true"
-            id="world-cases"
             color="#888380"
           />
           <DataSource
+            v-if="total"
             class="mx-3"
             :ids="variableObj.sources"
             dataType="epidemiology"
             figureRef="epi-bargraph"
             :numSvgs="1"
             :data="total.total"
-            v-if="total"
           />
         </div>
       </div>
@@ -60,16 +60,16 @@
         <!-- EPI CURVE SUMMARIES -->
 
         <div class="col-sm-12 d-flex">
-          <section class="w-100" id="regional-epi-curves">
+          <section id="regional-epi-curves" class="w-100">
             <template v-if="nestedData && nestedData.length > 0">
               <div
-                class="region-tooltip-plots"
                 v-for="(region, idx) in regionDict"
                 :key="idx"
+                class="region-tooltip-plots"
               >
                 <div
-                  class="tooltip-countries"
                   :id="idx"
+                  class="tooltip-countries"
                   :style="{
                     visibility: region.display ? 'visible' : 'hidden',
                     left: region.x + 'px',
@@ -90,14 +90,14 @@
                   </div>
                 </div>
                 <CountryBarGraph
+                  :id="idx"
                   :region="region.region"
                   :variable="selectedVariable"
-                  :id="idx"
                   :style="{
                     visibility: region.displayMore ? 'visible' : 'hidden',
                   }"
-                  @regionSelected="handleTooltip"
                   class="tooltip-countries-detailed"
+                  @regionSelected="handleTooltip"
                 />
               </div>
             </template>
@@ -112,8 +112,8 @@
                 >
                   <option
                     v-for="option in variableOptions"
-                    :value="option.value"
                     :key="option.value"
+                    :value="option.value"
                   >
                     {{ option.label }}
                   </option>
@@ -126,14 +126,14 @@
               id="regional-stacked-area-plots d-flex"
               ref="regional_stacked_area_plots"
             >
-              <div class="row px-2" v-if="nestedData && nestedData.length > 0">
+              <div v-if="nestedData && nestedData.length > 0" class="row px-2">
                 <div class="col-sm-12 col-md-12">
                   <EpiStacked
+                    id="all-data"
                     :width="stackedWidth"
                     :height="stackedHeight"
                     :data="nestedData"
                     :includeChinaAnnot="true"
-                    id="all-data"
                     :title="`${selectedVariableLabel} Worldwide`"
                     @regionSelected="handleTooltip"
                   />
@@ -155,8 +155,8 @@
 
     <section
       v-if="total"
-      class="container my-5"
       id="world-daily-small-multiples"
+      class="container my-5"
     >
       <div class="row">
         <!-- EPI CURVE SUMMARIES -->
@@ -167,8 +167,8 @@
             <select v-model="variableObj" class="select-dropdown">
               <option
                 v-for="option in totalOptions"
-                :value="option"
                 :key="option.value"
+                :value="option"
               >
                 {{ option.label }}
               </option>
@@ -178,6 +178,7 @@
           <div class="d-flex flex-wrap justify-content-between">
             <Bargraph
               v-for="(regionData, idx) in total.regional"
+              :id="'region' + idx"
               :key="idx"
               :data="regionData.value"
               :title="regionData.key"
@@ -192,18 +193,17 @@
               :log="false"
               :percapita="false"
               :animate="true"
-              :id="'region' + idx"
               :color="regionColorScale(regionData.key)"
             />
           </div>
           <DataSource
+            v-if="total"
             class="mx-3"
             :ids="variableObj.sources"
             dataType="epidemiology"
             figureRef="epi-bargraph"
             :numSvgs="total.regional.length"
             :data="total.regional"
-            v-if="total"
           />
         </div>
       </div>
@@ -295,9 +295,31 @@ export default {
     ...mapState('geo', ['regionDict']),
     selectedVariableLabel() {
       return this.variableOptions.filter(
-        (d) => d.value == this.selectedVariable,
+        (d) => d.value === this.selectedVariable,
       )[0]['label'];
     },
+  },
+  mounted() {
+    this.dataSubscription = getStackedRegions(this.$apiurl).subscribe((d) => {
+      this.data = d;
+      this.nestedData = d[this.selectedVariable];
+    });
+    this.totalSubscription = getWorldDailyCases(this.$apiurl).subscribe((d) => {
+      this.total = d;
+    });
+
+    // Event listener for mobile responsiveness
+    // $nextTick waits till DOM rendered
+    this.$nextTick(() => {
+      window.addEventListener('resize', this.setDims);
+      // set initial dimensions for the stacked area plots.
+      this.setDims();
+    });
+  },
+  destroyed() {
+    this.dataSubscription.unsubscribe();
+    this.totalSubscription.unsubscribe();
+    window.removeEventListener('resize', this.setDims);
   },
   methods: {
     changeVariable() {
@@ -306,11 +328,11 @@ export default {
     handleTooltip(selected) {
       store.commit('geo/setRegionTooltip', selected);
     },
-    regionColorScale: function(location) {
+    regionColorScale(location) {
       const scale = store.getters['colors/getRegionColorFromLocation'];
       return scale(location);
     },
-    lightColor: function(region) {
+    lightColor(region) {
       const scale = store.getters['colors/getRegionColor'];
       return scale(region, 0.85);
     },
@@ -346,28 +368,6 @@ export default {
         this.bargraphTransform = 1;
       }
     },
-  },
-  mounted() {
-    this.dataSubscription = getStackedRegions(this.$apiurl).subscribe((d) => {
-      this.data = d;
-      this.nestedData = d[this.selectedVariable];
-    });
-    this.totalSubscription = getWorldDailyCases(this.$apiurl).subscribe((d) => {
-      this.total = d;
-    });
-
-    // Event listener for mobile responsiveness
-    // $nextTick waits till DOM rendered
-    this.$nextTick(function() {
-      window.addEventListener('resize', this.setDims);
-      // set initial dimensions for the stacked area plots.
-      this.setDims();
-    });
-  },
-  destroyed() {
-    this.dataSubscription.unsubscribe();
-    this.totalSubscription.unsubscribe();
-    window.removeEventListener('resize', this.setDims);
   },
 };
 </script>

@@ -1,13 +1,15 @@
 <template>
   <div>
-    <h4 class="">Citing this report</h4>
-    <section class="my-3 border-top pt-3" id="outbreak-citation">
+    <h4 class="">
+      Citing this report
+    </h4>
+    <section id="outbreak-citation" class="my-3 border-top pt-3">
       <p class="m-0">
         <b>{{ title }}</b>
         . {{ mutationAuthors }}. outbreak.info, (available at {{ url }}).
         Accessed {{ today }}.
       </p>
-      <p class="mt-2" v-html="genomicsCitation"></p>
+      <p class="mt-2" v-html="genomicsCitation" />
     </section>
     <section id="gisaid-citation">
       <b>GISAID’s Role in Pandemic Response</b>
@@ -29,20 +31,21 @@
   </div>
 </template>
 
-<script lang="js">
-import Vue from "vue";
+<script>
+import Vue from 'vue';
 
 export default Vue.extend({
-  name: "GenomicsCitation",
+  name: 'GenomicsCitation',
   components: {
-    ShareReport: () => import( /* webpackPrefetch: true */ "@/components/ShareReport.vue")
+    ShareReport: () =>
+      import(/* webpackPrefetch: true */ '@/components/ShareReport.vue'),
   },
   props: {
     title: String,
     mutationAuthors: String,
     genomicsCitation: String,
     url: String,
-    today: String
-  }
-})
+    today: String,
+  },
+});
 </script>

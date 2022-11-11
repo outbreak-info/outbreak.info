@@ -26,8 +26,8 @@
                     Variants
                   </router-link>
                   <small
-                    class="text-muted badge bg-grey__lightest mt-1"
                     v-if="lastUpdated && lastUpdated['genomics']"
+                    class="text-muted badge bg-grey__lightest mt-1"
                   >
                     <font-awesome-icon class="mr-1" :icon="['far', 'clock']" />
                     {{ lastUpdated['genomics'] }} ago
@@ -39,8 +39,8 @@
                     Research Library
                   </router-link>
                   <small
-                    class="text-muted badge bg-grey__lightest mt-1"
                     v-if="lastUpdated && lastUpdated['resources']"
+                    class="text-muted badge bg-grey__lightest mt-1"
                   >
                     <font-awesome-icon class="mr-1" :icon="['far', 'clock']" />
                     {{ lastUpdated['resources'] }} ago
@@ -52,8 +52,8 @@
                     Cases & Deaths
                   </router-link>
                   <small
-                    class="text-muted badge bg-grey__lightest mt-1"
                     v-if="lastUpdated && lastUpdated['epi']"
+                    class="text-muted badge bg-grey__lightest mt-1"
                   >
                     <font-awesome-icon class="mr-1" :icon="['far', 'clock']" />
                     {{ lastUpdated['epi'] }} ago
@@ -65,11 +65,11 @@
 
           <div class="update-container">
             <div
-              class="d-flex mb-4"
               v-for="(update, idx) in updates"
               :key="idx"
+              class="d-flex mb-4"
             >
-              <span class="update-linker"></span>
+              <span class="update-linker" />
               <span class="update-date pl-3">
                 {{ formatDate(update.date) }}
               </span>
@@ -79,11 +79,11 @@
                   {{ update.title }}
                 </h5>
                 <div>
-                  <span v-html="update.description" class="text-muted"></span>
+                  <span class="text-muted" v-html="update.description" />
                   <router-link
+                    v-if="update.route"
                     class="ml-2"
                     :to="update.route"
-                    v-if="update.route"
                   >
                     Example
                   </router-link>
@@ -97,57 +97,42 @@
   </div>
 </template>
 
-<script lang="js">
-import Vue from "vue";
+<script>
+import Vue from 'vue';
 
-import {
-  mapState
-} from "vuex";
+import { mapState } from 'vuex';
 
-import {
-  timeFormat
-} from "d3";
+import { timeFormat } from 'd3';
 
 // --- font awesome --
-import {
-  FontAwesomeIcon
-} from "@fortawesome/vue-fontawesome";
-import {
-  library
-} from "@fortawesome/fontawesome-svg-core";
-import {
-  faClock
-} from "@fortawesome/free-regular-svg-icons";
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faClock } from '@fortawesome/free-regular-svg-icons';
 
 library.add(faClock);
 
-import {
-  getSourcesUpdated
-} from "@/api/metadata.js";
-
+import { getSourcesUpdated } from '@/api/metadata.js';
 
 export default Vue.extend({
-  name: "Latest",
-  computed: {
-    ...mapState("admin", ["updates"])
-  },
+  name: 'Latest',
   components: {
-    FontAwesomeIcon
-  },
-  methods: {
-    formatDate: function(date) {
-      const dateFormatter = timeFormat("%d %B %Y");
-      return dateFormatter(date)
-    }
+    FontAwesomeIcon,
   },
   data() {
-    return ({
+    return {
       updateSubscription: null,
-      lastUpdated: null
-    })
+      lastUpdated: null,
+    };
+  },
+  computed: {
+    ...mapState('admin', ['updates']),
   },
   mounted() {
-    this.updateSubscription = getSourcesUpdated(this.$genomicsurl, this.$resourceurl, this.$apiurl).subscribe(results => {
+    this.updateSubscription = getSourcesUpdated(
+      this.$genomicsurl,
+      this.$resourceurl,
+      this.$apiurl,
+    ).subscribe((results) => {
       this.lastUpdated = results;
     });
 
@@ -157,7 +142,13 @@ export default Vue.extend({
     if (this.updateSubscription) {
       this.updateSubscription.unsubscribe();
     }
-  }
+  },
+  methods: {
+    formatDate(date) {
+      const dateFormatter = timeFormat('%d %B %Y');
+      return dateFormatter(date);
+    },
+  },
 });
 </script>
 

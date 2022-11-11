@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-4" id="sublineage-totals">
+  <div id="sublineage-totals" class="mt-4">
     <div class="d-flex align-items-center">
       <h5 class="m-0">Lineage breakdown of {{ title }}</h5>
       <button
@@ -14,7 +14,7 @@
     <p class="text-muted m-0">
       There are
       <b>{{ data.length }}</b>
-      <a>Pango lineages</a>
+      <a> Pango lineages</a>
       currently associated with the {{ lineageName }} variant:
     </p>
 
@@ -43,23 +43,23 @@
         </marker>
       </defs>
       <g
-        :transform="`translate(${margin.left}, ${margin.top})`"
         ref="horizontal_bargraph"
-      ></g>
+        :transform="`translate(${margin.left}, ${margin.top})`"
+      />
       <g
+        ref="yAxis"
         :transform="`translate(${margin.left}, ${margin.top})`"
         class="horizontal-bargraph-y pointer axis--y"
-        ref="yAxis"
-      ></g>
+      />
       <g class="swoopy-arrow-group">
         <path
-          class="swoopy-arrow"
           id="switch-btn-swoopy-arrow"
+          class="swoopy-arrow"
           marker-end="url(#arrow-sublineage)"
           :d="swoopyPosition"
           :stroke="fill"
           fill="none"
-        ></path>
+        />
         <text
           :x="width - margin.right - 10"
           :y="height - margin.top"
@@ -73,8 +73,8 @@
 
     <div class="d-flex align-items-center mt-3">
       <button
-        id="zeros-filtered"
         v-if="areZerosFiltered || (!areZerosFiltered && !hideZeros)"
+        id="zeros-filtered"
         class="btn btn-main-outline m-0 btn-sublineages mr-3"
         @click="showZeros"
       >
@@ -120,7 +120,6 @@
 
 <script>
 import Vue from 'vue';
-
 import { select, selectAll, scaleLinear, scaleBand, axisLeft, sum } from 'd3';
 
 // --- font awesome --
@@ -152,7 +151,7 @@ export default Vue.extend({
     routeTo: String,
     margin: {
       type: Object,
-      default: function() {
+      default: () => {
         return {
           left: 80,
           right: 100,
@@ -168,25 +167,6 @@ export default Vue.extend({
     fill: {
       type: String,
       default: '#f28e2c',
-    },
-  },
-  computed: {
-    geographicName() {
-      return this.location == 'Worldwide'
-        ? 'globally'
-        : this.location
-        ? `in ${this.location}`
-        : null;
-    },
-    title() {
-      return this.geographicName
-        ? `${this.lineageName} ${this.geographicName}`
-        : this.lineageName;
-    },
-    swoopyPosition() {
-      return `M ${this.width - this.margin.left - 20} ${this.height -
-        this.margin.top -
-        5} c 0 0, 15 0, 0 -25`;
     },
   },
   data() {
@@ -211,16 +191,39 @@ export default Vue.extend({
       yAxis: null,
     };
   },
+  computed: {
+    geographicName() {
+      return this.location === 'Worldwide'
+        ? 'globally'
+        : this.location
+        ? `in ${this.location}`
+        : null;
+    },
+    title() {
+      return this.geographicName
+        ? `${this.lineageName} ${this.geographicName}`
+        : this.lineageName;
+    },
+    swoopyPosition() {
+      return `M ${this.width - this.margin.left - 20} ${this.height -
+        this.margin.top -
+        5} c 0 0, 15 0, 0 -25`;
+    },
+  },
   watch: {
-    data: function() {
+    data() {
       this.preprocessData();
       this.updatePlot();
     },
   },
+  mounted() {
+    this.setupPlot();
+    this.updatePlot();
+  },
   methods: {
     handleLineageClick(lineage) {
       const queryParams = this.$route.query;
-      if (this.routeTo == 'GenomicsEmbedVariant') {
+      if (this.routeTo === 'GenomicsEmbedVariant') {
         this.$router.push({
           name: 'GenomicsEmbed',
           query: {
@@ -250,7 +253,7 @@ export default Vue.extend({
 
       if (this.hideZeros) {
         this.processedData = this.processedData.filter((d) => d.lineage_count);
-        this.areZerosFiltered = this.data.length != this.processedData.length;
+        this.areZerosFiltered = this.data.length !== this.processedData.length;
       } else {
         this.areZerosFiltered = false;
       }
@@ -263,7 +266,7 @@ export default Vue.extend({
       this.svg = select(this.$refs.horizontal_bargraph);
       this.preprocessData();
     },
-    updatePlot: function() {
+    updatePlot() {
       this.updateAxes();
       this.drawBars();
     },
@@ -276,7 +279,7 @@ export default Vue.extend({
 
       select(this.$refs.yAxis)
         .selectAll('text')
-        .filter((axis_label) => axis_label == d[this.yVar])
+        .filter((axis_label) => axis_label === d[this.yVar])
         .style('opacity', 1);
 
       this.svg.select(`#${d.id}`).style('opacity', 1);
@@ -411,10 +414,6 @@ export default Vue.extend({
         .on('mouseleave', () => this.tooltipOff())
         .on('click', (d) => this.handleLineageClick(d[this.yVar]));
     },
-  },
-  mounted() {
-    this.setupPlot();
-    this.updatePlot();
   },
 });
 </script>

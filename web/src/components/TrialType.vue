@@ -1,105 +1,120 @@
 <template>
   <div class="d-flex flex-wrap my-2">
-    <div class="accent mr-2" v-if="design && design.studyType">
+    <div v-if="design && design.studyType" class="accent mr-2">
       {{ design.studyType }}
     </div>
-    <div class="text-dark mr-3" v-for="(intervention, key) in arms" :key="key">
+    <div v-for="(intervention, key) in arms" :key="key" class="text-dark mr-3">
       <font-awesome-icon
+        v-if="intervention.category === 'drug'"
         class="bright"
         :icon="['fas', 'pills']"
-        v-if="intervention.category == 'drug'"
       />
       <!-- <i class="fas fa-prescription-bottle bright" v-if="intervention.category == 'drug'" /> -->
       <font-awesome-icon
+        v-if="intervention.category === 'genetic'"
         class="bright"
         :icon="['fas', 'dna']"
-        v-if="intervention.category == 'genetic'"
       />
       <font-awesome-icon
+        v-if="intervention.category === 'biological'"
         class="bright"
         :icon="['fas', 'virus']"
-        v-if="intervention.category == 'biological'"
       />
       <font-awesome-icon
+        v-if="intervention.category === 'combination product'"
         class="bright"
         :icon="['fas', 'mortar-pestle']"
-        v-if="intervention.category == 'combination product'"
       />
       <font-awesome-icon
+        v-if="intervention.category === 'behavioral'"
         class="bright"
         :icon="['fas', 'notes-medical']"
-        v-if="intervention.category == 'behavioral'"
       />
       <font-awesome-icon
+        v-if="intervention.category === 'device'"
         class="bright"
         :icon="['fas', 'tablet-alt']"
-        v-if="intervention.category == 'device'"
       />
       <!-- <i class="fas fa-laptop-medical bright" v-if="intervention.category == 'device'" /> -->
       <font-awesome-icon
+        v-if="intervention.category === 'diagnostic test'"
         class="bright"
         :icon="['fas', 'vial']"
-        v-if="intervention.category == 'diagnostic test'"
       />
       <font-awesome-icon
+        v-if="intervention.category === 'dietary supplement'"
         class="bright"
         :icon="['fas', 'capsules']"
-        v-if="intervention.category == 'dietary supplement'"
       />
       <font-awesome-icon
+        v-if="intervention.category === 'procedure'"
         class="bright"
         :icon="['fas', 'user-nurse']"
-        v-if="intervention.category == 'procedure'"
       />
       <font-awesome-icon
+        v-if="intervention.category === 'radiation'"
         class="bright"
         :icon="['fas', 'radiation']"
-        v-if="intervention.category == 'radiation'"
       />
       {{ intervention.name }}
     </div>
   </div>
 </template>
 
-<script lang="js">
-import Vue from "vue";
-
+<script>
+import Vue from 'vue';
 
 // --- font awesome --
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
 import {
-  FontAwesomeIcon
-} from "@fortawesome/vue-fontawesome";
-import {
-  library
-} from "@fortawesome/fontawesome-svg-core";
-import {
-  faPills, faDna, faVirus, faMortarPestle, faNotesMedical, faTabletAlt, faVial, faCapsules, faUserNurse, faRadiation
-} from "@fortawesome/free-solid-svg-icons";
+  faPills,
+  faDna,
+  faVirus,
+  faMortarPestle,
+  faNotesMedical,
+  faTabletAlt,
+  faVial,
+  faCapsules,
+  faUserNurse,
+  faRadiation,
+} from '@fortawesome/free-solid-svg-icons';
 
-library.add(faPills, faDna, faVirus, faMortarPestle, faNotesMedical, faTabletAlt, faVial, faCapsules, faUserNurse, faRadiation);
+library.add(
+  faPills,
+  faDna,
+  faVirus,
+  faMortarPestle,
+  faNotesMedical,
+  faTabletAlt,
+  faVial,
+  faCapsules,
+  faUserNurse,
+  faRadiation,
+);
 
 export default Vue.extend({
-  name: "TrialType",
+  name: 'TrialType',
+  components: { FontAwesomeIcon },
   props: {
     design: Object,
-    arms: Array
+    arms: Array,
   },
-  components: { FontAwesomeIcon },
   data() {
     return {
       phaseWidth: 37,
       triangleWidth: 10,
       allPhases: [1, 2, 3, 4],
       spacer: 7,
-      height: 17
+      height: 17,
     };
   },
-  watch: {},
   computed: {
     width() {
-      return (this.phaseWidth * 5 + this.spacer * 4)
-    }
+      return this.phaseWidth * 5 + this.spacer * 4;
+    },
   },
+  watch: {},
   methods: {},
 });
 </script>

@@ -1,11 +1,13 @@
 <template>
   <div class="my-5 mx-4">
     <div
-      class="d-flex justify-content-center align-items-top"
       id="resource-overview"
+      class="d-flex justify-content-center align-items-top"
     >
       <div class="ml-3 text-left">
-        <h2 class="">Finding research is hard</h2>
+        <h2 class="">
+          Finding research is hard
+        </h2>
         <p>
           During the COVID-19 epidemic, researchers from around the world have
           not only been working around the clock to better understand the
@@ -29,17 +31,18 @@
       </div>
 
       <div
+        v-if="counts.total"
         id="resource-counts"
         class="d-flex ml-3 flex-column align-items-center"
-        v-if="counts.total"
       >
         <h3 class="text-left text-highlight">{{ counts.total }} resources</h3>
         <small
-          class="text-muted badge bg-grey__lightest mb-4"
           v-if="counts.dateModified"
+          class="text-muted badge bg-grey__lightest mb-4"
         >
           <font-awesome-icon class="mr-1" :icon="['far', 'clock']" />
-          Updated {{ counts.dateModified }}
+          Updated
+          {{ counts.dateModified }}
         </small>
 
         <CirclePacking class="circle-packing mr-5" :data="counts.sources" />
@@ -55,41 +58,37 @@
               <div class="input-group">
                 <div class="input-group-prepend">
                   <span
-                    class="input-group-text bg-grey text-muted border-0"
                     id="sb"
+                    class="input-group-text bg-grey text-muted border-0"
                   >
                     <font-awesome-icon :icon="['fas', 'search']" />
                   </span>
                 </div>
                 <input
                   id="sBar"
+                  v-model="searchInput"
                   class="form-control border"
                   placeholder="Search"
                   aria-label="search"
                   aria-describedby="sb"
                   type="text"
-                  v-model="searchInput"
                 />
               </div>
             </form>
             <div class="d-flex mt-1">
               <span class="mr-2">Try:</span>
               <span
-                class="mr-3 d-flex align-items-center"
                 v-for="(demo, idx) in demos"
                 :key="idx"
+                class="mr-3 d-flex align-items-center"
               >
                 <router-link
-                  :to="{ name: 'Resources', query: { q: demo.query } }"
+                  :to="{ name: demo.route, query: { q: demo.query } }"
                 >
                   {{ demo.label }}
                   <font-awesome-icon :icon="['fas', 'angle-double-right']" />
                 </router-link>
               </span>
-              <router-link :to="{ name: 'NIAID' }">
-                NIAID-related
-                <font-awesome-icon :icon="['fas', 'angle-double-right']" />
-              </router-link>
             </div>
           </div>
 
@@ -124,6 +123,10 @@ import {
 
 library.add(faClock, faAngleDoubleRight, faSearch);
 
+// Example queries
+import RESOURCEEXAMPLES from '@/assets/examples/resources_examples.json';
+
+
 export default {
   name: 'ResourceSummary',
   components: {
@@ -133,35 +136,14 @@ export default {
   },
   data() {
     return {
-      demos: [
-        {
-          label: 'remdesivir',
-          query: 'remdesivir',
-        },
-        {
-          label: 'antibodies',
-          query: 'antibodies',
-        },
-        {
-          label: 'x-ray diffraction',
-          query: '"x-ray diffraction"',
-        },
-      ],
+      demos: [],
       counts: [],
       searchInput: null,
     };
   },
-  methods: {
-    onEnter() {
-      this.$router.push({
-        name: 'Resources',
-        query: {
-          q: this.searchInput,
-        },
-      });
-    },
-  },
   mounted() {
+    this.demos = RESOURCEEXAMPLES;
+
     this.countSubscription = getSourceSummary(
       this.$resourceurl,
       '__all__',
@@ -172,6 +154,16 @@ export default {
   },
   beforeDestroy() {
     this.countSubscription.unsubscribe();
+  },
+  methods: {
+    onEnter() {
+      this.$router.push({
+        name: 'Resources',
+        query: {
+          q: this.searchInput,
+        },
+      });
+    },
   },
 };
 </script>

@@ -1,32 +1,32 @@
 <template>
   <div
-    class="d-flex flex-wrap justify-content-center align-items-center"
-    ref="map_container"
     id="map_container"
+    ref="map_container"
+    class="d-flex flex-wrap justify-content-center align-items-center"
   >
     <div class="d-flex flex-column align-items-center">
-      <h4 ref="date"></h4>
+      <h4 ref="date" />
       <svg
+        ref="svg"
         :width="width"
         :height="height"
-        ref="svg"
         class="epi-map-svg"
         :subtitle="title"
       >
-        <g ref="blank_map" class="blank-map-group"></g>
-        <g ref="regions" class="region-group"></g>
-        <g ref="overlay" class="overlay-map-group"></g>
+        <g ref="blank_map" class="blank-map-group" />
+        <g ref="regions" class="region-group" />
+        <g ref="overlay" class="overlay-map-group" />
       </svg>
     </div>
     <div
-      class="tooltip choropleth-tooltip box-shadow p-2"
       ref="choropleth_tooltip"
+      class="tooltip choropleth-tooltip box-shadow p-2"
     >
-      <h6 class="country-name m-0"></h6>
-      <p class="value m-0"></p>
+      <h6 class="country-name m-0" />
+      <p class="value m-0" />
       <small
-        class="m-0 text-right d-block mb-2"
         v-if="variable.includes('_rolling')"
+        class="m-0 text-right d-block mb-2"
       >
         (average over last {{ rollLength }} days)
       </small>
@@ -36,13 +36,13 @@
           <div class="d-flex flex-column">
             <small class="">new cases per day</small>
             <Bargraph
+              id="time-trace"
               :data="timeTrace"
               :date1="date1"
               :include2Week="isDiff"
               :variableObj="{ value: 'confirmed_numIncrease' }"
               :width="100"
               :height="40"
-              id="time-trace"
               :color="'#9f9f9f'"
               colorAverage="#2c3e50"
             />
@@ -86,13 +86,13 @@
           <div class="d-flex flex-column">
             <small class="">new deaths per day</small>
             <Bargraph
+              id="time-trace"
               :data="timeTrace"
               :date1="date1"
               :include2Week="isDiff"
               :variableObj="{ value: 'dead_numIncrease' }"
               :width="100"
               :height="40"
-              id="time-trace"
               :color="'#9f9f9f'"
               colorAverage="#2c3e50"
             />
@@ -135,6 +135,7 @@
     </div>
     <div class="d-flex flex-column">
       <HistogramLegend
+        v-if="data && data.length"
         class="ml-2"
         :data="data"
         :animate="animate"
@@ -145,9 +146,8 @@
         :variable="variable"
         :variableLabel="variableLabel"
         :colorScale="colorScale"
-        v-if="this.data && this.data.length"
       />
-      <div class="d-flex justify-content-between mt-4" v-if="filteredData">
+      <div v-if="filteredData" class="d-flex justify-content-between mt-4">
         <DotPlot
           :data="filteredData"
           :variable="variable"
@@ -200,7 +200,6 @@ import DataUpdated from '@/components/DataUpdated.vue';
 import Bargraph from '@/components/Bargraph.vue';
 import DotPlot from '@/components/DotPlot.vue';
 import { getSparklineTraces } from '@/api/epi-traces.js';
-
 import store from '@/store';
 
 export default {
@@ -224,11 +223,6 @@ export default {
     colorScale: Function,
     adminLevel: String,
     animate: Boolean,
-  },
-  watch: {
-    data: function() {
-      this.drawMap();
-    },
   },
   data() {
     return {
@@ -303,11 +297,16 @@ export default {
         : this.variableLabel;
     },
   },
-  created: function() {
+  watch: {
+    data() {
+      this.drawMap();
+    },
+  },
+  created() {
     this.debounceMouseon = this.debounce(this.mouseOn, 250);
   },
   mounted() {
-    this.$nextTick(function() {
+    this.$nextTick(() => {
       window.addEventListener('resize', this.setDims);
       // set initial dimensions for the stacked area plots.
       this.setDims(false);
@@ -549,14 +548,14 @@ export default {
     // https://stackoverflow.com/questions/43407947/how-to-throttle-function-call-on-mouse-event-with-d3-js/43448820
     // modified to save the d3. event to vue::this
     debounce(fn, delay) {
-      var timer = null;
-      return function() {
-        var context = this,
+      let timer = null;
+      return () => {
+        const context = this,
           args = arguments,
           evt = event;
         //we get the D3 event here
         clearTimeout(timer);
-        timer = setTimeout(function() {
+        timer = setTimeout(() => {
           context.event = evt;
           //and use the reference here
           fn.apply(context, args);

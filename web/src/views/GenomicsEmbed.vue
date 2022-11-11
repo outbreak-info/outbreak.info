@@ -7,10 +7,10 @@
         <div class="radio-item-light text-light w-100 pt-2 pb-3">
           <div class="radio-item fa-lg">
             <input
-              type="radio"
               id="var"
-              value="var"
               v-model="selectedReportType"
+              type="radio"
+              value="var"
               @change="switchRadioBtn"
             />
             <label class="font-weight-bold" for="var">Lineage Report</label>
@@ -18,13 +18,13 @@
         </div>
 
         <!-- lineage typeahead -->
-        <div id="search-lineage" v-if="selectedReportType == 'var'">
-          <form autocomplete="off" class="w-100" id="search-lineage-input">
+        <div v-if="selectedReportType === 'var'" id="search-lineage">
+          <form id="search-lineage-input" autocomplete="off" class="w-100">
             <div class="input-group">
               <div class="input-group-prepend">
                 <span
-                  class="input-group-text bg-grey text-muted border-0"
                   id="sb"
+                  class="input-group-text bg-grey text-muted border-0"
                 >
                   <font-awesome-icon :icon="['fas', 'search']" />
                 </span>
@@ -33,10 +33,10 @@
                 :isStandalone="false"
                 class="form-control border"
                 :queryFunction="queryPangolin"
-                @selected="updatePangolin"
                 :apiUrl="this.$genomicsurl"
                 :removeOnSelect="true"
                 placeholder="Search PANGO lineage"
+                @selected="updatePangolin"
               />
             </div>
           </form>
@@ -54,6 +54,7 @@
                 class="text-light"
               >
                 Omicron
+
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
             </span>
@@ -66,6 +67,7 @@
                 class="text-light"
               >
                 Delta
+
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
             </span>
@@ -78,6 +80,7 @@
                 class="text-light"
               >
                 Alpha / B.1.1.7
+
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
             </span>
@@ -91,10 +94,10 @@
         <div class="radio-item-light text-light w-100 pt-2">
           <div class="radio-item fa-lg">
             <input
-              type="radio"
               id="loc"
-              value="loc"
               v-model="selectedReportType"
+              type="radio"
+              value="loc"
               @change="switchRadioBtn"
             />
             <label class="font-weight-bold" for="loc">Location Report</label>
@@ -103,20 +106,20 @@
 
         <!-- location typeahead -->
         <div
+          v-if="selectedReportType === 'loc'"
           id="search-variant-location"
           class="m-3 text-light"
-          v-if="selectedReportType == 'loc'"
         >
           <form
+            id="search-variant-location-input"
             autocomplete="off"
             class="w-100"
-            id="search-variant-location-input"
           >
             <div class="input-group">
               <div class="input-group-prepend">
                 <span
-                  class="input-group-text bg-grey text-muted border-0"
                   id="sb"
+                  class="input-group-text bg-grey text-muted border-0"
                 >
                   <font-awesome-icon :icon="['fas', 'search']" />
                 </span>
@@ -125,12 +128,12 @@
                 :isStandalone="false"
                 class="form-control border"
                 :queryFunction="queryLocation"
-                @selected="submitLocation"
                 :apiUrl="this.$genomicsurl"
                 labelVariable="label"
                 :removeOnSelect="false"
                 placeholder="Select location"
                 totalLabel="total sequences"
+                @selected="submitLocation"
               />
             </div>
           </form>
@@ -148,6 +151,7 @@
                 class="text-light"
               >
                 USA
+
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
             </span>
@@ -160,6 +164,7 @@
                 class="text-light"
               >
                 U.K.
+
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
             </span>
@@ -172,6 +177,7 @@
                 class="text-light"
               >
                 New York
+
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
             </span>
@@ -184,6 +190,7 @@
                 class="text-light"
               >
                 San Diego
+
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
             </span>
@@ -197,10 +204,10 @@
         <div class="radio-item-light text-light w-100 pt-2">
           <div class="radio-item fa-lg">
             <input
-              type="radio"
               id="comp"
-              value="comp"
               v-model="selectedReportType"
+              type="radio"
+              value="comp"
               @change="switchRadioBtn"
             />
             <label class="font-weight-bold" for="comp">
@@ -213,6 +220,7 @@
 
     <!-- Lineage report component -->
     <SituationReportComponent
+      v-if="selectedReportType === 'var' && (pango || alias || muts)"
       :embedded="true"
       :loc="loc"
       :muts="muts"
@@ -222,11 +230,11 @@
       :xmax="xmax"
       :selected="selected"
       routeTo="GenomicsEmbedVariant"
-      v-if="selectedReportType == 'var' && (pango || alias || muts)"
     />
 
     <!-- Location report component -->
     <LocationReportComponent
+      v-if="selectedReportType === 'loc' && loc"
       :embedded="true"
       :loc="loc"
       :dark="dark"
@@ -238,14 +246,13 @@
       :xmax="xmax"
       :selected="selected"
       routeTo="GenomicsEmbedLocation"
-      v-if="selectedReportType == 'loc' && loc"
     />
 
     <!-- Lineage comparison component -->
     <LineageComparisonComponent
+      v-if="selectedReportType === 'comp'"
       :embedded="true"
       routeTo="GenomicsEmbed"
-      v-if="selectedReportType == 'comp'"
     />
 
     <footer class="bg-main__darker">
@@ -282,10 +289,9 @@ import {
   faAngleDoubleRight,
   faSearch,
 } from '@fortawesome/free-solid-svg-icons';
+import isEqual from 'lodash/isEqual';
 
 library.add(faAngleDoubleRight, faSearch);
-
-import isEqual from 'lodash/isEqual';
 
 export default {
   name: 'GenomicsEmbed',
@@ -328,6 +334,7 @@ export default {
       selectedReportType: null,
     };
   },
+  computed: {},
   watch: {
     '$route.query': function(newVal, oldVal) {
       if (!isEqual(newVal, oldVal)) {
@@ -335,10 +342,14 @@ export default {
       }
     },
   },
-  computed: {},
+  mounted() {
+    this.selectedReportType = this.type ? this.type : 'var';
+    this.queryPangolin = findPangolin;
+    this.queryLocation = findLocation;
+  },
   methods: {
     switchRadioBtn() {
-      const newSelected = this.selectedReportType == 'loc' ? [] : null;
+      const newSelected = this.selectedReportType === 'loc' ? [] : null;
 
       this.$router.push({
         name: 'GenomicsEmbed',
@@ -376,11 +387,6 @@ export default {
         },
       });
     },
-  },
-  mounted() {
-    this.selectedReportType = this.type ? this.type : 'var';
-    this.queryPangolin = findPangolin;
-    this.queryLocation = findLocation;
   },
 };
 </script>

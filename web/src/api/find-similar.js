@@ -5,14 +5,14 @@ import { timeParse, nest, extent, max } from 'd3';
 import store from '@/store';
 import { getAll } from '@/api/biothings.js';
 
-export function findSimilar(
+export const findSimilar = (
   apiUrl,
   locationID,
   variable,
   similarityMetric,
   adminLevels,
   num2Return = 5,
-) {
+) => {
   store.state.admin.dataloading = true;
   // Choosing one specific date, since all dates contain the current info.
   // First get the location's data for the most recent date.
@@ -30,6 +30,7 @@ export function findSimilar(
         mergeMap((similar) => {
           const locationString = `("${similar
             .map((d) => d.location_id)
+
             .join('" OR "')}")`;
           return getLocation(
             apiUrl,
@@ -48,17 +49,17 @@ export function findSimilar(
                 d['nameFormatted'] = mostRecent.admin1
                   ? `${mostRecent.name}, ${mostRecent.admin1}`
                   : mostRecent.country_name &&
-                    mostRecent.country_name != mostRecent.name
+                    mostRecent.country_name !== mostRecent.name
                   ? `${mostRecent.name}, ${mostRecent.country_name}`
                   : mostRecent.name;
                 d['partOfUSA'] =
-                  mostRecent.country_name == 'United States of America';
+                  mostRecent.country_name === 'United States of America';
                 d['lat'] = mostRecent.lat;
                 d['lon'] = mostRecent.long;
                 d['similarValue'] = mostRecent[similarityMetric];
               });
 
-              const location = nested.filter((d) => d.key == locationID)[0];
+              const location = nested.filter((d) => d.key === locationID)[0];
               const locationValue = location.similarValue;
 
               nested.forEach((d) => {
@@ -66,7 +67,6 @@ export function findSimilar(
               });
 
               nested.sort((a, b) => a.valueDiff - b.valueDiff);
-
               const xDomain = extent(results.map((d) => d.date));
               const yMaxC = max(
                 results.map((d) => d.confirmed_rolling_per_100k),
@@ -74,7 +74,7 @@ export function findSimilar(
               const yMaxD = max(results.map((d) => d.dead_rolling_per_100k));
 
               return {
-                similar: nested.filter((d) => d.key != locationID),
+                similar: nested.filter((d) => d.key !== locationID),
                 location: location,
                 xDomain: xDomain,
                 yMaxC: yMaxC,
@@ -87,20 +87,21 @@ export function findSimilar(
     ),
     catchError((e) => {
       console.log('%c Error in getting similarity data!', 'color: red');
+
       console.log(e);
       return from([]);
     }),
     finalize(() => (store.state.admin.dataloading = false)),
   );
-}
+};
 
-export function getLocation(
+export const getLocation = (
   apiUrl,
   locationID,
   variable,
   similarityMetric,
   mostRecent = false,
-) {
+) => {
   const parseDate = timeParse('%Y-%m-%d');
 
   const query = mostRecent
@@ -129,16 +130,16 @@ export function getLocation(
       return from([]);
     }),
   );
-}
+};
 
-export function getSimilarData(
+export const getSimilarData = (
   apiUrl,
   locationData,
   similarityMetric,
   adminLevels,
   num2Return,
   logged = true,
-) {
+) => {
   const threshold = 0.05;
   const mostRecent = locationData[0];
   const locationValue = mostRecent[similarityMetric];
@@ -151,9 +152,9 @@ export function getSimilarData(
       )}`
     : `${(1 - threshold) * value} TO ${(1 + threshold) * value}`;
 
-  var query = `mostRecent:true AND ${similarityMetric}:[${thresholdString}]&fields=location_id,${similarityMetric}`;
+  let query = `mostRecent:true AND ${similarityMetric}:[${thresholdString}]&fields=location_id,${similarityMetric}`;
   if (adminLevels.length) {
-    var locationQuery = [];
+    const locationQuery = [];
     if (adminLevels.includes('countries')) {
       locationQuery.push('admin_level:0');
     }
@@ -195,4 +196,4 @@ export function getSimilarData(
       return from([]);
     }),
   );
-}
+};

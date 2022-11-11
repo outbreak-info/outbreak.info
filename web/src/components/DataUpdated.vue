@@ -1,43 +1,37 @@
 <template>
-  <small class="text-muted badge bg-grey__lightest" v-if="lastUpdated$">
+  <small v-if="lastUpdated$" class="text-muted badge bg-grey__lightest">
     <font-awesome-icon class="mr-1" :icon="['far', 'clock']" />
     Updated {{ lastUpdated$ }} ago
   </small>
 </template>
 
-<script lang="js">
-import Vue from "vue";
-import { getDateUpdated } from "@/api/biothings.js";
+<script>
+import Vue from 'vue';
+import { getDateUpdated } from '@/api/biothings.js';
 
 // --- font awesome --
-import {
-  FontAwesomeIcon
-} from "@fortawesome/vue-fontawesome";
-import {
-  library
-} from "@fortawesome/fontawesome-svg-core";
-import {
-  faClock
-} from "@fortawesome/free-regular-svg-icons";
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faClock } from '@fortawesome/free-regular-svg-icons';
 
 library.add(faClock);
 
 export default Vue.extend({
-  name: "DataUpdated",
+  name: 'DataUpdated',
+  components: {
+    FontAwesomeIcon,
+  },
   props: {},
   data() {
     return {};
   },
   watch: {},
-  components: {
-      FontAwesomeIcon
-  },
   methods: {},
-  subscriptions () {
+  subscriptions() {
     return {
-      lastUpdated$: getDateUpdated(this.$apiurl)
-    }
-  }
+      lastUpdated$: getDateUpdated(this.$apiurl),
+    };
+  },
 });
 </script>
 

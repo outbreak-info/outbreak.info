@@ -8,13 +8,13 @@
       </div>
       <input
         id="sBar"
+        v-model="search"
         class="form-control"
         :class="[darkMode ? 'border-0' : 'border']"
         :placeholder="placeholder"
         aria-label="search"
         aria-describedby="sb"
         type="text"
-        v-model="search"
         @input="onChange"
         @keydown.down="onArrowDown"
         @keydown.up="onArrowUp"
@@ -24,16 +24,16 @@
         @keydown.meta.65="onSelectAll"
       />
       <ul
-        id="autocomplete-results"
         v-show="isOpen"
+        id="autocomplete-results"
         class="autocomplete-results bg-dark text-light"
       >
-        <li class="loading" v-if="isLoading">
+        <li v-if="isLoading" class="loading">
           Loading results...
         </li>
         <li
-          v-else
           v-for="(result, i) in results"
+          v-else
           :key="i"
           @click="setResult(result)"
           class="autocomplete-result"
@@ -46,7 +46,7 @@
   </form>
 </template>
 
-<script lang="ts">
+<script>
 // adapted from https://alligator.io/vuejs/vue-autocomplete-component/
 import Vue from 'vue';
 import { mapState } from 'vuex';
@@ -55,15 +55,16 @@ import { mapState } from 'vuex';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
+// --- store / Vuex ---
+import { getLocations } from '@/api/epi-basics.js';
 
 library.add(faSearch);
 
-// --- store / Vuex ---
-import store from '@/store';
-import { getLocations } from '@/api/epi-basics.js';
-
 export default Vue.extend({
   name: 'SearchBar',
+  components: {
+    FontAwesomeIcon,
+  },
   props: {
     items: {
       type: Array,
@@ -91,9 +92,6 @@ export default Vue.extend({
       default: true,
     },
   },
-  components: {
-    FontAwesomeIcon,
-  },
   data() {
     return {
       isOpen: false,
@@ -108,7 +106,7 @@ export default Vue.extend({
     ...mapState('geo', ['allPlaces']),
   },
   watch: {
-    items: function(val, oldValue) {
+    items(val, oldValue) {
       // actually compare them
       if (val.length !== oldValue.length) {
         this.results = val;
@@ -131,7 +129,7 @@ export default Vue.extend({
       if (this.isAsync) {
         this.isLoading = true;
       } else {
-        // Let's  our flat array
+        // Let us  our flat array
         this.filterResults();
         this.isOpen = true;
       }
@@ -170,11 +168,10 @@ export default Vue.extend({
     },
     onEnter() {
       // // Let's warn the parent that a change was made
-      const result = this.results[this.arrowCounter]
+      // this.$emit('input', result);
+      this.selected = this.results[this.arrowCounter]
         ? this.results[this.arrowCounter]
         : this.search;
-      // this.$emit('input', result);
-      this.selected = result;
       this.$emit('input', this.selected);
       this.search = '';
       this.isOpen = false;

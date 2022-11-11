@@ -5,7 +5,7 @@ import { timeParse } from 'd3';
 import store from '@/store';
 import { getAll } from '@/api/biothings.js';
 
-export function getMapData(apiUrl) {
+export const getMapData = (apiUrl) => {
   const parseDate = timeParse('%Y-%m-%d');
 
   store.state.admin.loading = true;
@@ -37,4 +37,4 @@ export function getMapData(apiUrl) {
     }),
     finalize(() => (store.state.admin.loading = false)),
   );
-}
+};

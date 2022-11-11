@@ -2,7 +2,9 @@
   <div
     class="bg-light d-flex flex-column justify-content-center align-items-center my-5"
   >
-    <h1 class="d-block">outbreak.info in the media</h1>
+    <h1 class="d-block">
+      outbreak.info in the media
+    </h1>
     <div id="press" class="text-left w-75">
       <div
         v-for="(article, aIdx) in press"
@@ -30,26 +32,19 @@
   </div>
 </template>
 
-<script lang="js">
-import Vue from "vue";
-
-import {
-  mapState
-} from "vuex";
-
-import {
-  timeFormat
-} from "d3";
+<script>
+import Vue from 'vue';
+import { mapState } from 'vuex';
 
 export default Vue.extend({
-  name: "Press",
+  name: 'Press',
   computed: {
-    ...mapState("press", ["press"])
+    ...mapState('press', ['press']),
   },
   mounted() {
-    this.press.sort((a,b) => a.order - b.order);
-  }
-})
+    this.press.sort((a, b) => a.order - b.order);
+  },
+});
 </script>
 
 <style lang="scss" scoped>

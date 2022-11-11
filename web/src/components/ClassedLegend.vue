@@ -5,7 +5,7 @@
       <div class="text-muted">
         {{ label }}
       </div>
-      <div class="d-flex flex-wrap mt-n2" v-if="colorScale">
+      <div v-if="colorScale" class="d-flex flex-wrap mt-n2">
         <svg
           :width="35"
           :height="rectWidth + 15"
@@ -21,7 +21,7 @@
               :fill="colorScale(0)"
               :stroke="strokeColor"
               stroke-width="1"
-            ></rect>
+            />
             <text
               :x="0"
               :y="rectWidth"
@@ -37,10 +37,10 @@
         </svg>
 
         <svg
-          :width="35"
-          :height="rectWidth + 15"
           v-for="(color, i) in colorDomain"
           :key="i"
+          :width="35"
+          :height="rectWidth + 15"
           class="categorical-rect my-1"
           style="margin-right: 15px;"
         >
@@ -53,8 +53,9 @@
               :fill="colorScale(color)"
               :stroke="strokeColor"
               stroke-width="1"
-            ></rect>
+            />
             <text
+              v-if="i < colorDomain.length - 1"
               :x="0"
               :y="rectWidth"
               dy="5"
@@ -62,11 +63,11 @@
               text-anchor="start"
               :fill="strokeColor"
               font-size="10px"
-              v-if="i < colorDomain.length - 1"
             >
               {{ color * 100 }}-{{ colorDomain[i + 1] * 100 }}
             </text>
             <text
+              v-if="i === colorDomain.length - 1"
               :x="0"
               :y="rectWidth"
               dy="5"
@@ -74,7 +75,6 @@
               text-anchor="start"
               :fill="strokeColor"
               font-size="10px"
-              v-if="i == colorDomain.length - 1"
             >
               {{ color * 100 }}-100%
             </text>
@@ -85,13 +85,13 @@
 
     <!-- WEIRDO LEGEND -->
     <svg
-      ref="manual-legend"
+      v-if="includeNulls"
       id="manual-legend"
+      ref="manual-legend"
       :width="280"
       :height="58"
       class="report-choropleth-legend my-2"
       role="legend"
-      v-if="includeNulls"
     >
       <defs>
         <pattern
@@ -120,7 +120,7 @@
           :fill="filteredColor"
           :stroke="strokeColor"
           stroke-width="1"
-        ></rect>
+        />
         <rect
           x="0"
           y="20"
@@ -129,7 +129,7 @@
           fill="url(#diagonalHatchLegend)"
           :stroke="strokeColor"
           stroke-width="1"
-        ></rect>
+        />
         <rect
           x="0"
           y="0"
@@ -138,7 +138,7 @@
           :fill="nullColor"
           :stroke="strokeColor"
           stroke-width="1"
-        ></rect>
+        />
 
         <text
           style='font-family:"DM Sans", Avenir, Helvetica, Arial, sans-serif;'

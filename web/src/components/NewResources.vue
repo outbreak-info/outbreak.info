@@ -62,14 +62,14 @@ import StripeAccent from '@/components/StripeAccent.vue';
 
 export default {
   name: 'NewResources',
-  props: {
-    newData: Array,
-  },
   components: {
     StripeAccent,
   },
+  props: {
+    newData: Array,
+  },
   methods: {
-    format: function(dateStr) {
+    format(dateStr) {
       const parsed = timeParse('%Y-%m-%d')(dateStr);
       return parsed ? timeFormat('%d %B')(parsed) : null;
     },

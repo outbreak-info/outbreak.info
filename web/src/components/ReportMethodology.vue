@@ -4,6 +4,7 @@
     <div v-if="summary">
       <p>
         All SARS-CoV sequences are received via direct provision from the
+
         <a href="https://www.gisaid.org/" rel="noreferrer" target="_blank">
           GISAID Initiative
         </a>
@@ -13,9 +14,7 @@
           rel="noreferrer"
           target="_blank"
         >
-          Bjorn
-        </a>
-        , which relies heavily on
+          Bjorn</a>, which relies heavily on
         <a
           href="https://github.com/lh3/minimap2/"
           rel="noreferrer"
@@ -29,9 +28,7 @@
           rel="noreferrer"
           target="_blank"
         >
-          datafunk
-        </a>
-        .
+          datafunk</a>.
         <router-link :to="{ name: 'SituationReportMethodology' }">
           View full methods
         </router-link>
@@ -42,15 +39,15 @@
     <div v-else>
       <div class="d-flex mt-2 mb-3">
         <small
-          class="text-muted badge bg-grey__lightest mt-1"
           v-if="lastUpdated"
+          class="text-muted badge bg-grey__lightest mt-1"
         >
           <font-awesome-icon class="mr-1" :icon="['far', 'clock']" />
           Updated {{ lastUpdated }} (methods)
         </small>
         <small
-          class="text-muted badge bg-grey__lightest mt-1 ml-3"
           v-if="lastUpdated"
+          class="text-muted badge bg-grey__lightest mt-1 ml-3"
         >
           <font-awesome-icon class="mr-1" :icon="['far', 'clock']" />
           Updated {{ updated }} (data)
@@ -59,7 +56,9 @@
 
       <section class="border-top py-2">
         <h2>Sequencing data</h2>
-        <h4 id="pipeline">Sequence alignment</h4>
+        <h4 id="pipeline">
+          Sequence alignment
+        </h4>
         <p>
           All SARS-CoV sequences are received via direct provision from the
           <a href="https://www.gisaid.org/" rel="noreferrer" target="_blank">
@@ -72,8 +71,7 @@
             target="_blank"
           >
             Bjorn
-          </a>
-          , which relies heavily on
+          </a>, which relies heavily on
           <a
             href="https://github.com/lh3/minimap2/"
             rel="noreferrer"
@@ -87,16 +85,15 @@
             rel="noreferrer"
             target="_blank"
           >
-            datafunk
-          </a>
-          . The alignment is based on the reference sequence used by
+            datafunk</a>. The alignment is based on the reference sequence used
+            by
           <a :href="refSeq.url" target="_blank" rel="noreferrer">
-            {{ refSeq.name }}
-          </a>
-          .
+            {{ refSeq.name }}</a>.
         </p>
 
-        <h4 id="filters">Data processing</h4>
+        <h4 id="filters">
+          Data processing
+        </h4>
         <ul>
           <li>
             Sequences with collection dates specifying only the year or dates in
@@ -116,7 +113,9 @@
           </li>
         </ul>
 
-        <h4 id="prevalence">Prevalence calculation</h4>
+        <h4 id="prevalence">
+          Prevalence calculation
+        </h4>
         <p>
           Mutation prevalence was calculated as a ratio of the count of
           sequences containing a given set of mutations on a day at a particular
@@ -129,16 +128,18 @@
           <span
             class="code"
             v-html="'2.5 quantile of	&beta;(x + 0.5, n - x + 0.5)'"
-          ></span>
+          />
           to
           <span
             class="code"
             v-html="'97.5 quantile of &beta;(x + 0.5, n - x + 0.5)'"
-          ></span>
+          />
           .
         </p>
 
-        <h4 id="dates">Date reporting</h4>
+        <h4 id="dates">
+          Date reporting
+        </h4>
         <p>
           Dates when the lineage, variant, or mutation(s) were first and last
           found are based on the sample collection date, not the sequencing date
@@ -150,7 +151,9 @@
 
       <section class="border-top border-bottom py-2">
         <h2>Lineages</h2>
-        <h4 id="lineages">Lineage assignment</h4>
+        <h4 id="lineages">
+          Lineage assignment
+        </h4>
         <p>
           PANGO lineage classification for each individual sequence was provided
           by GISAID. Note that classifications of newer lineages by the
@@ -165,20 +168,18 @@
           </a>
           and an explanation about the
           <a href="https://www.pango.network/new-ay-lineages/" target="_blank">
-            AY lineage series
-          </a>
-          .
+            AY lineage series</a>.
         </p>
 
-        <h4 id="sublineages">Sublineage assignment</h4>
+        <h4 id="sublineages">
+          Sublineage assignment
+        </h4>
         <p>
           outbreak.info Variant of Concern (VOC) reports pull all descendants of
           a parent VOC lineage from
           <a href="https://cov-lineages.org/index.html" target="_blank">
-            cov-lineages.org
-          </a>
-          . For instance, we define "Omicron" as all B.1.1.529 and all its
-          descendants according to the
+            cov-lineages.org</a>. For instance, we define "Omicron" as all
+            B.1.1.529 and all its descendants according to the
           <a
             href="https://github.com/cov-lineages/lineages-website/blob/master/data/lineages.yml"
             target="_blank"
@@ -188,7 +189,9 @@
           maintained by the cov-lineages.org team.
         </p>
 
-        <h4 id="characteristic">Characteristic mutations of a lineage</h4>
+        <h4 id="characteristic">
+          Characteristic mutations of a lineage
+        </h4>
 
         <p>
           Characteristic mutations for a lineage are defined as nonsynonymous
@@ -203,8 +206,7 @@
           found, the characteristic mutations may change. For applications like
           reagent design which require stringent accuracy, we recommend
           downloading the consensus sequences from
-          <a href="https://www.gisaid.org/" target="_blank">GISAID</a>
-          .
+          <a href="https://www.gisaid.org/" target="_blank">GISAID</a>.
         </p>
       </section>
 
@@ -213,78 +215,70 @@
   </div>
 </template>
 
-<script lang="js">
-import Vue from "vue";
-
+<script>
+import Vue from 'vue';
 
 // --- font awesome --
-import {
-  FontAwesomeIcon
-} from "@fortawesome/vue-fontawesome";
-import {
-  library
-} from "@fortawesome/fontawesome-svg-core";
-import {
-  faClock
-} from "@fortawesome/free-regular-svg-icons/faClock";
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faClock } from '@fortawesome/free-regular-svg-icons/faClock';
 
 library.add(faClock);
 
-import Warning from "@/components/Warning.vue";
+import Warning from '@/components/Warning.vue';
 
 // --- store / Vuex ---
-import {
-  mapState
-} from "vuex";
+import { mapState } from 'vuex';
 
-import {
-  getDateUpdated
-} from "@/api/genomics.js";
+import { getDateUpdated } from '@/api/genomics.js';
 
-import {format} from "d3";
+import { format } from 'd3';
 
 export default {
-  name: "ReportMethodology",
+  name: 'ReportMethodology',
+  components: {
+    Warning,
+    FontAwesomeIcon,
+  },
   props: {
     dateUpdated: String,
     summary: {
       type: Boolean,
-      default: false
-    }
-  },
-  components: {
-    Warning,
-    FontAwesomeIcon
-  },
-  computed: {
-    ...mapState("genomics", ["refSeq", "characteristicThreshold"]),
-    charMutThreshold() {
-      return(format(".0%")(this.characteristicThreshold))
-    }
+      default: false,
+    },
   },
   data() {
     return {
-      lastUpdated: "15 March 2021",
-      disclaimer: "SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the mutations but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>",
+      lastUpdated: '15 March 2021',
+      disclaimer:
+        "SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the mutations but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>",
       updated: null,
-      updatedSubscription: null
-    }
+      updatedSubscription: null,
+    };
+  },
+  computed: {
+    ...mapState('genomics', ['refSeq', 'characteristicThreshold']),
+    charMutThreshold() {
+      return format('.0%')(this.characteristicThreshold);
+    },
   },
   mounted() {
     if (this.dateUpdated) {
       this.updated = this.dateUpdated;
     } else {
-      this.updatedSubscription = getDateUpdated(this.$genomicsurl).subscribe(result => {
-        this.updated = result.dateUpdated;
-      })
+      this.updatedSubscription = getDateUpdated(this.$genomicsurl).subscribe(
+        (result) => {
+          this.updated = result.dateUpdated;
+        },
+      );
     }
   },
   destroyed() {
     if (this.updatedSubscription) {
       this.updatedSubscription.unsubscribe();
     }
-  }
-}
+  },
+};
 </script>
 
 <style lang="scss">

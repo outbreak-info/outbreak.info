@@ -1,10 +1,10 @@
 // RIS format based off of Wikipedia:
 // https://en.wikipedia.org/wiki/RIS_(file_format)
 // two letters, two spaces and a hyphen
-export function formatRIS(data) {
+export const formatRIS = (data) => {
   const type = getFormat(data);
 
-  var authors = null;
+  let authors = null;
   if (data.author && data.creator) {
     authors = data.author
       .concat(data.creator)
@@ -67,19 +67,19 @@ export function formatRIS(data) {
   ]
     .filter((d) => d)
     .join('\n');
-}
+};
 
-function getFormat(data) {
+const getFormat = (data) => {
   const type = data.type ? data.type : data['@type'];
-  if (type == 'Publication') {
+  if (type === 'Publication') {
     return 'TY  - JOUR';
-  } else if (type == 'Dataset') {
+  } else if (type === 'Dataset') {
     return 'TY  - DATA';
-  } else if (type == 'Protocol') {
+  } else if (type === 'Protocol') {
     return 'TY  - ELEC';
-  } else if (type == 'Analysis') {
+  } else if (type === 'Analysis') {
     return 'TY  - ELEC';
   } else {
     return 'TY  - GEN';
   }
-}
+};

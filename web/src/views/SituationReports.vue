@@ -1,7 +1,9 @@
 <template>
   <div>
     <div class="bg-main__darker mutation-banner border-top py-4">
-      <h1 class="m-0 text-grey">SARS-CoV-2 (hCoV-19) Mutation Reports</h1>
+      <h1 class="m-0 text-grey">
+        SARS-CoV-2 (hCoV-19) Mutation Reports
+      </h1>
       <h2 class="m-0 mutation-header font-weight-bold">
         Lineage
         <span class="mx-2">|</span>
@@ -11,7 +13,10 @@
 
     <div class="my-2 mx-4 px-4">
       <!-- LOADING -->
-      <div v-if="reportloading" class="loader">
+      <div
+        v-if="reportloading"
+        class="loader"
+      >
         <font-awesome-icon
           class="fa-pulse fa-4x text-highlight"
           :icon="['fas', 'spinner']"
@@ -20,7 +25,11 @@
 
       <!-- Header info -->
       <div class="mb-1">
-        <img src="@/assets/sars-virus.svg" alt="map" class="bg-image" />
+        <img
+          src="@/assets/sars-virus.svg"
+          alt="map"
+          class="bg-image"
+        >
         <div
           class="d-flex flex-column justify-content-center align-items-center"
         >
@@ -38,7 +47,7 @@
                   src="@/assets/resources/gisaid.png"
                   class="gisaid-lg ml-2"
                   alt="GISAID Initiative"
-                />
+                >
               </a>
             </div>
           </div>
@@ -46,7 +55,11 @@
           <!-- Select custom reports -->
           <div class="w-75 mt-2 text-left">
             The
-            <a href="https://cvisb.org/" rel="noreferrer" target="_blank">
+            <a
+              href="https://cvisb.org/"
+              rel="noreferrer"
+              target="_blank"
+            >
               CViSB Team
             </a>
             at Scripps Research is tracking the prevalence of SARS-CoV-2
@@ -56,16 +69,26 @@
             with any combination of lineages and/or mutations.
           </div>
           <div class="d-flex align-items-center justify-content-between my-2">
-            <div id="date-updated" class="mr-2">
+            <div
+              id="date-updated"
+              class="mr-2"
+            >
               <small
-                class="text-muted badge bg-grey__lightest mt-1"
                 v-if="lastUpdated"
+                class="text-muted badge bg-grey__lightest mt-1"
               >
-                <font-awesome-icon class="mr-1" :icon="['far', 'clock']" />
+                <font-awesome-icon
+                  class="mr-1"
+                  :icon="['far', 'clock']"
+                />
                 Updated {{ lastUpdated }} ago
               </small>
             </div>
-            <div id="sequence-count" class="ml-2 mr-5 text-muted" v-if="total">
+            <div
+              v-if="total"
+              id="sequence-count"
+              class="ml-2 mr-5 text-muted"
+            >
               with
               <span class="text-highlight">{{ total }} sequences</span>
               from GISAID
@@ -78,12 +101,18 @@
             <div class="d-flex flex-wrap">
               View:
               <div class="d-flex flex-wrap flex-column">
-                <router-link class="mx-3 mb-1" :to="{ hash: '#voc' }">
+                <router-link
+                  class="mx-3 mb-1"
+                  :to="{ hash: '#voc' }"
+                >
                   Variants of Concern
                 </router-link>
 
                 <div class="d-flex flex-column mx-3 mb-1">
-                  <router-link :to="{ hash: '#voi' }" class="">
+                  <router-link
+                    :to="{ hash: '#voi' }"
+                    class=""
+                  >
                     Variants of Interest
                   </router-link>
                   <div class="text-muted text-size-xs mt-n1">
@@ -94,7 +123,10 @@
 
               <div class="d-flex flex-wrap flex-column mx-3">
                 <div class="d-flex flex-column mx-3 mb-1">
-                  <router-link :to="{ hash: '#previous-voc' }" class="">
+                  <router-link
+                    :to="{ hash: '#previous-voc' }"
+                    class=""
+                  >
                     Previous Variants of Concern
                   </router-link>
                   <div class="text-muted text-size-xs mt-n1">
@@ -103,7 +135,10 @@
                 </div>
 
                 <div class="d-flex flex-column mx-3 mb-1">
-                  <router-link :to="{ hash: '#de-escalated' }" class="">
+                  <router-link
+                    :to="{ hash: '#de-escalated' }"
+                    class=""
+                  >
                     De-escalated Variants
                   </router-link>
                   <div class="text-muted text-size-xs mt-n1">
@@ -113,11 +148,17 @@
               </div>
 
               <div class="d-flex flex-wrap flex-column mx-3">
-                <router-link class="mx-3 mb-1" :to="{ hash: '#moc' }">
+                <router-link
+                  class="mx-3 mb-1"
+                  :to="{ hash: '#moc' }"
+                >
                   Mutations of Concern
                 </router-link>
 
-                <router-link class="mx-3 mb-1" :to="{ hash: '#moi' }">
+                <router-link
+                  class="mx-3 mb-1"
+                  :to="{ hash: '#moi' }"
+                >
                   Mutations of Interest
                 </router-link>
               </div>
@@ -128,50 +169,53 @@
             </button>
           </div> -->
 
-            <div id="filter-classifiers" class="mt-3 collapse">
+            <div
+              id="filter-classifiers"
+              class="mt-3 collapse"
+            >
               <div class="d-flex flex-wrap align-items-center my-3">
                 <small class="text-muted mr-2">VOC classified by:</small>
                 <label
-                  class="b-contain d-flex align-items-center pr-4 m-0"
                   v-for="(curator, idx) in curatorOpts"
                   :key="idx"
+                  class="b-contain d-flex align-items-center pr-4 m-0"
                 >
                   <img
                     :src="require(`@/assets/${curator.src}`)"
                     class="variant-logo mr-1"
-                  />
+                  >
                   <span>{{ curator.label }}</span>
                   <input
-                    type="checkbox"
                     :id="curator.label"
-                    :value="curator.id"
                     v-model.lazy="selectedVOC"
+                    type="checkbox"
+                    :value="curator.id"
                     @change="filterVOC()"
-                  />
-                  <div class="b-input"></div>
+                  >
+                  <div class="b-input" />
                 </label>
               </div>
 
               <div class="d-flex flex-wrap align-items-center my-3">
                 <small class="text-muted mr-2">VOI classified by:</small>
                 <label
-                  class="b-contain d-flex align-items-center pr-4 m-0"
                   v-for="(curator, idx) in curatorOpts"
                   :key="idx"
+                  class="b-contain d-flex align-items-center pr-4 m-0"
                 >
                   <img
                     :src="require(`@/assets/${curator.src}`)"
                     class="variant-logo mr-1"
-                  />
+                  >
                   <span>{{ curator.label }}</span>
                   <input
-                    type="checkbox"
                     :id="curator.label"
-                    :value="curator.id"
                     v-model.lazy="selectedVOI"
+                    type="checkbox"
+                    :value="curator.id"
                     @change="filterVOC()"
-                  />
-                  <div class="b-input"></div>
+                  >
+                  <div class="b-input" />
                 </label>
               </div>
 
@@ -181,16 +225,16 @@
                   <img
                     :src="require(`@/assets/icon-01.svg`)"
                     class="variant-logo mr-1"
-                  />
+                  >
                   <span>outbreak.info</span>
                   <input
-                    type="checkbox"
                     id="outbreak.info"
-                    value="outbreak"
                     v-model.lazy="selectedMOC"
+                    type="checkbox"
+                    value="outbreak"
                     @change="filterMOC()"
-                  />
-                  <div class="b-input"></div>
+                  >
+                  <div class="b-input" />
                 </label>
               </div>
 
@@ -200,16 +244,16 @@
                   <img
                     :src="require(`@/assets/icon-01.svg`)"
                     class="variant-logo mr-1"
-                  />
+                  >
                   <span>outbreak.info</span>
                   <input
-                    type="checkbox"
                     id="outbreak.info"
-                    value="outbreak"
                     v-model.lazy="selectedMOI"
+                    type="checkbox"
+                    value="outbreak"
                     @change="filterMOC()"
-                  />
-                  <div class="b-input"></div>
+                  >
+                  <div class="b-input" />
                 </label>
               </div>
             </div>
@@ -225,7 +269,10 @@
                 </div>
               </div>
 
-              <section id="custom-report" class="collapse text-left">
+              <section
+                id="custom-report"
+                class="collapse text-left"
+              >
                 <CustomReportForm />
               </section>
             </div>
@@ -233,22 +280,31 @@
         </div>
       </div>
 
-      <section id="report-list" class="text-left">
+      <section
+        id="report-list"
+        class="text-left"
+      >
         <!-- lineage groups -->
         <div
-          class="lineage-group my-10"
           v-for="(group, i) in filteredReports"
-          :key="i"
           :id="group.id + '-reports'"
+          :key="i"
+          class="lineage-group my-10"
         >
           <template
             v-if="group.id != 'deescalated' && group.id != 'previous_voc'"
           >
             <div class="d-flex justify-content-between">
-              <h2 class="mb-0" :id="group.id">
+              <h2
+                :id="group.id"
+                class="mb-0"
+              >
                 {{ group.key | capitalize }} Reports
               </h2>
-              <div class="d-flex align-items-center text-sec" v-if="i === 0">
+              <div
+                v-if="i === 0"
+                class="d-flex align-items-center text-sec"
+              >
                 <font-awesome-icon
                   class="mr-2"
                   :icon="['fas', 'info-circle']"
@@ -266,7 +322,7 @@
               <span
                 class="text-highlight d-inline"
                 v-html="getReportType(group.key)"
-              ></span>
+              />
               <a
                 class="ml-2 d-inline"
                 href="https://outbreak.info/situation-reports/caveats#variant"
@@ -278,39 +334,39 @@
             <template v-if="group.values.length">
               <!-- filter to hide VOCs / VOIs -->
               <div
-                class="d-flex flex-wrap align-items-center ml-3 my-3 border-top border-bottom bg-white py-2 justify-content-center"
                 v-if="group.id != 'vum'"
+                class="d-flex flex-wrap align-items-center ml-3 my-3 border-top border-bottom bg-white py-2 justify-content-center"
               >
                 <small class="text-muted mr-2">
                   include {{ group.id.toUpperCase() }}s classified by:
                 </small>
                 <label
-                  class="b-contain d-flex align-items-center pr-4 m-0"
                   v-for="(curator, idx) in curatorOpts"
                   :key="idx"
+                  class="b-contain d-flex align-items-center pr-4 m-0"
                 >
                   <img
                     :src="require(`@/assets/${curator.src}`)"
                     class="variant-logo mr-1"
-                  />
+                  >
                   <span>{{ curator.label }}</span>
                   <input
-                    type="checkbox"
-                    :id="curator.label"
-                    :value="curator.id"
-                    v-model.lazy="selectedVOC"
-                    @change="filterVOC()"
                     v-if="group.id == 'voc'"
-                  />
-                  <input
-                    type="checkbox"
                     :id="curator.label"
+                    v-model.lazy="selectedVOC"
+                    type="checkbox"
                     :value="curator.id"
-                    v-model.lazy="selectedVOI"
                     @change="filterVOC()"
+                  >
+                  <input
                     v-if="group.id == 'voi'"
-                  />
-                  <div class="b-input"></div>
+                    :id="curator.label"
+                    v-model.lazy="selectedVOI"
+                    type="checkbox"
+                    :value="curator.id"
+                    @change="filterVOC()"
+                  >
+                  <div class="b-input" />
                 </label>
                 <button
                   class="btn btn-grey-outline py-1 m-0"
@@ -331,24 +387,24 @@
                         <form
                           autocomplete="off"
                           class="ml-3 fa-sm"
-                          @submit.prevent="onEnter"
                           style="width:250px"
+                          @submit.prevent="onEnter"
                         >
                           <div class="input-group">
                             <input
                               :id="'sBar' + i"
+                              v-model="searchInput"
                               class="form-control border"
                               placeholder="Search"
                               aria-label="search"
                               aria-describedby="sb"
                               type="text"
-                              v-model="searchInput"
                               @input="debounceSearch"
-                            />
+                            >
                             <div class="input-group-prepend">
                               <span
-                                class="input-group-text text-muted border-0"
                                 id="sb"
+                                class="input-group-text text-muted border-0"
                               >
                                 <font-awesome-icon :icon="['fas', 'search']" />
                               </span>
@@ -366,10 +422,10 @@
                     <th>
                       total
                     </th>
-                    <!-- <th>
-                      S-gene Mutations
-                      <sup>*</sup>
-                    </th> -->
+                  <!-- <th>
+                    S-gene Mutations
+                    <sup>*</sup>
+                  </th> -->
                   </tr>
                 </thead>
 
@@ -377,10 +433,10 @@
                 <tbody>
                   <template v-for="(report, rIdx) in group.values">
                     <tr
+                      :id="report.identifier"
                       :key="rIdx"
                       class="border-bottom"
                       :class="{ checkbook: (rIdx % 2) - 1 }"
-                      :id="report.identifier"
                     >
                       <!-- name + synonyms -->
                       <td class="pt-2  border-bottom">
@@ -399,8 +455,8 @@
                             class="no-underline"
                           >
                             <h3
-                              class="m-0 font-weight-bold border-bottom pb-1 mb-2"
                               :id="anchorLink(report.who_name)"
+                              class="m-0 font-weight-bold border-bottom pb-1 mb-2"
                             >
                               {{ report.label }}
                             </h3>
@@ -409,6 +465,7 @@
 
                         <!-- multiple sublineages, unnamed -->
                         <router-link
+                          v-else-if="report.pango_sublineages.length"
                           :to="{
                             name: 'MutationReport',
                             params: { alias: report.label.toLowerCase() },
@@ -418,11 +475,10 @@
                             },
                           }"
                           class="no-underline"
-                          v-else-if="report.pango_sublineages.length"
                         >
                           <h3
-                            class="m-0 font-weight-bold border-bottom pb-1 mb-2"
                             :id="anchorLink(report.label)"
+                            class="m-0 font-weight-bold border-bottom pb-1 mb-2"
                           >
                             {{ report.label }}
                           </h3>
@@ -430,6 +486,7 @@
 
                         <!-- single lineage -->
                         <router-link
+                          v-else
                           :to="{
                             name: 'MutationReport',
                             query: {
@@ -439,11 +496,10 @@
                             },
                           }"
                           class="no-underline"
-                          v-else
                         >
                           <h3
-                            class="m-0 font-weight-bold border-bottom pb-1 mb-2"
                             :id="anchorLink(report.pangolin_lineage)"
+                            class="m-0 font-weight-bold border-bottom pb-1 mb-2"
                           >
                             {{ report.pangolin_lineage }}
                           </h3>
@@ -451,11 +507,11 @@
 
                         <!-- list of parent / sublineages -->
                         <div
-                          class="sublineages text-muted border-bottom pb-2 mb-2"
                           v-if="
                             report.pango_descendants.length > 1 ||
                               report.who_name
                           "
+                          class="sublineages text-muted border-bottom pb-2 mb-2"
                         >
                           <template v-if="report.pangolin_lineage">
                             <div
@@ -463,11 +519,11 @@
                               class="d-flex"
                             >
                               <h4
-                                class="m-0 parent-lineage"
-                                :id="anchorLink(parentLineage)"
                                 v-for="(parentLineage,
-                                pIdx) in report.pangolin_lineage"
+                                        pIdx) in report.pangolin_lineage"
+                                :id="anchorLink(parentLineage)"
                                 :key="pIdx"
+                                class="m-0 parent-lineage"
                               >
                                 <router-link
                                   :to="{
@@ -483,19 +539,19 @@
                                   {{ parentLineage }}
                                 </router-link>
                                 <span
-                                  class="mx-1"
                                   v-if="
                                     pIdx < report.pangolin_lineage.length - 1
                                   "
+                                  class="mx-1"
                                 >
                                   &bull;
                                 </span>
                               </h4>
                             </div>
                             <h4
-                              class="m-0 parent-lineage"
-                              :id="anchorLink(report.pangolin_lineage)"
                               v-else
+                              :id="anchorLink(report.pangolin_lineage)"
+                              class="m-0 parent-lineage"
                             >
                               <router-link
                                 :to="{
@@ -519,11 +575,12 @@
                               <template v-if="report.showSublineages">
                                 <span
                                   v-for="(sublineage,
-                                  sIdx) in report.pango_sublineages"
-                                  :key="sIdx"
+                                          sIdx) in report.pango_sublineages"
                                   :id="anchorLink(sublineage)"
+                                  :key="sIdx"
                                 >
                                   <router-link
+                                    :id="anchorLink(sublineage)"
                                     :to="{
                                       name: 'MutationReport',
                                       query: {
@@ -533,15 +590,14 @@
                                       },
                                     }"
                                     class="font-weight-bold no-underline"
-                                    :id="anchorLink(sublineage)"
                                   >
                                     {{ sublineage }}
                                   </router-link>
                                   <span
-                                    class="mx-1"
                                     v-if="
                                       sIdx < report.pango_sublineages.length - 1
                                     "
+                                    class="mx-1"
                                   >
                                     &bull;
                                   </span>
@@ -550,14 +606,15 @@
                               <template v-else>
                                 <span
                                   v-for="(sublineage,
-                                  sIdx) in report.pango_sublineages.slice(
-                                    0,
-                                    sublineageMax,
-                                  )"
-                                  :key="sIdx"
+                                          sIdx) in report.pango_sublineages.slice(
+                                            0,
+                                            sublineageMax,
+                                          )"
                                   :id="anchorLink(sublineage)"
+                                  :key="sIdx"
                                 >
                                   <router-link
+                                    :id="anchorLink(sublineage)"
                                     :to="{
                                       name: 'MutationReport',
                                       query: {
@@ -567,25 +624,24 @@
                                       },
                                     }"
                                     class="font-weight-bold no-underline"
-                                    :id="anchorLink(sublineage)"
                                   >
                                     {{ sublineage }}
                                   </router-link>
                                   <span
-                                    class="mx-1"
                                     v-if="
                                       sIdx < report.pango_sublineages.length - 1
                                     "
+                                    class="mx-1"
                                   >
                                     &bull;
                                   </span>
                                   <span
-                                    class="mx-1 opacity-75"
                                     v-if="
-                                      sIdx == sublineageMax - 1 &&
-                                        sIdx !=
-                                          report.pango_sublineages.length - 1
+                                      sIdx === sublineageMax - 1 &&
+                                        sIdx !==
+                                        report.pango_sublineages.length - 1
                                     "
+                                    class="mx-1 opacity-75"
                                   >
                                     and
                                     <span class="font-weight-bold">
@@ -597,8 +653,8 @@
                                     more
                                     <small>
                                       <a
-                                        @click="viewSublineages(report)"
                                         class="link"
+                                        @click="viewSublineages(report)"
                                       >
                                         view all
                                       </a>
@@ -637,8 +693,8 @@
                             </span>
                           </div>
                           <div
-                            class="text-highlight d-flex flex-wrap"
                             v-if="report.related"
+                            class="text-highlight d-flex flex-wrap"
                           >
                             <span class="mr-1">related:</span>
                             <span
@@ -652,8 +708,8 @@
                                 {{ related }}
                               </router-link>
                               <span
-                                class="mx-1"
                                 v-if="rIdx < report.related.length - 1"
+                                class="mx-1"
                               >
                                 &bull;
                               </span>
@@ -667,7 +723,7 @@
                         <table class="bordered">
                           <thead>
                             <tr class="fa-xs">
-                              <th></th>
+                              <th />
                               <th
                                 v-for="(curator, cIdx) in curatorOpts"
                                 :key="cIdx + 'table'"
@@ -675,7 +731,7 @@
                                 <img
                                   :src="require(`@/assets/${curator.src}`)"
                                   class="variant-logo"
-                                />
+                                >
                               </th>
                             </tr>
                           </thead>
@@ -704,9 +760,9 @@
                                 :key="cIdx + 'td'"
                                 :class="[
                                   report.classificationTable[variant.id] &&
-                                  report.classificationTable[variant.id][
-                                    curator.id
-                                  ]
+                                    report.classificationTable[variant.id][
+                                      curator.id
+                                    ]
                                     ? variant.id + '-bg'
                                     : 'no-classification',
                                 ]"
@@ -716,7 +772,6 @@
                                   class="border-inset"
                                 >
                                   <small
-                                    class="line-height-1 tracked-variant-report"
                                     v-if="
                                       report.classificationTable[variant.id][
                                         curator.id
@@ -725,6 +780,7 @@
                                           curator.id
                                         ].label
                                     "
+                                    class="line-height-1 tracked-variant-report"
                                     :data-tippy-info="
                                       report.classificationTable[variant.id][
                                         curator.id
@@ -735,7 +791,7 @@
                                         curator.id
                                       ].label
                                     "
-                                  ></small>
+                                  />
                                 </div>
                               </td>
                             </tr>
@@ -752,49 +808,49 @@
                         {{ report.lineage_count }}
                       </td>
 
-                      <!-- s-gene mutations heatmap -->
-                      <!-- <td>
-                        <div class="d-flex flex-column align-items-center">
-                          <MutationHeatmap
-                            :data="report.mutations"
-                            :dark="false"
-                            gene="S"
-                            :yDomain="report.mutationsYDomain"
-                            :moc="curatedMOC"
-                            :moi="curatedMOI"
-                            v-if="report.mutations.length"
-                          />
-                          <div class="d-flex">
-                            <router-link
-                              class="text-muted"
-                              :to="{
-                                name: 'SituationReportComparison',
-                                query: { pango: report.who_name, sub: true },
-                              }"
-                              v-if="report.mutations.length && report.who_name"
-                            >
-                              <small v-if="report.pango_sublineages.length">
-                                Compare {{ report.who_name }} sublineages
-                              </small>
-                              <small v-else>Explore all genes</small>
-                            </router-link>
-                            <router-link
-                              class="text-muted"
-                              :to="{
-                                name: 'SituationReportComparison',
-                                query: { pango: report.char_muts_query },
-                              }"
-                              v-else-if="report.mutations.length"
-                            >
-                              <small v-if="report.pango_sublineages.length">
-                                Compare
-                                {{ report.pangolin_lineage }} sublineages
-                              </small>
-                              <small v-else>Explore all genes</small>
-                            </router-link>
-                          </div>
+                    <!-- s-gene mutations heatmap -->
+                    <!-- <td>
+                      <div class="d-flex flex-column align-items-center">
+                        <MutationHeatmap
+                          :data="report.mutations"
+                          :dark="false"
+                          gene="S"
+                          :yDomain="report.mutationsYDomain"
+                          :moc="curatedMOC"
+                          :moi="curatedMOI"
+                          v-if="report.mutations.length"
+                        />
+                        <div class="d-flex">
+                          <router-link
+                            class="text-muted"
+                            :to="{
+                              name: 'SituationReportComparison',
+                              query: { pango: report.who_name, sub: true },
+                            }"
+                            v-if="report.mutations.length && report.who_name"
+                          >
+                            <small v-if="report.pango_sublineages.length">
+                              Compare {{ report.who_name }} sublineages
+                            </small>
+                            <small v-else>Explore all genes</small>
+                          </router-link>
+                          <router-link
+                            class="text-muted"
+                            :to="{
+                              name: 'SituationReportComparison',
+                              query: { pango: report.char_muts_query },
+                            }"
+                            v-else-if="report.mutations.length"
+                          >
+                            <small v-if="report.pango_sublineages.length">
+                              Compare
+                              {{ report.pangolin_lineage }} sublineages
+                            </small>
+                            <small v-else>Explore all genes</small>
+                          </router-link>
                         </div>
-                      </td> -->
+                      </div>
+                    </td> -->
                     </tr>
                   </template>
                 </tbody>
@@ -842,7 +898,7 @@
                         (
                         <span class="text-underline">{{ variant.id }}</span>
                         ):
-                        <span v-html="variant.def"></span>
+                        <span v-html="variant.def" />
                       </small>
                     </div>
                   </div>
@@ -860,27 +916,35 @@
               </div>
             </template>
 
-            <div class="d-flex align-items-center my-3" v-else>
-              <h5 class="text-muted m-0">No {{ group.key }} reports found</h5>
+            <div
+              v-else
+              class="d-flex align-items-center my-3"
+            >
+              <h5 class="text-muted m-0">
+                No {{ group.key }} reports found
+              </h5>
               <form
                 autocomplete="off"
                 class="ml-3 fa-sm"
-                @submit.prevent="onEnter"
                 style="width:250px"
+                @submit.prevent="onEnter"
               >
                 <div class="input-group">
                   <input
                     :id="'sBar-clear' + i"
+                    v-model="searchInput"
                     class="form-control border"
                     placeholder="Search"
                     aria-label="search"
                     aria-describedby="sb"
                     type="text"
-                    v-model="searchInput"
                     @input="debounceSearch"
-                  />
+                  >
                   <div class="input-group-prepend">
-                    <span class="input-group-text text-muted border-0" id="sb">
+                    <span
+                      id="sb"
+                      class="input-group-text text-muted border-0"
+                    >
                       <font-awesome-icon :icon="['fas', 'search']" />
                     </span>
                   </div>
@@ -895,7 +959,10 @@
               </button>
             </div>
           </template>
-          <div v-else-if="group.id == 'previous_voc'" id="previous-voc">
+          <div
+            v-else-if="group.id === 'previous_voc'"
+            id="previous-voc"
+          >
             <h4>Previously Circulating Variants of Concern</h4>
             <div class="text-muted">
               These former VOCs have been de-escalated by public health agencies
@@ -921,7 +988,10 @@
                     }"
                     class="no-underline"
                   >
-                    <h5 class="m-0" :id="anchorLink(report.who_name)">
+                    <h5
+                      :id="anchorLink(report.who_name)"
+                      class="m-0"
+                    >
                       {{ report.label }}/{{
                         Array.isArray(report.pangolin_lineage)
                           ? report.pangolin_lineage.join(' & ')
@@ -933,21 +1003,25 @@
 
                 <!-- multiple sublineages, unnamed -->
                 <router-link
+                  v-else-if="report.pango_sublineages.length"
                   :to="{
                     name: 'MutationReport',
                     params: { alias: report.label.toLowerCase() },
                     query: { loc: report.loc, selected: report.selected },
                   }"
                   class="no-underline"
-                  v-else-if="report.pango_sublineages.length"
                 >
-                  <h5 class="m-0" :id="anchorLink(report.label)">
+                  <h5
+                    :id="anchorLink(report.label)"
+                    class="m-0"
+                  >
                     {{ report.label }}
                   </h5>
                 </router-link>
 
                 <!-- single lineage -->
                 <router-link
+                  v-else
                   :to="{
                     name: 'MutationReport',
                     query: {
@@ -957,16 +1031,21 @@
                     },
                   }"
                   class="no-underline"
-                  v-else
                 >
-                  <h5 class="m-0" :id="anchorLink(report.pangolin_lineage)">
+                  <h5
+                    :id="anchorLink(report.pangolin_lineage)"
+                    class="m-0"
+                  >
                     {{ report.pangolin_lineage }}
                   </h5>
                 </router-link>
               </div>
             </div>
           </div>
-          <div v-else id="de-escalated">
+          <div
+            v-else
+            id="de-escalated"
+          >
             <h4>De-escalated Variants</h4>
             <div class="text-muted">
               These former VOCs and/or VOIs have been de-escalated by public
@@ -996,7 +1075,10 @@
                     }"
                     class="no-underline"
                   >
-                    <h5 class="m-0" :id="anchorLink(report.who_name)">
+                    <h5
+                      :id="anchorLink(report.who_name)"
+                      class="m-0"
+                    >
                       {{ report.label }}/{{
                         Array.isArray(report.pangolin_lineage)
                           ? report.pangolin_lineage.join(' & ')
@@ -1008,21 +1090,25 @@
 
                 <!-- multiple sublineages, unnamed -->
                 <router-link
+                  v-else-if="report.pango_sublineages.length"
                   :to="{
                     name: 'MutationReport',
                     params: { alias: report.label.toLowerCase() },
                     query: { loc: report.loc, selected: report.selected },
                   }"
                   class="no-underline"
-                  v-else-if="report.pango_sublineages.length"
                 >
-                  <h5 class="m-0" :id="anchorLink(report.label)">
+                  <h5
+                    :id="anchorLink(report.label)"
+                    class="m-0"
+                  >
                     {{ report.label }}
                   </h5>
                 </router-link>
 
                 <!-- single lineage -->
                 <router-link
+                  v-else
                   :to="{
                     name: 'MutationReport',
                     query: {
@@ -1032,9 +1118,11 @@
                     },
                   }"
                   class="no-underline"
-                  v-else
                 >
-                  <h5 class="m-0" :id="anchorLink(report.pangolin_lineage)">
+                  <h5
+                    :id="anchorLink(report.pangolin_lineage)"
+                    class="m-0"
+                  >
                     {{ report.pangolin_lineage }}
                   </h5>
                 </router-link>
@@ -1044,8 +1132,14 @@
         </div>
 
         <template v-if="!filteredMutations.length">
-          <h2 id="moc">Mutation of Concern &amp; Interest Reports</h2>
-          <button id="moi" class="btn btn-main" @click="getCuratedMutations">
+          <h2 id="moc">
+            Mutation of Concern &amp; Interest Reports
+          </h2>
+          <button
+            id="moi"
+            class="btn btn-main"
+            @click="getCuratedMutations"
+          >
             show mutation reports
           </button>
         </template>
@@ -1053,13 +1147,16 @@
         <template v-else>
           <!-- mutation groups -->
           <div
-            class="mutation-group my-10"
             v-for="(group, i) in filteredMutations"
-            :key="'mutation' + i"
             :id="group.id + '-reports'"
+            :key="'mutation' + i"
+            class="mutation-group my-10"
           >
             <div class="d-flex justify-content-between">
-              <h2 class="mb-0" :id="group.id">
+              <h2
+                :id="group.id"
+                class="mb-0"
+              >
                 {{ group.key | capitalize }} Reports
               </h2>
             </div>
@@ -1068,7 +1165,7 @@
                 <span
                   class="text-highlight d-inline"
                   v-html="getReportType(group.key)"
-                ></span>
+                />
                 <a
                   class="ml-2 d-inline"
                   href="https://outbreak.info/situation-reports/caveats#variant"
@@ -1089,25 +1186,25 @@
                   <img
                     :src="require(`@/assets/icon-01.svg`)"
                     class="variant-logo mr-1"
-                  />
+                  >
                   <span>outbreak.info</span>
                   <input
-                    type="checkbox"
-                    id="outbreak.info"
-                    value="outbreak"
                     v-if="group.id == 'moc'"
-                    v-model.lazy="selectedMOC"
-                    @change="filterMOC()"
-                  />
-                  <input
-                    type="checkbox"
                     id="outbreak.info"
+                    v-model.lazy="selectedMOC"
+                    type="checkbox"
                     value="outbreak"
-                    v-if="group.id == 'moi'"
-                    v-model.lazy="selectedMOI"
                     @change="filterMOC()"
-                  />
-                  <div class="b-input"></div>
+                  >
+                  <input
+                    v-if="group.id == 'moi'"
+                    id="outbreak.info"
+                    v-model.lazy="selectedMOI"
+                    type="checkbox"
+                    value="outbreak"
+                    @change="filterMOC()"
+                  >
+                  <div class="b-input" />
                 </label>
                 <button
                   class="btn btn-grey-outline py-1 m-0"
@@ -1126,24 +1223,24 @@
                         <form
                           autocomplete="off"
                           class="ml-3 fa-sm"
-                          @submit.prevent="onEnter"
                           style="width:250px"
+                          @submit.prevent="onEnter"
                         >
                           <div class="input-group">
                             <input
                               :id="'sBar-mutation' + i"
+                              v-model="searchInput"
                               class="form-control border"
                               placeholder="Search"
                               aria-label="search"
                               aria-describedby="sb"
                               type="text"
-                              v-model="searchInput"
                               @input="debounceSearch"
-                            />
+                            >
                             <div class="input-group-prepend">
                               <span
-                                class="input-group-text text-muted border-0"
                                 id="sb"
+                                class="input-group-text text-muted border-0"
                               >
                                 <font-awesome-icon :icon="['fas', 'search']" />
                               </span>
@@ -1168,9 +1265,9 @@
                 <tbody>
                   <template v-for="(report, rIdx) in group.values">
                     <tr
+                      :id="report.identifier"
                       :key="rIdx"
                       :class="{ checkbook: (rIdx % 2) - 1 }"
-                      :id="report.identifier"
                     >
                       <!-- name + synonyms -->
                       <td class="pt-2">
@@ -1190,26 +1287,26 @@
                       <td>
                         <div class="d-flex flex-wrap">
                           <router-link
+                            v-for="(lineage, lIdx) in report.lineages"
+                            :key="lIdx"
                             class="btn btn-grey-outline p-0 m-1 d-flex"
                             :to="{
                               name: 'MutationReport',
                               query: { pango: lineage },
                             }"
-                            v-for="(lineage, lIdx) in report.lineages"
-                            :key="lIdx"
                           >
                             <div class="mx-1">
                               {{ lineage }}
                             </div>
                             <div
-                              class="VOC-badge"
                               v-if="curatedVOC.includes(lineage.toLowerCase())"
+                              class="VOC-badge"
                             >
                               VOC
                             </div>
                             <div
-                              class="VOI-badge"
                               v-if="curatedVOI.includes(lineage.toLowerCase())"
+                              class="VOI-badge"
                             >
                               VOI
                             </div>
@@ -1223,8 +1320,8 @@
 
                       <td>
                         <a
-                          :href="report.aquaria"
                           v-if="report.aquaria"
+                          :href="report.aquaria"
                           target="_blank"
                           class="line-height-1 d-flex"
                         >
@@ -1233,7 +1330,7 @@
                             src="@/assets/resources/aquaria.svg"
                             style="width: 35px"
                             class="ml-2"
-                          />
+                          >
                           ""
                         </a>
                       </td>
@@ -1263,27 +1360,35 @@
                 />
               </div> -->
             </template>
-            <div class="d-flex align-items-center my-3" v-else>
-              <h5 class="text-muted m-0">No {{ group.key }} reports found</h5>
+            <div
+              v-else
+              class="d-flex align-items-center my-3"
+            >
+              <h5 class="text-muted m-0">
+                No {{ group.key }} reports found
+              </h5>
               <form
                 autocomplete="off"
                 class="ml-3 fa-sm"
-                @submit.prevent="onEnter"
                 style="width:250px"
+                @submit.prevent="onEnter"
               >
                 <div class="input-group">
                   <input
                     :id="'sBar-clear-mut' + i"
+                    v-model="searchInput"
                     class="form-control border"
                     placeholder="Search"
                     aria-label="search"
                     aria-describedby="sb"
                     type="text"
-                    v-model="searchInput"
                     @input="debounceSearch"
-                  />
+                  >
                   <div class="input-group-prepend">
-                    <span class="input-group-text text-muted border-0" id="sb">
+                    <span
+                      id="sb"
+                      class="input-group-text text-muted border-0"
+                    >
                       <font-awesome-icon :icon="['fas', 'search']" />
                     </span>
                   </div>
@@ -1351,13 +1456,6 @@ import {
 
 export default {
   name: 'SituationReports',
-  props: {
-    voc: [Array, String],
-    voi: [Array, String],
-    moc: [Array, String],
-    moi: [Array, String],
-    name: String,
-  },
   components: {
     // DownloadReportData,
     CustomReportForm,
@@ -1366,12 +1464,195 @@ export default {
     // MutationHeatmap,
     // Warning
   },
+  props: {
+    voc: [Array, String],
+    voi: [Array, String],
+    moc: [Array, String],
+    moi: [Array, String],
+    name: String,
+  },
+  data() {
+    return {
+      // reminder: must be the raw verison of the file
+      curatedSubscription: null,
+      totalSubscription: null,
+      lastUpdated: null,
+      total: null,
+      reports: null,
+      mutationReports: [],
+      filteredReports: null,
+      filteredMutations: [],
+      sublineageMax: 5,
+      variantTypes: [
+        {
+          id: 'VOC',
+          label: 'Variant of Concern',
+          def:
+              'Variants with increased transmissibility, virulence, and/or decreased diagnostic, therapeutic, or vaccine efficacy',
+        },
+        {
+          id: 'VOI',
+          label: 'Variant of Interest',
+          def:
+              "Variants with mutations suspected or confirmed to cause a change in transmissibility, virulence, or diagnostic / therapeutic / vaccine efficacy, <span class='text-underline'>plus</span> community transmission, a cluster of cases, or detection in multiple countries",
+        },
+        {
+          id: 'VUM',
+          label: 'Variant Under Monitoring',
+          def:
+              'Variants with mutations suspected to cause a change in transmissibility, virulence, or diagnostic / therapeutic / vaccine efficacy',
+        },
+        {
+          id: 'de-escalated',
+          label: 'De-escalated Variant',
+          def:
+              'These former VOCs and/or VOIs have been de-escalated by public health agencies based on at least one the following criteria: (1) the variant is no longer circulating, (2) the variant has been circulating for a long time without any impact on the overall epidemiological situation, (3) scientific evidence demonstrates that the variant is not associated with any concerning properties',
+        },
+      ],
+      mutationTypes: [
+        {
+          id: 'MOC',
+          label: 'Mutation of Concern',
+          def:
+              "Mutations with evidence of increasing transmissibility or virulence or decreasing therapeutic/vaccine efficacy. <span class='text-underline'>However</span>, the phenotype of a variant depends on <b>all</b> its mutations, not any one particular mutation.",
+        },
+        {
+          id: 'MOI',
+          label: 'Mutation of Interest',
+          def:
+              "Mutations suspected of causing a change in transmissibility, virulence, or therapeutic/vaccine efficacy. <span class='text-underline'>However</span>, the phenotype of a variant depends on <b>all</b> its mutations, not any one particular mutation.",
+        },
+      ],
+      curatedVOC: null,
+      curatedVOI: null,
+      curatedMOC: null,
+      curatedMOI: null,
+      curatorOpts: [
+        {
+          id: 'outbreak',
+          label: 'outbreak.info',
+          src: 'icon-01.svg',
+        },
+        {
+          id: 'CDC',
+          label: 'CDC',
+          src: 'resources/cdc-logo.svg',
+        },
+        {
+          id: 'ECDC',
+          label: 'ECDC',
+          src: 'resources/ecdc-logo.png',
+        },
+        {
+          id: 'PHE',
+          label: 'Public Health England',
+          src: 'resources/PHE-logo-square.png',
+        },
+        {
+          id: 'WHO',
+          label: 'WHO',
+          src: 'resources/who-emblem.svg',
+        },
+      ],
+      searchInput: '',
+      selectedVOC: [],
+      selectedVOI: [],
+      selectedMOC: [],
+      selectedMOI: [],
+    };
+  },
   computed: {
     ...mapState('admin', ['reportloading']),
     // ...mapState('genomics', ['characteristicThreshold']),
     // charMutThreshold() {
     //   return format('.0%')(this.characteristicThreshold);
     // },
+  },
+  created() {
+    this.debounceSearch = debounce(this.filterName, 250);
+  },
+  updated() {
+    tippy('.tracked-variant-badge', {
+      content: 'Loading...',
+      maxWidth: '250px',
+      placement: 'bottom',
+      animation: 'fade',
+      theme: 'light',
+      allowHTML: true,
+      onShow(instance) {
+        let info = instance.reference.dataset.tippyInfo;
+        instance.setContent(info);
+      },
+    });
+
+    tippy('.tracked-variant-report', {
+      content: 'Loading...',
+      maxWidth: '200px',
+      placement: 'bottom',
+      animation: 'fade',
+      theme: 'light',
+      allowHTML: true,
+      onShow(instance) {
+        let info = instance.reference.dataset.tippyInfo;
+        instance.setContent(info);
+      },
+    });
+  },
+  mounted() {
+    this.selectedVOC = this.voc
+        ? typeof this.voc == 'string'
+            ? [this.voc]
+            : this.voc
+        : [];
+    this.selectedVOI = this.voi
+        ? typeof this.voi == 'string'
+            ? [this.voi]
+            : this.voi
+        : [];
+    this.selectedMOC = this.moc
+        ? typeof this.moc == 'string'
+            ? [this.moc]
+            : this.moc
+        : [];
+    this.selectedMOI = this.moi
+        ? typeof this.moi == 'string'
+            ? [this.moi]
+            : this.moi
+        : [];
+    this.searchInput = this.name;
+
+    const ofInterest = getBadMutations(true);
+    this.curatedMOC = ofInterest.moc;
+    this.curatedMOI = ofInterest.moi;
+
+    this.curatedSubscription = getReportList(this.$genomicsurl).subscribe(
+        (results) => {
+          this.lastUpdated = results.dateUpdated;
+          this.reports = results.md;
+          this.filterReports();
+        },
+    );
+
+    this.totalSubscription = getSequenceCount(
+        this.$genomicsurl,
+        null,
+        true,
+    ).subscribe((total) => {
+      this.total = total;
+    });
+  },
+  beforeDestroyed() {
+    if (this.curatedSubscription) {
+      this.curatedSubscription.unsubscribe();
+    }
+
+    if (this.curatedMutationsSubscription) {
+      this.curatedMutationsSubscription.unsubscribe();
+    }
+
+    if (this.totalSubscription) {
+      this.totalSubscription.unsubscribe();
+    }
   },
   methods: {
     clearFilters() {
@@ -1397,12 +1678,12 @@ export default {
       });
     },
     getReportType(group) {
-      const vfiltered = this.variantTypes.filter((d) => d.label == group);
-      const mfiltered = this.mutationTypes.filter((d) => d.label == group);
-      if (vfiltered.length == 1) {
+      const vfiltered = this.variantTypes.filter((d) => d.label === group);
+      const mfiltered = this.mutationTypes.filter((d) => d.label === group);
+      if (vfiltered.length === 1) {
         return vfiltered[0].def;
       }
-      if (mfiltered.length == 1) {
+      if (mfiltered.length === 1) {
         return mfiltered[0].def;
       }
       return null;
@@ -1458,13 +1739,13 @@ export default {
       });
     },
     route2Filtered(org, type) {
-      if (type == 'VOC') {
+      if (type === 'VOC') {
         this.selectedVOC = [org];
         this.selectedVOI = [];
         this.selectedMOC = [];
         this.selectedMOI = [];
       }
-      if (type == 'VOI' || type == 'VUI') {
+      if (type === 'VOI' || type === 'VUI') {
         this.selectedVOI = [org];
         this.selectedVOC = [];
         this.selectedMOC = [];
@@ -1504,9 +1785,9 @@ export default {
       this.filteredMutations = cloneDeep(this.mutationReports);
 
       if (
-        this.selectedVOC.length ||
-        this.selectedVOI.length ||
-        this.searchInput
+          this.selectedVOC.length ||
+          this.selectedVOI.length ||
+          this.searchInput
       ) {
         // filter the selected VOC/VOI reports
         this.filteredReports.forEach((group) => {
@@ -1514,17 +1795,17 @@ export default {
           group.values.forEach((report) => {
             // FILTER OUTBREAK CLASSIFICATIONS
             if (
-              (report.variantType == 'Variant of Concern' &&
-                this.selectedVOC.includes('outbreak')) ||
-              (report.variantType == 'Variant of Interest' &&
-                this.selectedVOI.includes('outbreak'))
+                (report.variantType === 'Variant of Concern' &&
+                    this.selectedVOC.includes('outbreak')) ||
+                (report.variantType === 'Variant of Interest' &&
+                    this.selectedVOI.includes('outbreak'))
             ) {
               // Filter by outbreak VOC/VOI + name
               if (this.searchInput) {
                 if (
-                  report.searchTerms.some((x) =>
-                    x.toLowerCase().includes(this.searchInput.toLowerCase()),
-                  )
+                    report.searchTerms.some((x) =>
+                        x.toLowerCase().includes(this.searchInput.toLowerCase()),
+                    )
                 ) {
                   filtered.push(report);
                 }
@@ -1535,41 +1816,41 @@ export default {
 
               // FILTER BY CLASSICATIONS
             } else if (
-              report.classifications &&
-              (this.selectedVOC.length || this.selectedVOI.length)
+                report.classifications &&
+                (this.selectedVOC.length || this.selectedVOI.length)
             ) {
               // filter name filters
               if (this.searchInput) {
                 if (
-                  report.searchTerms.some((x) =>
-                    x.toLowerCase().includes(this.searchInput.toLowerCase()),
-                  ) &&
-                  (report.classifications.filter(
-                    (x) =>
-                      x.variantType == 'VOC' &&
-                      this.selectedVOC.includes(x.author),
-                  ).length ||
-                    report.classifications.filter(
-                      (x) =>
-                        (x.variantType == 'VOI' || x.variantType == 'VUI') &&
-                        this.selectedVOI.includes(x.author),
-                    ).length)
+                    report.searchTerms.some((x) =>
+                        x.toLowerCase().includes(this.searchInput.toLowerCase()),
+                    ) &&
+                    (report.classifications.filter(
+                            (x) =>
+                                x.variantType === 'VOC' &&
+                                this.selectedVOC.includes(x.author),
+                        ).length ||
+                        report.classifications.filter(
+                            (x) =>
+                                (x.variantType === 'VOI' || x.variantType === 'VUI') &&
+                                this.selectedVOI.includes(x.author),
+                        ).length)
                 ) {
                   filtered.push(report);
                 }
               } else {
                 // filter only the classifications
                 if (
-                  report.classifications.filter(
-                    (x) =>
-                      x.variantType == 'VOC' &&
-                      this.selectedVOC.includes(x.author),
-                  ).length ||
-                  report.classifications.filter(
-                    (x) =>
-                      (x.variantType == 'VOI' || x.variantType == 'VUI') &&
-                      this.selectedVOI.includes(x.author),
-                  ).length
+                    report.classifications.filter(
+                        (x) =>
+                            x.variantType === 'VOC' &&
+                            this.selectedVOC.includes(x.author),
+                    ).length ||
+                    report.classifications.filter(
+                        (x) =>
+                            (x.variantType === 'VOI' || x.variantType === 'VUI') &&
+                            this.selectedVOI.includes(x.author),
+                    ).length
                 ) {
                   filtered.push(report);
                 }
@@ -1577,9 +1858,9 @@ export default {
             } else {
               // no report classifications; just filter by name
               if (
-                report.searchTerms.some((x) =>
-                  x.toLowerCase().includes(this.searchInput.toLowerCase()),
-                )
+                  report.searchTerms.some((x) =>
+                      x.toLowerCase().includes(this.searchInput.toLowerCase()),
+                  )
               ) {
                 filtered.push(report);
               }
@@ -1592,21 +1873,21 @@ export default {
 
       // filter mutation reports
       if (
-        this.selectedMOC.length ||
-        this.selectedMOI.length ||
-        this.searchInput
+          this.selectedMOC.length ||
+          this.selectedMOI.length ||
+          this.searchInput
       ) {
         if (this.searchInput) {
           this.filteredMutations.forEach((group) => {
             let mutFiltered = [];
             group.values.forEach((report) => {
               if (
-                report.mutation_name
-                  .toLowerCase()
-                  .includes(this.searchInput.toLowerCase()) ||
-                report.lineages.some((x) =>
-                  x.toLowerCase().includes(this.searchInput.toLowerCase()),
-                )
+                  report.mutation_name
+                      .toLowerCase()
+                      .includes(this.searchInput.toLowerCase()) ||
+                  report.lineages.some((x) =>
+                      x.toLowerCase().includes(this.searchInput.toLowerCase()),
+                  )
               ) {
                 mutFiltered.push(report);
               }
@@ -1616,14 +1897,14 @@ export default {
             if (this.selectedMOC.length || this.selectedMOI.length) {
               // filter MOC
               if (!this.selectedMOC.includes('outbreak')) {
-                if (group.key == 'Mutation of Concern') {
+                if (group.key === 'Mutation of Concern') {
                   group.values = [];
                 }
               }
 
               // filter MOI
               if (!this.selectedMOI.includes('outbreak')) {
-                if (group.key == 'Mutation of Interest') {
+                if (group.key === 'Mutation of Interest') {
                   group.values = [];
                 }
               }
@@ -1633,14 +1914,14 @@ export default {
           this.filteredMutations.forEach((group) => {
             // filter MOC
             if (!this.selectedMOC.includes('outbreak')) {
-              if (group.key == 'Mutation of Concern') {
+              if (group.key === 'Mutation of Concern') {
                 group.values = [];
               }
             }
 
             // filter MOI
             if (!this.selectedMOI.includes('outbreak')) {
-              if (group.key == 'Mutation of Interest') {
+              if (group.key === 'Mutation of Interest') {
                 group.values = [];
               }
             }
@@ -1650,9 +1931,9 @@ export default {
 
       // MOC || MOI selected but not VOC / VOI
       if (
-        (this.selectedMOC.length || this.selectedMOI.length) &&
-        !this.selectedVOC.length &&
-        !this.selectedVOI.length
+          (this.selectedMOC.length || this.selectedMOI.length) &&
+          !this.selectedVOC.length &&
+          !this.selectedVOI.length
       ) {
         this.filteredReports.forEach((group) => {
           group.values = [];
@@ -1661,9 +1942,9 @@ export default {
 
       // VOC || VOI selected but not MOC / MOI
       if (
-        (this.selectedVOC.length || this.selectedVOI.length) &&
-        !this.selectedMOC.length &&
-        !this.selectedMOI.length
+          (this.selectedVOC.length || this.selectedVOI.length) &&
+          !this.selectedMOC.length &&
+          !this.selectedMOI.length
       ) {
         this.filteredMutations.forEach((group) => {
           group.values = [];
@@ -1679,198 +1960,22 @@ export default {
     getCuratedMutations() {
       store.commit('admin/setReportLoading', true);
       this.curatedMutationsSubscription = getCuratedMutations(
-        this.$genomicsurl,
-        this.characteristicThreshold,
+          this.$genomicsurl,
+          this.characteristicThreshold,
       ).subscribe((results) => {
         this.curatedVOC = this.reports
-          .filter((d) => d.id === 'voc')[0]
-          ['values'].flatMap((d) => d.pango_descendants)
-          .map((d) => d.toLowerCase());
+            .filter((d) => d.id === 'voc')[0]
+            ['values'].flatMap((d) => d.pango_descendants)
+            .map((d) => d.toLowerCase());
         this.curatedVOI = this.reports
-          .filter((d) => d.id === 'voi')[0]
-          ['values'].flatMap((d) => d.pango_descendants)
-          .map((d) => d.toLowerCase());
+            .filter((d) => d.id === 'voi')[0]
+            ['values'].flatMap((d) => d.pango_descendants)
+            .map((d) => d.toLowerCase());
         this.mutationReports = results;
         store.commit('admin/setReportLoading', false);
         this.filterReports();
       });
     },
-  },
-  data() {
-    return {
-      // reminder: must be the raw verison of the file
-      curatedSubscription: null,
-      totalSubscription: null,
-      lastUpdated: null,
-      total: null,
-      reports: null,
-      mutationReports: [],
-      filteredReports: null,
-      filteredMutations: [],
-      sublineageMax: 5,
-      variantTypes: [
-        {
-          id: 'VOC',
-          label: 'Variant of Concern',
-          def:
-            'Variants with increased transmissibility, virulence, and/or decreased diagnostic, therapeutic, or vaccine efficacy',
-        },
-        {
-          id: 'VOI',
-          label: 'Variant of Interest',
-          def:
-            "Variants with mutations suspected or confirmed to cause a change in transmissibility, virulence, or diagnostic / therapeutic / vaccine efficacy, <span class='text-underline'>plus</span> community transmission, a cluster of cases, or detection in multiple countries",
-        },
-        {
-          id: 'VUM',
-          label: 'Variant Under Monitoring',
-          def:
-            'Variants with mutations suspected to cause a change in transmissibility, virulence, or diagnostic / therapeutic / vaccine efficacy',
-        },
-        {
-          id: 'de-escalated',
-          label: 'De-escalated Variant',
-          def:
-            'These former VOCs and/or VOIs have been de-escalated by public health agencies based on at least one the following criteria: (1) the variant is no longer circulating, (2) the variant has been circulating for a long time without any impact on the overall epidemiological situation, (3) scientific evidence demonstrates that the variant is not associated with any concerning properties',
-        },
-      ],
-      mutationTypes: [
-        {
-          id: 'MOC',
-          label: 'Mutation of Concern',
-          def:
-            "Mutations with evidence of increasing transmissibility or virulence or decreasing therapeutic/vaccine efficacy. <span class='text-underline'>However</span>, the phenotype of a variant depends on <b>all</b> its mutations, not any one particular mutation.",
-        },
-        {
-          id: 'MOI',
-          label: 'Mutation of Interest',
-          def:
-            "Mutations suspected of causing a change in transmissibility, virulence, or therapeutic/vaccine efficacy. <span class='text-underline'>However</span>, the phenotype of a variant depends on <b>all</b> its mutations, not any one particular mutation.",
-        },
-      ],
-      curatedVOC: null,
-      curatedVOI: null,
-      curatedMOC: null,
-      curatedMOI: null,
-      curatorOpts: [
-        {
-          id: 'outbreak',
-          label: 'outbreak.info',
-          src: 'icon-01.svg',
-        },
-        {
-          id: 'CDC',
-          label: 'CDC',
-          src: 'resources/cdc-logo.svg',
-        },
-        {
-          id: 'ECDC',
-          label: 'ECDC',
-          src: 'resources/ecdc-logo.png',
-        },
-        {
-          id: 'PHE',
-          label: 'Public Health England',
-          src: 'resources/PHE-logo-square.png',
-        },
-        {
-          id: 'WHO',
-          label: 'WHO',
-          src: 'resources/who-emblem.svg',
-        },
-      ],
-      searchInput: '',
-      selectedVOC: [],
-      selectedVOI: [],
-      selectedMOC: [],
-      selectedMOI: [],
-    };
-  },
-  mounted() {
-    this.selectedVOC = this.voc
-      ? typeof this.voc == 'string'
-        ? [this.voc]
-        : this.voc
-      : [];
-    this.selectedVOI = this.voi
-      ? typeof this.voi == 'string'
-        ? [this.voi]
-        : this.voi
-      : [];
-    this.selectedMOC = this.moc
-      ? typeof this.moc == 'string'
-        ? [this.moc]
-        : this.moc
-      : [];
-    this.selectedMOI = this.moi
-      ? typeof this.moi == 'string'
-        ? [this.moi]
-        : this.moi
-      : [];
-    this.searchInput = this.name;
-
-    const ofInterest = getBadMutations(true);
-    this.curatedMOC = ofInterest.moc;
-    this.curatedMOI = ofInterest.moi;
-
-    this.curatedSubscription = getReportList(this.$genomicsurl).subscribe(
-      (results) => {
-        this.lastUpdated = results.dateUpdated;
-        this.reports = results.md;
-        this.filterReports();
-      },
-    );
-
-    this.totalSubscription = getSequenceCount(
-      this.$genomicsurl,
-      null,
-      true,
-    ).subscribe((total) => {
-      this.total = total;
-    });
-  },
-  created: function() {
-    this.debounceSearch = debounce(this.filterName, 250);
-  },
-  updated() {
-    tippy('.tracked-variant-badge', {
-      content: 'Loading...',
-      maxWidth: '250px',
-      placement: 'bottom',
-      animation: 'fade',
-      theme: 'light',
-      allowHTML: true,
-      onShow(instance) {
-        let info = instance.reference.dataset.tippyInfo;
-        instance.setContent(info);
-      },
-    });
-
-    tippy('.tracked-variant-report', {
-      content: 'Loading...',
-      maxWidth: '200px',
-      placement: 'bottom',
-      animation: 'fade',
-      theme: 'light',
-      allowHTML: true,
-      onShow(instance) {
-        let info = instance.reference.dataset.tippyInfo;
-        instance.setContent(info);
-      },
-    });
-  },
-  beforeDestroyed() {
-    if (this.curatedSubscription) {
-      this.curatedSubscription.unsubscribe();
-    }
-
-    if (this.curatedMutationsSubscription) {
-      this.curatedMutationsSubscription.unsubscribe();
-    }
-
-    if (this.totalSubscription) {
-      this.totalSubscription.unsubscribe();
-    }
   },
 };
 </script>

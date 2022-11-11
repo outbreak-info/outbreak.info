@@ -1,8 +1,8 @@
 <template>
   <div>
     <div
-      class="d-flex flex-column mb-3"
       ref="map"
+      class="d-flex flex-column mb-3"
       :style="{ width: mapWidth + 'px' }"
     >
       <div
@@ -14,7 +14,7 @@
             {{ status.status }}
           </small>
           <!-- status date -->
-          <span class="ml-3" v-if="includeDate">
+          <span v-if="includeDate" class="ml-3">
             <small>
               <font-awesome-icon
                 class="mr-1 text-muted"
@@ -25,7 +25,7 @@
           </span>
         </div>
 
-        <small class="text-dark" v-if="status.enrollmentCount">
+        <small v-if="status.enrollmentCount" class="text-dark">
           {{ status.enrollmentType }} size:
           {{ status.enrollmentCount.toLocaleString() }}
         </small>
@@ -35,63 +35,61 @@
       </small>
     </div>
     <CountryMap
+      v-if="countries.length"
       :countries="countries"
       :width="mapWidth"
-      v-if="countries.length"
     />
   </div>
 </template>
 
-<script lang="js">
-import Vue from "vue";
-import CountryMap from "@/components/CountryMap.vue";
-import uniq from "lodash/uniq";
+<script>
+import Vue from 'vue';
+import CountryMap from '@/components/CountryMap.vue';
+import uniq from 'lodash/uniq';
 
 // --- font awesome --
-import {
-  FontAwesomeIcon
-} from "@fortawesome/vue-fontawesome";
-import {
-  library
-} from "@fortawesome/fontawesome-svg-core";
-import {
-  faClock
-} from "@fortawesome/free-regular-svg-icons";
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faClock } from '@fortawesome/free-regular-svg-icons';
 
 library.add(faClock);
 
 export default Vue.extend({
-  name: "TrialStatus",
+  name: 'TrialStatus',
+  components: {
+    CountryMap,
+    FontAwesomeIcon,
+  },
   props: {
     status: Object,
     setWidth: Number,
     locations: Array,
     includeDate: {
       type: Boolean,
-      default: false
-    }
-  },
-  components: {
-    CountryMap,
-    FontAwesomeIcon
+      default: false,
+    },
   },
   data() {
     return {
-      mapWidth: null
+      mapWidth: null,
     };
+  },
+  computed: {
+    countries() {
+      return uniq(
+        this.locations
+          .map((d) => d.studyLocationCountry)
+          .sort((a, b) => (a < b ? -1 : 1)),
+      );
+    },
   },
   watch: {},
   mounted() {
     if (this.setWidth) {
-      this.mapWidth = this.setWidth
+      this.mapWidth = this.setWidth;
     } else {
       const targetWidth = this.$refs.map.clientWidth * 0.85;
       this.mapWidth = targetWidth > 600 ? 600 : targetWidth;
-    }
-  },
-  computed: {
-    countries() {
-      return (uniq(this.locations.map(d => d.studyLocationCountry).sort((a, b) => a < b ? -1 : 1)));
     }
   },
   methods: {},

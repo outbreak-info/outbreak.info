@@ -1,17 +1,17 @@
 <template>
   <div class="d-flex flex-wrap">
     <svg
+      v-for="(value, vIdx) in legendValues"
+      :key="vIdx"
       :width="80"
       :height="legendRectWidth + 2"
       class="categorical-legend mr-2 mb-2"
-      v-for="(value, vIdx) in legendValues"
-      :key="vIdx"
     >
       <rect
         :width="legendRectWidth"
         :height="legendRectWidth"
         :fill="value.fill"
-      ></rect>
+      />
       <text
         x="0"
         :y="legendRectWidth / 2"
@@ -45,14 +45,14 @@
         :width="legendRectWidth"
         :height="legendRectWidth"
         fill="url(#diagonalHatchLight)"
-      ></rect>
+      />
       <rect
         :width="legendRectWidth"
         :height="legendRectWidth"
         stroke="#555"
         stroke-width="0.5"
         fill="none"
-      ></rect>
+      />
       <text
         x="0"
         :y="legendRectWidth / 2"
@@ -65,36 +65,32 @@
   </div>
 </template>
 
-<script lang="js">
-import Vue from "vue";
-
-import {
-  scaleOrdinal
-} from "d3";
+<script>
+import Vue from 'vue';
 
 export default Vue.extend({
-  name: "HorizontalCategoricalLegend",
+  name: 'HorizontalCategoricalLegend',
   props: {
     values: Array,
     colorScale: Function,
     legendRectWidth: {
       type: Number,
-      default: 15
-    }
+      default: 15,
+    },
   },
   computed: {
     legendValues() {
       if (this.colorScale) {
-        return (this.values.map(d => {
-          return ({
+        return this.values.map((d) => {
+          return {
             fill: this.colorScale(d),
-            label: d
-          })
-        }))
+            label: d,
+          };
+        });
       } else {
-        return (null)
+        return null;
       }
-    }
-  }
-})
+    },
+  },
+});
 </script>

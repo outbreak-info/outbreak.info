@@ -9,15 +9,13 @@
   </div>
 </template>
 
-<script lang="js">
-import Vue from "vue";
-
-import ReportMethodology from "@/components/ReportMethodology";
+<script>
+import ReportMethodology from '@/components/ReportMethodology';
 
 export default {
-  name: "SituationReportMethodology",
+  name: 'SituationReportMethodology',
   components: {
-  ReportMethodology
-  }
-}
+    ReportMethodology,
+  },
+};
 </script>

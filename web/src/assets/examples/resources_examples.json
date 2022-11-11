@@ -1,0 +1,21 @@
+[{
+    "label": "Moderna",
+    "route": "Resources",
+    "query": "Moderna OR \"mRNA-1273\""
+  },
+  {
+    "label": "paxlovid",
+    "route": "Resources",
+    "query": "paxlovid"
+  },
+  {
+    "label": "R346T",
+    "route": "Resources",
+    "query": "R346T"
+  },
+  {
+    "label": "NIAID-funded",
+    "route": "NIAID",
+    "query": null
+  }
+]

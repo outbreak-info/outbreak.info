@@ -1,14 +1,14 @@
 <template>
   <div class="d-flex flex-column">
     <svg
+      ref="svg"
       :width="width + margin.left + margin.right"
       :height="height + margin.top + margin.bottom"
-      ref="svg"
     >
-      <g ref="countries" class="country-group"></g>
+      <g ref="countries" class="country-group" />
     </svg>
-    <div class="country-container d-flex flex-wrap" v-if="showNames">
-      <small class="m-0 mr-1" v-for="(country, idx) in countries" :key="idx">
+    <div v-if="showNames" class="country-container d-flex flex-wrap">
+      <small v-for="(country, idx) in countries" :key="idx" class="m-0 mr-1">
         {{ country }}
         <span v-if="idx < countries.length - 1">,</span>
       </small>
@@ -16,47 +16,33 @@
   </div>
 </template>
 
-<script lang="js">
-import Vue from "vue";
+<script>
+import Vue from 'vue';
 
-import GEODATA from "@/assets/geo/countries_ne.json";
-import GADM from "@/assets/geo/gadm_adm0_simplified.json";
-import {
-  select,
-  geoPath,
-  geoEqualEarth,
-  min
-} from "d3";
+import GEODATA from '@/assets/geo/countries_ne.json';
+import GADM from '@/assets/geo/gadm_adm0_simplified.json';
+import { select, geoPath, geoEqualEarth, min } from 'd3';
 
 export default Vue.extend({
-  name: "CountryMap",
+  name: 'CountryMap',
   props: {
     countries: Array,
     mapSource: {
       type: String,
-      default: "NE"
+      default: 'NE',
     },
     width: {
       type: Number,
-      default: 200
+      default: 200,
     },
     fill: {
       type: String,
-      default: "#df4ab7"
+      default: '#df4ab7',
     },
     showNames: {
       type: Boolean,
-      default: true
-    }
-  },
-  watch: {
-    countries: function() {
-      this.drawMetro();
+      default: true,
     },
-    width: function() {
-      this.height = this.width * 0.5;
-      this.drawMetro();
-    }
   },
   data() {
     return {
@@ -64,13 +50,22 @@ export default Vue.extend({
         top: 5,
         right: 5,
         bottom: 5,
-        left: 5
+        left: 5,
       },
       // refs
       svg: null,
       regions: null,
-      height: null
-    }
+      height: null,
+    };
+  },
+  watch: {
+    countries() {
+      this.drawMetro();
+    },
+    width() {
+      this.height = this.width * 0.5;
+      this.drawMetro();
+    },
   },
   mounted() {
     this.setupChoro();
@@ -82,49 +77,57 @@ export default Vue.extend({
       this.regions = select(this.$refs.countries);
       this.height = this.width * 0.5;
 
-      this.baseMap = this.mapSource == "GADM" ? GADM.features : GEODATA.features;
+      this.baseMap =
+        this.mapSource === 'GADM' ? GADM.features : GEODATA.features;
     },
     drawMetro() {
-      var path = geoPath();
-      var projection = geoEqualEarth()
+      const path = geoPath();
+      const projection = geoEqualEarth()
         .center([15, 12]) // so this should be calcuable from the bounds of the geojson, but it's being weird, and it's constant for the world anyway...
         .translate([this.width / 2, this.height / 2])
         .scale(this.width / 1.45 / Math.PI);
 
       // regional data
       this.regions
-        .selectAll("path")
+        .selectAll('path')
         .data(this.baseMap)
         .join(
-          enter => {
+          (enter) => {
             enter
-              .append("path")
-              .attr("class", "region")
-              .attr("id", d => d.location_id)
+              .append('path')
+              .attr('class', 'region')
+              .attr('id', (d) => d.location_id)
               // draw each region
-              .attr("d", path
-                .projection(projection)
+              .attr('d', path.projection(projection))
+              .attr('fill', (d) =>
+                this.countries.includes(d.properties.NAME)
+                  ? this.fill
+                  : '#dce4ec',
               )
-              .attr("fill", d => this.countries.includes(d.properties.NAME) ? this.fill : "#dce4ec")
-              .attr("stroke", d => this.countries.includes(d.properties.NAME) ? "white" : "none");
+              .attr('stroke', (d) =>
+                this.countries.includes(d.properties.NAME) ? 'white' : 'none',
+              );
           },
-          update => update
-          .attr("fill", d => this.countries.includes(d.properties.NAME) ? this.fill : "#dce4ec")
-          .attr("d", path
-            .projection(projection)
-          ),
-          exit =>
-          exit.call(exit =>
-            exit
-            .transition()
-            .duration(10)
-            .style("opacity", 1e-5)
-            .remove()
-          )
-        )
-    }
-  }
-})
+          (update) =>
+            update
+              .attr('fill', (d) =>
+                this.countries.includes(d.properties.NAME)
+                  ? this.fill
+                  : '#dce4ec',
+              )
+              .attr('d', path.projection(projection)),
+          (exit) =>
+            exit.call((exit) =>
+              exit
+                .transition()
+                .duration(10)
+                .style('opacity', 1e-5)
+                .remove(),
+            ),
+        );
+    },
+  },
+});
 </script>
 
 <style lang="scss">

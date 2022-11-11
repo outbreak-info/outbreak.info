@@ -1,8 +1,8 @@
 <template>
   <div class="mt-2">
     <!-- health condition -->
-    <div id="condition" v-if="data.healthCondition">
-      {{ data.healthCondition.length == 1 ? 'Condition:' : 'Conditions' }}
+    <div v-if="data.healthCondition" id="condition">
+      {{ data.healthCondition.length === 1 ? 'Condition:' : 'Conditions' }}
       <SearchLink
         :data="data.healthCondition"
         tooltipLabel="trials"
@@ -12,7 +12,7 @@
     </div>
 
     <!-- study type -->
-    <div id="study-type" v-if="data.studyDesign && data.studyDesign.studyType">
+    <div v-if="data.studyDesign && data.studyDesign.studyType" id="study-type">
       Type:
       <SearchLink
         :data="[data.studyDesign.studyType]"
@@ -24,8 +24,8 @@
 
     <!-- study type -->
     <div
-      id="study-purpose"
       v-if="data.studyDesign && data.studyDesign.designPrimaryPurpose"
+      id="study-purpose"
     >
       Primary Purpose:
       <SearchLink
@@ -38,8 +38,8 @@
 
     <!-- phase -->
     <div
-      id="study-phase"
       v-if="data.studyDesign && data.studyDesign.phase"
+      id="study-phase"
       class="d-flex flex-wrap align-items-center"
     >
       Phase:
@@ -58,8 +58,8 @@
 
     <!-- model -->
     <div
-      id="study-model"
       v-if="data.studyDesign && data.studyDesign.designModel"
+      id="study-model"
     >
       Model:
       <SearchLink
@@ -72,8 +72,8 @@
 
     <!-- allocation -->
     <div
-      id="study-allocation"
       v-if="data.studyDesign && data.studyDesign.designAllocation"
+      id="study-allocation"
     >
       Participant Allocation:
       <SearchLink
@@ -100,12 +100,12 @@ import SearchLink from '@/components/SearchLink.vue';
 
 export default {
   name: 'TrialDesign',
-  props: {
-    data: Object,
-  },
   components: {
     TrialPhase,
     SearchLink,
+  },
+  props: {
+    data: Object,
   },
   data() {
     return {};

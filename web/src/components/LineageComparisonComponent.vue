@@ -14,15 +14,15 @@
       </p>
 
       <!-- SOCIAL MEDIA SHARE, BACK BTN -->
-      <div class="d-flex align-items-center" v-if="!embedded">
+      <div v-if="!embedded" class="d-flex align-items-center">
         <ShareReport title="title" url="url" />
       </div>
 
       <!-- REPORT HEADER -->
       <div
+        v-if="!embedded"
         class="d-flex flex-column text-light comparison-banner py-3"
         :class="[smallScreen ? 'mx-n2 px-2' : 'mx-n5 px-5']"
-        v-if="!embedded"
       >
         <h3 class="m-0 mt-n1 text-grey">
           SARS-CoV-2 (hCoV-19) Mutation Reports
@@ -51,13 +51,13 @@
             </div>
             <div class="d-flex align-items-center">
               <small
-                class="text-muted badge bg-grey__lightest mt-1"
                 v-if="lastUpdated"
+                class="text-muted badge bg-grey__lightest mt-1"
               >
                 <font-awesome-icon class="mr-1" :icon="['far', 'clock']" />
                 Updated {{ lastUpdated }} ago
               </small>
-              <div class="text-grey font-size-2 ml-5" v-if="totalSequences">
+              <div v-if="totalSequences" class="text-grey font-size-2 ml-5">
                 with
                 <span class="text-light">{{ totalSequences }} sequences</span>
                 from GISAID
@@ -96,9 +96,9 @@
 
       <!-- Simplified embedded version -->
       <div
+        v-else
         class="d-flex flex-column text-light comparison-banner py-3"
         :class="[smallScreen ? 'mx-n2 px-2' : 'mx-n5 px-5']"
-        v-else
       >
         <div
           class="d-flex flex-wrap justify-content-between align-items-center"
@@ -128,13 +128,13 @@
           >
             <div class="d-flex align-items-center">
               <small
-                class="text-muted badge bg-grey__lightest mt-1"
                 v-if="lastUpdated"
+                class="text-muted badge bg-grey__lightest mt-1"
               >
                 <font-awesome-icon class="mr-1" :icon="['far', 'clock']" />
                 Updated {{ lastUpdated }} ago
               </small>
-              <div class="text-grey font-size-2 ml-3" v-if="totalSequences">
+              <div v-if="totalSequences" class="text-grey font-size-2 ml-3">
                 with
                 <span class="text-light">{{ totalSequences }} sequences</span>
                 from GISAID
@@ -180,10 +180,10 @@
         </div>
         <div class="d-flex flex-wrap align-items-center">
           <button
-            role="button"
-            class="btn chip btn-outline-secondary bg-white d-flex align-items-center py-1 px-2 line-height-1"
             v-for="(lineage, lIdx) in selectedPango"
             :key="lIdx"
+            role="button"
+            class="btn chip btn-outline-secondary bg-white d-flex align-items-center py-1 px-2 line-height-1"
             @click="deletePango(lIdx)"
           >
             <span>{{ lineage }}</span>
@@ -196,13 +196,13 @@
           <div class="ml-3">
             <label class="b-contain pr-4 m-0">
               <input
-                type="checkbox"
                 id="checkbox"
                 v-model="includeSublineages"
+                type="checkbox"
                 @change="changeInclSublineages"
               />
               include sublineages
-              <div class="b-input"></div>
+              <div class="b-input" />
             </label>
           </div>
 
@@ -216,13 +216,17 @@
         </div>
 
         <div class="border-top pt-3 my-3 mb-1">
-          <h4 class="mb-3">Add lineages</h4>
+          <h4 class="mb-3">
+            Add lineages
+          </h4>
           <div class="d-flex flex-wrap justify-content-between">
             <div
               class="d-flex flex-column mr-5 bg-grey__lightest p-2 rounded mb-3"
             >
               <h6 class="d-flex align-items-center">
-                <div class="mr-2 circle">1</div>
+                <div class="mr-2 circle">
+                  1
+                </div>
                 <span class="mr-1">By Variants of Concern &amp; Interest</span>
               </h6>
               <div class="d-flex flex-column align-items-center">
@@ -269,8 +273,10 @@
               class="d-flex flex-column mr-5 bg-grey__lightest p-2 rounded mb-3"
             >
               <h6 class="d-flex align-items-center">
-                <div class="mr-2 circle">2</div>
-                <span class="mr-1"></span>
+                <div class="mr-2 circle">
+                  2
+                </div>
+                <span class="mr-1" />
                 <a
                   href="https://cov-lineages.org/lineage_list.html"
                   target="_blank"
@@ -299,9 +305,9 @@
               </div>
 
               <div
+                v-if="selectedWHO"
                 class="d-flex align-items-center justify-content-between my-3"
                 style="width: 250px"
-                v-if="selectedWHO"
               >
                 <button
                   class="ml-2 px-2 py-1 btn btn-sec fa-sm"
@@ -328,7 +334,9 @@
               class="d-flex flex-column mr-5 bg-grey__lightest p-2 rounded mb-3"
             >
               <h6 class="d-flex align-items-center">
-                <div class="mr-2 circle">3</div>
+                <div class="mr-2 circle">
+                  3
+                </div>
                 <span class="mr-1">By</span>
                 <a
                   href="https://cov-lineages.org/lineage_list.html"
@@ -346,10 +354,10 @@
                 <div style="width: 170px" class="align-self-middle">
                   <TypeaheadSelect
                     :queryFunction="queryPangolin"
-                    @selected="addPango"
                     :apiUrl="this.$genomicsurl"
                     :removeOnSelect="true"
                     placeholder="Add lineage"
+                    @selected="addPango"
                   />
                 </div>
               </div>
@@ -357,7 +365,9 @@
 
             <div class="mr-5 mb-3 bg-grey__lightest p-2 rounded mb-3">
               <h6 class="d-flex align-items-center p-0 m-0">
-                <div class="mr-2 circle">4</div>
+                <div class="mr-2 circle">
+                  4
+                </div>
                 Containing a mutation(s)
               </h6>
 
@@ -377,9 +387,9 @@
                   <div class="d-flex align-items-center">
                     <textarea
                       id="add-mutation"
+                      v-model="selectedMutationQuery"
                       class="form-control border"
                       style="width: 200px"
-                      v-model="selectedMutationQuery"
                       placeholder="S:E484K, ORF1a:DEL3675/3677"
                     />
 
@@ -390,12 +400,12 @@
                         class="percent-sign border border-radius-1 bg-white py-1"
                       >
                         <input
+                          v-model="selectedMutationThreshold"
                           type="number"
                           min="0"
                           max="100"
                           class="flex-grow-0 px-2"
                           style="width: 60px"
-                          v-model="selectedMutationThreshold"
                           placeholder="0-100"
                         />
                         <span class="mr-1">%</span>
@@ -404,9 +414,9 @@
                   </div>
                 </div>
                 <div
+                  v-if="selectedMutationQuery && !mutationValid"
                   id="warnings"
                   style="width: 400px"
-                  v-if="selectedMutationQuery && !mutationValid"
                 >
                   <div class="warning">
                     Please check the mutation format:
@@ -436,22 +446,22 @@
                 <!-- select btns -->
                 <small>
                   <div
+                    v-if="selectedMutationQuery"
                     class="d-flex align-items-center justify-content-between my-3"
                     style="width: 250px"
-                    v-if="selectedMutationQuery"
                   >
                     <button
                       class="ml-2 px-2 py-1 btn btn-sec fa-sm"
-                      @click="addMutations()"
                       :disabled="!mutationValid"
+                      @click="addMutations()"
                     >
                       <font-awesome-icon class="mr-2" :icon="['fas', 'plus']" />
                       Add {{ selectedMutationQuery }}-containing lineages
                     </button>
                     <button
                       class="ml-2 px-2 py-1 btn btn-sec fa-sm"
-                      @click="clearAddMutations()"
                       :disabled="!mutationValid"
+                      @click="clearAddMutations()"
                     >
                       <font-awesome-icon class="mr-2" :icon="['fas', 'sync']" />
                       clear &amp; add {{ selectedMutationQuery }}-containing
@@ -464,7 +474,9 @@
 
             <div class="mr-5 mb-3 bg-grey__lightest p-2 rounded mb-3">
               <h6 class="d-flex align-items-center p-0 m-0">
-                <div class="mr-2 circle">5</div>
+                <div class="mr-2 circle">
+                  5
+                </div>
                 Prevalent in a location
               </h6>
               <div class="d-flex">
@@ -483,12 +495,12 @@
                   <TypeaheadSelect
                     :queryFunction="queryLocation"
                     :selectedValue="selectedLocation"
-                    @selected="updateLocation"
                     :apiUrl="this.$genomicsurl"
                     labelVariable="label"
                     :removeOnSelect="false"
                     placeholder="Select location"
                     totalLabel="total sequences"
+                    @selected="updateLocation"
                   />
                 </div>
                 <div class="d-flex flex-column ml-3">
@@ -498,12 +510,12 @@
                       class="percent-sign border border-radius-1 bg-white py-1"
                     >
                       <input
+                        v-model="selectedOtherThreshold"
                         type="number"
                         min="0"
                         max="100"
                         class="flex-grow-0 px-2"
                         style="width: 60px"
-                        v-model="selectedOtherThreshold"
                         placeholder="0-100"
                       />
                       <span class="mr-1">%</span>
@@ -515,12 +527,12 @@
                       class="percent-sign border border-radius-1 bg-white py-1"
                     >
                       <input
+                        v-model="selectedWindow"
                         type="number"
                         min="0"
                         max="1000"
                         class="flex-grow-0 px-2"
                         style="width: 60px"
-                        v-model="selectedWindow"
                         placeholder="num. days"
                       />
                       <span class="mr-1">days</span>
@@ -531,9 +543,9 @@
 
               <small>
                 <div
+                  v-if="locationValid"
                   class="d-flex align-items-center justify-content-between my-3"
                   style="width: 400px"
-                  v-if="locationValid"
                 >
                   <button
                     class="ml-2 px-2 py-1 btn btn-sec fa-sm"
@@ -557,16 +569,16 @@
                   style="width: 400px"
                 >
                   <p
-                    class="warning"
                     v-if="
                       !selectedOtherThreshold || !(selectedOtherThreshold >= 0)
                     "
+                    class="warning"
                   >
                     Specify a minimum prevalence (
                     <b>3%</b>
                     by default)
                   </p>
-                  <p class="warning" v-if="!(selectedWindow > 0)">
+                  <p v-if="!(selectedWindow > 0)" class="warning">
                     Specify a time window (over the last
                     <b>60</b>
                     days by default)
@@ -595,10 +607,10 @@
               style="margin-left: 90px;"
             >
               <input
-                class="checkbox"
                 id="checkbox1"
-                type="checkbox"
                 v-model.lazy="darkMode"
+                class="checkbox"
+                type="checkbox"
                 @change="routeDark"
               />
               <label for="checkbox1" class="checkbox-label">
@@ -617,19 +629,19 @@
               </small>
               <div class="d-flex flex-wrap">
                 <label
-                  class="b-contain pr-3"
                   v-for="(gene, idx) in geneOpts"
                   :key="idx"
+                  class="b-contain pr-3"
                 >
                   <span>{{ gene }}</span>
                   <input
-                    type="checkbox"
                     :id="gene"
-                    :value="gene"
                     v-model.lazy="selectedGenes"
+                    type="checkbox"
+                    :value="gene"
                     @change="updateGenes()"
                   />
-                  <div class="b-input"></div>
+                  <div class="b-input" />
                 </label>
               </div>
             </div>
@@ -645,12 +657,12 @@
                     class="percent-sign border border-radius-1 bg-white py-1"
                   >
                     <input
+                      v-model="prevalenceThreshold"
                       type="number"
                       min="0"
                       max="100"
                       class="flex-grow-0 px-2"
                       style="width: 42px"
-                      v-model="prevalenceThreshold"
                     />
                     <span class="mr-1">%</span>
                   </span>
@@ -664,11 +676,11 @@
                 </small>
                 <div class="mt-2">
                   <input
+                    v-model="countThreshold"
                     type="number"
                     min="1"
                     class="flex-grow-0 px-2 border border-radius-1"
                     style="width: 85px"
-                    v-model="countThreshold"
                   />
                 </div>
               </div>
@@ -684,7 +696,9 @@
           >
             <div class="d-flex flex-column">
               <div class="d-flex align-items-center">
-                <h2 class="m-0">Mutation prevalence across lineages</h2>
+                <h2 class="m-0">
+                  Mutation prevalence across lineages
+                </h2>
                 <button
                   class="btn py-1 px-2 mx-4 my-2 btn-grey flex-shrink-0"
                   data-toggle="collapse"
@@ -704,8 +718,8 @@
                   least one lineage.
                 </p>
                 <p
-                  class="text-muted font-weight-bold line-height-1 m-0 my-1 ml-2"
                   v-if="countThreshold > 1"
+                  class="text-muted font-weight-bold line-height-1 m-0 my-1 ml-2"
                 >
                   Lineages with fewer than
                   {{ countThreshold.toLocaleString() }} sequences have been
@@ -756,7 +770,7 @@
                   rx="4"
                   stroke="#888"
                   stroke-width="0.5"
-                ></rect>
+                />
               </svg>
               <small
                 class="ml-2"
@@ -789,20 +803,22 @@
             class="mr-4 mb-2"
           >
             <template v-if="selectedGenes.includes(geneData.key)">
-              <h4 class="m-0 text-dark">{{ geneData.key }}</h4>
+              <h4 class="m-0 text-dark">
+                {{ geneData.key }}
+              </h4>
 
               <!-- OMICRON INSERTION WARNING -->
               <Warning
-                text="<p>Most Omicron sequences also contain a <b>3 amino acid insertion (EPE) at position 214 in the Spike</b> protein.</p> outbreak.info currently only reports substitution and deletion changes, due to the computational challenges with identifying insertions in 5+ million sequences every day. We’re working towards incorporating insertions into our data processing pipeline, and we encourage you to refer back to the sequence data available on GISAID for more information about these insertions."
-                class="fa-sm mt-1 mb-2"
-                :align_left="true"
                 v-if="
-                  geneData.key == 'S' &&
+                  geneData.key === 'S' &&
                     selectedPango &&
                     (selectedPango.includes('Omicron') ||
                       selectedPango.includes('omicron') ||
                       selectedPango.includes('B.1.1.529'))
                 "
+                text="<p>Most Omicron sequences also contain a <b>3 amino acid insertion (EPE) at position 214 in the Spike</b> protein.</p> outbreak.info currently only reports substitution and deletion changes, due to the computational challenges with identifying insertions in 5+ million sequences every day. We’re working towards incorporating insertions into our data processing pipeline, and we encourage you to refer back to the sequence data available on GISAID for more information about these insertions."
+                class="fa-sm mt-1 mb-2"
+                :align_left="true"
               />
 
               <MutationHeatmap
@@ -830,7 +846,7 @@
     </div>
     <div class="mx-5 text-left">
       <!-- METHODOLOGY -->
-      <section class="mt-3 mb-5 border-top pt-3" id="methods">
+      <section id="methods" class="mt-3 mb-5 border-top pt-3">
         <h4>Methodology</h4>
         <ReportMethodology :dateUpdated="lastUpdated" :summary="true" />
         <Warning class="mt-2" :text="disclaimer" />
@@ -889,6 +905,29 @@ import uniq from 'lodash/uniq';
 
 export default {
   name: 'LineageComparisonComponent',
+  components: {
+    TypeaheadSelect: () =>
+      import(/* webpackPrefetch: true */ '@/components/TypeaheadSelect.vue'),
+    ReportMethodology: () =>
+      import(/* webpackPrefetch: true */ '@/components/ReportMethodology.vue'),
+    Warning: () =>
+      import(/* webpackPrefetch: true */ '@/components/Warning.vue'),
+    ReportAcknowledgements: () =>
+      import(
+        /* webpackPrefetch: true */ '@/components/ReportAcknowledgements.vue'
+      ),
+    ShareReport: () =>
+      import(/* webpackPrefetch: true */ '@/components/ShareReport.vue'),
+    MutationHeatmap: () =>
+      import(/* webpackPrefetch: true */ '@/components/MutationHeatmap.vue'),
+    GradientLegend: () =>
+      import(/* webpackPrefetch: true */ '@/components/GradientLegend.vue'),
+    DownloadReportData: () =>
+      import(/* webpackPrefetch: true */ '@/components/DownloadReportData.vue'),
+    GenomicsCitation: () =>
+      import(/* webpackPrefetch: true */ '@/components/GenomicsCitation.vue'),
+    FontAwesomeIcon,
+  },
   props: {
     embedded: {
       type: Boolean,
@@ -918,73 +957,6 @@ export default {
     gene: {
       type: [Array, String],
       default: () => ['ORF1a', 'ORF1b', 'S'],
-    },
-  },
-  components: {
-    TypeaheadSelect: () =>
-      import(/* webpackPrefetch: true */ '@/components/TypeaheadSelect.vue'),
-    ReportMethodology: () =>
-      import(/* webpackPrefetch: true */ '@/components/ReportMethodology.vue'),
-    Warning: () =>
-      import(/* webpackPrefetch: true */ '@/components/Warning.vue'),
-    ReportAcknowledgements: () =>
-      import(
-        /* webpackPrefetch: true */ '@/components/ReportAcknowledgements.vue'
-      ),
-    ShareReport: () =>
-      import(/* webpackPrefetch: true */ '@/components/ShareReport.vue'),
-    MutationHeatmap: () =>
-      import(/* webpackPrefetch: true */ '@/components/MutationHeatmap.vue'),
-    GradientLegend: () =>
-      import(/* webpackPrefetch: true */ '@/components/GradientLegend.vue'),
-    DownloadReportData: () =>
-      import(/* webpackPrefetch: true */ '@/components/DownloadReportData.vue'),
-    GenomicsCitation: () =>
-      import(/* webpackPrefetch: true */ '@/components/GenomicsCitation.vue'),
-    FontAwesomeIcon,
-  },
-  computed: {
-    ...mapState('admin', ['mutationAuthors', 'genomicsCitation']),
-    ...mapState('genomics', ['locationLoading1', 'locationLoading2']),
-    loading() {
-      return this.locationLoading1 || this.locationLoading2;
-    },
-    smallScreen() {
-      return window.innerWidth < 500;
-    },
-    mediumScreen() {
-      return window.innerWidth < 1000;
-    },
-    locationValid() {
-      return this.selectedLocation &&
-        this.selectedOtherThreshold &&
-        this.selectedOtherThreshold >= 0 &&
-        this.selectedWindow > 0
-        ? true
-        : false;
-    },
-    mutationValid() {
-      return (
-        /\w+:[A-z]\d+[A-z]/.test(this.selectedMutationQuery) ||
-        /\w+:DEL\d+/.test(this.selectedMutationQuery.toUpperCase())
-      );
-    },
-    darkModeHelper() {
-      return this.darkMode
-        ? 'Switch to <b>light mode</b> to focus on similarities between lineages'
-        : 'Switch to <b>dark mode</b> to emphasize mutations with low prevalence';
-    },
-  },
-  watch: {
-    countThreshold(newVal, oldVal) {
-      if (oldVal && newVal != oldVal) {
-        this.debounceCountThreshold();
-      }
-    },
-    prevalenceThreshold(newVal, oldVal) {
-      if (oldVal && newVal != oldVal) {
-        this.debounceThreshold();
-      }
     },
   },
   data() {
@@ -1044,15 +1016,59 @@ export default {
       ],
     };
   },
+  computed: {
+    ...mapState('admin', ['mutationAuthors', 'genomicsCitation']),
+    ...mapState('genomics', ['locationLoading1', 'locationLoading2']),
+    loading() {
+      return this.locationLoading1 || this.locationLoading2;
+    },
+    smallScreen() {
+      return window.innerWidth < 500;
+    },
+    mediumScreen() {
+      return window.innerWidth < 1000;
+    },
+    locationValid() {
+      return !!(
+        this.selectedLocation &&
+        this.selectedOtherThreshold &&
+        this.selectedOtherThreshold >= 0 &&
+        this.selectedWindow > 0
+      );
+    },
+    mutationValid() {
+      return (
+        /\w+:[A-z]\d+[A-z]/.test(this.selectedMutationQuery) ||
+        /\w+:DEL\d+/.test(this.selectedMutationQuery.toUpperCase())
+      );
+    },
+    darkModeHelper() {
+      return this.darkMode
+        ? 'Switch to <b>light mode</b> to focus on similarities between lineages'
+        : 'Switch to <b>dark mode</b> to emphasize mutations with low prevalence';
+    },
+  },
+  watch: {
+    countThreshold(newVal, oldVal) {
+      if (oldVal && newVal !== oldVal) {
+        this.debounceCountThreshold();
+      }
+    },
+    prevalenceThreshold(newVal, oldVal) {
+      if (oldVal && newVal !== oldVal) {
+        this.debounceThreshold();
+      }
+    },
+  },
   mounted() {
     const formatDate = timeFormat('%e %B %Y');
     this.currentTime = new Date();
     this.today = formatDate(this.currentTime);
 
     this.darkMode =
-      this.dark == 'true' || (!!this.dark && this.dark != 'false');
+      this.dark === 'true' || (!!this.dark && this.dark !== 'false');
     this.includeSublineages =
-      this.sub == 'true' || (!!this.sub && this.sub != 'false');
+      this.sub === 'true' || (!!this.sub && this.sub !== 'false');
 
     this.prevalenceThreshold = +this.threshold;
     this.countThreshold = +this.nthresh;
@@ -1066,7 +1082,7 @@ export default {
         typeof this.pango === 'string' ? [this.pango] : this.pango;
     }
 
-    this.$nextTick(function() {
+    this.$nextTick(() => {
       // set URL for sharing, etc.
       const location = window.location;
       this.url =
@@ -1136,7 +1152,7 @@ export default {
         this.showSnackbar = false;
       }, 3000);
 
-      if (this.routeTo == 'GenomicsEmbed') {
+      if (this.routeTo === 'GenomicsEmbed') {
         this.$router.push({
           name: this.routeTo,
           params: {
@@ -1184,7 +1200,7 @@ export default {
         this.showSnackbar = false;
       }, 3000);
 
-      if (this.routeTo == 'GenomicsEmbed') {
+      if (this.routeTo === 'GenomicsEmbed') {
         this.$router.push({
           name: this.routeTo,
           params: {
@@ -1220,7 +1236,7 @@ export default {
       this.getData();
     },
     updateGenes() {
-      if (this.routeTo == 'GenomicsEmbed') {
+      if (this.routeTo === 'GenomicsEmbed') {
         this.$router.push({
           name: this.routeTo,
           params: {
@@ -1255,7 +1271,7 @@ export default {
     },
     changeThreshold() {
       if (this.prevalenceThreshold) {
-        if (this.routeTo == 'GenomicsEmbed') {
+        if (this.routeTo === 'GenomicsEmbed') {
           this.$router.push({
             name: this.routeTo,
             params: {
@@ -1293,7 +1309,7 @@ export default {
     },
     changeCountThreshold() {
       if (this.countThreshold) {
-        if (this.routeTo == 'GenomicsEmbed') {
+        if (this.routeTo === 'GenomicsEmbed') {
           this.$router.push({
             name: this.routeTo,
             params: {
@@ -1343,7 +1359,7 @@ export default {
     },
     changeInclSublineages() {
       this.selectedPango = this.pango;
-      if (this.routeTo == 'GenomicsEmbed') {
+      if (this.routeTo === 'GenomicsEmbed') {
         this.$router.push({
           name: this.routeTo,
           params: {
@@ -1395,7 +1411,7 @@ export default {
       });
     },
     routeDark() {
-      if (this.routeTo == 'GenomicsEmbed') {
+      if (this.routeTo === 'GenomicsEmbed') {
         this.$router.push({
           name: this.routeTo,
           params: {
@@ -1471,7 +1487,7 @@ export default {
 
         this.prepResults(results);
 
-        if (this.routeTo == 'GenomicsEmbed') {
+        if (this.routeTo === 'GenomicsEmbed') {
           this.$router.push({
             name: this.routeTo,
             params: {
@@ -1526,7 +1542,7 @@ export default {
         }, 5000);
         this.prepResults(results);
 
-        if (this.routeTo == 'GenomicsEmbed') {
+        if (this.routeTo === 'GenomicsEmbed') {
           this.$router.push({
             name: this.routeTo,
             params: {
@@ -1586,7 +1602,7 @@ export default {
         this.showSnackbar = false;
       }, 5000);
 
-      if (this.routeTo == 'GenomicsEmbed') {
+      if (this.routeTo === 'GenomicsEmbed') {
         this.$router.push({
           name: this.routeTo,
           params: {
@@ -1630,7 +1646,7 @@ export default {
         this.showSnackbar = false;
       }, 3000);
 
-      if (this.routeTo == 'GenomicsEmbed') {
+      if (this.routeTo === 'GenomicsEmbed') {
         this.$router.push({
           name: this.routeTo,
           params: {
@@ -1667,7 +1683,7 @@ export default {
     },
     clearPango() {
       this.selectedPango = [];
-      if (this.routeTo == 'GenomicsEmbed') {
+      if (this.routeTo === 'GenomicsEmbed') {
         this.$router.push({
           name: this.routeTo,
           query: {
@@ -1699,7 +1715,7 @@ export default {
     deletePango(idx) {
       this.selectedPango.splice(idx, 1);
 
-      if (this.routeTo == 'GenomicsEmbed') {
+      if (this.routeTo === 'GenomicsEmbed') {
         this.$router.push({
           name: this.routeTo,
           params: {

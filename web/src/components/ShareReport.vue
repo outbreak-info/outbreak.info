@@ -46,11 +46,11 @@
       <font-awesome-icon class="ml-3" :icon="['fas', 'envelope']" />
     </a>
 
-    <a @click="shareLink" v-if="canShare" aria-label="share">
+    <a v-if="canShare" aria-label="share" @click="shareLink">
       <font-awesome-icon class="share-link ml-3" :icon="['fas', 'share']" />
     </a>
 
-    <a @click="copy2Clipboard" aria-label="copy to clipboard">
+    <a aria-label="copy to clipboard" @click="copy2Clipboard">
       <font-awesome-icon class="share-link ml-3" :icon="['fas', 'link']" />
     </a>
 
@@ -60,39 +60,49 @@
   </div>
 </template>
 
-<script lang="js">
-import Vue from "vue";
+<script>
+import Vue from 'vue';
 
 // --- font awesome --
-import {
-  FontAwesomeIcon
-} from "@fortawesome/vue-fontawesome";
-import {
-  library
-} from "@fortawesome/fontawesome-svg-core";
-import {
-  faClock
-} from "@fortawesome/free-regular-svg-icons";
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faClock } from '@fortawesome/free-regular-svg-icons';
 import {
   faLink,
   faShare,
   faEnvelope,
-  faSync
-} from "@fortawesome/free-solid-svg-icons";
+  faSync,
+} from '@fortawesome/free-solid-svg-icons';
 import {
-  faTwitter, faFacebookF, faRedditAlien, faLinkedinIn
-} from "@fortawesome/free-brands-svg-icons";
+  faTwitter,
+  faFacebookF,
+  faRedditAlien,
+  faLinkedinIn,
+} from '@fortawesome/free-brands-svg-icons';
 
-library.add(faLink, faShare, faEnvelope, faTwitter, faFacebookF, faRedditAlien, faLinkedinIn);
+library.add(
+  faLink,
+  faShare,
+  faEnvelope,
+  faTwitter,
+  faFacebookF,
+  faRedditAlien,
+  faLinkedinIn,
+);
 
 export default Vue.extend({
-  name: "ShareReport",
+  name: 'ShareReport',
+  components: {
+    FontAwesomeIcon,
+  },
   props: {
     title: String,
-    url: String
+    url: String,
   },
-  components: {
-    FontAwesomeIcon
+  data() {
+    return {
+      showSnackbar: false,
+    };
   },
   computed: {
     outbreakUrl() {
@@ -111,35 +121,30 @@ export default Vue.extend({
       return `https://www.linkedin.com/sharing/share-offsite/?url=${this.outbreakUrl}`;
     },
     emailUrl() {
-      return `mailto:?subject=outbreak.info%20Mutation%20Report&body=${this.outbreakUrl}`
+      return `mailto:?subject=outbreak.info%20Mutation%20Report&body=${this.outbreakUrl}`;
     },
     canShare() {
-      return navigator.share ? true : false;
-    }
-  },
-  data() {
-    return {
-      showSnackbar: false
-    }
+      return !!navigator.share;
+    },
   },
   methods: {
-    copy2Clipboard: function() {
+    copy2Clipboard() {
       this.showSnackbar = true;
       setTimeout(() => {
         this.showSnackbar = false;
       }, 3000);
       navigator.clipboard.writeText(this.outbreakUrl);
     },
-    shareLink: function() {
+    shareLink() {
       if (navigator.share) {
         navigator.share({
           title: `outbreak.info Mutation Report`,
-          url: this.outbreakUrl
+          url: this.outbreakUrl,
         });
       }
-    }
-  }
-})
+    },
+  },
+});
 </script>
 
 <style lang="scss">

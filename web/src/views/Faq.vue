@@ -20,37 +20,39 @@
               <ol :id="'group' + gIdx" class="collapse">
                 <li
                   v-for="(question, qIdx) in faq[group]"
+                  :id="'g' + gIdx + '-q' + qIdx"
                   :key="qIdx"
                   class="mb-4 pb-4 font-size-xlarge"
                   :class="{ 'border-bottom': qIdx < faq[group].length - 1 }"
-                  :id="'g' + gIdx + '-q' + qIdx"
                 >
                   <b>{{ question.q }}</b>
-                  <div class="font-size-normal" v-html="question.a"></div>
+                  <div class="font-size-normal" v-html="question.a" />
                 </li>
               </ol>
             </template>
 
             <!-- subgroups -->
-            <div :id="'group' + gIdx" class="collapse ml-4" v-else>
+            <div v-else :id="'group' + gIdx" class="collapse ml-4">
               <div
                 v-for="(subgroup, sIdx) in Object.keys(faq[group])"
                 :key="sIdx"
                 class="mb-5"
               >
-                <h4 class="text-sec">{{ subgroup }}</h4>
+                <h4 class="text-sec">
+                  {{ subgroup }}
+                </h4>
                 <ol :id="'group' + gIdx + '-subgroup' + sIdx">
                   <li
                     v-for="(question, qIdx) in faq[group][subgroup]"
+                    :id="'g' + gIdx + 's' + sIdx + '-q' + qIdx"
                     :key="qIdx"
                     class="mb-4 pb-4 font-size-xlarge"
                     :class="{
                       'border-bottom': qIdx < faq[group][subgroup].length - 1,
                     }"
-                    :id="'g' + gIdx + 's' + sIdx + '-q' + qIdx"
                   >
                     <b>{{ question.q }}</b>
-                    <div class="font-size-normal" v-html="question.a"></div>
+                    <div class="font-size-normal" v-html="question.a" />
                   </li>
                 </ol>
               </div>

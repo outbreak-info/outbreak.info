@@ -8,16 +8,14 @@
       <p class="mt-3">
         To describe the prevalence of sets of mutations in our
         <router-link :to="{ name: 'SituationReports' }">
-          Mutation Situation Reports
-        </router-link>
-        , we rely on shared virus sequences from the
-        <a href="https://www.gisaid.org/" target="_blank">GISAID Initiative</a>
-        . While we apply filters to remove some low quality sequences and
+          Mutation Situation Reports</router-link>, we rely on shared virus
+          sequences from the
+        <a href="https://www.gisaid.org/" target="_blank">GISAID Initiative</a>.
+        While we apply filters to remove some low quality sequences and
         unreasonable metadata as described in our
         <router-link :to="{ name: 'SituationReportMethodology' }">
-          methods
-        </router-link>
-        , we rely on the accuracy of the sequences and sample metadata deposited
+          methods</router-link>, we rely on the accuracy of the sequences and
+          sample metadata deposited
         in GISAID.
       </p>
 
@@ -32,7 +30,9 @@
 
       <h3>Known sources of bias</h3>
       <div class="border-bottom pb-2">
-        <h5 class="m-0 mb-1">Uneven rates of sequencing across locations</h5>
+        <h5 class="m-0 mb-1">
+          Uneven rates of sequencing across locations
+        </h5>
         <p>
           Sequencing rates between locations are highly variable, complicating
           comparisons between places. Wherever possible, we have added
@@ -46,7 +46,9 @@
       </div>
 
       <div class="border-bottom py-2">
-        <h5 class="m-0 mb-1">Greater sequencing of older samples</h5>
+        <h5 class="m-0 mb-1">
+          Greater sequencing of older samples
+        </h5>
         <p>
           For all sequencing data, there is a lag between when the sample was
           acquired from the patient, when the sample was processed and
@@ -61,7 +63,9 @@
       </div>
 
       <div class="border-bottom py-2">
-        <h5 class="m-0 mb-1">Selective sampling</h5>
+        <h5 class="m-0 mb-1">
+          Selective sampling
+        </h5>
         <p>
           The samples submitted for sequencing are often not a random sample of
           all cases. These samples are often from:
@@ -85,12 +89,14 @@
       </div>
 
       <div class="border-bottom py-2">
-        <h5 class="m-0 mb-1">Sequencing techniques</h5>
+        <h5 class="m-0 mb-1">
+          Sequencing techniques
+        </h5>
         <p class="m-0">
           Sequencing techniques can heavily bias this sampling. For instance,
           the majority of
           <router-link
-            :to="{ name: 'SituationReport', params: { mutation: 'B.1.1.7' } }"
+            :to="{ name: 'MutationReport', params: { mutation: 'B.1.1.7' } }"
           >
             B.1.1.7 genomes
           </router-link>
@@ -103,36 +109,36 @@
             href="https://blog.helix.com/b117-variant-updated-data/"
             target="_blank"
           >
-            Helix Research blog
-          </a>
-          .
+            Helix Research blog</a>.
         </p>
       </div>
 
       <div class="my-5">
-        <h3 id="delta">New lineages &amp; how lineages are assigned</h3>
+        <h3 id="delta">
+          New lineages &amp; how lineages are assigned
+        </h3>
         <p>
           The mutations associated with new lineages classified by the
           <a target="_blank" href="https://www.pango.network/">
             Pango nomenclature system
           </a>
           are more dynamic than lineages with thousands of associated sequences
-          and may change as more samples are sequenced.. Read more from the
+          and may change as more samples are sequenced. Read more from the
           Pango team on
           <a href="https://cov-lineages.org/FAQ.html" target="_blank">
             why a lineage assignment might change
           </a>
           and an explanation about the
           <a href="https://www.pango.network/new-ay-lineages/" target="_blank">
-            AY lineage series
-          </a>
-          .
+            AY lineage series</a>.
         </p>
       </div>
     </section>
     <section id="methods" class="d-flex w-75 justify-content-center my-5">
       <router-link :to="{ name: 'SituationReportMethodology' }">
-        <button class="btn btn-main">View methods</button>
+        <button class="btn btn-main">
+          View methods
+        </button>
       </router-link>
     </section>
 
@@ -142,15 +148,15 @@
   </div>
 </template>
 
-<script lang="js">
-import Vue from "vue";
+<script>
+import Vue from 'vue';
 
-import SituationReportDefinitions from "@/components/SituationReportDefinitions.vue";
+import SituationReportDefinitions from '@/components/SituationReportDefinitions.vue';
 
 export default Vue.extend({
-  name: "SituationReportsCaveats",
+  name: 'SituationReportsCaveats',
   components: {
-    SituationReportDefinitions
-  }
-})
+    SituationReportDefinitions,
+  },
+});
 </script>
