@@ -163,72 +163,24 @@
               class="form-text d-block text-left ml-5"
             >
               <span class="mr-2">Try:</span>
-              <span class="mr-3">
+              <span class="mr-3" v-for='(example, gIdx) in genomicsExamples' :key='gIdx'>
+              <template v-if="example.who_name">
                 <router-link
-                  :to="{ name: 'MutationReport', params: { alias: 'omicron' } }"
+                  :to="{ name: 'MutationReport', params: { alias: example.who_name } }"
                   class="text-light"
-                >
-                  Omicron
-
+                >{{example.short_name}}
                   <font-awesome-icon :icon="['fas', 'angle-double-right']" />
                 </router-link>
-              </span>
-              <span class="mr-3">
+              </template>
+              <template v-else>
                 <router-link
-                  :to="{
-                    name: 'MutationReport',
-                    params: { alias: 'ba.2* [omicron (ba.2.x)]' },
-                  }"
+                  :to="{ name: 'MutationReport', query: { pango: example.pangolin_lineage } }"
                   class="text-light"
-                >
-                  BA.2*
-
+                >{{example.short_name}}
                   <font-awesome-icon :icon="['fas', 'angle-double-right']" />
                 </router-link>
-              </span>
-              <span class="mr-3">
-                <router-link
-                  :to="{
-                    name: 'MutationReport',
-                    query: { pango: 'BA.2.12.1' },
-                  }"
-                  class="text-light"
-                >
-                  BA.2.12.1
-
-                  <font-awesome-icon :icon="['fas', 'angle-double-right']" />
-                </router-link>
-              </span>
-              <span class="mr-3">
-                <router-link
-                  :to="{ name: 'MutationReport', query: { pango: 'BA.2.75' } }"
-                  class="text-light"
-                >
-                  BA.2.75
-
-                  <font-awesome-icon :icon="['fas', 'angle-double-right']" />
-                </router-link>
-              </span>
-              <span class="mr-3">
-                <router-link
-                  :to="{ name: 'MutationReport', query: { pango: 'BA.4' } }"
-                  class="text-light"
-                >
-                  BA.4
-
-                  <font-awesome-icon :icon="['fas', 'angle-double-right']" />
-                </router-link>
-              </span>
-              <span class="mr-3">
-                <router-link
-                  :to="{ name: 'MutationReport', params: { alias: 'BA.5*' } }"
-                  class="text-light"
-                >
-                  BA.5*
-
-                  <font-awesome-icon :icon="['fas', 'angle-double-right']" />
-                </router-link>
-              </span>
+              </template>
+            </span>
             </small>
           </div>
 
@@ -899,6 +851,7 @@ import store from '@/store';
 
 // Example queries
 import RESOURCEEXAMPLES from '@/assets/examples/resources_examples.json';
+import GENOMICSEXAMPLES from '@/assets/examples/genomics_examples.json';
 
 // --- font awesome --
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -927,6 +880,7 @@ export default {
       queryPangolin: null,
       queryLocation: null,
       resourceExamples: [],
+      genomicsExamples: [],
     };
   },
   computed: {
@@ -934,6 +888,7 @@ export default {
   },
   mounted() {
     this.resourceExamples = RESOURCEEXAMPLES;
+    this.genomicsExamples = GENOMICSEXAMPLES;
 
     const locations = Vue.$cookies.get('custom_locations');
 

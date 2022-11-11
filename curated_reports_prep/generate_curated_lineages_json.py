@@ -21,7 +21,10 @@ logging.info("Generating curated_lineages.json")
 
 # --- CONSTANTS: file locations ---
 # location where the Pango sublineages are stored
-lineage_url = "https://raw.githubusercontent.com/cov-lineages/lineages-website/master/data/lineages.yml"
+
+# lineage_url = "https://raw.githubusercontent.com/cov-lineages/lineages-website/master/data/lineages.yml"
+lineage_url = "lineages.yml"
+
 
 # location where the Pango recombinants lineage definitions are stored.
 recombinants_url = "https://raw.githubusercontent.com/cov-lineages/pango-designation/master/pango_designation/alias_key.json"
@@ -30,6 +33,7 @@ recombinants_url = "https://raw.githubusercontent.com/cov-lineages/pango-designa
 curated_filename = "curated_lineages.yaml"
 # where to save the resulting .json
 output_file = "../web/src/assets/genomics/curated_lineages.json"
+output_file_examples = "../web/src/assets/examples/genomics_examples.json"
 
 # --- IMPORT CURATED list ---
 # load the curated list
@@ -89,27 +93,33 @@ def idRecombinants(voc, recombinants):
 # pull out the sublineages / descendants for all of the parent lineages
 def getDescendants(row):
     lineage = row.pangolin_lineage
-    if(isinstance(lineage, str)):
-        # list the parent first
-        descendants = [lineage]
-        descendants.extend(lineage_descendants[lineage])
-        # de-duplicate
-        unique_desc = list(dict.fromkeys(descendants))
-        # add in any recombinant lineages where all the recombined lineages belong to that VOC/VOI.
-        if((row.include_recombinants  == "True") | (row.include_recombinants  == "true")):
-            recombs = findRecombinants(unique_desc, recombinant_lineages)
-            unique_desc.extend(recombs)
-        return(unique_desc)
+    if((row.include_sublineages is None) | ((row.include_sublineages  != "False") & (row.include_sublineages  != "false"))):
+        if(isinstance(lineage, str)):
+            # list the parent first
+            descendants = [lineage]
+            descendants.extend(lineage_descendants[lineage])
+            # de-duplicate
+            unique_desc = list(dict.fromkeys(descendants))
+            # add in any recombinant lineages where all the recombined lineages belong to that VOC/VOI.
+            if((row.include_recombinants  == "True") | (row.include_recombinants  == "true")):
+                recombs = findRecombinants(unique_desc, recombinant_lineages)
+                unique_desc.extend(recombs)
+            return(unique_desc)
+        else:
+            descendants = lineage.copy()
+            # dealing with the B.1.427/B.1.429 case
+            sublineages = [item for sublist in lineage for item in lineage_descendants[sublist]]
+            descendants.extend(sublineages)
+            return(list(dict.fromkeys(descendants)))
     else:
-        descendants = lineage.copy()
-        # dealing with the B.1.427/B.1.429 case
-        sublineages = [item for sublist in lineage for item in lineage_descendants[sublist]]
-        descendants.extend(sublineages)
-        return(list(dict.fromkeys(descendants)))
+        return([lineage])
 
 # Pull the Pango lineages, reshape the descendants into a dict
-lineage_file = request.urlopen(lineage_url)
-lineages = yaml.load(lineage_file, Loader=yaml.BaseLoader)
+with open('lineages.yml') as f:
+    lineages = yaml.safe_load(f)
+# lineage_file = request.urlopen(lineage_url)
+# lineages = yaml.load(open(lineage_url), Loader=yaml.BaseLoader)
+
 lineage_descendants = {}
 for lineage in lineages:
     lineage_descendants[lineage["name"]] = lineage["children"]
@@ -223,6 +233,7 @@ curated.drop(["dateModified", "dateModifiedFormatted"], axis = 1, inplace=True)
 
 # --- EXPORT ---
 curated.to_json(output_file, orient="records")
+vocs[["who_name", "pangolin_lineage", "short_name"]].to_json(output_file_examples, orient="records")
 
 # --- Write to log file ---
 def getName(row):

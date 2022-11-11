@@ -1,6 +1,1 @@
-[{
-    "label": "Moderna",
-    "route": "Resources",
-    "query": "Moderna OR \"mRNA-1273\""
-  }
-]
+[{"who_name":"Omicron","pangolin_lineage":"B.1.1.529","short_name":"Omicron"},{"who_name":"BA.5* [Omicron (BA.5.X)]","pangolin_lineage":"BA.5","short_name":"BA.5*"},{"who_name":"BQ.1* [Omicron (BQ.1.X)]","pangolin_lineage":"BQ.1","short_name":"BQ.1*"},{"who_name":null,"pangolin_lineage":"BQ.1.1","short_name":"BQ.1.1"},{"who_name":null,"pangolin_lineage":"XBB.1","short_name":"XBB.1"},{"who_name":null,"pangolin_lineage":"BF.7","short_name":"BF.7"},{"who_name":"BA.2.75* [Omicron (BA.2.75.X)]","pangolin_lineage":"BA.2.75","short_name":"BA.2.75*"}]
