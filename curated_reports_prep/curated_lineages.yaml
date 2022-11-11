@@ -2,7 +2,6 @@ VOC:
   - who_name: Omicron
     short_name: Omicron
     pangolin_lineage: B.1.1.529
-    include_sublineages: True
     include_recombinants: True
     nextstrain_clade: 21K, 21L
     gisaid_clade: GR/484A
@@ -34,7 +33,6 @@ VOC:
   - who_name: "BA.5* [Omicron (BA.5.X)]"
     short_name: "BA.5*"
     pangolin_lineage: BA.5
-    include_sublineages: True
     include_recombinants: True
     dateModified: 2022-07-20
     variantType: Variant of Concern
@@ -60,7 +58,6 @@ VOC:
     short_name: BQ.1*
     pangolin_lineage: BQ.1
     include_recombinants: True
-    include_sublineages: True
     dateModified: 2022-11-10
     variantType: Variant of Concern
     classifications:
@@ -153,7 +150,6 @@ VOC:
   - who_name: "BA.2.75* [Omicron (BA.2.75.X)]"
     short_name: BA.2.75*
     pangolin_lineage: BA.2.75
-    include_sublineages: True
     include_recombinants: True
     dateModified: 2022-07-20
     variantType: Variant of Concern
