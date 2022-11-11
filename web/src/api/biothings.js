@@ -1,5 +1,6 @@
 import { from, EMPTY, BehaviorSubject } from 'rxjs';
 import axios from 'axios';
+
 import {
   finalize,
   catchError,
@@ -14,7 +15,7 @@ import store from '@/store';
 export const progressSubject = new BehaviorSubject(0);
 export const progressState$ = progressSubject.asObservable();
 
-export function getDateUpdated(apiUrl) {
+export const getDateUpdated = (apiUrl) => {
   const today = new Date();
   const url = `${apiUrl}metadata`;
   return from(axios.get(url)).pipe(
@@ -42,11 +43,12 @@ export function getDateUpdated(apiUrl) {
       return from([]);
     }),
   );
-}
+};
 
-export function getCurrentDate(apiUrl, returnFormatted = true) {
+export const getCurrentDate = (apiUrl, returnFormatted = true) => {
   const formatDate = timeFormat('%e %B %Y');
   const parseDate = timeParse('%Y-%m-%d');
+
   const url = `${apiUrl}query?q=mostRecent:true&sort=-date&size=1&fields=date`;
   return from(axios.get(url)).pipe(
     pluck('data', 'hits'),
@@ -60,9 +62,9 @@ export function getCurrentDate(apiUrl, returnFormatted = true) {
       return from([]);
     }),
   );
-}
+};
 
-export function getAll(apiUrl, queryString) {
+export const getAll = (apiUrl, queryString) => {
   store.state.admin.loading = true;
   return getOne(apiUrl, queryString, 0).pipe(
     expand((data, _) =>
@@ -88,9 +90,9 @@ export function getAll(apiUrl, queryString) {
       store.state.admin.loading = false;
     }),
   );
-}
+};
 
-export function getOne(apiUrl, queryString, count, scrollID = null) {
+export const getOne = (apiUrl, queryString, count, scrollID = null) => {
   let url = `${apiUrl}query?q=${queryString}&fetch_all=true&page=${count}`;
   if (scrollID) {
     url = `${url}&scroll_id=${scrollID}`;
@@ -99,7 +101,7 @@ export function getOne(apiUrl, queryString, count, scrollID = null) {
   return from(axios.get(url)).pipe(
     pluck('data'),
     map((results) => {
-      var pct;
+      let pct;
       if (!results['total'] || (count + 1) * 1000 > results['total']) {
         pct = 1;
       } else {
@@ -119,4 +121,4 @@ export function getOne(apiUrl, queryString, count, scrollID = null) {
     }),
     // finalize(() => (store.state.admin.loading = false))
   );
-}
+};

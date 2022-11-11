@@ -2,7 +2,9 @@
   <div class="row" style="min-height: 75vh;">
     <div class="col-sm-12 my-5">
       <div class="container text-left mb-5">
-        <h1 class="text-highlight">Terms of Use</h1>
+        <h1 class="text-highlight">
+          Terms of Use
+        </h1>
         <h4>Disclaimer</h4>
         <p>
           Every effort has been made to ensure the accuracy and completeness of
@@ -73,16 +75,16 @@
   </div>
 </template>
 
-<script lang="js">
-import Vue from "vue";
-import DataUsage from "@/components/DataUsage.vue";
-import CiteUs from "@/components/CiteUs.vue";
+<script>
+import Vue from 'vue';
+import DataUsage from '@/components/DataUsage.vue';
+import CiteUs from '@/components/CiteUs.vue';
 
 export default Vue.extend({
-  name: "Terms",
+  name: 'Terms',
   components: {
     DataUsage,
-    CiteUs
-  }
+    CiteUs,
+  },
 });
 </script>

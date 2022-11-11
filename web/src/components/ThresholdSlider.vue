@@ -109,6 +109,12 @@ export default {
     countThreshold: Number,
     maxCount: Number,
   },
+  data() {
+    return {
+      xFilter: null,
+      newThreshold: null,
+    };
+  },
   computed: {
     filterShift() {
       return this.xFilter ? this.xFilter(this.newThreshold) : 0;
@@ -117,11 +123,14 @@ export default {
       return this.maxCount ? format(',')(this.maxCount) : null;
     },
   },
-  data() {
-    return {
-      xFilter: null,
-      newThreshold: null,
-    };
+  mounted() {
+    this.newThreshold = this.countThreshold;
+    this.updateAxes();
+
+    this.$nextTick(() => {
+      // set up drag for threshold filter
+      this.setupDrag();
+    });
   },
   methods: {
     updateAxes() {
@@ -145,15 +154,6 @@ export default {
     changeFilters() {
       this.$emit('update:countThreshold', this.newThreshold);
     },
-  },
-  mounted() {
-    this.newThreshold = this.countThreshold;
-    this.updateAxes();
-
-    this.$nextTick(function() {
-      // set up drag for threshold filter
-      this.setupDrag();
-    });
   },
 };
 </script>

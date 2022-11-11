@@ -31,11 +31,13 @@
           </div>
 
           <div class="text-left mt-5">
-            <h3 id="geographic" class="pt-4 border-top">Genomic Data</h3>
+            <h3 id="geographic" class="pt-4 border-top">
+              Genomic Data
+            </h3>
             <SourceDescription
+              v-if="sourceMetadata"
               :sources="genomicSources"
               :metadata="sourceMetadata.genomics"
-              v-if="sourceMetadata"
             />
           </div>
 
@@ -44,14 +46,16 @@
               COVID-19 Cases &amp; Deaths Data
             </h3>
             <SourceDescription
+              v-if="sourceMetadata"
               :sources="sources"
               :metadata="sourceMetadata.epi"
-              v-if="sourceMetadata"
             />
           </div>
 
           <div class="text-left mt-5">
-            <h3 id="geographic" class="pt-4 border-top">Geographic Data</h3>
+            <h3 id="geographic" class="pt-4 border-top">
+              Geographic Data
+            </h3>
             <SourceDescription :sources="geoSources" />
           </div>
 
@@ -59,7 +63,9 @@
             <div
               class="mb-3 pt-4 border-top d-flex justify-content-between align-items-center"
             >
-              <h3 id="resources" class="">Resources</h3>
+              <h3 id="resources" class="">
+                Resources
+              </h3>
               <DownloadData
                 downloadLabel="all resources"
                 type="resources"
@@ -76,7 +82,9 @@
               <div
                 class="d-flex justify-content-between align-items-center my-2"
               >
-                <h4 :id="resource.id">{{ resource.category }}</h4>
+                <h4 :id="resource.id">
+                  {{ resource.category }}
+                </h4>
                 <DownloadData
                   :downloadLabel="`all ${resource.category}`"
                   type="resources"
@@ -86,9 +94,9 @@
               </div>
 
               <SourceDescription
+                v-if="sourceMetadata"
                 :sources="resource.sources"
                 :metadata="sourceMetadata.resources"
-                v-if="sourceMetadata"
               />
             </div>
           </div>
@@ -98,35 +106,42 @@
   </div>
 </template>
 
-<script lang="js">
-import Vue from "vue";
+<script>
+import Vue from 'vue';
 
-import {
-  mapState
-} from "vuex";
+import { mapState } from 'vuex';
 
-import SourceDescription from "@/components/SourceDescription.vue";
-import DownloadData from "@/components/DownloadData.vue";
+import SourceDescription from '@/components/SourceDescription.vue';
+import DownloadData from '@/components/DownloadData.vue';
 
-import {getIndivSourcesUpdated} from "@/api/metadata.js";
+import { getIndivSourcesUpdated } from '@/api/metadata.js';
 
 export default Vue.extend({
-  name: "Sources",
+  name: 'Sources',
   components: {
     SourceDescription,
-    DownloadData
-  },
-  computed: {
-    ...mapState("admin", ["sources", "geoSources", "genomicSources", "resources"])
+    DownloadData,
   },
   data() {
-    return ({
+    return {
       metadataSubscription: null,
-      sourceMetadata: null
-    })
+      sourceMetadata: null,
+    };
+  },
+  computed: {
+    ...mapState('admin', [
+      'sources',
+      'geoSources',
+      'genomicSources',
+      'resources',
+    ]),
   },
   mounted() {
-    this.metadataSubscription = getIndivSourcesUpdated(this.$genomicsurl, this.$resourceurl, this.$apiurl).subscribe(results => {
+    this.metadataSubscription = getIndivSourcesUpdated(
+      this.$genomicsurl,
+      this.$resourceurl,
+      this.$apiurl,
+    ).subscribe((results) => {
       this.sourceMetadata = results;
     });
   },
@@ -134,7 +149,7 @@ export default Vue.extend({
     if (this.metadataSubscription) {
       this.metadataSubscription.unsubscribe();
     }
-  }
+  },
 });
 </script>
 

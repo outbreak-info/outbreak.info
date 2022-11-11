@@ -1,27 +1,13 @@
-import { from, of, forkJoin } from 'rxjs';
+import { forkJoin, from, of } from 'rxjs';
 import axios from 'axios';
-import {
-  tap,
-  finalize,
-  catchError,
-  mergeMap,
-  pluck,
-  map,
-} from 'rxjs/operators';
-import { nest, timeParse, timeFormat, sum } from 'd3';
-
-import { schemeYlGnBu } from 'd3-scale-chromatic';
-import { getSparklineTraces } from '@/api/epi-traces.js';
-
-import { getLocationTable } from '@/api/genomics.js';
+import { catchError, finalize, map, pluck, tap } from 'rxjs/operators';
+import { nest, sum } from 'd3';
 
 import { getAll } from '@/api/biothings.js';
 
-import CURATED from '@/assets/genomics/curated_lineages.json';
-
 import store from '@/store';
 
-export function lookupEpiLocations(apiUrl, locationArr) {
+export const lookupEpiLocations = (apiUrl, locationArr) => {
   if (locationArr.length) {
     return from(
       axios.get(
@@ -35,7 +21,7 @@ export function lookupEpiLocations(apiUrl, locationArr) {
         results.forEach((d) => {
           d['label'] = d.state_name
             ? `${d.name}, ${d.state_name}`
-            : d.country_name && d.country_name != d.name
+            : d.country_name && d.country_name !== d.name
             ? `${d.name}, ${d.country_name}`
             : d.name;
         });
@@ -58,9 +44,9 @@ export function lookupEpiLocations(apiUrl, locationArr) {
   } else {
     return of([]);
   }
-}
+};
 
-export function findEpiLocation(apiUrl, query, num2Return = 5) {
+export const findEpiLocation = (apiUrl, query, num2Return = 5) => {
   return from(
     axios.get(
       `${apiUrl}query?q=mostRecent:true AND name.lower:*${query}*&size=${num2Return}&fields=name,location_id,admin1,admin2,admin_level,country_name`,
@@ -70,17 +56,16 @@ export function findEpiLocation(apiUrl, query, num2Return = 5) {
     map((results) => {
       results.forEach((d) => {
         let location_label = d.name;
-        if (d.admin_level === 2 && d.admin2 && d.admin2 != 'None') {
+        if (d.admin_level === 2 && d.admin2 && d.admin2 !== 'None') {
           location_label =
             d.name === 'Kansas City' || d.name === 'New York'
               ? `${d.name}, ${d.country_name}`
               : `${d.admin2} County, ${d.admin1}`;
-        } else if (d.admin_level === 1 && d.admin1 && d.admin1 != 'None') {
+        } else if (d.admin_level === 1 && d.admin1 && d.admin1 !== 'None') {
           location_label = `${d.name}, ${d.country_name}`;
         } else if (d.admin_level === 1.5) {
           location_label = `${d.name} Metro, ${d.admin1}, ${d.country_name}`;
         }
-
         d['label'] = location_label;
       });
       return results;
@@ -91,12 +76,12 @@ export function findEpiLocation(apiUrl, query, num2Return = 5) {
       return from([]);
     }),
   );
-}
+};
 
-export function getLocations(apiUrl) {
+export const getLocations = (apiUrl) => {
   store.state.admin.loading = true;
 
-  if (store.state.geo.allPlaces.length == 0) {
+  if (store.state.geo.allPlaces.length === 0) {
     return getAll(
       apiUrl,
       `mostRecent:true&fields=location_id,name,country_name,admin1,wb_region,admin_level`,
@@ -152,26 +137,26 @@ export function getLocations(apiUrl) {
     store.state.admin.loading = false;
     return from(store.state.geo.allPlaces);
   }
-}
+};
 
-function getLabel(entry) {
+const getLabel = (entry) => {
   if (entry.admin_level === 0) {
     return entry.name;
   } else if (entry.admin_level === 1) {
-    return entry.country_name == 'United States of America'
+    return entry.country_name === 'United States of America'
       ? `${entry.name} State, USA`
       : `${entry.name} Province, ${entry.country_name}`;
-  } else if (String(entry.admin_level) == '1.7') {
+  } else if (String(entry.admin_level) === '1.7') {
     return `${entry.name}`;
-  } else if (String(entry.admin_level) == '1.5') {
+  } else if (String(entry.admin_level) === '1.5') {
     return `${entry.name} Metropolitan Area`;
-  } else if (String(entry.admin_level) == '2') {
+  } else if (String(entry.admin_level) === '2') {
     return `${entry.name} County, ${entry.admin1}`;
   }
   return entry.name;
-}
+};
 
-export function getMostCases(apiUrl, num2Return = 5) {
+export const getMostCases = (apiUrl, num2Return = 5) => {
   store.state.admin.loading = true;
 
   return from(
@@ -191,9 +176,9 @@ export function getMostCases(apiUrl, num2Return = 5) {
     }),
     finalize(() => (store.state.admin.loading = false)),
   );
-}
+};
 
-export function getSummary(apiUrl, caseThreshold) {
+export const getSummary = (apiUrl, caseThreshold) => {
   store.state.admin.loading = true;
   return forkJoin([
     getTotals(apiUrl),
@@ -214,9 +199,9 @@ export function getSummary(apiUrl, caseThreshold) {
     }),
     finalize(() => (store.state.admin.loading = false)),
   );
-}
+};
 
-export function getTotals(apiUrl) {
+export const getTotals = (apiUrl) => {
   return from(
     axios.get(
       `${apiUrl}query?q=mostRecent:true AND admin_level:"-1"&fields=confirmed,dead&sort=-confirmed&size=100`,
@@ -224,11 +209,10 @@ export function getTotals(apiUrl) {
   ).pipe(
     pluck('data', 'hits'),
     map((results) => {
-      const totals = {
+      return {
         confirmed: sum(results, (d) => d.confirmed).toLocaleString(),
         dead: sum(results, (d) => d.dead).toLocaleString(),
       };
-      return totals;
     }),
     catchError((e) => {
       console.log('%c Error in getting totals!', 'color: red');
@@ -236,9 +220,9 @@ export function getTotals(apiUrl) {
       return from([]);
     }),
   );
-}
+};
 
-export function countCountries(apiUrl) {
+export const countCountries = (apiUrl) => {
   return from(
     axios.get(
       `${apiUrl}query?q=mostRecent:true AND admin_level:0&size=0&facet_size=300&facets=name`,
@@ -254,9 +238,9 @@ export function countCountries(apiUrl) {
       return from([]);
     }),
   );
-}
+};
 
-export function getFirstCases(apiUrl) {
+export const getFirstCases = (apiUrl) => {
   return from(
     axios.get(
       `${apiUrl}query?q=mostRecent:true%20AND%20admin_level:0%20AND%20confirmed_newToday:true&size=300&fields=name,location_id`,
@@ -278,9 +262,9 @@ export function getFirstCases(apiUrl) {
       return from([]);
     }),
   );
-}
+};
 
-export function getCasesAboveThresh(apiUrl, threshold) {
+export const getCasesAboveThresh = (apiUrl, threshold) => {
   return from(
     axios.get(
       `${apiUrl}query?q=mostRecent:true%20AND%20admin_level:0%20AND%20confirmed_numIncrease:[${threshold} TO *]&size=300&fields=name,location_id`,
@@ -302,4 +286,4 @@ export function getCasesAboveThresh(apiUrl, threshold) {
       return from([]);
     }),
   );
-}
+};

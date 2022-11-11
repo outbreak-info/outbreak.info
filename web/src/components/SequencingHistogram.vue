@@ -1,14 +1,14 @@
 <template>
   <div>
     <!-- LEGEND -->
-    <div class="d-flex" v-if="!downward">
+    <div v-if="!downward" class="d-flex">
       <small class="text-uppercase" :style="{ color: notDetectedColor }">
         {{ title }}
       </small>
       <small
+        v-if="!onlyTotals"
         class="text-uppercase ml-3"
         :style="{ color: detectedColor }"
-        v-if="!onlyTotals"
       >
         <span v-if="showDetected">*</span>
         {{ mutationName }} detected
@@ -17,61 +17,58 @@
 
     <!-- SEQUENCING HISTOGRAM -->
     <svg
+      ref="svg-counts"
       :width="width"
       :height="height"
       :class="className"
-      ref="svg-counts"
       :name="svgTitle"
     >
+      <g ref="counts" :transform="`translate(${margin.left}, ${margin.top})`" />
       <g
-        ref="counts"
-        :transform="`translate(${margin.left}, ${margin.top})`"
-      ></g>
-      <g
+        ref="xAxis"
         :transform="`translate(${margin.left}, ${height - margin.bottom + 1})`"
         class="prevalence-axis total-axis axis--x"
-        ref="xAxis"
         :hidden="!includeXAxis"
-      ></g>
+      />
       <g
+        ref="yAxisLeft"
         :transform="
           `translate(${margin.left - xBandwidth / 2 - 5}, ${margin.top})`
         "
         class="prevalence-axis total-axis axis--y"
-        ref="yAxisLeft"
         :hidden="!data.length"
-      ></g>
+      />
       <g
+        ref="yAxisRight"
         :transform="
           `translate(${width - margin.right + xBandwidth / 2 + 5}, ${
             margin.top
           })`
         "
         class="prevalence-axis total-axis axis--y"
-        ref="yAxisRight"
         :hidden="!data.length"
-      ></g>
+      />
     </svg>
 
     <!-- LEGEND -->
-    <div class="d-flex" v-if="downward">
+    <div v-if="downward" class="d-flex">
       <small
+        v-if="width > 250"
         class="text-uppercase"
         :style="{
           'margin-left': this.margin.left + 'px',
           color: notDetectedColor,
         }"
-        v-if="width > 250"
       >
         {{ title }}
       </small>
-      <small class="text-uppercase" :style="{ color: notDetectedColor }" v-else>
+      <small v-else class="text-uppercase" :style="{ color: notDetectedColor }">
         {{ title }}
       </small>
       <small
+        v-if="!onlyTotals"
         class="text-uppercase ml-3"
         :style="{ color: detectedColor }"
-        v-if="!onlyTotals"
       >
         <span v-if="showDetected">*</span>
         {{ mutationName }} detected
@@ -80,29 +77,29 @@
 
     <!-- TOOLTIPS -->
     <div
+      v-if="onlyTotals"
+      id="tooltip-prevalence"
       ref="tooltip_prevalence"
       class="tooltip-basic box-shadow"
-      id="tooltip-prevalence"
-      v-if="onlyTotals"
     >
-      <h5 id="date"></h5>
-      <b id="sequencing-count" class="font-size-2"></b>
+      <h5 id="date" />
+      <b id="sequencing-count" class="font-size-2" />
     </div>
 
     <div
+      v-else
+      id="tooltip-prevalence"
       ref="tooltip_prevalence"
       class="tooltip-basic box-shadow"
-      id="tooltip-prevalence"
-      v-else
     >
-      <h5 id="date"></h5>
+      <h5 id="date" />
       <div class="d-flex align-items-center">
-        <b id="proportion" class="font-size-2"></b>
-        <span id="confidence-interval" class="text-muted ml-2"></span>
+        <b id="proportion" class="font-size-2" />
+        <span id="confidence-interval" class="text-muted ml-2" />
       </div>
 
-      <div id="sequencing-count"></div>
-      <div id="sequencing-count-rolling"></div>
+      <div id="sequencing-count" />
+      <div id="sequencing-count-rolling" />
     </div>
   </div>
 </template>
@@ -194,10 +191,10 @@ export default Vue.extend({
     xInput() {
       this.updatePlot();
     },
-    width: function() {
+    width() {
       this.updatePlot();
     },
-    data: function() {
+    data() {
       this.updatePlot();
     },
   },
@@ -254,7 +251,7 @@ export default Vue.extend({
     tooltipOn() {
       const ttipShift = 20;
 
-      // find closest date
+      // find the closest date
       const selectedX = this.x.invert(event.offsetX - this.margin.left);
       const selectedDate = timeDay.round(selectedX);
       const selected = this.data.filter(

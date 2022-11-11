@@ -1,27 +1,29 @@
 <template>
-  <div :style="{ width: width + 'px' }" ref="dotplot_container">
-    <h6 class="text-left m-0">{{ sortAsc ? 'Lowest' : 'Highest' }}</h6>
+  <div ref="dotplot_container" :style="{ width: width + 'px' }">
+    <h6 class="text-left m-0">
+      {{ sortAsc ? 'Lowest' : 'Highest' }}
+    </h6>
     <small class="text-left m-0 p-0 line-height-1 d-block text-wrap mb-2 mr-2">
       {{ title }}
     </small>
     <svg
+      ref="dotplot_svg"
       :width="width"
       :height="height"
-      ref="dotplot_svg"
       class="epi-map-svg epi-map-dotplot dotplot-svg"
       :subtitle="fullTitle"
     >
       <g :transform="`translate(${margin.left}, ${margin.top})`">
         <line
+          v-if="x && x(0) >= 0"
           :x1="x(0)"
           :x2="x(0)"
           :y1="0"
           :y2="height - margin.top - margin.bottom"
-          v-if="x && x(0) >= 0"
           stroke="black"
           stroke-width="0.5"
-        ></line>
-        <g ref="circles" class="circles-group"></g>
+        />
+        <g ref="circles" class="circles-group" />
       </g>
     </svg>
   </div>
@@ -52,11 +54,6 @@ export default {
     transition1: Number,
     animate: Boolean,
   },
-  watch: {
-    data: function() {
-      this.drawPlot();
-    },
-  },
   data() {
     return {
       num2Plot: 5,
@@ -73,7 +70,7 @@ export default {
     };
   },
   computed: {
-    fullTitle: function() {
+    fullTitle() {
       return this.sortAsc ? 'Lowest' : 'Highest';
     },
     numberFormatter() {
@@ -98,6 +95,11 @@ export default {
             bottom: 30,
             left: locationWidth,
           };
+    },
+  },
+  watch: {
+    data() {
+      this.drawPlot();
     },
   },
   mounted() {
@@ -275,10 +277,10 @@ export default {
         .data(this.plottedData, (d) => d.location_id);
 
       // Lazy trunction of too long names
-      function trimText(text, threshold) {
+      const trimText = (text, threshold) => {
         if (text.length <= threshold) return text;
         return text.substr(0, threshold).concat('...');
-      }
+      };
 
       const locationNameThresh = 8;
 
@@ -346,7 +348,6 @@ export default {
                 );
               }
             }),
-
         (exit) =>
           exit.call((exit) =>
             exit

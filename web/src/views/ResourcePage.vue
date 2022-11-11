@@ -8,7 +8,7 @@
       />
     </div>
 
-    <div class="row w-100 m-0" v-if="data">
+    <div v-if="data" class="row w-100 m-0">
       <div class="col-sm-12 text-left">
         <!-- mini-nav for resource types -->
         <section class="d-flex justify-content-end w-100 bg-grey__lighter my-4">
@@ -16,9 +16,9 @@
             <nav class="navbar navbar-expand-lg navbar-dark">
               <ul class="navbar-nav">
                 <li
-                  class="nav-item text-light mr-4"
                   v-for="(anchor, idx) in anchorsArr"
                   :key="idx"
+                  class="nav-item text-light mr-4"
                 >
                   <router-link
                     class="nav-link no-underline p-0"
@@ -33,12 +33,12 @@
         </section>
 
         <!-- type label -->
-        <div :class="type.replace(/\s/g, '')" v-if="type">
+        <div v-if="type" :class="type.replace(/\s/g, '')">
           <!-- <StripeAccent :height="20" :width="4" :className="type" /> -->
           {{ type }}
           <span
-            class="pub-type mx-3"
             v-if="data.publicationType && data.publicationType[0]"
+            class="pub-type mx-3"
           >
             <template v-if="Array.isArray(data.publicationType)">
               <span v-for="(pub, idx) in data.publicationType" :key="idx">
@@ -62,16 +62,21 @@
         />
 
         <!-- special clinical trials description -->
-        <ClinicalTrialDescription :data="data" v-if="type == 'ClinicalTrial'" />
+        <ClinicalTrialDescription
+          v-if="type === 'ClinicalTrial'"
+          :data="data"
+        />
 
         <div class="mr-5">
           <!-- downloads -->
           <div
+            v-if="anchorsArr.includes('downloads')"
             id="downloads"
             class="text-left border-bottom text-muted py-3 my-3"
-            v-if="anchorsArr.includes('downloads')"
           >
-            <h6 class="m-0">Downloads</h6>
+            <h6 class="m-0">
+              Downloads
+            </h6>
             <ul v-if="data.distribution" id="download-list">
               <li v-for="(item, idx) in data.distribution" :key="idx">
                 <a :href="item.contentUrl" target="_blank" rel="noreferrer">
@@ -86,11 +91,13 @@
 
           <!-- funding info -->
           <div
+            v-if="anchorsArr.includes('funder')"
             id="funder"
             class="text-left border-bottom text-muted py-3 mb-3"
-            v-if="anchorsArr.includes('funder')"
           >
-            <h6 class="m-0">Funder</h6>
+            <h6 class="m-0">
+              Funder
+            </h6>
             <div v-if="data.funding || data.funder">
               <div v-if="data.funding">
                 <ul>
@@ -118,6 +125,7 @@
                           <b v-if="funding.funder && funding.funder.name">
                             {{ funding.funder.name }}
                           </b>
+
                           <span
                             v-if="
                               funding.funder &&
@@ -167,6 +175,7 @@
                           >
                             {{ data.funding.funder.name }}
                           </b>
+
                           <span
                             v-if="
                               data.funding.funder &&
@@ -179,6 +188,7 @@
                           <span v-if="data.funding.identifier">
                             {{ data.funding.identifier }}
                           </span>
+
                           <span
                             v-if="
                               data.funding.funder && data.funding.funder.role
@@ -241,11 +251,13 @@
 
           <!-- corrections -->
           <div
+            v-if="anchorsArr.includes('corrections')"
             id="corrections"
             class="text-left border-bottom text-muted py-1 my-3"
-            v-if="anchorsArr.includes('corrections')"
           >
-            <h6 class="m-0">Corrections</h6>
+            <h6 class="m-0">
+              Corrections
+            </h6>
             <ul v-if="data.correction" id="correction-list">
               <li v-for="(item, idx) in data.correction" :key="idx">
                 {{ item.correctionType[0].toUpperCase()
@@ -280,11 +292,13 @@
 
           <!-- license -->
           <div
+            v-if="anchorsArr.includes('license')"
             id="license"
             class="text-left border-bottom text-muted pb-3 mb-3"
-            v-if="anchorsArr.includes('license')"
           >
-            <h6 class="m-0">License</h6>
+            <h6 class="m-0">
+              License
+            </h6>
             <div v-if="data.license">
               <a
                 v-if="data.license.startsWith('http')"
@@ -293,7 +307,7 @@
               >
                 {{ data.license }}
               </a>
-              <span v-else v-html="data.license"></span>
+              <span v-else v-html="data.license" />
             </div>
             <div v-else>
               <small>not specified</small>
@@ -302,16 +316,18 @@
 
           <!-- based on -->
           <div
+            v-if="anchorsArr.includes('based on')"
             id="based_on"
             class="text-left border-bottom text-muted pb-3 mb-3"
-            v-if="anchorsArr.includes('based on')"
           >
-            <h6 class="m-0 mb-2">Based on</h6>
+            <h6 class="m-0 mb-2">
+              Based on
+            </h6>
             <div v-if="data.isBasedOn && data.isBasedOn.length">
               <ResourceCitation
-                :data="item"
                 v-for="(item, idx) in data.isBasedOn"
                 :key="idx"
+                :data="item"
               />
             </div>
             <div v-else>
@@ -321,16 +337,18 @@
 
           <!-- cited by -->
           <div
+            v-if="anchorsArr.includes('cited by')"
             id="cited_by"
             class="text-left border-bottom text-muted pb-3 mb-3"
-            v-if="anchorsArr.includes('cited by')"
           >
-            <h6 class="m-0 mb-2">Cited by</h6>
+            <h6 class="m-0 mb-2">
+              Cited by
+            </h6>
             <div v-if="data.citedBy && data.citedBy.length">
               <ResourceCitation
-                :data="item"
                 v-for="(item, idx) in data.citedBy"
                 :key="idx"
+                :data="item"
               />
             </div>
             <div v-else>
@@ -340,16 +358,18 @@
 
           <!-- related -->
           <div
+            v-if="anchorsArr.includes('related')"
             id="related"
             class="text-left border-bottom text-muted pb-3 mb-3"
-            v-if="anchorsArr.includes('related')"
           >
-            <h6 class="m-0 mb-2">Related resources</h6>
+            <h6 class="m-0 mb-2">
+              Related resources
+            </h6>
             <div v-if="data.relatedTo && data.relatedTo.length">
               <ResourceCitation
-                :data="item"
                 v-for="(item, idx) in data.relatedTo"
                 :key="idx"
+                :data="item"
               />
             </div>
             <div v-else>
@@ -361,10 +381,10 @@
       <!-- RIGHT SIDE -->
       <div class="col-md-3 my-3">
         <ResourceSidebar
+          v-if="data"
           :data="data"
           :date="dateModified"
           :type="data['@type']"
-          v-if="data"
         />
       </div>
     </div>
@@ -382,81 +402,114 @@
   </div>
 </template>
 
-<script lang="js">
-import Vue from "vue";
+<script>
+import Vue from 'vue';
 
-import {
-  timeFormat,
-  timeParse
-} from "d3";
+import { timeFormat, timeParse } from 'd3';
 
-import {
-  mapState
-} from "vuex";
+import { mapState } from 'vuex';
 
 // --- font awesome --
-import {
-  FontAwesomeIcon
-} from "@fortawesome/vue-fontawesome";
-import {
-  library
-} from "@fortawesome/fontawesome-svg-core";
-import {
-  faSpinner
-} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 library.add(faSpinner);
 
-import {
-  getResourceMetadata
-} from "@/api/resources.js";
+import { getResourceMetadata } from '@/api/resources.js';
 
-import cloneDeep from "lodash/cloneDeep";
+import cloneDeep from 'lodash/cloneDeep';
 
-import ResourceDescription from "@/components/ResourceDescription.vue";
-import ResourceSidebar from "@/components/ResourceSidebar.vue";
-import ClinicalTrialDescription from "@/components/ClinicalTrialDescription.vue";
-import ResourceCitation from "@/components/ResourceCitation.vue";
+import ResourceDescription from '@/components/ResourceDescription.vue';
+import ResourceSidebar from '@/components/ResourceSidebar.vue';
+import ClinicalTrialDescription from '@/components/ClinicalTrialDescription.vue';
+import ResourceCitation from '@/components/ResourceCitation.vue';
 
 export default Vue.extend({
-  name: "ResourcePage",
+  name: 'ResourcePage',
   components: {
     ResourceDescription,
     ResourceSidebar,
     ClinicalTrialDescription,
     ResourceCitation,
-    FontAwesomeIcon
+    FontAwesomeIcon,
   },
   data() {
-    return ({
+    return {
       type: null,
       data: null,
       id: null,
       anchors: {
-        default: ["authors", "description", "downloads", "license", "funder", "based on", "cited by", "related"],
-        Publication: ["authors", "description", "funder", "corrections", "based on", "cited by", "related"],
-        ClinicalTrial: ["authors", "description", "design", "interventions", "eligibility", "outcome", "status", "funder", "publications", "based on", "related"]
+        default: [
+          'authors',
+          'description',
+          'downloads',
+          'license',
+          'funder',
+          'based on',
+          'cited by',
+          'related',
+        ],
+        Publication: [
+          'authors',
+          'description',
+          'funder',
+          'corrections',
+          'based on',
+          'cited by',
+          'related',
+        ],
+        ClinicalTrial: [
+          'authors',
+          'description',
+          'design',
+          'interventions',
+          'eligibility',
+          'outcome',
+          'status',
+          'funder',
+          'publications',
+          'based on',
+          'related',
+        ],
+      },
+    };
+  },
+  computed: {
+    ...mapState('admin', ['loading']),
+    anchorsArr() {
+      if (Object.keys(this.anchors).includes(this.type)) {
+        return this.anchors[this.type];
       }
-    })
+      return this.anchors['default'];
+    },
+  },
+  mounted() {
+    this.id = this.$route.params.id;
+
+    this.getData(this.id);
   },
   methods: {
     formatDate(dateStr) {
-      const parseDate = timeParse("%Y-%m-%d");
-      const formatDate = timeFormat("%d %B %Y");
+      const parseDate = timeParse('%Y-%m-%d');
+      const formatDate = timeFormat('%d %B %Y');
       return dateStr ? formatDate(parseDate(dateStr)) : null;
     },
     getData(id) {
-      this.resultsSubscription = getResourceMetadata(this.$resourceurl, id).subscribe(results => {
+      this.resultsSubscription = getResourceMetadata(
+        this.$resourceurl,
+        id,
+      ).subscribe((results) => {
         this.data = results;
         if (this.data) {
-          this.type = this.data["@type"];
+          this.type = this.data['@type'];
           this.dateModified = this.formatDate(this.data.date);
         } else {
           this.type = null;
           this.dateModified = null;
         }
-      })
-    }
+      });
+    },
   },
   beforeRouteUpdate(to, from, next) {
     this.id = to.params.id;
@@ -464,162 +517,158 @@ export default Vue.extend({
     next();
   },
   metaInfo() {
-    var metadata = null;
+    let metadata = null;
     // Based on https://scholar.google.com/intl/en/scholar/inclusion.html#indexing
     // Dublin Core ref: https://www.dublincore.org/specifications/dublin-core/dcmi-terms/#section-4
-    var citationTags = [];
+    let citationTags = [];
     if (this.data) {
       metadata = cloneDeep(this.data);
 
       // phaseNumber causes problems
       if (metadata.studyDesign && metadata.studyDesign.phaseNumber) {
         delete metadata.studyDesign.phaseNumber;
-      };
-      // [null] will have problems embedding...
-      metadata.citedBy = metadata.citedBy ? metadata.citedBy.filter(d => d) : null;
-
-      metadata["includedInDataCatalog"] = {
-        "@type": "DataCatalog",
-        name: "outbreak.info",
-        description: "During outbreaks of emerging diseases such as COVID-19, efficiently collecting, sharing, and integrating data is critical to scientific research. outbreak.info is a resource to aggregate all this information into a single location.",
-        url: "https://outbreak.info/resources",
-        publisher: {
-          "@type": "Organization",
-          name: "outbreak.info",
-          url: "https://outbreak.info/"
-        }
       }
+      // [null] will have problems embedding...
+      metadata.citedBy = metadata.citedBy
+        ? metadata.citedBy.filter((d) => d)
+        : null;
+
+      metadata['includedInDataCatalog'] = {
+        '@type': 'DataCatalog',
+        name: 'outbreak.info',
+        description:
+          'During outbreaks of emerging diseases such as COVID-19, efficiently collecting, sharing, and integrating data is critical to scientific research. outbreak.info is a resource to aggregate all this information into a single location.',
+        url: 'https://outbreak.info/resources',
+        publisher: {
+          '@type': 'Organization',
+          name: 'outbreak.info',
+          url: 'https://outbreak.info/',
+        },
+      };
 
       citationTags.push({
-        title: "DC.type",
-        content: this.data["@type"],
-        vmid: "DC.type"
+        title: 'DC.type',
+        content: this.data['@type'],
+        vmid: 'DC.type',
       });
 
       citationTags.push({
-        title: "citation_title",
+        title: 'citation_title',
         content: this.data.name,
-        vmid: "citation_title"
+        vmid: 'citation_title',
       });
 
       if (this.data.description) {
         citationTags.push({
-          title: "DC.description",
+          title: 'DC.description',
           content: this.data.description,
-          vmid: "DC.description"
+          vmid: 'DC.description',
         });
       }
 
       if (this.data.abstract) {
         citationTags.push({
-          title: "DC.abstract",
+          title: 'DC.abstract',
           content: this.data.abstract,
-          vmid: "DC.abstract"
+          vmid: 'DC.abstract',
         });
       }
 
       if (this.data.doi) {
         citationTags.push({
-          title: "DC.identifier.DOI",
+          title: 'DC.identifier.DOI',
           content: this.data.doi,
-          vmid: "DC.identifier.DOI"
+          vmid: 'DC.identifier.DOI',
         });
       }
 
       if (this.data.datePublished) {
         citationTags.push({
-          title: "citation_publication_date",
+          title: 'citation_publication_date',
           content: this.data.datePublished,
-          vmid: "citation_publication_date"
+          vmid: 'citation_publication_date',
         });
       }
 
       if (this.data.journalName) {
         citationTags.push({
-          title: "citation_journal_title",
+          title: 'citation_journal_title',
           content: this.data.journalName,
-          vmid: "citation_journal_title"
+          vmid: 'citation_journal_title',
         });
       }
 
       if (this.data.volumeNumber) {
         citationTags.push({
-          title: "citation_volume",
+          title: 'citation_volume',
           content: this.data.volumeNumber,
-          vmid: "citation_volume"
+          vmid: 'citation_volume',
         });
       }
 
       if (this.data.issueNumber) {
         citationTags.push({
-          title: "citation_issue",
+          title: 'citation_issue',
           content: this.data.issueNumber,
-          vmid: "citation_issue"
+          vmid: 'citation_issue',
         });
       }
 
       if (this.data.pagination) {
         citationTags.push({
-          title: "citation_issue",
+          title: 'citation_issue',
           content: this.data.issueNumber,
-          vmid: "citation_issue"
+          vmid: 'citation_issue',
         });
       }
 
       if (this.data.author) {
         if (Array.isArray(this.data.author)) {
-          citationTags = citationTags.concat(this.data.author.map(d => {
-            return ({
-              title: "citation_author",
-              content: d.name ? d.name : `${d.givenName} ${d.familyName}`,
-              vmid: "citation_author"
-            })
-          }))
+          citationTags = citationTags.concat(
+            this.data.author.map((d) => {
+              return {
+                title: 'citation_author',
+                content: d.name ? d.name : `${d.givenName} ${d.familyName}`,
+                vmid: 'citation_author',
+              };
+            }),
+          );
         } else {
           citationTags = citationTags.concat({
-            title: "citation_author",
-            content: this.data.author.name ? this.data.author.name : `${this.data.author.givenName} ${this.data.author.familyName}`,
-            vmid: "citation_author"
-          })
+            title: 'citation_author',
+            content: this.data.author.name
+              ? this.data.author.name
+              : `${this.data.author.givenName} ${this.data.author.familyName}`,
+            vmid: 'citation_author',
+          });
         }
       }
 
       if (this.data.creator) {
-        citationTags = citationTags.concat(this.data.creator.map(d => {
-          return ({
-            title: "DC.creator",
-            content: d.name ? d.name : `${d.givenName} ${d.familyName}`,
-            vmid: "DC.creator"
-          })
-        }))
+        citationTags = citationTags.concat(
+          this.data.creator.map((d) => {
+            return {
+              title: 'DC.creator',
+              content: d.name ? d.name : `${d.givenName} ${d.familyName}`,
+              vmid: 'DC.creator',
+            };
+          }),
+        );
       }
-
     }
 
     if (metadata) {
       return {
-        script: [{
-          type: 'application/ld+json',
-          json: metadata
-        }],
-        meta: citationTags
-      }
+        script: [
+          {
+            type: 'application/ld+json',
+            json: metadata,
+          },
+        ],
+        meta: citationTags,
+      };
     }
   },
-  computed: {
-    ...mapState("admin", ["loading"]),
-    anchorsArr() {
-      if (Object.keys(this.anchors).includes(this.type)) {
-        return (this.anchors[this.type])
-      }
-      return (this.anchors["default"])
-    }
-  },
-  mounted() {
-    this.id = this.$route.params.id;
-
-    this.getData(this.id);
-  }
 });
 </script>
 

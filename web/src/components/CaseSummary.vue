@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="container py-3" v-if="currentSummary$">
+    <div v-if="currentSummary$" class="container py-3">
       <p class="case-summary focustext">
         {{ currentDate$ ? `As of ${currentDate$}` : 'Currently' }}, there are
         <span class="text-highlight">{{ currentSummary$['confirmed'] }}</span>
@@ -67,7 +67,9 @@
     >
       <div class="d-flex justify-content-center align-items-center mb-2">
         <div>
-          <h5 class="at-a-glance-header m-0">At a glance</h5>
+          <h5 class="at-a-glance-header m-0">
+            At a glance
+          </h5>
           <p class="ml-3 mb-0">
             View the three locations with the largest increase in COVID-19 cases
             in the past day, or select your own locations
@@ -93,18 +95,18 @@
         />
 
         <div
-          class="d-flex mx-2 py-3 px-3 flex-column align-items-center box-shadow add-items bg-grag-main"
           v-if="summaryDeletable"
+          class="d-flex mx-2 py-3 px-3 flex-column align-items-center box-shadow add-items bg-grag-main"
         >
           <h6>Add locations</h6>
-          <SearchBar @location="addSummary" class="search-bar"></SearchBar>
+          <SearchBar class="search-bar" @location="addSummary" />
         </div>
       </div>
     </section>
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import Vue from 'vue';
 import { mapState } from 'vuex';
 import tippy from 'tippy.js';
@@ -135,62 +137,18 @@ export default Vue.extend({
       updatedSubscription: null,
     };
   },
-  watch: {},
   computed: {
     ...mapState('epidata', ['mostCases']),
-    mostCasesNames: function() {
+    mostCasesNames() {
       return this.mostCases.map((d) => d.location_id).join(';');
     },
   },
-  methods: {
-    removeSummary: function(idx) {
-      this.glanceLocations = this.glanceLocations.filter((d, i) => d !== idx);
-      Vue.$cookies.set('custom_locations', this.glanceLocations);
-      if (this.glanceLocations.length > 0) {
-        this.updatedSubscription = getGlanceSummary(
-          this.$apiurl,
-          this.$genomicsurl,
-          this.glanceLocations,
-        ).subscribe((d) => {
-          this.glanceSummaries = this.sortSummaries(d);
-        });
-      } else {
-        this.glanceSummaries = [];
-      }
-    },
-    addSummary: function(location_id) {
-      this.glanceLocations = this.glanceLocations.concat(location_id);
-      Vue.$cookies.set('custom_locations', this.glanceLocations);
-      this.updatedSubscription = getGlanceSummary(
-        this.$apiurl,
-        this.$genomicsurl,
-        this.glanceLocations,
-      ).subscribe((d) => {
-        this.glanceSummaries = this.sortSummaries(d);
-      });
-    },
-    sortSummaries(data) {
-      if (this.glanceLocations && this.glanceLocations.length > 0) {
-        data.sort(
-          (a, b) =>
-            this.glanceLocations.indexOf(a.location_id) -
-            this.glanceLocations.indexOf(b.location_id),
-        );
-      }
-      return data;
-    },
-  },
+  watch: {},
   destroyed() {
     this.dataSubscription.unsubscribe();
     if (this.updatedSubscription) {
       this.updatedSubscription.unsubscribe();
     }
-  },
-  subscriptions() {
-    return {
-      currentSummary$: getSummary(this.$apiurl, this.caseThreshold),
-      currentDate$: getCurrentDate(this.$apiurl),
-    };
   },
   mounted() {
     const locations = Vue.$cookies.get('custom_locations');
@@ -240,6 +198,50 @@ export default Vue.extend({
         },
       });
     });
+  },
+  methods: {
+    removeSummary(idx) {
+      this.glanceLocations = this.glanceLocations.filter((d, i) => d !== idx);
+      Vue.$cookies.set('custom_locations', this.glanceLocations);
+      if (this.glanceLocations.length > 0) {
+        this.updatedSubscription = getGlanceSummary(
+          this.$apiurl,
+          this.$genomicsurl,
+          this.glanceLocations,
+        ).subscribe((d) => {
+          this.glanceSummaries = this.sortSummaries(d);
+        });
+      } else {
+        this.glanceSummaries = [];
+      }
+    },
+    addSummary(location_id) {
+      this.glanceLocations = this.glanceLocations.concat(location_id);
+      Vue.$cookies.set('custom_locations', this.glanceLocations);
+      this.updatedSubscription = getGlanceSummary(
+        this.$apiurl,
+        this.$genomicsurl,
+        this.glanceLocations,
+      ).subscribe((d) => {
+        this.glanceSummaries = this.sortSummaries(d);
+      });
+    },
+    sortSummaries(data) {
+      if (this.glanceLocations && this.glanceLocations.length > 0) {
+        data.sort(
+          (a, b) =>
+            this.glanceLocations.indexOf(a.location_id) -
+            this.glanceLocations.indexOf(b.location_id),
+        );
+      }
+      return data;
+    },
+  },
+  subscriptions() {
+    return {
+      currentSummary$: getSummary(this.$apiurl, this.caseThreshold),
+      currentDate$: getCurrentDate(this.$apiurl),
+    };
   },
 });
 </script>

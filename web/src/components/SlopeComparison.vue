@@ -19,21 +19,21 @@
         </marker>
       </defs>
       <g
+        ref="xAxis"
         :transform="`translate(${margin.left}, ${height - margin.bottom})`"
         class="epi-axis axis--x"
-        ref="xAxis"
-      ></g>
+      />
       <!-- <g :transform="`translate(${margin.left}, ${margin.top})`" class="epi-axis axis--y" ref="yAxis"></g> -->
       <g
+        ref="slopes"
         :transform="`translate(${margin.left},${margin.top})`"
         class="slopes"
-        ref="slopes"
-      ></g>
+      />
     </svg>
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import Vue from 'vue';
 
 import { select, selectAll, scaleLinear, axisBottom } from 'd3';
@@ -74,10 +74,10 @@ export default Vue.extend({
     };
   },
   watch: {
-    slope1: function() {
+    slope1() {
       this.updatePlot();
     },
-    slope2: function() {
+    slope2() {
       this.updatePlot();
     },
   },
@@ -86,15 +86,15 @@ export default Vue.extend({
     this.updatePlot();
   },
   methods: {
-    updatePlot: function() {
+    updatePlot() {
       this.updateScales();
       this.drawSlopes();
     },
-    setupPlot: function() {
+    setupPlot() {
       this.svg = select('svg.slope-comparison');
       this.chart = this.svg.select('.slopes');
     },
-    updateScales: function() {
+    updateScales() {
       this.x = this.x
         .range([0, this.width - this.margin.left - this.margin.right])
         .domain([0, 1]);
@@ -113,7 +113,7 @@ export default Vue.extend({
 
       // select(this.$refs.yAxis).call(this.yAxis);
     },
-    drawSlopes: function() {
+    drawSlopes() {
       // --- poly fill and swoopy arrow ---
       this.chart
         .selectAll('.fit-diff')

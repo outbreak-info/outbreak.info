@@ -1,6 +1,6 @@
 <template>
   <div class="d-flex flex-column border-top">
-    <div class="border-bottom py-3" v-if="date">
+    <div v-if="date" class="border-bottom py-3">
       <!-- date -->
       <div>
         {{ date }}
@@ -17,7 +17,7 @@
         </a>
       </div>
 
-      <div class="text-muted" v-if="!data.pmid">ID: {{ data._id }}</div>
+      <div v-if="!data.pmid" class="text-muted">ID: {{ data._id }}</div>
       <div v-if="data.pmid" class="text-muted">
         PMID:
         <a
@@ -32,8 +32,8 @@
 
     <!-- link out -->
     <div
-      class="py-4 border-bottom d-flex flex-column justify-content-center"
       v-if="data.url"
+      class="py-4 border-bottom d-flex flex-column justify-content-center"
     >
       <span class="sidebar-header">View {{ type }}</span>
       <div class="d-flex align-items-center justify-content-center">
@@ -54,12 +54,12 @@
       <div class="citation-container flex">
         <a class="mr-3 share-link" @click="downloadCitation()">RIS</a>
         <a
+          ref="risDownload"
           :href="citationRIS"
           target="_blank"
           rel="noreferrer"
           download="outbreakinfo_citation.ris"
-          ref="risDownload"
-        ></a>
+        />
       </div>
     </div>
 
@@ -68,19 +68,19 @@
       <div v-for="(evaluation, eIdx) in data.evaluations" :key="eIdx">
         <!-- COVID-19 LST -->
         <div
+          v-if="evaluation.name === 'covid19LST'"
           id="covid19-lst"
-          v-if="evaluation.name == 'covid19LST'"
           class="py-3 border-bottom d-flex flex-column"
         >
           <span class="sidebar-header">Level of Evidence in Study</span>
           <span class="mt-2">&larr; more evidence</span>
           <div class="d-flex justify-content-center mt-1 mb-3">
             <div
-              class="circle-rating mx-2"
               v-for="(rating, dIdx) in 5"
               :key="dIdx"
+              class="circle-rating mx-2"
               :class="[
-                rating == evaluation.ratingValue
+                rating === evaluation.ratingValue
                   ? 'rating-selected'
                   : 'rating-unselected',
               ]"
@@ -104,14 +104,16 @@
             </a>
           </div>
           <small
-            class="text-muted section-header fa-xs line-height-1"
             v-if="evaluation.reviewAspect"
+            class="text-muted section-header fa-xs line-height-1"
           >
             based on
             <a
+              v-if="
+                evaluation.reviewAspect === 'Oxford 2011 Levels of Evidence'
+              "
               href="https://www.cebm.ox.ac.uk/resources/levels-of-evidence/explanation-of-the-2011-ocebm-levels-of-evidence"
               target="_blank"
-              v-if="evaluation.reviewAspect == 'Oxford 2011 Levels of Evidence'"
             >
               {{ evaluation.reviewAspect }}
             </a>
@@ -122,7 +124,7 @@
     </template>
 
     <!-- altmetrics badges -->
-    <div class="py-3 border-bottom d-flex flex-column" v-if="data.doi">
+    <div v-if="data.doi" class="py-3 border-bottom d-flex flex-column">
       <span class="sidebar-header">
         <a
           class="text-white"
@@ -138,15 +140,15 @@
         data-badge-type="medium-donut"
         data-badge-popover="left"
         :data-doi="data.doi"
-      ></div>
+      />
       <small class="text-muted line-height-1">
         Altmetric tracks mentions of scholarly works across the social web
       </small>
     </div>
 
     <div
+      v-else-if="data.curatedBy && data.curatedBy.name === 'ClinicalTrials.gov'"
       class="py-3 border-bottom d-flex flex-column"
-      v-else-if="data.curatedBy && data.curatedBy.name == 'ClinicalTrials.gov'"
     >
       <span class="sidebar-header">
         <a
@@ -163,7 +165,7 @@
         data-badge-type="medium-donut"
         data-badge-popover="left"
         :data-nct-id="data.identifier"
-      ></div>
+      />
       <small class="text-muted line-height-1">
         Altmetric tracks mentions of scholarly works across the social web
       </small>
@@ -208,13 +210,13 @@
         >
           <font-awesome-icon class="mr-3" :icon="['fas', 'envelope']" />
         </a>
-        <a @click="copy2Clipboard" aria-label="copy to clipboard">
+        <a aria-label="copy to clipboard" @click="copy2Clipboard">
           <font-awesome-icon class="share-link mr-3" :icon="['fas', 'link']" />
         </a>
         <p :class="{ snackbar: true, show: showSnackbar }">
           copied to clipboard
         </p>
-        <a @click="shareLink" v-if="canShare" aria-label="share">
+        <a v-if="canShare" aria-label="share" @click="shareLink">
           <font-awesome-icon class="share-link mr-3" :icon="['fas', 'share']" />
         </a>
       </div>
@@ -235,13 +237,13 @@ library.add(faLink, faShare, faEnvelope, faTwitter);
 
 export default {
   name: 'ResourceSidebar',
+  components: {
+    FontAwesomeIcon,
+  },
   props: {
     data: Object,
     type: String,
     date: String,
-  },
-  components: {
-    FontAwesomeIcon,
   },
   data() {
     return {
@@ -254,7 +256,7 @@ export default {
       return window.location.href;
     },
     resourceLinkLabel() {
-      if (this.type == 'Publication') {
+      if (this.type === 'Publication') {
         return this.data.journalName
           ? this.data.journalName
           : this.data.journalNameAbbrev
@@ -267,7 +269,7 @@ export default {
       }
     },
     canShare() {
-      return navigator.share ? true : false;
+      return !!navigator.share;
     },
   },
   mounted() {
@@ -280,14 +282,14 @@ export default {
     document.body.appendChild(altmetricsScript);
   },
   methods: {
-    copy2Clipboard: function() {
+    copy2Clipboard() {
       this.showSnackbar = true;
       setTimeout(() => {
         this.showSnackbar = false;
       }, 3000);
       navigator.clipboard.writeText(this.outbreakUrl);
     },
-    downloadCitation: function() {
+    downloadCitation() {
       const ris = formatRIS(this.data);
 
       if (ris) {
@@ -296,7 +298,7 @@ export default {
         this.$refs.risDownload.click();
       }
     },
-    shareLink: function() {
+    shareLink() {
       if (navigator.share) {
         navigator.share({
           title: `outbreak.info ${this.type}`,

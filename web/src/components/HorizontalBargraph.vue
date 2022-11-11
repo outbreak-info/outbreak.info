@@ -1,17 +1,19 @@
 <template>
   <div class="horizontal-bargraph d-flex flex-column text-left">
-    <h6 class="m-0">{{ title }}</h6>
+    <h6 class="m-0">
+      {{ title }}
+    </h6>
     <small class="text-muted">{{ subtitle }}</small>
     <svg :width="width" :height="height">
       <g
-        :transform="`translate(${margin.left}, ${margin.top})`"
         ref="horizontal_bargraph"
-      ></g>
+        :transform="`translate(${margin.left}, ${margin.top})`"
+      />
       <g
+        ref="yAxis"
         :transform="`translate(${width - margin.right + 3}, ${margin.top})`"
         class="horizontal-bargraph-y axis--y"
-        ref="yAxis"
-      ></g>
+      />
     </svg>
   </div>
 </template>
@@ -45,7 +47,7 @@ export default Vue.extend({
       default: '#cbd7e3',
     },
   },
-  data: function() {
+  data() {
     return {
       barHeight: 10,
       spacing: 3,
@@ -64,7 +66,7 @@ export default Vue.extend({
     };
   },
   computed: {
-    filtered: function() {
+    filtered() {
       if (this.data) {
         return this.data.slice(0, this.num2Show);
       } else {
@@ -72,11 +74,15 @@ export default Vue.extend({
       }
     },
   },
+  mounted() {
+    this.setupPlot();
+    this.updatePlot();
+  },
   methods: {
     setupPlot() {
       this.svg = select(this.$refs.horizontal_bargraph);
     },
-    updatePlot: function() {
+    updatePlot() {
       if (this.filtered) {
         this.updateAxes();
         this.drawBars();
@@ -109,10 +115,6 @@ export default Vue.extend({
           .style('fill', this.fill);
       });
     },
-  },
-  mounted() {
-    this.setupPlot();
-    this.updatePlot();
   },
 });
 </script>

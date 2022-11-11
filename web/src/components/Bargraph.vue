@@ -1,32 +1,34 @@
 <template>
   <div
-    class="bargraph-group d-flex flex-column bargraph-group-margin"
     :id="`bargraph-${id}-${variable}`"
+    class="bargraph-group d-flex flex-column bargraph-group-margin"
     :style="{ transform: `scale(${transformChart})` }"
   >
-    <h4 v-if="title">{{ title }}</h4>
+    <h4 v-if="title">
+      {{ title }}
+    </h4>
     <div class="position-relative">
       <div
-        :style="{ transform: `translate(${margin.left}px,${margin.top}px)` }"
         id="barchart-wrapper"
         ref="barchart_wrapper"
+        :style="{ transform: `translate(${margin.left}px,${margin.top}px)` }"
       >
         <div :class="tooltipIdx">
           <div class="tooltip  p-2">
-            <h6 class="country-name m-0"></h6>
-            <p class="date m-0"></p>
-            <p class="count m-0"></p>
-            <b class="count-avg m-0"></b>
+            <h6 class="country-name m-0" />
+            <p class="date m-0" />
+            <p class="count m-0" />
+            <b class="count-avg m-0" />
           </div>
         </div>
       </div>
       <svg
+        ref="svg"
         :width="width + margin.left + margin.right"
         :height="height + margin.top + margin.bottom"
         class="epi-bargraph"
         :name="plotTitle"
         :subtitle="title"
-        ref="svg"
       >
         <defs>
           <marker
@@ -54,29 +56,29 @@
         </defs>
 
         <g
+          id="xAxis"
+          ref="xAxis"
           :transform="`translate(${margin.left}, ${height + margin.top + 2})`"
           class="epi-axis axis--x axis-font"
-          ref="xAxis"
-          id="xAxis"
-        ></g>
+        />
         <g
+          id="yAxis"
+          ref="yAxis"
           :transform="`translate(${margin.left - 5}, ${margin.top})`"
           class="epi-axis axis--y axis-font"
-          ref="yAxis"
-          id="yAxis"
-        ></g>
+        />
         <g
-          :transform="`translate(${margin.left},${margin.top})`"
           id="case-counts"
-          class="bargraph"
           ref="case_counts"
-        ></g>
-        <g
           :transform="`translate(${margin.left},${margin.top})`"
-          id="rolling-average"
           class="bargraph"
+        />
+        <g
+          id="rolling-average"
           ref="rolling_average"
-        ></g>
+          :transform="`translate(${margin.left},${margin.top})`"
+          class="bargraph"
+        />
         <g class="annotations" :class="{ hidden: noRollingAvg }">
           <line
             :style="{ stroke: this.colorAverage, 'stroke-width': 2.5 }"
@@ -84,7 +86,7 @@
             :x2="margin.left + 20"
             :y1="margin.top + 6"
             :y2="margin.top + 6"
-          ></line>
+          />
           <text
             class="annotation--rolling-average"
             :x="margin.left + 25"
@@ -92,6 +94,7 @@
             :style="{
               fill: this.colorAverage,
               'dominant-baseline': 'hanging',
+
               'font-family': 'DM Sans, Avenir, Helvetica, Arial, sans-serif',
             }"
           >
@@ -100,25 +103,25 @@
         </g>
       </svg>
       <svg
+        ref="svg_arrows"
         :width="width + margin.left + margin.right"
         :height="height + margin.top + margin.bottom"
         style="left:0; bottom:0"
         class="epi-bargraph-arrows position-absolute"
-        ref="svg_arrows"
       >
         <g
+          v-if="includeAxis && loggable"
+          ref="switch_btn"
           class="switch-button-group"
           transform="translate(5,0)"
-          ref="switch_btn"
-          v-if="includeAxis && loggable"
         >
-          <rect class="switch-button-rect"></rect>
+          <rect class="switch-button-rect" />
           <path
-            class="swoopy-arrow"
             id="switch-btn-swoopy-arrow"
+            class="swoopy-arrow"
             marker-end="url(#arrow)"
-          ></path>
-          <text class="switch-button" x="5"></text>
+          />
+          <text class="switch-button" x="5" />
         </g>
       </svg>
     </div>
@@ -134,7 +137,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import Vue from 'vue';
 
 import {
@@ -203,7 +206,7 @@ export default Vue.extend({
     date1: {
       type: String,
     },
-    include2Week: {
+    include2week: {
       type: Boolean,
       default: false,
     },
@@ -244,7 +247,7 @@ export default Vue.extend({
     },
   },
   watch: {
-    data: function() {
+    data() {
       this.updatePlot();
       this.drawBarchart();
     },
@@ -262,10 +265,10 @@ export default Vue.extend({
         this.drawBarchart();
       },
     },
-    // variable: function() {
+    // variable() {
     //   this.updatePlot()
     // },
-    fixedYMax: function() {
+    fixedYMax() {
       this.updatePlot();
       this.drawBarchart();
     },
@@ -286,14 +289,28 @@ export default Vue.extend({
         }
       },
     },
-    width: function() {
+    width() {
       this.updatePlot();
       this.drawBarchart();
     },
-    height: function() {
+    height() {
       this.updatePlot();
       this.drawBarchart();
     },
+  },
+  mounted() {
+    if (!this.includeAxis) {
+      this.margin = {
+        top: 0,
+        bottom: 0,
+        left: 0,
+        right: 0,
+      };
+    }
+
+    this.setupPlot();
+    this.setupBarChart();
+    this.updatePlot();
   },
   methods: {
     setupPlot() {
@@ -302,6 +319,7 @@ export default Vue.extend({
       );
       this.chart = this.svg.select('#case-counts');
       this.average = this.svg.select('#rolling-average');
+
       this.line = line()
         .x((d) => this.x(d.date))
         .y((d) => this.y(d[this.variable.replace('_numIncrease', '_rolling')]));
@@ -320,7 +338,7 @@ export default Vue.extend({
         this.drawBarchart();
       }
     },
-    prepData: function() {
+    prepData() {
       this.location_id =
         this.data && this.data.length && this.data[0].admin_level >= 0
           ? this.data[0].location_id
@@ -427,6 +445,7 @@ export default Vue.extend({
           .attr(
             'width',
             this.switchBtn
+
               .select('text')
               .node()
               .getBBox().width + 10,
@@ -434,6 +453,7 @@ export default Vue.extend({
           .attr(
             'height',
             this.switchBtn
+
               .select('text')
               .node()
               .getBBox().height + 5,
@@ -511,7 +531,7 @@ export default Vue.extend({
               ),
           );
 
-          if (this.include2Week && this.x(endDate)) {
+          if (this.include2week && this.x(endDate)) {
             const dateSelector = this.chart
               .selectAll(`.date-annotation_${this.variable}`)
               .data([endDate]);
@@ -553,7 +573,7 @@ export default Vue.extend({
           }
         }
 
-        var lineSelector;
+        let lineSelector;
         if (
           [
             'confirmed_numIncrease',
@@ -584,6 +604,7 @@ export default Vue.extend({
         lineSelector.join(
           (enter) => {
             enter
+
               .append('path')
               .attr('class', 'rolling-average')
               .style('stroke', this.colorAverage)
@@ -597,6 +618,7 @@ export default Vue.extend({
           },
           (update) => {
             update
+
               .style('stroke', this.colorAverage)
               .attr('d', this.line)
               .attr('stroke-dasharray', 0)
@@ -637,12 +659,14 @@ export default Vue.extend({
         this.pixiApp.stage.addChild(hoverCircle);
 
         this.plottedData
+
           .filter((t) => t[this.variable])
           .forEach((d) => {
             let barchart = new SmoothGraphics();
             if (d.confirmed_numIncrease > d.confirmed_rolling) {
               barchart.hitArea = new PIXI.Rectangle(
                 this.x(d.date),
+
                 this.y(d[this.variable.replace('_numIncrease', '_rolling')]) -
                   100,
                 this.x.bandwidth(),
@@ -655,6 +679,7 @@ export default Vue.extend({
             } else {
               barchart.hitArea = new PIXI.Rectangle(
                 this.x(d.date),
+
                 this.y(d[this.variable.replace('_numIncrease', '_rolling')]) -
                   100,
                 this.x.bandwidth(),
@@ -666,18 +691,18 @@ export default Vue.extend({
               );
             }
             barchart.beginFill(0x507ea3, 0.55);
-            let bar = barchart
-              .lineStyle(0.9, 0x507ea3, 0, 0.5)
-              .drawRect(
-                this.x(d.date),
-                this.y(d[this.variable]),
-                this.x.bandwidth(),
-                this.y(this.yMin) - this.y(d[this.variable]),
-              );
+            let bar = barchart.lineStyle(0.9, 0x507ea3, 0, 0.5).drawRect(
+              this.x(d.date),
+              this.y(d[this.variable]),
+              this.x.bandwidth(),
+
+              this.y(this.yMin) - this.y(d[this.variable]),
+            );
 
             barchart.endFill();
             if (this.includeTooltips) {
               bar.interactive = true;
+
               bar.on('pointerover', (event) => {
                 const ttip = selectAll(`.${this.tooltipIdx}`)
                   .selectAll('.tooltip')
@@ -714,6 +739,7 @@ export default Vue.extend({
                 hoverLine.alpha = 1;
                 hoverLine.position.set(
                   this.x(d.date),
+
                   this.y(d[this.variable.replace('_numIncrease', '_rolling')]),
                 );
                 hoverLine.height =
@@ -724,6 +750,7 @@ export default Vue.extend({
                 let circ_x = this.x(d.date) + this.x.bandwidth() / 2;
                 hoverCircle.position.set(
                   circ_x,
+
                   this.y(d[this.variable.replace('_numIncrease', '_rolling')]),
                 );
               });
@@ -739,7 +766,7 @@ export default Vue.extend({
       }
     },
 
-    changeScale: function() {
+    changeScale() {
       this.isLogY = !this.isLogY;
       this.$router.replace({
         path: 'epidemiology',
@@ -760,20 +787,6 @@ export default Vue.extend({
       this.drawBarchart();
     },
   },
-  mounted() {
-    if (!this.includeAxis) {
-      this.margin = {
-        top: 0,
-        bottom: 0,
-        left: 0,
-        right: 0,
-      };
-    }
-
-    this.setupPlot();
-    this.setupBarChart();
-    this.updatePlot();
-  },
 });
 </script>
 
@@ -786,6 +799,7 @@ export default Vue.extend({
   opacity: 0;
   pointer-events: none;
 }
+
 .switch-button-rect {
   cursor: pointer;
   fill: #fff;
@@ -795,30 +809,38 @@ export default Vue.extend({
   stroke-width: 1;
   shape-rendering: crispedges;
 }
+
 .swoopy-arrow,
 .swoopy-arrowhead {
   stroke: #698bac;
   fill: none;
   stroke-width: 0.8;
 }
+
 .epi-bargraph {
   pointer-events: none;
 }
+
 .epi-bargraph-arrows {
   pointer-events: none;
+
   & rect {
     pointer-events: auto !important;
   }
 }
+
 #barchart-wrapper {
   position: absolute;
 }
+
 .axis-font {
   font-size: 1rem;
 }
+
 .annotation--rolling-average {
   font-size: 0.75em;
 }
+
 @media only screen and (max-width: 790px) {
   h4 {
     font-size: 2.5rem;

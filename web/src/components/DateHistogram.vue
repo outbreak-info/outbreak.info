@@ -1,19 +1,16 @@
 <template>
-  <div class="donut-group d-flex flex-column" :id="`donut-${id}`">
+  <div :id="`donut-${id}`" class="donut-group d-flex flex-column">
     <svg
       :width="width + margin.left + margin.right"
       :height="height + margin.top + margin.bottom"
       class="date-histogram"
     >
+      <g ref="hist" :transform="`translate(${margin.left},${margin.top})`" />
       <g
-        :transform="`translate(${this.margin.left},${this.margin.top})`"
-        ref="hist"
-      ></g>
-      <g
-        class="axis axis--x"
         ref="axis_x"
+        class="axis axis--x"
         :transform="`translate(${margin.left},${height + margin.top})`"
-      ></g>
+      />
     </svg>
     <svg
       :hidden="!filterable"
@@ -21,9 +18,9 @@
       height="38"
     >
       <g
-        class="slider-handle pointer"
         v-if="x"
-        :transform="`translate(${this.margin.left},${5})`"
+        class="slider-handle pointer"
+        :transform="`translate(${margin.left},${5})`"
       >
         <g stroke="#686868" fill="#d6d6d6" stroke-width="0.5">
           <line
@@ -37,8 +34,8 @@
           />
           <polygon
             id="slider_left"
-            :transform="`translate(${sliderLeft},0)`"
             ref="slider_left"
+            :transform="`translate(${sliderLeft},0)`"
             points="4.1,10.3 0.1,10.3 0.1,-1.8 1.1,-1.8 4.1,-1.8 8.1,4.1 "
           />
           <polygon
@@ -66,8 +63,8 @@
   </div>
 </template>
 
-<script lang="js">
-import Vue from "vue";
+<script>
+import Vue from 'vue';
 
 import {
   select,
@@ -85,11 +82,11 @@ import {
   timeFormat,
   timeParse,
   drag,
-  event
-} from "d3";
+  event,
+} from 'd3';
 
 export default Vue.extend({
-  name: "DateHistogram",
+  name: 'DateHistogram',
   props: {
     data: Array,
     id: String,
@@ -97,16 +94,16 @@ export default Vue.extend({
     maxVal: Date,
     filterable: {
       type: Boolean,
-      default: true
+      default: true,
     },
     width: {
       type: Number,
-      default: 125
+      default: 125,
     },
     height: {
       type: Number,
-      default: 60
-    }
+      default: 60,
+    },
   },
   data() {
     return {
@@ -114,7 +111,7 @@ export default Vue.extend({
         top: 5,
         bottom: 25,
         left: 15,
-        right: 15
+        right: 15,
       },
       // data
       bins: null,
@@ -127,42 +124,50 @@ export default Vue.extend({
       selectedMax: null,
       // refs
       svg: null,
-      xAxisRef: null
+      xAxisRef: null,
       // methods
     };
   },
+  computed: {
+    sliderRight() {
+      return this.x && this.selectedMax ? this.x(this.selectedMax) : 8;
+    },
+    sliderLeft() {
+      return this.x && this.selectedMin ? this.x(this.selectedMin) : 0;
+    },
+  },
   watch: {
-    data: function() {
+    data() {
       if (this.data) {
         if (this.filterable) {
           this.setSliders();
         }
         this.updatePlot();
       }
-    }
-  },
-  computed: {
-    sliderRight() {
-      return ((this.x && this.selectedMax) ? this.x(this.selectedMax) : 8);
     },
-    sliderLeft() {
-      return ((this.x && this.selectedMin) ? this.x(this.selectedMin) : 0);
+  },
+  mounted() {
+    this.setupPlot();
+    this.updatePlot();
+    if (this.filterable) {
+      this.setSliders();
+      this.$nextTick(() => this.setupDrag());
     }
   },
   methods: {
     formatLimit(val) {
-      return (timeFormat("%d %b %Y")(val));
+      return timeFormat('%d %b %Y')(val);
     },
     formatDate(val) {
-      return (timeFormat("%Y-%m-%d")(val));
+      return timeFormat('%Y-%m-%d')(val);
     },
     parseDate(val) {
-      return (timeParse("%Y-%m-%d")(val));
+      return timeParse('%Y-%m-%d')(val);
     },
-    updateFilterLimits: function() {
+    updateFilterLimits() {
       this.selectedMin = new Date(2020, 3, 1);
       // selectedMax: new Date(2020,8,1),this.minVal ;
-      this.selectedMax = new Date(2020, 6, 1)
+      this.selectedMax = new Date(2020, 6, 1);
     },
     setupPlot() {
       this.svg = select(this.$refs.hist);
@@ -174,47 +179,50 @@ export default Vue.extend({
         this.drawPlot();
       }
     },
-    updateAxes: function() {
-      const dateRange = extent(this.data, d => d.date);
+    updateAxes() {
+      const dateRange = extent(this.data, (d) => d.date);
 
       // x-axis
       // Add 1 week pad on either side of the histogram to pad the ends
       this.x = scaleTime()
         .range([0, this.width])
-        .domain([timeWeek.offset(dateRange[0], -1), timeWeek.offset(dateRange[1], 1)])
+        .domain([
+          timeWeek.offset(dateRange[0], -1),
+          timeWeek.offset(dateRange[1], 1),
+        ])
         .clamp(true);
 
-
-      this.xAxis = axisBottom(this.x).tickSizeOuter(0).ticks(2);
+      this.xAxis = axisBottom(this.x)
+        .tickSizeOuter(0)
+        .ticks(2);
       this.xAxisRef.call(this.xAxis);
 
-      selectAll(".axis").call(this.xAxis);
+      selectAll('.axis').call(this.xAxis);
 
       // calculate bins
       // rolled up to every week
       this.bins = nest()
-        .key(d => timeWeek(d.date))
-        .rollup(values => sum(values, d => d.count))
-        .entries(this.data)
+        .key((d) => timeWeek(d.date))
+        .rollup((values) => sum(values, (d) => d.count))
+        .entries(this.data);
 
       // gotta reconvert dates from strings
-      this.bins.forEach(d => {
-        d["date"] = isoParse(d.key)
-      })
+      this.bins.forEach((d) => {
+        d['date'] = isoParse(d.key);
+      });
 
       // // y-axis
       this.y = scaleLinear()
         .range([this.height, 0])
-        .domain([0, max(this.bins, d => d.value)]);
-
+        .domain([0, max(this.bins, (d) => d.value)]);
     },
     changeFilters() {
       const route = this.$route.query;
 
       this.$router.push({
-        name: "Resources",
+        name: 'Resources',
         params: {
-          disableScroll: true
+          disableScroll: true,
         },
         query: {
           q: route.q,
@@ -223,76 +231,90 @@ export default Vue.extend({
           filter: route.filter,
           sort: route.sort,
           dateMin: this.formatDate(this.selectedMin),
-          dateMax: this.formatDate(this.selectedMax)
-        }
+          dateMax: this.formatDate(this.selectedMax),
+        },
       });
     },
     setSliders() {
-      this.selectedMin = this.$route.query.dateMin ? this.parseDate(this.$route.query.dateMin) : min(this.data.filter(d => d.count), x => x.date);
-      this.selectedMax = this.$route.query.dateMax ? this.parseDate(this.$route.query.dateMax) : max(this.data.filter(d => d.count), x => x.date);
+      this.selectedMin = this.$route.query.dateMin
+        ? this.parseDate(this.$route.query.dateMin)
+        : min(
+            this.data.filter((d) => d.count),
+            (x) => x.date,
+          );
+      this.selectedMax = this.$route.query.dateMax
+        ? this.parseDate(this.$route.query.dateMax)
+        : max(
+            this.data.filter((d) => d.count),
+            (x) => x.date,
+          );
     },
     setupDrag() {
       // draggable filters
-      select(this.$refs.slider_left)
-        .call(drag()
-          .on("drag", () => this.updateDrag("left"))
-          .on("end", () => this.changeFilters())
-        )
-      select(this.$refs.slider_right)
-        .call(drag()
-          .on("drag", () => this.updateDrag("right"))
-          .on("end", () => this.changeFilters())
-        )
+      select(this.$refs.slider_left).call(
+        drag()
+          .on('drag', () => this.updateDrag('left'))
+          .on('end', () => this.changeFilters()),
+      );
+      select(this.$refs.slider_right).call(
+        drag()
+          .on('drag', () => this.updateDrag('right'))
+          .on('end', () => this.changeFilters()),
+      );
     },
     updateDrag(side) {
       const newVal = this.x.invert(event.x);
-      if (side == "left") {
+      if (side === 'left') {
         this.selectedMin = newVal;
-        select(this.$refs.slider_left)
-          .attr("transform", `translate(${this.x(this.selectedMin)},0)`);
-
+        select(this.$refs.slider_left).attr(
+          'transform',
+          `translate(${this.x(this.selectedMin)},0)`,
+        );
       } else {
         this.selectedMax = newVal;
 
-        select(this.$refs.slider_right)
-          .attr("transform", `translate(${this.x(this.selectedMax) - 8},0)`);
+        select(this.$refs.slider_right).attr(
+          'transform',
+          `translate(${this.x(this.selectedMax) - 8},0)`,
+        );
       }
 
       // selectAll(".date-histogram")
       // .style("fill", d => d.date <= this.selectedMax && d.date >= this.selectedMin ? "#66c2a5" : "#bababa")
     },
     drawPlot() {
-      const barSelector = this.svg
-        .selectAll("rect")
-        .data(this.bins);
+      const barSelector = this.svg.selectAll('rect').data(this.bins);
 
-      barSelector.join(enter => {
-          enter.append("rect")
-            .attr("class", "date-bar")
-            .style("fill", "#66c2a5")
+      barSelector.join(
+        (enter) => {
+          enter
+            .append('rect')
+            .attr('class', 'date-bar')
+            .style('fill', '#66c2a5')
             // .style("fill", d => d.date <= this.selectedMax && d.date >= this.selectedMin ? "#66c2a5" : "#bababa")
-            .attr("x", d => this.x(d.date))
-            .attr("width", d => (this.x(timeWeek.offset(d.date, 1)) - this.x(d.date)) * 0.9)
-            .attr("y", d => this.y(d.value))
-            .attr("height", d => this.y(0) - this.y(d.value))
+            .attr('x', (d) => this.x(d.date))
+            .attr(
+              'width',
+              (d) =>
+                (this.x(timeWeek.offset(d.date, 1)) - this.x(d.date)) * 0.9,
+            )
+            .attr('y', (d) => this.y(d.value))
+            .attr('height', (d) => this.y(0) - this.y(d.value));
         },
-        update => update
-        .style("fill", "#66c2a5")
-        .attr("x", d => this.x(d.date))
-        .attr("width", d => (this.x(timeWeek.offset(d.date, 1)) - this.x(d.date)) * 0.9)
-        .attr("y", d => this.y(d.value))
-        .attr("height", d => this.y(0) - this.y(d.value)))
-    }
+        (update) =>
+          update
+            .style('fill', '#66c2a5')
+            .attr('x', (d) => this.x(d.date))
+            .attr(
+              'width',
+              (d) =>
+                (this.x(timeWeek.offset(d.date, 1)) - this.x(d.date)) * 0.9,
+            )
+            .attr('y', (d) => this.y(d.value))
+            .attr('height', (d) => this.y(0) - this.y(d.value)),
+      );
+    },
   },
-  mounted() {
-    this.setupPlot();
-    this.updatePlot();
-    if (this.filterable) {
-      this.setSliders();
-      this.$nextTick(() => this.setupDrag())
-    }
-
-  }
 });
 </script>
 

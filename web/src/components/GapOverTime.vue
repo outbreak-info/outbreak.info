@@ -57,7 +57,7 @@ export default Vue.extend({
     },
     margin: {
       type: Object,
-      default: () => {
+      default() {
         return {
           top: 10,
           bottom: 30,
@@ -69,18 +69,6 @@ export default Vue.extend({
     fillColor: {
       type: String,
       default: '#9edae5',
-    },
-  },
-  watch: {
-    data() {
-      this.updatePlot();
-    },
-  },
-  computed: {
-    title() {
-      return this.location
-        ? `Weekly median difference between sample collection and sequence submission in days ${this.location}`
-        : 'Weekly median difference between sample collection and sequence submission in days';
     },
   },
   data() {
@@ -105,6 +93,22 @@ export default Vue.extend({
       area: null,
     };
   },
+  computed: {
+    title() {
+      return this.location
+        ? `Weekly median difference between sample collection and sequence submission in days ${this.location}`
+        : 'Weekly median difference between sample collection and sequence submission in days';
+    },
+  },
+  watch: {
+    data() {
+      this.updatePlot();
+    },
+  },
+  mounted() {
+    this.setupPlot();
+    this.updatePlot();
+  },
   methods: {
     updatePlot() {
       if (this.data) {
@@ -113,7 +117,7 @@ export default Vue.extend({
       }
     },
     setupPlot() {
-      this.$nextTick(function() {
+      this.$nextTick(() => {
         window.addEventListener('resize', this.setDims);
 
         // set initial dimensions for the plots.
@@ -216,10 +220,6 @@ export default Vue.extend({
           ),
       );
     },
-  },
-  mounted() {
-    this.setupPlot();
-    this.updatePlot();
   },
 });
 </script>

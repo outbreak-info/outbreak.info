@@ -2,7 +2,7 @@ import { from, Observable, of } from 'rxjs';
 import axios from 'axios';
 import { catchError, pluck, map, mergeMap } from 'rxjs/operators';
 
-export function getLocation(apiUrl) {
+export const getLocation = (apiUrl) => {
   return lookupLocation().pipe(
     mergeMap((loc) => processLocation(apiUrl, loc)),
     catchError((e) => {
@@ -11,9 +11,9 @@ export function getLocation(apiUrl) {
       return from(['none']);
     }),
   );
-}
+};
 
-function lookupLocation() {
+const lookupLocation = () => {
   return Observable.create((observer) => {
     if (window.navigator && window.navigator.geolocation) {
       window.navigator.geolocation.getCurrentPosition(
@@ -27,7 +27,7 @@ function lookupLocation() {
       observer.error('Unsupported Browser');
     }
   });
-}
+};
 
 // export function getLocation(apiUrl) {
 //   // if (!navigator.geolocation) {
@@ -43,7 +43,7 @@ function lookupLocation() {
 //   // }
 // }
 
-function processLocation(apiUrl, location) {
+const processLocation = (apiUrl, location) => {
   const scalar = 0.05;
   const url = `${apiUrl}query?q=mostRecent:true AND lat:[${(1 - scalar) *
     location.coords.latitude} TO ${(1 + scalar) *
@@ -72,9 +72,9 @@ function processLocation(apiUrl, location) {
       return from([]);
     }),
   );
-}
+};
 
-function failedLocation(location) {
+const failedLocation = (location) => {
   console.log(`failed location: ${location}`);
   return of(null);
-}
+};

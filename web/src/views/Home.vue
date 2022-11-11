@@ -32,7 +32,9 @@
         >
           <div class="mb-3">
             <router-link :to="{ name: 'Epidemiology' }" class="text-light">
-              <h3 class="my-3">COVID-19 Cases &amp; Deaths</h3>
+              <h3 class="my-3">
+                COVID-19 Cases &amp; Deaths
+              </h3>
             </router-link>
 
             <div
@@ -50,7 +52,7 @@
               placeholder="Search location"
               class="w-100"
               :darkMode="false"
-            ></SearchBar>
+            />
             <small id="sBar-example" class="form-text d-block text-left ml-5">
               <span class="mr-2">Try:</span>
               <span class="mr-3">
@@ -59,6 +61,7 @@
                   class="text-light"
                 >
                   Brazil
+
                   <font-awesome-icon :icon="['fas', 'angle-double-right']" />
                 </router-link>
               </span>
@@ -72,6 +75,7 @@
                   class="text-light"
                 >
                   California
+
                   <font-awesome-icon :icon="['fas', 'angle-double-right']" />
                 </router-link>
               </span>
@@ -84,6 +88,7 @@
                 class="text-light"
               >
                 Kansas City metro area
+
                 <font-awesome-icon :icon="['fas', 'angle-double-right']" />
               </router-link>
             </small>
@@ -102,7 +107,9 @@
                 :to="{ name: 'SituationReports' }"
                 class="text-light"
               >
-                <h3 class="my-3">Variants</h3>
+                <h3 class="my-3">
+                  Variants
+                </h3>
               </router-link>
               <small class="ml-2">
                 enabled by data from
@@ -130,12 +137,12 @@
           </div>
 
           <div id="search-lineage">
-            <form autocomplete="off" class="w-100" id="search-lineage-input">
+            <form id="search-lineage-input" autocomplete="off" class="w-100">
               <div class="input-group">
                 <div class="input-group-prepend">
                   <span
-                    class="input-group-text bg-grey text-muted border-0"
                     id="sb"
+                    class="input-group-text bg-grey text-muted border-0"
                   >
                     <font-awesome-icon :icon="['fas', 'search']" />
                   </span>
@@ -144,10 +151,10 @@
                   :isStandalone="false"
                   class="form-control border"
                   :queryFunction="queryPangolin"
-                  @selected="updatePangolin"
                   :apiUrl="this.$genomicsurl"
                   :removeOnSelect="true"
                   placeholder="Search PANGO lineage"
+                  @selected="updatePangolin"
                 />
               </div>
             </form>
@@ -162,6 +169,7 @@
                   class="text-light"
                 >
                   Omicron
+
                   <font-awesome-icon :icon="['fas', 'angle-double-right']" />
                 </router-link>
               </span>
@@ -174,6 +182,7 @@
                   class="text-light"
                 >
                   BA.2*
+
                   <font-awesome-icon :icon="['fas', 'angle-double-right']" />
                 </router-link>
               </span>
@@ -186,6 +195,7 @@
                   class="text-light"
                 >
                   BA.2.12.1
+
                   <font-awesome-icon :icon="['fas', 'angle-double-right']" />
                 </router-link>
               </span>
@@ -195,6 +205,7 @@
                   class="text-light"
                 >
                   BA.2.75
+
                   <font-awesome-icon :icon="['fas', 'angle-double-right']" />
                 </router-link>
               </span>
@@ -204,6 +215,7 @@
                   class="text-light"
                 >
                   BA.4
+
                   <font-awesome-icon :icon="['fas', 'angle-double-right']" />
                 </router-link>
               </span>
@@ -213,6 +225,7 @@
                   class="text-light"
                 >
                   BA.5*
+
                   <font-awesome-icon :icon="['fas', 'angle-double-right']" />
                 </router-link>
               </span>
@@ -221,15 +234,15 @@
 
           <div id="search-variant-location" class="mt-3">
             <form
+              id="search-variant-location-input"
               autocomplete="off"
               class="w-100"
-              id="search-variant-location-input"
             >
               <div class="input-group">
                 <div class="input-group-prepend">
                   <span
-                    class="input-group-text bg-grey text-muted border-0"
                     id="sb"
+                    class="input-group-text bg-grey text-muted border-0"
                   >
                     <font-awesome-icon :icon="['fas', 'search']" />
                   </span>
@@ -238,12 +251,12 @@
                   :isStandalone="false"
                   class="form-control border"
                   :queryFunction="queryLocation"
-                  @selected="submitLocation"
                   :apiUrl="this.$genomicsurl"
                   labelVariable="label"
                   :removeOnSelect="false"
                   placeholder="Select location"
                   totalLabel="total sequences"
+                  @selected="submitLocation"
                 />
               </div>
             </form>
@@ -258,6 +271,7 @@
                   class="text-light"
                 >
                   USA
+
                   <font-awesome-icon :icon="['fas', 'angle-double-right']" />
                 </router-link>
               </span>
@@ -267,6 +281,7 @@
                   class="text-light"
                 >
                   U.K.
+
                   <font-awesome-icon :icon="['fas', 'angle-double-right']" />
                 </router-link>
               </span>
@@ -276,6 +291,7 @@
                   class="text-light"
                 >
                   New York
+
                   <font-awesome-icon :icon="['fas', 'angle-double-right']" />
                 </router-link>
               </span>
@@ -288,6 +304,7 @@
                   class="text-light"
                 >
                   San Diego
+
                   <font-awesome-icon :icon="['fas', 'angle-double-right']" />
                 </router-link>
               </span>
@@ -316,24 +333,24 @@
           </div>
 
           <div>
-            <form autocomplete="off" class="w-100" id="search-resources">
+            <form id="search-resources" autocomplete="off" class="w-100">
               <div class="input-group">
                 <div class="input-group-prepend">
                   <span
-                    class="input-group-text bg-grey text-muted border-0"
                     id="sb"
+                    class="input-group-text bg-grey text-muted border-0"
                   >
                     <font-awesome-icon :icon="['fas', 'search']" />
                   </span>
                 </div>
                 <input
                   id="resourceBar"
+                  v-model="searchQuery"
                   class="form-control border"
                   placeholder="Search resources"
                   aria-label="search"
                   aria-describedby="sb"
                   type="text"
-                  v-model="searchQuery"
                   @keydown.enter.prevent="submitSearch"
                 />
               </div>
@@ -341,37 +358,15 @@
             <small id="sBar-example" class="form-text d-block  text-left ml-5">
               <span class="mr-2">Try:</span>
 
-              <span class="mr-3">
+              <span class="mr-3" v-for='(resource, rId) in resourceExamples' :key='rId'>
                 <router-link
-                  :to="{ name: 'Resources', query: { q: 'E484K' } }"
+                  :to="{ name: resource.route, query: { q: resource.query } }"
                   class="text-light"
-                >
-                  E484K
+                >{{resource.label}}
                   <font-awesome-icon :icon="['fas', 'angle-double-right']" />
                 </router-link>
               </span>
-              <span class="mr-3">
-                <router-link
-                  :to="{ name: 'Resources', query: { q: 'Moderna' } }"
-                  class="text-light"
-                >
-                  Moderna
-                  <font-awesome-icon :icon="['fas', 'angle-double-right']" />
-                </router-link>
-              </span>
-              <span class="mr-3">
-                <router-link
-                  :to="{ name: 'Resources', query: { q: 'remdesivir' } }"
-                  class="text-light"
-                >
-                  remdesivir
-                  <font-awesome-icon :icon="['fas', 'angle-double-right']" />
-                </router-link>
-              </span>
-              <router-link :to="{ name: 'NIAID' }" class="text-light">
-                NIAID-funded
-                <font-awesome-icon :icon="['fas', 'angle-double-right']" />
-              </router-link>
+
             </small>
           </div>
         </div>
@@ -382,9 +377,9 @@
     <div
       class="col-sm-12 d-flex justify-content-center align-items-center p-0 bg-grey__lightest"
     >
-      <div class="row d-flex align-items-center p-3">
+      <div class="d-flex align-items-center p-3">
         <div
-          class="col-sm-12 col-lg-6 d-flex flex-column align-items-center justify-content-center px-4 large"
+          class="mx-lg-5 mx-sm-0 d-flex flex-column align-items-center justify-content-center px-4 large"
         >
           <p>
             Outbreak.info is a project from the
@@ -393,13 +388,10 @@
               rel="noreferrer"
               target="_blank"
             >
-              Hughes
-            </a>
-            ,
-            <a href="http://sulab.org/" target="_blank">Su</a>
-            ,
-            <a href="https://wulab.io/" target="_blank">Wu</a>
-            , and
+              Hughes</a>,
+            <a href="http://sulab.org/" target="_blank">Su</a>,
+            <a href="https://wulab.io/" target="_blank">Wu</a>, and
+
             <a href="https://andersen-lab.com/" target="_blank">Andersen</a>
             labs at Scripps Research to unify COVID-19 and SARS-CoV-2
             epidemiology and genomic data, published research, and other
@@ -414,15 +406,6 @@
           </p>
         </div>
 
-        <div class="col-sm-12 col-lg-6">
-          <video class="w-100 mb-3" controls @play="videoClick">
-            <source
-              src="@/assets/home/outbreak_video_v3.mp4"
-              type="video/mp4"
-            />
-            Your browser does not support the video tag.
-          </video>
-        </div>
       </div>
     </div>
 
@@ -453,16 +436,22 @@
         :to="{ name: 'About', hash: '#jobs' }"
         class="no-underline m-4"
       >
-        <button class="btn btn-main">We're hiring!</button>
+        <button class="btn btn-main">
+          We're hiring!
+        </button>
       </router-link>
     </div>
 
-    <div class="collapse" id="collapsedFeatures">
-      <h1 class="text-center">What can I do with outbreak.info?</h1>
+    <div id="collapsedFeatures" class="collapse">
+      <h1 class="text-center">
+        What can I do with outbreak.info?
+      </h1>
 
       <!-- EPI EXAMPLES -->
       <section id="epi-examples" class="container my-3">
-        <h3 class="mb-1">Explore cases &amp; deaths</h3>
+        <h3 class="mb-1">
+          Explore cases &amp; deaths
+        </h3>
         <p class="text-muted">
           Track how reported COVID-19 cases and deaths are changing over time,
           how they compare between locations, and where locations have similar
@@ -475,7 +464,9 @@
                 :to="{ name: 'Epidemiology' }"
                 class="text-dark h-100 d-flex flex-column justify-content-between"
               >
-                <h5 class="text-uppercase">Compare locations over time</h5>
+                <h5 class="text-uppercase">
+                  Compare locations over time
+                </h5>
                 <img
                   src="@/assets/home/epi_example.svg"
                   alt="Outbreak.info epidemiology data over time"
@@ -491,7 +482,9 @@
                 :to="{ name: 'Maps' }"
                 class="text-dark h-100 d-flex flex-column justify-content-between"
               >
-                <h5 class="text-uppercase">View by geography</h5>
+                <h5 class="text-uppercase">
+                  View by geography
+                </h5>
                 <img
                   src="@/assets/home/map_example.svg"
                   alt="Outbreak.info U.S. epidemiology data by metro area"
@@ -507,7 +500,9 @@
                 :to="{ name: 'Compare' }"
                 class="text-dark h-100 d-flex flex-column justify-content-between"
               >
-                <h5 class="text-uppercase">Find similar regions</h5>
+                <h5 class="text-uppercase">
+                  Find similar regions
+                </h5>
                 <img
                   src="@/assets/home/compare_example.png"
                   alt="Outbreak.info compare regions"
@@ -519,12 +514,14 @@
 
           <!-- EPI CURVE SUMMARIES -->
           <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
-            <section class="w-100 p-3 card" id="regional-epi-curves">
+            <section id="regional-epi-curves" class="w-100 p-3 card">
               <router-link
                 :to="{ name: 'Regions' }"
                 class="text-dark h-100 d-flex flex-column justify-content-between"
               >
-                <h5 class="text-uppercase">Explore regions</h5>
+                <h5 class="text-uppercase">
+                  Explore regions
+                </h5>
                 <div class="h-100 d-flex flex-column justify-content-center">
                   <img
                     src="@/assets/home/regions_example.svg"
@@ -539,27 +536,12 @@
           <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
             <div class="w-100 p-3 card">
               <router-link
-                :to="{ name: 'Doubling Rates' }"
-                class="text-dark h-100 d-flex flex-column"
-              >
-                <h5 class="text-uppercase">View doubling rates</h5>
-                <div class="h-100 d-flex flex-column justify-content-center">
-                  <img
-                    src="@/assets/home/doubling_example.svg"
-                    alt="Outbreak.info doubling rates"
-                    class="w-100"
-                  />
-                </div>
-              </router-link>
-            </div>
-          </div>
-          <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
-            <div class="w-100 p-3 card">
-              <router-link
                 :to="{ name: 'Data' }"
                 class="text-dark h-100 d-flex flex-column"
               >
-                <h5 class="text-uppercase">View tables</h5>
+                <h5 class="text-uppercase">
+                  View tables
+                </h5>
                 <div class="h-100 d-flex flex-column justify-content-center">
                   <img
                     src="@/assets/home/data_table.png"
@@ -575,7 +557,9 @@
 
       <!-- GENOMICS -->
       <section id="epi-examples" class="container my-3">
-        <h3 class="mb-1">View SARS-CoV-2 Variant Reports</h3>
+        <h3 class="mb-1">
+          View SARS-CoV-2 Variant Reports
+        </h3>
         <p class="text-muted">
           SARS-CoV-2 variants have been shown to have increased
           transmissibility, virulence, and/or decreased efficacy of vaccines and
@@ -618,9 +602,10 @@
                   What questions can I answer with Lineage | Mutation Tracker
                   Reports?
                 </a>
+
                 <ul
-                  class="collapse text-highlight fa-sm line-height-1 mt-2"
                   id="lineage-report-questions"
+                  class="collapse text-highlight fa-sm line-height-1 mt-2"
                 >
                   <li class="mb-2">
                     How many sequences of a lineage /set of mutations have been
@@ -690,9 +675,10 @@
                 >
                   What questions can I answer with Location Tracker Reports?
                 </a>
+
                 <ul
-                  class="collapse text-highlight fa-sm line-height-1 mt-2"
                   id="location-report-questions"
+                  class="collapse text-highlight fa-sm line-height-1 mt-2"
                 >
                   <li class="mb-2">
                     What are the most prevalent lineages in a location recently?
@@ -722,7 +708,9 @@
                 :to="{ name: 'SituationReportComparison' }"
                 class="text-dark d-flex flex-column justify-content-between"
               >
-                <h5 class="text-uppercase">Compare PANGO Lineages</h5>
+                <h5 class="text-uppercase">
+                  Compare PANGO Lineages
+                </h5>
               </router-link>
               <div class="h-100 d-flex flex-column justify-content-center">
                 <router-link
@@ -747,8 +735,8 @@
                 </a>
 
                 <ul
-                  class="collapse text-highlight fa-sm line-height-1 mt-2"
                   id="compare-lineage-questions"
+                  class="collapse text-highlight fa-sm line-height-1 mt-2"
                 >
                   <li class="mb-2">
                     What mutations are shared between lineages?
@@ -771,7 +759,9 @@
 
       <!-- RESOURCE EXAMPLES -->
       <section id="resource-examples" class="container my-3">
-        <h3 class="mb-1">Search COVID-19 research library</h3>
+        <h3 class="mb-1">
+          Search COVID-19 research library
+        </h3>
         <p class="text-muted">
           Keeping track of rapidly changing COVID-19 research is a daunting
           task. We assembled a searchable library of COVID-19 and SARS-CoV-2
@@ -785,7 +775,9 @@
                 :to="{ name: 'Resources' }"
                 class="text-dark h-100 d-flex flex-column justify-content-between"
               >
-                <h5 class="text-uppercase">Search Resource Library</h5>
+                <h5 class="text-uppercase">
+                  Search Resource Library
+                </h5>
                 <img
                   src="@/assets/home/resources_search.png"
                   alt="Search Outbreak.info resources"
@@ -797,7 +789,9 @@
 
           <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
             <div class="w-100 p-3 card">
-              <h5 class="text-uppercase">Download metadata</h5>
+              <h5 class="text-uppercase">
+                Download metadata
+              </h5>
               <a
                 href="https://api.outbreak.info/try/resources"
                 target="_blank"
@@ -827,7 +821,9 @@
                 :to="{ name: 'Schema' }"
                 class="text-dark h-100 d-flex flex-column justify-content-between"
               >
-                <h5 class="text-uppercase">View &amp; adapt schema</h5>
+                <h5 class="text-uppercase">
+                  View &amp; adapt schema
+                </h5>
                 <div class="h-100 d-flex align-items-center">
                   <img
                     src="@/assets/home/schema_example.png"
@@ -843,7 +839,9 @@
 
       <!-- ACCESS DATA -->
       <section id="epi-examples" class="container my-3">
-        <h3 class="mb-1">Access data</h3>
+        <h3 class="mb-1">
+          Access data
+        </h3>
         <p class="text-muted">
           All the data we aggregate and standardized can be accessed through our
           API and R package.
@@ -899,17 +897,21 @@ import { mapState } from 'vuex';
 
 import store from '@/store';
 
+// Example queries
+import RESOURCEEXAMPLES from '@/assets/examples/resources_examples.json';
+
 // --- font awesome --
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
+
 import {
   faAngleDoubleRight,
   faSearch,
 } from '@fortawesome/free-solid-svg-icons';
 
-library.add(faAngleDoubleRight, faSearch);
-
 import { findPangolin, findLocation } from '@/api/genomics.js';
+
+library.add(faAngleDoubleRight, faSearch);
 
 export default {
   name: 'Home',
@@ -924,18 +926,21 @@ export default {
       searchQuery: '',
       queryPangolin: null,
       queryLocation: null,
+      resourceExamples: [],
     };
   },
   computed: {
     ...mapState('admin', ['loading']),
   },
+  mounted() {
+    this.resourceExamples = RESOURCEEXAMPLES;
+
+    const locations = Vue.$cookies.get('custom_locations');
+
+    this.queryPangolin = findPangolin;
+    this.queryLocation = findLocation;
+  },
   methods: {
-    videoClick() {
-      this.$gtag.event('video_play', {
-        event_category: `video_play`,
-        event_label: `outbreak.info homepage overview`,
-      });
-    },
     submitLocation(selected) {
       this.$router.push({
         name: 'LocationReport',
@@ -969,12 +974,6 @@ export default {
         });
       }
     },
-  },
-  mounted() {
-    const locations = Vue.$cookies.get('custom_locations');
-
-    this.queryPangolin = findPangolin;
-    this.queryLocation = findLocation;
   },
 };
 </script>

@@ -8,7 +8,7 @@
     </div>
 
     <!-- EPI CURVE SUMMARIES -->
-    <section class="mt-5" id="regional-epi-curves">
+    <section id="regional-epi-curves" class="mt-5">
       <div class="row d-flex justify-content-center">
         <GlanceSummary
           v-for="(location, idx) in glanceSummaries"
@@ -60,6 +60,9 @@ export default {
       dataSubscription: null,
     };
   },
+  computed: {
+    ...mapState('admin', ['loading']),
+  },
   watch: {
     location: {
       immediate: true,
@@ -69,8 +72,8 @@ export default {
       },
     },
   },
-  computed: {
-    ...mapState('admin', ['loading']),
+  mounted() {
+    this.getData();
   },
   methods: {
     getData() {
@@ -92,9 +95,6 @@ export default {
       }
       return data;
     },
-  },
-  mounted() {
-    this.getData();
   },
 };
 </script>

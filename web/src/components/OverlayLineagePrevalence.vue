@@ -2,19 +2,19 @@
   <div>
     <div class="d-flex flex-wrap justify-content-center mt-2">
       <label
-        class="b-contain m-0 mr-3 mb-2 variant-checkbox"
         v-for="option in options"
         :key="option.label"
+        class="b-contain m-0 mr-3 mb-2 variant-checkbox"
         :data-tippy-info="option.tooltip"
       >
         <small>{{ option.label }}</small>
         <input
+          v-model.lazy="selectedMutations"
           type="checkbox"
           :value="option"
-          v-model.lazy="selectedMutations"
           @change="debounceSelectMutation"
-        />
-        <div class="b-input"></div>
+        >
+        <div class="b-input" />
       </label>
       <font-awesome-icon
         class="fa-lg text-sec pointer"
@@ -24,13 +24,13 @@
       />
     </div>
     <ReportPrevalenceOverlay
+      v-if="prevalences && epi"
       :routeName="routeTo"
       :data="prevalences"
       :seqCounts="seqCounts"
       :epi="epi"
       :xmin="xmin"
       :xmax="xmax"
-      v-if="prevalences && epi"
       :locationID="locationID"
       :locationName="locationName"
     />
@@ -62,6 +62,10 @@ library.add(faPlusSquare);
 
 export default {
   name: 'OverlayLineagePrevalence',
+  components: {
+    ReportPrevalenceOverlay,
+    FontAwesomeIcon,
+  },
   props: {
     options: Array,
     routeTo: String,
@@ -71,20 +75,6 @@ export default {
     xmin: String,
     xmax: String,
     selected: [Array, String],
-  },
-  components: {
-    ReportPrevalenceOverlay,
-    FontAwesomeIcon,
-  },
-  watch: {
-    locationID() {
-      this.setMutations();
-      this.updateData();
-    },
-    selected() {
-      this.setMutations();
-      this.updateMutations();
-    },
   },
   data() {
     return {
@@ -96,7 +86,17 @@ export default {
       epi: null,
     };
   },
-  created: function() {
+  watch: {
+    locationID() {
+      this.setMutations();
+      this.updateData();
+    },
+    selected() {
+      this.setMutations();
+      this.updateMutations();
+    },
+  },
+  created() {
     this.debounceSelectMutation = debounce(this.selectMutation, 250);
   },
   mounted() {
@@ -118,7 +118,7 @@ export default {
   methods: {
     selectMutation() {
       const queryParams = this.$route.query;
-      if (this.routeTo == 'GenomicsEmbedLocation')
+      if (this.routeTo === 'GenomicsEmbedLocation')
         this.$router.push({
           name: 'GenomicsEmbed',
           params: {
@@ -160,7 +160,7 @@ export default {
       if (this.selected && this.selected.length) {
         this.selectedMutations =
           typeof this.selected == 'string'
-            ? this.options.filter((d) => this.selected == d.label)
+            ? this.options.filter((d) => this.selected === d.label)
             : this.options.filter((d) => uniq(this.selected).includes(d.label));
       } else {
         this.selectedMutations = this.options.slice(0, this.numPreselected);

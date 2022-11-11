@@ -7,8 +7,8 @@
     </div>
 
     <div
-      class="col-sm-6 col-md-3 col-sm-6 pr-4  d-flex flex-column"
       v-if="newPubs"
+      class="col-sm-6 col-md-3 col-sm-6 pr-4  d-flex flex-column"
     >
       <router-link
         :to="{
@@ -32,8 +32,8 @@
     </div>
 
     <div
-      class="col-sm-6 col-md-3 col-sm-6 pr-4 d-flex flex-column"
       v-if="newTrials"
+      class="col-sm-6 col-md-3 col-sm-6 pr-4 d-flex flex-column"
     >
       <router-link
         :to="{
@@ -109,15 +109,15 @@ import NewList from '@/components/NewList.vue';
 
 export default {
   name: 'WhatsNew',
+  components: {
+    NewList,
+  },
   props: {
     query: String,
     numResults: {
       type: Number,
       default: 5,
     },
-  },
-  components: {
-    NewList,
   },
   data() {
     return {

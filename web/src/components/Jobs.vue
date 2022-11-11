@@ -44,61 +44,66 @@
   </div>
 </template>
 
-<script lang="js">
-import Vue from "vue";
+<script>
+import Vue from 'vue';
 
 export default Vue.extend({
-  name: "About",
+  name: 'About',
   data() {
-    return ({
-      jobs: [{
-          title: "Backend Engineer",
-          contact: "lhughes@scripps.edu",
-          url: "https://bit.ly/scrippsbackend",
-          qualifications: "BSc or equivalent",
+    return {
+      jobs: [
+        {
+          title: 'Backend Engineer',
+          contact: 'lhughes@scripps.edu',
+          url: 'https://bit.ly/scrippsbackend',
+          qualifications: 'BSc or equivalent',
           content: [
-            'We are looking for a <strong>Backend Engineer</strong> to develop high-performance APIs that allows us to access data quickly & easily to accelerate the pace of research. Current projects include <a href="https://outbreak.info" target="_blank" rel="noopener">outbreak.info</a> and <a href="http://biothings.io" target="_blank" rel="noopener">BioThings API</a>.'
-          ]
-        },
-      {
-          title: "Staff Scientist",
-          contact: "lhughes@scripps.edu",
-          url: "https://bit.ly/scrippsscientist",
-          qualifications: "Ph.D. in Bioinformatics, Computational Biology, or related fields",
-          content: [
-            'We are looking for a <strong>Staff Scientist</strong> to transform dataset discovery into data analysis to address critical biomedical problems. Current projects include <a href="https://outbreak.info" target="_blank" rel="noopener">outbreak.info</a> and <a href="http://data.cvisb.org/" target="_blank" rel="noopener">Center for Viral Systems Biology Data Portal</a>.'
-          ]
+            'We are looking for a <strong>Backend Engineer</strong> to develop high-performance APIs that allows us to access data quickly & easily to accelerate the pace of research. Current projects include <a href="https://outbreak.info" target="_blank" rel="noopener">outbreak.info</a> and <a href="http://biothings.io" target="_blank" rel="noopener">BioThings API</a>.',
+          ],
         },
         {
-          title: "Front-end Developer",
-          contact: "lhughes@scripps.edu",
-          url: ["https://t.co/0UTsmdndHf?amp=1", "https://www.scripps.edu/careers/?gnk=job&gni=8a78859e789e32c30178a3c4765d45b8"],
-          qualifications: "BSc or equivalent",
+          title: 'Staff Scientist',
+          contact: 'lhughes@scripps.edu',
+          url: 'https://bit.ly/scrippsscientist',
+          qualifications:
+            'Ph.D. in Bioinformatics, Computational Biology, or related fields',
           content: [
-            'We are looking for <strong>Front-end Developers</strong> to build interfaces to explore, visualize, and analyze biomedical data, including current data from the ongoing COVID-19 pandemic. Current projects include <a href="https://outbreak.info" target="_blank" rel="noopener">outbreak.info</a> and the <a href="http://data.cvisb.org/" target="_blank" rel="noopener">Center for Viral Systems Biology Data Portal</a>.'
-          ]
+            'We are looking for a <strong>Staff Scientist</strong> to transform dataset discovery into data analysis to address critical biomedical problems. Current projects include <a href="https://outbreak.info" target="_blank" rel="noopener">outbreak.info</a> and <a href="http://data.cvisb.org/" target="_blank" rel="noopener">Center for Viral Systems Biology Data Portal</a>.',
+          ],
         },
         {
-          title: "Security Engineer",
-          contact: "lhughes@scripps.edu",
-          url: "https://bit.ly/scrippssecurity",
-          qualifications: "BSc or equivalent",
+          title: 'Front-end Developer',
+          contact: 'lhughes@scripps.edu',
+          url: [
+            'https://t.co/0UTsmdndHf?amp=1',
+            'https://www.scripps.edu/careers/?gnk=job&gni=8a78859e789e32c30178a3c4765d45b8',
+          ],
+          qualifications: 'BSc or equivalent',
           content: [
-            'We are looking for a <strong>Security Engineer</strong> to improve the performance and security of our tools. Current projects include <a href="https://outbreak.info" target="_blank" rel="noopener">outbreak.info</a>, <a href="http://biothings.io" target="_blank" rel="noopener">BioThings API</a>, and the <a href="http://data.cvisb.org/" target="_blank" rel="noopener">Center for Viral Systems Biology Data Portal</a>.'
-          ]
+            'We are looking for <strong>Front-end Developers</strong> to build interfaces to explore, visualize, and analyze biomedical data, including current data from the ongoing COVID-19 pandemic. Current projects include <a href="https://outbreak.info" target="_blank" rel="noopener">outbreak.info</a> and the <a href="http://data.cvisb.org/" target="_blank" rel="noopener">Center for Viral Systems Biology Data Portal</a>.',
+          ],
         },
         {
-          title: "Research Programmer",
-          contact: "gkarthik@scripps.edu",
-          url: "https://www.scripps.edu/careers/?gnk=job&amp;gni=8a78879f7823d1090178240894ba01f1",
-          qualifications: "BSc or equivalent",
+          title: 'Security Engineer',
+          contact: 'lhughes@scripps.edu',
+          url: 'https://bit.ly/scrippssecurity',
+          qualifications: 'BSc or equivalent',
           content: [
-            'We are looking for a <strong>Research Programmer</strong> to build tools and analysis pipelines to process viral sequencing data including current data from the ongoing COVID-19 pandemic. Current tools and pipelines, including <a href="https://github.com/andersen-lab/ivar" target="_blank" rel="noopener">iVar</a> and <a href="https://outbreak.info" target="_blank" rel="noopener">outbreak.info</a>, can be seen on our <a href="https://github.com/andersen-lab/" target="_blank" rel="noopener">Github account</a>.'
-          ]
-        }
-      ]
-
-    })
-  }
-})
+            'We are looking for a <strong>Security Engineer</strong> to improve the performance and security of our tools. Current projects include <a href="https://outbreak.info" target="_blank" rel="noopener">outbreak.info</a>, <a href="http://biothings.io" target="_blank" rel="noopener">BioThings API</a>, and the <a href="http://data.cvisb.org/" target="_blank" rel="noopener">Center for Viral Systems Biology Data Portal</a>.',
+          ],
+        },
+        {
+          title: 'Research Programmer',
+          contact: 'gkarthik@scripps.edu',
+          url:
+            'https://www.scripps.edu/careers/?gnk=job&amp;gni=8a78879f7823d1090178240894ba01f1',
+          qualifications: 'BSc or equivalent',
+          content: [
+            'We are looking for a <strong>Research Programmer</strong> to build tools and analysis pipelines to process viral sequencing data including current data from the ongoing COVID-19 pandemic. Current tools and pipelines, including <a href="https://github.com/andersen-lab/ivar" target="_blank" rel="noopener">iVar</a> and <a href="https://outbreak.info" target="_blank" rel="noopener">outbreak.info</a>, can be seen on our <a href="https://github.com/andersen-lab/" target="_blank" rel="noopener">Github account</a>.',
+          ],
+        },
+      ],
+    };
+  },
+});
 </script>

@@ -40,18 +40,18 @@
     </div>
 
     <svg
+      ref="svg"
       :width="width"
       :height="height - 45"
       class="epi-curve"
-      ref="svg"
       :name="title"
     >
       <g
         class="tooltip-cover"
         :transform="`translate(${margin.left}, ${margin.top})`"
       >
-        <line class="mouse-line"></line>
-        <rect id="tooltip-cover-rect"></rect>
+        <line class="mouse-line" />
+        <rect id="tooltip-cover-rect" />
       </g>
 
       <defs>
@@ -68,77 +68,75 @@
         </marker>
       </defs>
       <g
+        ref="xAxis"
         :transform="`translate(${margin.left}, ${height - margin.bottom + 5})`"
         class="epi-axis axis--x"
-        ref="xAxis"
-      ></g>
+      />
       <g
+        ref="yAxis"
         :transform="`translate(${margin.left}, ${margin.top})`"
         class="epi-axis axis--y"
-        ref="yAxis"
-      ></g>
+      />
       <g
-        :transform="`translate(${margin.left},${margin.top})`"
         id="epi-curve"
         ref="epi_curve"
-      ></g>
+        :transform="`translate(${margin.left},${margin.top})`"
+      />
       <g
+        v-if="data"
+        id="brush-zoom"
         ref="brush"
         class="brush"
-        id="brush-zoom"
         :transform="`translate(${margin.left},${margin.top})`"
-        v-if="data"
         :class="{ hidden: !zoomAllowed }"
-      ></g>
+      />
     </svg>
 
     <svg
+      ref="svg_arrows"
       :width="width"
       :height="height"
       class="swoopy-arrow-group position-absolute"
-      ref="svg_arrows"
     >
       <g
+        v-if="loggable"
         ref="switchY"
         class="switch-y-button-group"
         transform="translate(5,0)"
-        v-if="loggable"
       >
-        <path class="swoopy-arrow" id="switch-y-btn-swoopy-arrow"></path>
-        <rect class="switch-button-rect" id="switch-y-btn-rect"></rect>
-        <text class="switch-button" id="switch-y-btn-text"></text>
+        <path id="switch-y-btn-swoopy-arrow" class="swoopy-arrow" />
+        <rect id="switch-y-btn-rect" class="switch-button-rect" />
+        <text id="switch-y-btn-text" class="switch-button" />
       </g>
     </svg>
     <div class="tooltip p-2">
-      <p class="date m-0"></p>
-      <div v-for="line in plottedData" :key="line.key" :class="line.key">
-        <h6 class="country-name m-0"></h6>
-        <b class="count-avg m-0"></b>
+      <p class="date m-0" />
+      <div v-for="line1 in plottedData" :key="line1.key" :class="line1.key">
+        <h6 class="country-name m-0" />
+        <b class="count-avg m-0" />
       </div>
     </div>
 
     <div v-if="plottedData && plottedData.length" class="mt-4">
       <router-link
-        v-for="line in plottedData"
-        :key="line.key"
+        v-for="_line in plottedData"
+        :key="_line.key"
         class="btn btn-main mr-2"
         :to="{
           name: 'LocationReports',
-          query: { loc: line.value[0].location_id },
+          query: { loc: _line.value[0].location_id },
         }"
       >
-        View {{ line.value[0].name }} Variant Report
+        View {{ _line.value[0].name }} Variant Report
       </router-link>
     </div>
   </div>
 </template>
 
-<script lang="js">
-import Vue from "vue";
+<script>
+import Vue from 'vue';
 
-import {
-  epiDataState$
-} from "@/api/epi-traces.js";
+import { epiDataState$ } from '@/api/epi-traces.js';
 
 import {
   select,
@@ -162,26 +160,22 @@ import {
   transition,
   easeLinear,
   line,
-  mouse
-} from "d3";
+  mouse,
+} from 'd3';
 
 // --- font awesome --
-import {
-  FontAwesomeIcon
-} from "@fortawesome/vue-fontawesome";
-import {
-  library
-} from "@fortawesome/fontawesome-svg-core";
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
 import {
   faSearchPlus,
-  faCompressArrowsAlt
-} from "@fortawesome/free-solid-svg-icons/";
+  faCompressArrowsAlt,
+} from '@fortawesome/free-solid-svg-icons/';
 
 library.add(faSearchPlus, faCompressArrowsAlt);
 
-import cloneDeep from "lodash/cloneDeep";
+import cloneDeep from 'lodash/cloneDeep';
 
-import store from "@/store";
+import store from '@/store';
 
 const width = 500;
 const height = 300;
@@ -190,14 +184,14 @@ const margin = {
   top: 15,
   right: 225,
   bottom: 75,
-  left: 125
+  left: 125,
 };
 const transitionDuration = 1500;
 
 export default Vue.extend({
-  name: "EpiCurve",
+  name: 'EpiCurve',
   components: {
-    FontAwesomeIcon
+    FontAwesomeIcon,
   },
   props: {
     data: Array,
@@ -208,7 +202,7 @@ export default Vue.extend({
     log: Boolean,
     percapita: Boolean,
     loggable: Boolean,
-    percent: Boolean
+    percent: Boolean,
   },
   data() {
     return {
@@ -217,7 +211,7 @@ export default Vue.extend({
       margin,
       radius,
       transitionDuration,
-      backgroundColor: "#f8f9fa",
+      backgroundColor: '#f8f9fa',
 
       // data
       dataSubscription: null,
@@ -225,7 +219,7 @@ export default Vue.extend({
 
       // button interfaces
       zoomAllowed: false,
-      xVariable: "date",
+      xVariable: 'date',
       // axes
       numXTicks: 6,
       numYTicks: 6,
@@ -240,78 +234,92 @@ export default Vue.extend({
       brushRef: null,
       // methods
       line: null,
-      brush: null
+      brush: null,
     };
   },
   computed: {
     dataUpdated() {
       // Combo property to check if the data has changed, or the normalization has.
       // TODO: in Vue 3, this can be streamlined as a dual watcher
-      return JSON.stringify(this.data) + this.selectedVariable + String(this.percapita);
+      return (
+        JSON.stringify(this.data) +
+        this.selectedVariable +
+        String(this.percapita)
+      );
     },
     selectedVariable() {
       if (this.percapita) {
-        return this.variableObj.percapita === false ? this.variableObj.value : this.variableObj.value + "_per_100k";
+        return this.variableObj.percapita === false
+          ? this.variableObj.value
+          : this.variableObj.value + '_per_100k';
       }
       return this.variableObj.value;
     },
     title() {
-      if (this.data.length == 1) {
-        return (this.percapita && this.variableObj.percapita !== false ? `Number of COVID-19 ${this.variableObj.label} in ${this.data[0].value[0].name} per 100,000 residents` :
-          `Number of COVID-19 ${this.variableObj.label} in ${this.data[0].value[0].name}`)
+      if (this.data.length === 1) {
+        return this.percapita && this.variableObj.percapita !== false
+          ? `Number of COVID-19 ${this.variableObj.label} in ${this.data[0].value[0].name} per 100,000 residents`
+          : `Number of COVID-19 ${this.variableObj.label} in ${this.data[0].value[0].name}`;
       } else {
-        return (this.percapita && this.variableObj.percapita !== false ? `Number of COVID-19 ${this.variableObj.label} per 100,000 residents` : `Number of COVID-19 ${this.variableObj.label}`)
+        return this.percapita && this.variableObj.percapita !== false
+          ? `Number of COVID-19 ${this.variableObj.label} per 100,000 residents`
+          : `Number of COVID-19 ${this.variableObj.label}`;
       }
-    }
+    },
   },
   watch: {
-    dataUpdated: function() {
-      this.xMin = timeParse("%Y-%m-%d")(this.xmin);
-      this.xMax = timeParse("%Y-%m-%d")(this.xmax);
+    dataUpdated() {
+      this.xMin = timeParse('%Y-%m-%d')(this.xmin);
+      this.xMax = timeParse('%Y-%m-%d')(this.xmax);
       this.setXScale();
       this.updatePlot();
     },
-    xmin: function() {
-      this.xMin = timeParse("%Y-%m-%d")(this.xmin);
-      this.xMax = timeParse("%Y-%m-%d")(this.xmax);
+    xmin() {
+      this.xMin = timeParse('%Y-%m-%d')(this.xmin);
+      this.xMax = timeParse('%Y-%m-%d')(this.xmax);
       this.setXScale();
       this.updatePlot();
     },
-    xmax: function() {
-      this.xMin = timeParse("%Y-%m-%d")(this.xmin);
-      this.xMax = timeParse("%Y-%m-%d")(this.xmax);
+    xmax() {
+      this.xMin = timeParse('%Y-%m-%d')(this.xmin);
+      this.xMax = timeParse('%Y-%m-%d')(this.xmax);
       this.setXScale();
       this.updatePlot();
     },
-    variable: function() {
+    variable() {
       this.setXScale();
       this.updatePlot();
     },
     width() {
       this.setXScale();
       this.updatePlot();
-    }
+    },
   },
   mounted() {
     this.setupPlot();
     this.updateBrush();
     this.updatePlot();
   },
-  created: function() {
+  created() {
     this.debounceZoom = this.debounce(this.zoom, 150);
   },
   destroyed() {
-    window.removeEventListener("resize", this.setPlotDims);
+    window.removeEventListener('resize', this.setPlotDims);
   },
   methods: {
     setPlotDims() {
       // let idealWidth = 750;
       const padding = 0.85;
-      let idealWidth = document.getElementById('curveContainer') ? document.getElementById('curveContainer').offsetWidth : 750;
+      let idealWidth = document.getElementById('curveContainer')
+        ? document.getElementById('curveContainer').offsetWidth
+        : 750;
 
       const whRatio = 5 / 3;
       const framePadding = 32; // left / right padding on the div of 16px ea.
-      const newWidth = window.innerWidth < idealWidth ? window.innerWidth * padding - framePadding : idealWidth * padding - framePadding;
+      const newWidth =
+        window.innerWidth < idealWidth
+          ? window.innerWidth * padding - framePadding
+          : idealWidth * padding - framePadding;
       const newHeight = newWidth / whRatio;
       // check height within limits
       if (newHeight > window.innerHeight * padding) {
@@ -327,34 +335,34 @@ export default Vue.extend({
       this.numXTicks = this.width < 750 ? 2 : 6;
       this.numYTicks = this.height < 250 ? 2 : 6;
     },
-    colorScale: function(location) {
-      const scale = store.getters["colors/getColor"];
+    colorScale(location) {
+      const scale = store.getters['colors/getColor'];
       return scale(location);
     },
-    lightColorScale: function(location) {
-      const scale = store.getters["colors/getColor"];
+    lightColorScale(location) {
+      const scale = store.getters['colors/getColor'];
       return scale(location, 0.7);
     },
 
-    changeYScale: function() {
+    changeYScale() {
       this.isLogY = !this.isLogY;
       this.changeScale();
     },
-    changeScale: function() {
+    changeScale() {
       this.$router.replace({
-        path: "epidemiology",
-        name: "Epidemiology",
+        path: 'epidemiology',
+        name: 'Epidemiology',
         params: {
-          disableScroll: true
+          disableScroll: true,
         },
         query: {
           location: this.location,
           log: String(this.isLogY),
-          variable: this.selectedVariable.replace("_per_100k", ""),
+          variable: this.selectedVariable.replace('_per_100k', ''),
           xmin: this.xmin,
           xmax: this.xmax,
-          percapita: String(this.percapita)
-        }
+          percapita: String(this.percapita),
+        },
       });
 
       this.updatePlot();
@@ -364,17 +372,18 @@ export default Vue.extend({
       this.brush = brushX()
         .extent([
           [0, 0],
-          [this.width - this.margin.left - this.margin.right, this.height - this.margin.top - this.margin.bottom]
+          [
+            this.width - this.margin.left - this.margin.right,
+            this.height - this.margin.top - this.margin.bottom,
+          ],
         ])
-        .on("end", () => this.debounceZoom(event));
+        .on('end', () => this.debounceZoom(event));
 
-      this.brushRef
-        .call(this.brush)
-        .on("dblclick", this.resetZoom);
+      this.brushRef.call(this.brush).on('dblclick', this.resetZoom);
     },
     zoom(evt, ref) {
-      selectAll(".tooltip").style("opacity", 0);
-      selectAll('.mouse-line').style("opacity", 0);
+      selectAll('.tooltip').style('opacity', 0);
+      selectAll('.mouse-line').style('opacity', 0);
       // reset domain to new coords
       const selection = this.event.selection;
 
@@ -398,20 +407,20 @@ export default Vue.extend({
         const queryParams = this.$route.query;
 
         this.$router.push({
-          name: "Epidemiology",
+          name: 'Epidemiology',
           params: {
-            disableScroll: true
+            disableScroll: true,
           },
           query: {
-            xmin: timeFormat("%Y-%m-%d")(newMin),
-            xmax: timeFormat("%Y-%m-%d")(newMax),
+            xmin: timeFormat('%Y-%m-%d')(newMin),
+            xmax: timeFormat('%Y-%m-%d')(newMax),
             location: queryParams.location,
             variable: queryParams.variable,
             log: queryParams.log,
             fixedY: queryParams.fixedY,
-            percapita: queryParams.percapita
-          }
-        })
+            percapita: queryParams.percapita,
+          },
+        });
       }
     },
     resetZoom() {
@@ -424,18 +433,18 @@ export default Vue.extend({
       this.setXScale();
 
       this.$router.push({
-        name: "Epidemiology",
+        name: 'Epidemiology',
         params: {
-          disableScroll: true
+          disableScroll: true,
         },
         query: {
           location: queryParams.location,
           variable: queryParams.variable,
           log: queryParams.log,
           fixedY: queryParams.fixedY,
-          percapita: queryParams.percapita
-        }
-      })
+          percapita: queryParams.percapita,
+        },
+      });
 
       this.updatePlot();
     },
@@ -443,110 +452,129 @@ export default Vue.extend({
       this.zoomAllowed = true;
     },
     debounce(fn, delay) {
-      var timer = null;
-      return function() {
-        var context = this,
+      let timer = null;
+      return () => {
+        const context = this,
           args = arguments,
           evt = event;
         //we get the D3 event here
         clearTimeout(timer);
-        timer = setTimeout(function() {
+        timer = setTimeout(() => {
           context.event = evt;
           //and use the reference here
           fn.apply(context, args);
         }, delay);
       };
     },
-    tooltipOn: function(d, location_id) {
-      select(`#tooltip-${d._id}`).attr("display", "block");
-      select(`#${d._id}`).attr("r", this.radius * 2);
+    tooltipOn(d, location_id) {
+      select(`#tooltip-${d._id}`).attr('display', 'block');
+      select(`#${d._id}`).attr('r', this.radius * 2);
 
       selectAll(`#${d[location_id]}`)
-        .select("text")
-        .style("font-weight", 700);
+        .select('text')
+        .style('font-weight', 700);
 
-      selectAll(`.epi-region`).style("opacity", 0.35);
-      selectAll(`.epi-line`).style("opacity", 0.35);
+      selectAll(`.epi-region`).style('opacity', 0.35);
+      selectAll(`.epi-line`).style('opacity', 0.35);
 
-      selectAll(`.${d[location_id]}`).style("opacity", 1);
-      selectAll(`#${d[location_id]}`).style("opacity", 1);
+      selectAll(`.${d[location_id]}`).style('opacity', 1);
+      selectAll(`#${d[location_id]}`).style('opacity', 1);
     },
-    tooltipOff: function(d) {
-      selectAll(".tooltip--epi-curve").attr("display", "none");
+    tooltipOff(d) {
+      selectAll('.tooltip--epi-curve').attr('display', 'none');
 
-      selectAll("circle").attr("r", this.radius);
+      selectAll('circle').attr('r', this.radius);
 
-      selectAll(".annotation--region-name").style("font-weight", 400);
+      selectAll('.annotation--region-name').style('font-weight', 400);
 
-      selectAll(`.epi-region`).style("opacity", 1);
-      selectAll(`.epi-line`).style("opacity", 1);
+      selectAll(`.epi-region`).style('opacity', 1);
+      selectAll(`.epi-line`).style('opacity', 1);
     },
 
-    mouseOn: function() {
-      const ttip = selectAll(".tooltip")
-        .style("pointer-events", "none")
-        .style("top", event.y + "px")
-        .style("left", event.x + "px")
-        .style("opacity", 1);
+    mouseOn() {
+      const ttip = selectAll('.tooltip')
+        .style('pointer-events', 'none')
+        .style('top', event.y + 'px')
+        .style('left', event.x + 'px')
+        .style('opacity', 1);
 
-      let date = this.x.invert(event.pageX - document.getElementById("tooltip-cover-rect").getBoundingClientRect().x)
+      let date = this.x.invert(
+        event.pageX -
+          document.getElementById('tooltip-cover-rect').getBoundingClientRect()
+            .x,
+      );
 
       this.plottedData.forEach((line, ind) => {
-        const bisect = bisector(d => d.date);
+        const bisect = bisector((d) => d.date);
         let i = bisect.left(line.value, date, 1);
         const a = line.value[i - 1];
         const b = line.value[i];
         let dat = date - a.date > b.date - date ? b : a;
 
-        ttip.select(`.${dat.location_id}`).select(`.country-name`).text(dat.name);
-        if (ind == 0) {
-          ttip.select(`.date`).text(`${timeFormat("%d %b %Y")(dat.date)}`);
+        ttip
+          .select(`.${dat.location_id}`)
+          .select(`.country-name`)
+          .text(dat.name);
+        if (ind === 0) {
+          ttip.select(`.date`).text(`${timeFormat('%d %b %Y')(dat.date)}`);
           const mouseLine = selectAll('.mouse-line')
             .attr('x1', this.x(dat.date))
             .attr('x2', this.x(dat.date))
-            .style('opacity', 1)
+            .style('opacity', 1);
         }
         ttip
           .select(`.${dat.location_id}`)
           .select(`.count-avg`)
-          .text(`${format(",.1f")(dat[this.selectedVariable])}`);
-      })
+          .text(`${format(',.1f')(dat[this.selectedVariable])}`);
+      });
     },
-    mouseOff: function() {
-      selectAll(".tooltip").style("opacity", 0);
-      selectAll('.mouse-line').style("opacity", 0);
-
+    mouseOff() {
+      selectAll('.tooltip').style('opacity', 0);
+      selectAll('.mouse-line').style('opacity', 0);
     },
 
-    updatePlot: function() {
+    updatePlot() {
       if (this.data && this.chart) {
-        // create slice so you create a copy, and sorting doesn't lead to an infinite update callback loop
+        // create slice, so you create a copy, and sorting doesn't lead to an infinite update callback loop
         this.updateScales();
         this.drawPlot();
       }
     },
-    prepData: function() {
-      this.loggable = this.selectedVariable != "testing_positivity";
+    prepData() {
+      this.loggable = this.selectedVariable !== 'testing_positivity';
       this.isLogY = this.loggable && this.log;
 
       if (this.data) {
         this.plottedData = cloneDeep(this.data);
 
-        this.plottedData.forEach(d => {
-          d["value"] = this.isLogY && this.loggable ?
-            d.value.filter(x => x[this.selectedVariable] >= 1 && x[this.xVariable] >= this.x.domain()[0] && x[this.xVariable] <= this.x.domain()[1] && (x[this.xVariable] || x[this.xVariable] === 0)) :
-            d.value.filter(x => x[this.selectedVariable] && x[this.xVariable] >= this.x.domain()[0] && x[this.xVariable] <= this.x.domain()[1] && (x[this.xVariable] || x[this.xVariable] === 0));
+        this.plottedData.forEach((d) => {
+          d['value'] =
+            this.isLogY && this.loggable
+              ? d.value.filter(
+                  (x) =>
+                    x[this.selectedVariable] >= 1 &&
+                    x[this.xVariable] >= this.x.domain()[0] &&
+                    x[this.xVariable] <= this.x.domain()[1] &&
+                    (x[this.xVariable] || x[this.xVariable] === 0),
+                )
+              : d.value.filter(
+                  (x) =>
+                    x[this.selectedVariable] &&
+                    x[this.xVariable] >= this.x.domain()[0] &&
+                    x[this.xVariable] <= this.x.domain()[1] &&
+                    (x[this.xVariable] || x[this.xVariable] === 0),
+                );
 
           // ensure dates are sorted
           d.value.sort((a, b) => a[this.xVariable] - b[this.xVariable]);
         });
       }
     },
-    setupPlot: function() {
+    setupPlot() {
       // Event listener for mobile responsiveness
       // $nextTick waits till DOM rendered
-      this.$nextTick(function() {
-        window.addEventListener("resize", this.setPlotDims);
+      this.$nextTick(() => {
+        window.addEventListener('resize', this.setPlotDims);
         // set initial dimensions for the stacked area plots.
         this.setPlotDims();
       });
@@ -557,8 +585,8 @@ export default Vue.extend({
       this.chart = select(this.$refs.epi_curve);
 
       this.line = line()
-        .x(d => this.x(d[this.xVariable]))
-        .y(d => this.y(d[this.selectedVariable]));
+        .x((d) => this.x(d[this.xVariable]))
+        .y((d) => this.y(d[this.selectedVariable]));
 
       this.brushRef = select(this.$refs.brush);
       this.setXScale();
@@ -569,7 +597,9 @@ export default Vue.extend({
       if (this.xMin && this.xMax && this.xMin < this.xMax) {
         xDomain = [this.xMin, this.xMax];
       } else {
-        xDomain = extent(this.data.flatMap(d => d.value).map(d => d[this.xVariable]));
+        xDomain = extent(
+          this.data.flatMap((d) => d.value).map((d) => d[this.xVariable]),
+        );
 
         if (this.xMin && this.xMin < xDomain[1]) {
           xDomain[0] = this.xMin;
@@ -586,21 +616,29 @@ export default Vue.extend({
 
       this.prepData();
     },
-    updateScales: function() {
+    updateScales() {
       if (this.isLogY && this.loggable) {
         this.y = scaleLog()
           .range([this.height - this.margin.top - this.margin.bottom, 0])
           .nice()
           .domain([
             1,
-            max(this.plottedData.flatMap(d => d.value).map(d => d[this.selectedVariable]))
+            max(
+              this.plottedData
+                .flatMap((d) => d.value)
+                .map((d) => d[this.selectedVariable]),
+            ),
           ]);
       } else {
         this.y = scaleLinear()
           .range([this.height - this.margin.top - this.margin.bottom, 0])
           .domain([
             0,
-            max(this.plottedData.flatMap(d => d.value).map(d => d[this.selectedVariable]))
+            max(
+              this.plottedData
+                .flatMap((d) => d.value)
+                .map((d) => d[this.selectedVariable]),
+            ),
           ]);
       }
 
@@ -609,18 +647,22 @@ export default Vue.extend({
       select(this.$refs.xAxis).call(this.xAxis);
 
       if (this.isLogY && this.loggable) {
-        this.yAxis = axisLeft(this.y).tickSizeOuter(0).ticks(this.numYTicks).tickFormat((d, i) => {
-          const log = Math.log10(d);
-          return Math.abs(Math.round(log) - log) < 1e-6 ? format(",")(d) : ""
-        })
+        this.yAxis = axisLeft(this.y)
+          .tickSizeOuter(0)
+          .ticks(this.numYTicks)
+          .tickFormat((d, i) => {
+            const log = Math.log10(d);
+            return Math.abs(Math.round(log) - log) < 1e-6 ? format(',')(d) : '';
+          });
       } else {
-        this.yAxis = axisLeft(this.y).tickSizeOuter(0).ticks(this.numYTicks);
+        this.yAxis = axisLeft(this.y)
+          .tickSizeOuter(0)
+          .ticks(this.numYTicks);
       }
 
       if (this.percent) {
-        this.yAxis.tickFormat(format(".0%"))
+        this.yAxis.tickFormat(format('.0%'));
       }
-
 
       select(this.$refs.yAxis).call(this.yAxis);
 
@@ -631,52 +673,53 @@ export default Vue.extend({
       if (this.loggable) {
         this.switchBtn = select(this.$refs.switchY);
 
-        select(this.$refs.switchY).select("rect")
-          .attr("x", 0)
-          .attr("width", 0)
-          .attr("height", 26.5)
-          .attr("y", this.height - 28)
-          .on("mouseover", () =>
-            this.switchBtn.select("rect").classed("switch-button-hover", true)
+        select(this.$refs.switchY)
+          .select('rect')
+          .attr('x', 0)
+          .attr('width', 0)
+          .attr('height', 26.5)
+          .attr('y', this.height - 28)
+          .on('mouseover', () =>
+            this.switchBtn.select('rect').classed('switch-button-hover', true),
           )
-          .on("mouseout", () =>
-            this.switchBtn.select("rect").classed("switch-button-hover", false)
+          .on('mouseout', () =>
+            this.switchBtn.select('rect').classed('switch-button-hover', false),
           )
-          .on("click", () => this.changeYScale());;
+          .on('click', () => this.changeYScale());
 
-        select(this.$refs.switchY).select("path")
-          .attr("marker-end", "url(#arrow)")
+        select(this.$refs.switchY)
+          .select('path')
+          .attr('marker-end', 'url(#arrow)')
           // M x-start y-start C x1 y1, x2 y2, x-end y-end -- where x1/y1/x2/y2 are the coordinates of the bezier curve.
           .attr(
-            "d",
+            'd',
             `M ${xSwoop} ${this.height + ySwoop}
           C ${xSwoop + swoopOffset} ${this.height + ySwoop},
           ${this.margin.left + ySwoop + 20} ${this.height -
-            this.margin.bottom +
-            15 +
-            swoopOffset},
+              this.margin.bottom +
+              15 +
+              swoopOffset},
           ${this.margin.left + ySwoop + 20} ${this.height -
-            this.margin.bottom +
-            15}`
+              this.margin.bottom +
+              15}`,
           );
 
+        const switchTextEnter = this.switchBtn
+          .select('text')
+          .attr('class', 'switch-button')
+          .attr('x', 3.84 * 2)
+          .text(`switch to ${this.isLogY ? 'linear' : 'log'} scale`)
+          .attr('y', this.height + 6 - 12.8);
 
-        const switchTextEnter = this.switchBtn.select("text")
-          .attr("class", "switch-button")
-          .attr("x", 3.84 * 2)
-          .text(`switch to ${this.isLogY ? "linear" : "log"} scale`)
-          .attr("y", this.height + 6 - 12.8);
-
-        if (this.switchBtn.select("text").node()) {
-          this.switchBtn
-            .select("rect")
-            .attr(
-              "width",
-              this.switchBtn
-              .select("text")
+        if (this.switchBtn.select('text').node()) {
+          this.switchBtn.select('rect').attr(
+            'width',
+            this.switchBtn
+              .select('text')
               .node()
-              .getBBox().width + 3.84 * 4
-            );
+              .getBBox().width +
+              3.84 * 4,
+          );
           // .attr(
           //   "height",
           //   .select("text")
@@ -688,45 +731,45 @@ export default Vue.extend({
     },
     drawPlot() {
       if (this.plottedData && this.plottedData.length) {
-        const t1 = transition()
-          .duration(this.transitionDuration);
+        const t1 = transition().duration(this.transitionDuration);
         const t2 = transition().duration(500);
-        const formatDate = timeFormat("%d %b %Y");
+        const formatDate = timeFormat('%d %b %Y');
 
         // --- location annotation ---
         // using force direction to make sure they don't overlap.
         // based off https://bl.ocks.org/wdickerson/bd654e61f536dcef3736f41e0ad87786
         const labelHeight = 16;
         // Create nodes of the text labels for force direction
-        this.plottedData.forEach(d => {
-          d["fx"] = 0;
-          const filtered = d.value.slice(-1)
-          const yMax = filtered.map(d => d[this.selectedVariable]);
-          d["xMax"] = filtered.length === 1 ? this.x(filtered[0][this.xVariable]) : null;
-          d["targetY"] = yMax[0] ? this.y(yMax[0]) : this.height;
+        this.plottedData.forEach((d) => {
+          d['fx'] = 0;
+          const filtered = d.value.slice(-1);
+          const yMax = filtered.map((d) => d[this.selectedVariable]);
+          d['xMax'] =
+            filtered.length === 1 ? this.x(filtered[0][this.xVariable]) : null;
+          d['targetY'] = yMax[0] ? this.y(yMax[0]) : this.height;
         });
 
         // Define a custom force
         const forceClamp = (min, max) => {
           let nodes;
           const force = () => {
-            nodes.forEach(n => {
+            nodes.forEach((n) => {
               if (n.y > max) n.y = max;
               if (n.y < min) n.y = min;
             });
           };
-          force.initialize = _ => (nodes = _);
+          force.initialize = (_) => (nodes = _);
           return force;
         };
 
         // Set up the force simulation
         const force = forceSimulation()
           .nodes(this.plottedData)
-          .force("collide", forceCollide(labelHeight / 2).strength(0.1))
-          .force("y", forceY(d => d.targetY).strength(1))
+          .force('collide', forceCollide(labelHeight / 2).strength(0.1))
+          .force('y', forceY((d) => d.targetY).strength(1))
           .force(
-            "clamp",
-            forceClamp(0, this.height - this.margin.top - this.margin.bottom)
+            'clamp',
+            forceClamp(0, this.height - this.margin.top - this.margin.bottom),
           )
           .stop();
 
@@ -735,41 +778,49 @@ export default Vue.extend({
 
         // --- create groups for each region ---
         const regionGroups = this.chart
-          .selectAll(".epi-region")
-          .data(this.plottedData, d => d.key);
+          .selectAll('.epi-region')
+          .data(this.plottedData, (d) => d.key);
 
         regionGroups.join(
-          enter => {
-            const grps = enter.append("g")
-              .attr("class", "epi-region")
-              .attr("id", d => d.key)
-              .attr("fill", d => this.colorScale(d.key));
+          (enter) => {
+            const grps = enter
+              .append('g')
+              .attr('class', 'epi-region')
+              .attr('id', (d) => d.key)
+              .attr('fill', (d) => this.colorScale(d.key));
 
-            grps.append("text")
-              .attr("dx", 8)
-              .attr("class", d => `annotation--region-name ${d.key}`)
-              .attr("x", this.width - this.margin.left - this.margin.right)
-              .attr("y", d => d.y)
-              .text(d => d.value[0] ? d.value[0].name : "")
-              .style("font-family", "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
+            grps
+              .append('text')
+              .attr('dx', 8)
+              .attr('class', (d) => `annotation--region-name ${d.key}`)
+              .attr('x', this.width - this.margin.left - this.margin.right)
+              .attr('y', (d) => d.y)
+              .text((d) => (d.value[0] ? d.value[0].name : ''))
+              .style(
+                'font-family',
+                "'DM Sans', Avenir, Helvetica, Arial, sans-serif",
+              )
               // .transition(t1)
               // .delay(1000)
-              .style("opacity", 1);
+              .style('opacity', 1);
 
-            grps.append("path")
-              .attr("class", d => `epi-line ${d.key}`)
-              .attr("stroke", d => this.colorScale(d.key))
-              .style("fill", "none")
-              .style("stroke-width", "2.5")
-              .attr("id", d => d.key ? `epi-line-${d.key}` : "epi-line-blank")
-              .datum(d => d.value)
-              .attr("d", this.line)
+            grps
+              .append('path')
+              .attr('class', (d) => `epi-line ${d.key}`)
+              .attr('stroke', (d) => this.colorScale(d.key))
+              .style('fill', 'none')
+              .style('stroke-width', '2.5')
+              .attr('id', (d) =>
+                d.key ? `epi-line-${d.key}` : 'epi-line-blank',
+              )
+              .datum((d) => d.value)
+              .attr('d', this.line);
 
-            // .attr("stroke-dasharray", function() {
+            // .attr("stroke-dasharray", () => {
             //   var totalLength = this.getTotalLength();
             //   return totalLength + " " + totalLength;
             // })
-            // .attr("stroke-dashoffset", function() {
+            // .attr("stroke-dashoffset", () => {
             //   var totalLength = this.getTotalLength();
             //   return totalLength;
             // })
@@ -778,75 +829,79 @@ export default Vue.extend({
             // .attr("stroke-dashoffset", 0)
 
             grps
-              .append("circle")
-              .attr("class", d => `epi-point ${d.key}`)
-              .attr("id", d => `${d.key}`)
-              .attr("r", this.radius)
-              .attr("cx", d => d.xMax)
-              .attr("cy", d => d.y)
-              .style("opacity", 1)
+              .append('circle')
+              .attr('class', (d) => `epi-point ${d.key}`)
+              .attr('id', (d) => `${d.key}`)
+              .attr('r', this.radius)
+              .attr('cx', (d) => d.xMax)
+              .attr('cy', (d) => d.y)
+              .style('opacity', 1);
           },
-          update => {
+          (update) => {
             update
-              .attr("id", d => d.key)
-              .attr("fill", d => this.colorScale(d.key));
+              .attr('id', (d) => d.key)
+              .attr('fill', (d) => this.colorScale(d.key));
 
-            update.select(".annotation--region-name")
-              .attr("x", this.width - this.margin.left - this.margin.right)
-              .text(d => d.value[0] ? d.value[0].name : "")
-              .style("opacity", 1)
+            update
+              .select('.annotation--region-name')
+              .attr('x', this.width - this.margin.left - this.margin.right)
+              .text((d) => (d.value[0] ? d.value[0].name : ''))
+              .style('opacity', 1)
               .transition(t2)
-              .attr("y", d => d.y)
+              .attr('y', (d) => d.y);
 
-            update.select(".epi-line")
-              .attr("stroke", d => this.colorScale(d.key))
-              .attr("id", d => d.key ? `epi-line-${d.key}` : "epi-line-blank")
-              .attr("class", d => `epi-line ${d.key}`)
-              .datum(d => d.value)
-              .attr("stroke-dashoffset", 0)
-              .attr("stroke-dasharray", "none")
+            update
+              .select('.epi-line')
+              .attr('stroke', (d) => this.colorScale(d.key))
+              .attr('id', (d) =>
+                d.key ? `epi-line-${d.key}` : 'epi-line-blank',
+              )
+              .attr('class', (d) => `epi-line ${d.key}`)
+              .datum((d) => d.value)
+              .attr('stroke-dashoffset', 0)
+              .attr('stroke-dasharray', 'none')
               .transition(t2)
-              .attr("d", this.line)
+              .attr('d', this.line);
 
-
-            update.select(".epi-point")
-              .attr("class", d => `epi-point ${d.key}`)
-              .attr("id", d => `${d.key}`)
-              .attr("cx", d => d.xMax)
+            update
+              .select('.epi-point')
+              .attr('class', (d) => `epi-point ${d.key}`)
+              .attr('id', (d) => `${d.key}`)
+              .attr('cx', (d) => d.xMax)
               .transition(t2)
-              .attr("cy", d => d.y)
+              .attr('cy', (d) => d.y);
           },
-          exit =>
-          exit.call(exit =>
-            exit
-            .transition()
-            .style("opacity", 1e-5)
-            .remove()
-          )
-        )
+          (exit) =>
+            exit.call((exit) =>
+              exit
+                .transition()
+                .style('opacity', 1e-5)
+                .remove(),
+            ),
+        );
 
         // --- event listeners ---
-        selectAll(".annotation--region-name")
-          .on("mouseover", d => this.tooltipOn(d, "key"))
-          .on("mouseout", d => this.tooltipOff(d));
+        selectAll('.annotation--region-name')
+          .on('mouseover', (d) => this.tooltipOn(d, 'key'))
+          .on('mouseout', (d) => this.tooltipOff(d));
 
-        const mouseRect = select("#tooltip-cover-rect")
-          .style("fill", "none")
-          .style("pointer-events", "all")
+        const mouseRect = select('#tooltip-cover-rect')
+          .style('fill', 'none')
+          .style('pointer-events', 'all')
           .attr('width', this.width - this.margin.left - this.margin.right)
           .attr('height', this.height - this.margin.top - this.margin.bottom)
-          .on("touchmove mouseover mousemove", this.mouseOn)
-          .on("touchend mouseout", this.mouseOff);
+          .on('touchmove mouseover mousemove', this.mouseOn)
+          .on('touchend mouseout', this.mouseOff);
 
-        selectAll(".mouse-line")
+        selectAll('.mouse-line')
           .attr('y1', this.height - this.margin.top - this.margin.bottom)
           .attr('y2', 0)
           .attr('stroke', 'currentColor')
-          .style("stroke-width", "1")
-          .style('opacity', 0)
+          .style('stroke-width', '1')
+          .style('opacity', 0);
       }
-    }
-  }
+    },
+  },
 });
 </script>
 

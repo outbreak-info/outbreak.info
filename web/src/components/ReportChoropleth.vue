@@ -1,13 +1,13 @@
 <template>
   <div
-    class="d-flex flex-column align-items-center w-100"
     id="report-choropleth"
+    class="d-flex flex-column align-items-center w-100"
   >
     <!-- choropleth -->
     <svg
+      ref="choropleth"
       :width="width"
       :height="height"
-      ref="choropleth"
       class="report-choropleth mt-3"
       :subtitle="subtitle"
       :name="title"
@@ -31,27 +31,27 @@
           />
         </pattern>
       </defs>
-      <g ref="basemap" class="basemap-group"></g>
-      <g ref="regions" class="region-group"></g>
-      <g ref="zero_data" class="zero-group"></g>
-      <g ref="overlay" class="overlay-group"></g>
+      <g ref="basemap" class="basemap-group" />
+      <g ref="regions" class="region-group" />
+      <g ref="zero_data" class="zero-group" />
+      <g ref="overlay" class="overlay-group" />
     </svg>
 
     <div
+      id="tooltip-choro"
       ref="tooltip_choro"
       class="tooltip-basic box-shadow"
-      id="tooltip-choro"
     >
-      <h5 id="location-name"></h5>
+      <h5 id="location-name" />
       <em id="no-sequencing">No reported sequencing</em>
       <div class="d-flex align-items-center">
-        <b id="proportion" class="font-size-2"></b>
-        <span id="confidence-interval" class="text-muted ml-2"></span>
+        <b id="proportion" class="font-size-2" />
+        <span id="confidence-interval" class="text-muted ml-2" />
       </div>
-      <div id="sequencing-count"></div>
+      <div id="sequencing-count" />
     </div>
 
-    <div class="w-75" v-if="showCopy && !noMap">
+    <div v-if="showCopy && !noMap" class="w-75">
       <DownloadReportData
         :data="data"
         figureRef="report-choropleth"
@@ -89,6 +89,9 @@ import ADMIN1 from '@/assets/geo/gadm_adm1_simplified.json';
 
 export default {
   name: 'ReportChoropleth',
+  components: {
+    DownloadReportData,
+  },
   props: {
     data: Array,
     mutationName: String,
@@ -113,9 +116,6 @@ export default {
     countThreshold: Number,
     recentWindow: String,
     colorScale: Function,
-  },
-  components: {
-    DownloadReportData,
   },
   data() {
     return {
@@ -152,18 +152,6 @@ export default {
       noMap: true,
     };
   },
-  watch: {
-    data: function() {
-      this.chooseMap();
-      this.drawMap();
-    },
-    countThreshold: function() {
-      this.drawMap();
-    },
-    width: function() {
-      this.drawMap();
-    },
-  },
   computed: {
     maxVal() {
       return this.data
@@ -187,7 +175,7 @@ export default {
           ? `Prevalence over the last ${this.recentWindow} days in ${this.location}`
           : 'Estimated prevalence';
       }
-      return this.location == 'Worldwide'
+      return this.location === 'Worldwide'
         ? `${this.mutationName} cumulative prevalence by country`
         : `${this.mutationName} cumulative prevalence in ${this.location}`;
     },
@@ -198,12 +186,24 @@ export default {
       return null;
     },
   },
-  created: function() {
+  watch: {
+    data() {
+      this.chooseMap();
+      this.drawMap();
+    },
+    countThreshold() {
+      this.drawMap();
+    },
+    width() {
+      this.drawMap();
+    },
+  },
+  created() {
     this.debounceMouseon = this.debounce(this.mouseOn, 250);
     this.debounceSetDims = this.debounce(this.setDims, 150);
   },
   mounted() {
-    this.$nextTick(function() {
+    this.$nextTick(function () {
       window.addEventListener('resize', this.debounceSetDims);
 
       this.$root.$on('update:countThreshold', (newThreshold) => {
@@ -345,7 +345,7 @@ export default {
 
         this.filteredData.forEach((d) => {
           const filtered = this.data.filter(
-            (seq) => seq.name.toLowerCase() == d.properties.NAME.toLowerCase(),
+            (seq) => seq.name.toLowerCase() === d.properties.NAME.toLowerCase(),
           );
           if (filtered.length > 0) {
             filtered.sort((a, b) => b.cum_total_count - a.cum_total_count);
@@ -384,9 +384,11 @@ export default {
 
       if (this.filteredData) {
         const basemapData =
-          this.location == 'Worldwide' || this.location == 'United States'
+          this.location === 'Worldwide' || this.location === 'United States'
             ? []
-            : ADMIN0.features.filter((d) => d.properties.NAME != this.location);
+            : ADMIN0.features.filter(
+                (d) => d.properties.NAME !== this.location,
+              );
 
         this.basemap
           .selectAll('.basemap')
@@ -463,6 +465,7 @@ export default {
 
         // highlight where the data is 0.
         this.regions
+
           .selectAll('.zero-data')
           .data(
             this.filteredData.filter((d) => d.proportion === 0),
@@ -507,8 +510,8 @@ export default {
           .data(
             ADMIN0.features.filter(
               (d) =>
-                d.properties.NAME == this.location &&
-                d.properties.NAME != 'United States',
+                d.properties.NAME === this.location &&
+                d.properties.NAME !== 'United States',
             ),
             (d) => d.properties.location_id,
           )
@@ -577,6 +580,7 @@ export default {
           .classed('hidden', false);
 
         ttip
+
           .select('#confidence-interval')
           .text(`(95% CI: ${format('.0%')(d.lower)}-${format('.0%')(d.upper)})`)
           .classed('hidden', false);
@@ -613,7 +617,7 @@ export default {
         .style('stroke-opacity', 1);
     },
     route2Location(id) {
-      if (this.report == 'MutationReport') {
+      if (this.report === 'MutationReport') {
         const query = this.$route.query;
         const params = this.$route.params;
         let locs = query.loc
@@ -635,7 +639,7 @@ export default {
             loc: locs,
           },
         });
-      } else if (this.report == 'GenomicsEmbedVariant') {
+      } else if (this.report === 'GenomicsEmbedVariant') {
         const query = this.$route.query;
         let locs = query.loc
           ? typeof query.loc == 'string'
@@ -656,7 +660,7 @@ export default {
             loc: locs,
           },
         });
-      } else if (this.report == 'LocationReport') {
+      } else if (this.report === 'LocationReport') {
         const query = this.$route.query;
         this.$router.push({
           name: 'LocationReport',
@@ -672,7 +676,7 @@ export default {
             xmin: query.xmin,
           },
         });
-      } else if (this.report == 'GenomicsEmbedLocation') {
+      } else if (this.report === 'GenomicsEmbedLocation') {
         const query = this.$route.query;
         this.$router.push({
           name: 'GenomicsEmbed',
@@ -694,9 +698,9 @@ export default {
     // https://stackoverflow.com/questions/43407947/how-to-throttle-function-call-on-mouse-event-with-d3-js/43448820
     // modified to save the d3. event to vue::this
     debounce(fn, delay) {
-      var timer = null;
-      return function() {
-        var context = this,
+      let timer = null;
+      return function () {
+        const context = this,
           args = arguments,
           evt = event;
         //we get the D3 event here

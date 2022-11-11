@@ -7,12 +7,12 @@
       </div>
 
       <select
-        v-model="numPerPage"
-        @change="changePageNum()"
-        class="select-dropdown ml-5"
         v-if="total"
+        v-model="numPerPage"
+        class="select-dropdown ml-5"
+        @change="changePageNum()"
       >
-        <option v-for="option in pageOpts" :value="option" :key="option">
+        <option v-for="option in pageOpts" :key="option" :value="option">
           {{ option }} results
         </option>
       </select>
@@ -26,9 +26,9 @@
         class="line-height-1 mb-3 d-flex"
       >
         <span
+          v-if="item['@type']"
           class="resource-type mr-2"
           :class="item['@type'].replace(/\s/g, '')"
-          v-if="item['@type']"
         >
           {{ item['@type'] }}
         </span>
@@ -37,9 +37,9 @@
             :to="{ name: 'Resource Page', params: { id: item._id } }"
             class=""
           >
-            <span v-html="item.name"></span>
+            <span v-html="item.name" />
           </router-link>
-          <b class="ml-1" id="author" v-if="item.author && item.author.length">
+          <b v-if="item.author && item.author.length" id="author" class="ml-1">
             {{
               item.author[0].name
                 ? item.author[0].name
@@ -47,7 +47,7 @@
             }}
             <span v-if="item.author.length > 1">et al.</span>
           </b>
-          <em class="ml-1 text-underline" v-if="item.journalName">
+          <em v-if="item.journalName" class="ml-1 text-underline">
             {{ item.journalName }}
           </em>
           <span class="ml-1">{{ item.dateFormatted }}</span>
@@ -56,8 +56,8 @@
     </div>
     <!-- PAGINATION -->
     <div
-      class="pagination mt-2 d-flex align-items-center justify-content-between w-50 m-auto"
       v-if="total"
+      class="pagination mt-2 d-flex align-items-center justify-content-between w-50 m-auto"
     >
       <button
         aria-label="previous-button"
@@ -118,12 +118,12 @@ library.add(
 
 export default Vue.extend({
   name: 'ReportResources',
+  components: {
+    FontAwesomeIcon,
+  },
   props: {
     mutationName: String,
     searchTerms: Array,
-  },
-  components: {
-    FontAwesomeIcon,
   },
   data() {
     return {
@@ -136,6 +136,22 @@ export default Vue.extend({
       pageOpts: [10, 50, 100],
     };
   },
+
+  computed: {
+    lowerLim() {
+      return this.selectedPage * this.numPerPage;
+    },
+    upperLim() {
+      const upper = this.selectedPage * this.numPerPage + this.numPerPage;
+      return upper > this.total ? this.total : upper;
+    },
+    lastPage() {
+      return this.total ? Math.floor(this.total / this.numPerPage) : null;
+    },
+    queryString() {
+      return `"${this.searchTerms.join('" OR "')}"`;
+    },
+  },
   watch: {
     queryString: {
       immediate: true,
@@ -144,20 +160,10 @@ export default Vue.extend({
       },
     },
   },
-  computed: {
-    lowerLim: function() {
-      return this.selectedPage * this.numPerPage;
-    },
-    upperLim: function() {
-      const upper = this.selectedPage * this.numPerPage + this.numPerPage;
-      return upper > this.total ? this.total : upper;
-    },
-    lastPage: function() {
-      return this.total ? Math.floor(this.total / this.numPerPage) : null;
-    },
-    queryString() {
-      return `"${this.searchTerms.join('" OR "')}"`;
-    },
+  beforeDestroy() {
+    if (this.resultSubscription) {
+      this.resultSubscription.unsubscribe();
+    }
   },
   methods: {
     changePage(step) {
@@ -182,11 +188,6 @@ export default Vue.extend({
         });
       }
     },
-  },
-  beforeDestroy() {
-    if (this.resultSubscription) {
-      this.resultSubscription.unsubscribe();
-    }
   },
 });
 </script>

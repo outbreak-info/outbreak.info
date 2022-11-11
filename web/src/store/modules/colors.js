@@ -5,7 +5,7 @@ const blankFunc = function(location) {
   return null;
 };
 
-// based off Tableau 10, sync'd with out color palette and with a slight increase in saturation for many.
+// based off Tableau 10, sync'd without color palette and with a slight increase in saturation for many.
 const categoricalPalette = [
   '#507ea3', // blue (Dataset)
   '#f28e2c', // orange (WebSite)

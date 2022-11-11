@@ -16,8 +16,8 @@
     />
     <!-- too many to plot -->
     <div
-      class="flex-column too-many-warning"
       v-if="dataLength > lengthThreshold && !variable.includes('Increase')"
+      class="flex-column too-many-warning"
     >
       <div
         class="text-center m-auto p-2 bg-grey__lightest"
@@ -25,22 +25,22 @@
       >
         <label class="b-contain m-auto">
           <span>show more than {{ lengthThreshold }} curves</span>
-          <input type="checkbox" v-model="showAll" />
-          <div class="b-input"></div>
+          <input v-model="showAll" type="checkbox" />
+          <div class="b-input" />
         </label>
       </div>
 
       <div style="max-width:700px;" class="m-auto">
         <Warning
+          v-if="!showAll"
           :animate="true"
           class="mt-2"
-          v-if="!showAll"
           :text="
             'You have selected a lot of places. Showing the top ' +
               lengthThreshold +
               ' with the highest current case counts'
           "
-        ></Warning>
+        />
       </div>
     </div>
 
@@ -49,31 +49,31 @@
       class="text-center m-auto p-2 bg-grey__lightest d-flex"
       style="max-width:700px;"
     >
-      <label class="b-contain m-auto" v-if="variableObj.percapita !== false">
+      <label v-if="variableObj.percapita !== false" class="b-contain m-auto">
         <span>normalize to population</span>
-        <input type="checkbox" v-model="isPerCapita" />
-        <div class="b-input"></div>
+        <input v-model="isPerCapita" type="checkbox" />
+        <div class="b-input" />
       </label>
       <label
-        class="b-contain m-auto"
         v-if="dataLength > 1 && variable.includes('Increase')"
+        class="b-contain m-auto"
       >
         <span>constant y-axis limits</span>
-        <input type="checkbox" v-model="isFixedY" />
-        <div class="b-input"></div>
+        <input v-model="isFixedY" type="checkbox" />
+        <div class="b-input" />
       </label>
       <label
-        class="b-contain m-auto"
         v-if="dataLength > 1 && variable.includes('Increase')"
+        class="b-contain m-auto"
       >
         <span>overlay graphs</span>
-        <input type="checkbox" v-model="isOverlay" />
-        <div class="b-input"></div>
+        <input v-model="isOverlay" type="checkbox" />
+        <div class="b-input" />
       </label>
     </div>
 
     <!-- title / drop down variable selector -->
-    <h4 class="plot-title pt-5 pb-3" v-if="location">
+    <h4 v-if="location" class="plot-title pt-5 pb-3">
       Number of COVID-19
       <select
         v-model="variableObj"
@@ -82,8 +82,8 @@
       >
         <option
           v-for="option in variableOptions"
-          :value="option"
           :key="option.value"
+          :value="option"
         >
           {{ option.label }}
         </option>
@@ -104,7 +104,7 @@
         </button>
       </template>
 
-      <h4 class="plot-title pt-5 pb-3 text-highlight" v-else>
+      <h4 v-else class="plot-title pt-5 pb-3 text-highlight">
         Cannot find a nearby location. Please select a location.
       </h4>
     </template>
@@ -118,75 +118,75 @@
     <div class="d-flex row m-0 content-wrapper">
       <!-- bar graph -->
       <div
+        v-if="data$ && data$[0] && variable.includes('Increase')"
         class="d-flex flex-column align-items-center"
-        v-if="data$ && data$[0] && this.variable.includes('Increase')"
       >
         <div
-          class="w-100 px-3 d-flex justify-content-center flex-wrap"
           id="bar-group"
           ref="bar_group"
+          class="w-100 px-3 d-flex justify-content-center flex-wrap"
         >
           <Bargraph
-            v-for="(countryData, idx) in data$[0]"
-            :key="idx"
-            class="mr-3 mb-3"
-            :data="countryData.value"
-            :title="countryData.value[0].name"
-            :variableObj="variableObj"
-            :includeAxis="true"
-            :width="bargraphWidth"
-            :height="bargraphHeight"
-            :transformChart="bargraphTransform"
-            :tooltipIdx="'n-' + idx"
-            :includeTooltips="true"
-            :location="location"
-            :log="isLogY"
-            :percapita="isPerCapita"
-            :xVariableLim="xLim"
-            :fixedYMax="yMax"
-            :animate="true"
-            :id="String(idx)"
-            :color="colorScale(countryData.key)"
+              v-for="(countryData, idx) in data$[0]"
+              :key="idx"
+              class="mr-3 mb-3"
+              :data="countryData.value"
+              :title="countryData.value[0].name"
+              :variableObj="variableObj"
+              :includeAxis="true"
+              :width="bargraphWidth"
+              :height="bargraphHeight"
+              :transformChart="bargraphTransform"
+              :tooltipIdx="'n-' + idx"
+              :includeTooltips="true"
+              :location="location"
+              :log="isLogY"
+              :percapita="isPerCapita"
+              :xVariableLim="xLim"
+              :fixedYMax="yMax"
+              :animate="true"
+              :id="String(idx)"
+              :color="colorScale(countryData.key)"
           />
         </div>
 
         <!-- source / download data -->
 
         <DataSource
+          v-if="data$"
           class="mx-3"
           :ids="variableObj.sources"
           dataType="epidemiology"
           figureRef="epi-bargraph"
           :numSvgs="data$[0].length"
           :data="data$[0]"
-          v-if="data$"
         />
       </div>
 
       <!-- curve -->
       <template
-        v-if="plottedData && showCurves && !this.variable.includes('Increase')"
+        v-if="plottedData && showCurves && !variable.includes('Increase')"
       >
         <EpiCurve
-          class="row"
           id="curveContainer"
+          class="row"
           :data="plottedData"
           :percapita="isPerCapita"
           :location="location"
           :variableObj="variableObj"
           :log="isLogY"
-          :loggable="variable != 'testing_positivity'"
-          :percent="variable == 'testing_positivity'"
+          :loggable="variable !== 'testing_positivity'"
+          :percent="variable === 'testing_positivity'"
           :xmin="xmin"
           :xmax="xmax"
-          :showAll="showAll"
+          :show-all="showAll"
         />
 
         <!-- source / download data -->
         <DataSource
+          v-if="data$"
           class="col-sm-12"
           :ids="variableObj.sources"
-          v-if="data$"
           dataType="epidemiology"
           figureRef="epi-curve"
           :data="data$[0]"
@@ -194,25 +194,27 @@
       </template>
 
       <div
-        class="container my-4 border-top pt-3"
         v-if="subParts"
         id="sub_parts"
+        class="container my-4 border-top pt-3"
       >
         <div class="row">
           <small
-            class="col-sm-6 col-lg-4 line-height-1 text-left pl-2 mb-3"
             v-for="(metro, mIdx) in subParts"
             :key="mIdx"
+            class="col-sm-6 col-lg-4 line-height-1 text-left pl-2 mb-3"
           >
             <template v-if="metro.hasSubparts">
               <b>{{ metro.key }}</b>
               metro area includes:
+
               <span
                 v-for="(loc, idx) in metro.parts"
                 :key="idx"
                 class="line-height-1"
               >
                 <router-link
+                  v-if="variable"
                   :to="{
                     name: 'Epidemiology',
                     query: {
@@ -223,7 +225,6 @@
                       percapita: percapita,
                     },
                   }"
-                  v-if="variable"
                 >
                   {{ loc.county_name }}, {{ loc.admin1 }}
                 </router-link>
@@ -256,19 +257,18 @@ import Warning from '@/components/Warning.vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
-
-library.add(faSpinner);
-
 import {
-  getEpiData,
   epiDataSubject,
   epiTableSubject,
+  getEpiData,
 } from '@/api/epi-traces.js';
 
 import { getLocation, processLocation } from '@/js/get-location.js';
 import store from '@/store';
 import { mapState } from 'vuex';
 import { extent, max } from 'd3';
+
+library.add(faSpinner);
 
 export default {
   name: 'Epidemiology',
@@ -279,6 +279,7 @@ export default {
       import(/* webpackPrefetch: true */ '@/components/EpiCurve.vue'),
     Bargraph: () =>
       import(/* webpackPrefetch: true */ '@/components/Bargraph.vue'),
+
     EpiTable,
     Autocomplete,
     FontAwesomeIcon,
@@ -375,11 +376,10 @@ export default {
   computed: {
     ...mapState('admin', ['loading']),
     ...mapState('geo', ['allPlaces']),
-    colorScale: function() {
-      const scale = store.getters['colors/getColor'];
-      return scale;
+    colorScale() {
+      return store.getters['colors/getColor'];
     },
-    noData: function() {
+    noData() {
       if (this.data$) {
         return !this.data$[0]
           .flatMap((d) => d.value)
@@ -389,7 +389,7 @@ export default {
         return false;
       }
     },
-    isLogY: function() {
+    isLogY() {
       return this.log === 'true';
     },
     dataLength() {
@@ -432,7 +432,7 @@ export default {
     },
   },
   watch: {
-    selectedPlaces: function(newValue, oldValue) {
+    selectedPlaces(newValue, oldValue) {
       const newLocation = newValue ? newValue.join(';') : '';
       if (this.$route.query.location !== newLocation) {
         this.$router.push({
@@ -451,18 +451,18 @@ export default {
       }
     },
     // route props
-    location: function(newLocation, oldLocation) {
+    location(newLocation, oldLocation) {
       this.setLocation(newLocation);
     },
     variable: {
       immediate: true,
       handler(newVal, oldVal) {
         this.variableObj = this.variableOptions.filter(
-          (d) => d.value == newVal,
+          (d) => d.value === newVal,
         )[0];
       },
     },
-    fixedY: function(newValue, oldValue) {
+    fixedY(newValue, oldValue) {
       if (newValue === 'true') {
         const varUsed = this.isPerCapita
           ? this.variable + '_per_100k'
@@ -477,23 +477,18 @@ export default {
         this.isFixedY = false;
       }
     },
-    isFixedY: function(newValue, oldValue) {
+    isFixedY(newValue, oldValue) {
       this.changeVariable();
     },
-    percapita: function(newValue, oldValue) {
-      if (newValue === 'true') {
-        this.isPerCapita = true;
-      } else {
-        this.isPerCapita = false;
-      }
+    percapita(newValue, oldValue) {
+      this.isPerCapita = newValue === 'true';
     },
-    isPerCapita: function(newValue, oldValue) {
+    isPerCapita(newValue, oldValue) {
       this.changeVariable();
     },
-    isOverlay: function(newValue, oldValue) {
+    isOverlay(newValue, oldValue) {
       if (newValue) {
         this.isOverlay = false;
-
         const newVariable = this.variable.replace('_numIncrease', '_rolling');
         this.$router.push({
           name: 'Epidemiology',
@@ -510,7 +505,7 @@ export default {
         });
       }
     },
-    showAll: function(newValue, oldValue) {
+    showAll(newValue, oldValue) {
       if (newValue) {
         this.addable = [];
         this.plottedData = this.data$ ? this.data$[0] : null;
@@ -519,8 +514,19 @@ export default {
       }
     },
   },
+  destroyed() {
+    window.removeEventListener('resize', this.setDims);
+  },
+  mounted() {
+    this.setLocation(this.location);
+    this.$nextTick(function() {
+      window.addEventListener('resize', this.setDims);
+      // set initial dimensions for the stacked area plots.
+      this.setDims();
+    });
+  },
   methods: {
-    setLocation: function(locationString, nullLocationHandler) {
+    setLocation(locationString, nullLocationHandler) {
       if (locationString && locationString !== '') {
         const locations = locationString.split(';').map((d) => d.trim());
         this.selectedPlaces = locations;
@@ -537,8 +543,8 @@ export default {
             this.data$[0].length > this.lengthThreshold
               ? this.hideExtra()
               : this.data$[0];
-          this.isFixedY = this.fixedY == 'true';
-          this.isPerCapita = this.percapita == 'true';
+          this.isFixedY = this.fixedY === 'true';
+          this.isPerCapita = this.percapita === 'true';
           const varUsed = this.isPerCapita
             ? this.variable + '_per_100k'
             : this.variable;
@@ -554,7 +560,7 @@ export default {
         this.clearLocations();
       }
     },
-    clearLocations: function() {
+    clearLocations() {
       this.selectedPlaces = [];
       epiDataSubject.next([]);
       epiTableSubject.next([]);
@@ -589,13 +595,13 @@ export default {
         },
       });
     },
-    updateSelected: function(selected) {
+    updateSelected(selected) {
       this.selectedPlaces = [...new Set(selected)];
     },
-    updateAddable: function(selected) {
+    updateAddable: (selected) => {
       this.addable = selected;
     },
-    setDims: function() {
+    setDims() {
       const minWidth = 550;
       const hwRatio = 0.75;
       const marginPadding = 80; // size of margin
@@ -616,7 +622,7 @@ export default {
         this.bargraphTransform = 1;
       }
     },
-    hideExtra: function() {
+    hideExtra() {
       const selectedData = this.data$
         ? this.data$[0]
             .slice()
@@ -624,19 +630,19 @@ export default {
             .slice(0, this.lengthThreshold)
         : null;
 
-      const toAdd = this.data$[0]
+      this.addable = this.data$[0]
         .slice()
         .sort((a, b) => b.currentCases - a.currentCases)
         .slice(this.lengthThreshold)
         .map((d) => d.key);
-      this.addable = toAdd;
+
       return selectedData;
     },
     lookupLocation() {
       store.state.admin.loading = true;
       getLocation(this.$apiurl).subscribe((nearestPlace) => {
         store.state.admin.loading = false;
-        if (nearestPlace != 'none') {
+        if (nearestPlace !== 'none') {
           this.$router.push({
             name: 'Epidemiology',
             query: {
@@ -648,17 +654,6 @@ export default {
         }
       });
     },
-  },
-  destroyed() {
-    window.removeEventListener('resize', this.setDims);
-  },
-  mounted() {
-    this.setLocation(this.location);
-    this.$nextTick(function() {
-      window.addEventListener('resize', this.setDims);
-      // set initial dimensions for the stacked area plots.
-      this.setDims();
-    });
   },
 };
 </script>

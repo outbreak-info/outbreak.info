@@ -12,7 +12,7 @@
           >
             lineage found
           </th>
-          <th></th>
+          <th />
           <th
             class="text-center padded border-bottom border-secondary"
             colspan="2"
@@ -29,7 +29,7 @@
             cumulative prevalence
             <sup>*</sup>
           </th>
-          <th></th>
+          <th />
           <th class="text-center padded">
             first
           </th>
@@ -39,28 +39,28 @@
         </tr>
       </thead>
       <tbody v-for="(lineageGroup, gIdx) in data" :key="gIdx">
-        <tr class="padding" v-if="gIdx > 0">
-          <td></td>
+        <tr v-if="gIdx > 0" class="padding">
+          <td />
         </tr>
         <tr
           class="border-top border-bottom"
           :class="{
             custom: lineageGroup.key.includes('Custom'),
-            voc: lineageGroup.key == 'Variant of Concern',
-            moc: lineageGroup.key == 'Mutation of Concern',
-            vum: lineageGroup.key == 'Variant under Monitoring',
-            moi: lineageGroup.key == 'Mutation of Interest',
-            voi: lineageGroup.key == 'Variant of Interest',
+            voc: lineageGroup.key === 'Variant of Concern',
+            moc: lineageGroup.key === 'Mutation of Concern',
+            vum: lineageGroup.key === 'Variant under Monitoring',
+            moi: lineageGroup.key === 'Mutation of Interest',
+            voi: lineageGroup.key === 'Variant of Interest',
           }"
         >
           <td
             colspan="6"
             :class="{
-              voc: lineageGroup.key == 'Variant of Concern',
-              moc: lineageGroup.key == 'Mutation of Concern',
-              moi: lineageGroup.key == 'Mutation of Interest',
-              vum: lineageGroup.key == 'Variant under Monitoring',
-              voi: lineageGroup.key == 'Variant of Interest',
+              voc: lineageGroup.key === 'Variant of Concern',
+              moc: lineageGroup.key === 'Mutation of Concern',
+              moi: lineageGroup.key === 'Mutation of Interest',
+              vum: lineageGroup.key === 'Variant under Monitoring',
+              voi: lineageGroup.key === 'Variant of Interest',
             }"
           >
             {{ lineageGroup.key }}
@@ -68,12 +68,17 @@
           </td>
         </tr>
         <tr
-          class="checkbook"
           v-for="(lineage, lIdx) in lineageGroup.values"
           :key="lIdx"
+          class="checkbook"
         >
           <td class="text-left line-height-1">
             <router-link
+              v-if="
+                routeTo === 'GenomicsEmbedLocation' &&
+                  lineage.params &&
+                  lineage.params.alias
+              "
               class="variant-table"
               :to="{
                 name: 'GenomicsEmbed',
@@ -86,15 +91,11 @@
                 },
               }"
               :data-tippy-info="lineage.tooltip"
-              v-if="
-                routeTo == 'GenomicsEmbedLocation' &&
-                  lineage.params &&
-                  lineage.params.alias
-              "
             >
               {{ lineage.label }}
             </router-link>
             <router-link
+              v-else-if="routeTo === 'GenomicsEmbedLocation'"
               class="variant-table"
               :to="{
                 name: 'GenomicsEmbed',
@@ -106,11 +107,11 @@
                 },
               }"
               :data-tippy-info="lineage.tooltip"
-              v-else-if="routeTo == 'GenomicsEmbedLocation'"
             >
               {{ lineage.label }}
             </router-link>
             <router-link
+              v-else
               class="variant-table"
               :to="{
                 name: 'MutationReport',
@@ -118,7 +119,6 @@
                 query: lineage.route,
               }"
               :data-tippy-info="lineage.tooltip"
-              v-else
             >
               {{ lineage.label }}
             </router-link>
@@ -129,13 +129,13 @@
           <td
             :class="{
               'text-muted':
-                lineage.proportion_formatted == 'no estimate' ||
-                lineage.proportion_formatted == 'not detected',
+                lineage.proportion_formatted === 'no estimate' ||
+                lineage.proportion_formatted === 'not detected',
             }"
           >
             <span
               :class="{
-                'no-estimate': lineage.proportion_formatted == 'no estimate',
+                'no-estimate': lineage.proportion_formatted === 'no estimate',
               }"
               :data-tippy-info="
                 `Prevalence estimates are unreliable since only ${
@@ -151,7 +151,7 @@
             </span>
           </td>
 
-          <td class="spacer"></td>
+          <td class="spacer" />
           <td>
             {{ lineage.first_detected }}
           </td>

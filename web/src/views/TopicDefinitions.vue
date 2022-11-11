@@ -5,12 +5,12 @@
       <p class="m-0">
         To increase the findability of
         <router-link :to="{ name: 'Resource Summary' }">
-          COVID-19 resources
-        </router-link>
-        , we've grouped all the resources into the following categories.
+          COVID-19 resources</router-link>, we've grouped all the
+          resources into the following categories.
       </p>
       <small>
         Suggest changes by submitting a
+
         <a
           href="https://github.com/outbreak-info/outbreak.info-resources/issues/new/choose"
           target="_blank"
@@ -18,15 +18,14 @@
         >
           Github issue
         </a>
+
         or creating a pull request on the
         <a
           href="https://github.com/outbreak-info/outbreak.info-resources/blob/master/covid_topic_categories.tsv"
           target="_blank"
           rel="noreferrer"
         >
-          categories
-        </a>
-        .
+          categories</a>.
       </small>
     </div>
 
@@ -35,7 +34,7 @@
         <h5 class="m-0 mr-3 mb-1 border-bottom text-uppercase">
           {{ topic.key }}
         </h5>
-        <p class="text-muted m-0" v-html="topic.value.description"></p>
+        <p class="text-muted m-0" v-html="topic.value.description" />
       </div>
 
       <div
@@ -43,48 +42,49 @@
         :key="subIdx"
         class="mb-2 ml-4"
       >
-        <h6 class="m-0">{{ subtopic.topicCategory }}</h6>
-        <p class="m-0 text-muted" v-html="subtopic.description"></p>
+        <h6 class="m-0">
+          {{ subtopic.topicCategory }}
+        </h6>
+        <p class="m-0 text-muted" v-html="subtopic.description" />
       </div>
     </div>
   </div>
 </template>
 
-<script lang="js">
-import Vue from "vue";
+<script>
+import Vue from 'vue';
 
-import {
-  tsv,
-  nest
-} from "d3";
+import { tsv, nest } from 'd3';
 
 export default Vue.extend({
-  name: "TopicDefinitions",
+  name: 'TopicDefinitions',
   data() {
-    return ({
-      topicUrl: "https://raw.githubusercontent.com/outbreak-info/outbreak.info-resources/master/covid_topic_categories.tsv",
-      topicArr: []
-    })
-  },
-  methods: {
-    getTopics() {
-      tsv(this.topicUrl).then(data => {
-
-        this.topicArr = nest()
-          .key(d => d.category)
-          .rollup(values => {
-            return ({
-              description: values.filter(d => d.subcategory == "false")[0]["description"],
-              subcats: values.filter(d => d.subcategory == "true")
-            })
-          })
-          .entries(data)
-          .sort((a, b) => a.key < b.key ? -1 : 1);
-      })
-    }
+    return {
+      topicUrl:
+        'https://raw.githubusercontent.com/outbreak-info/outbreak.info-resources/master/covid_topic_categories.tsv',
+      topicArr: [],
+    };
   },
   mounted() {
     this.getTopics();
-  }
+  },
+  methods: {
+    getTopics() {
+      tsv(this.topicUrl).then((data) => {
+        this.topicArr = nest()
+          .key((d) => d.category)
+          .rollup((values) => {
+            return {
+              description: values.filter((d) => d.subcategory === 'false')[0][
+                'description'
+              ],
+              subcats: values.filter((d) => d.subcategory === 'true'),
+            };
+          })
+          .entries(data)
+          .sort((a, b) => (a.key < b.key ? -1 : 1));
+      });
+    },
+  },
 });
 </script>

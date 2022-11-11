@@ -17,7 +17,7 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
           <div class="modal-content">
             <div class="modal-header border-secondary">
-              <h5 class="modal-title" id="exampleModalLabel">
+              <h5 id="exampleModalLabel" class="modal-title">
                 Select report locations
               </h5>
               <button
@@ -31,11 +31,13 @@
             </div>
             <div class="modal-body">
               <div class="mb-3 py-3 border-bottom border-secondary">
-                <h6 class="text-muted text-underline m-0">Current locations</h6>
+                <h6 class="text-muted text-underline m-0">
+                  Current locations
+                </h6>
                 <button
-                  class="btn btn-accent-flat text-muted px-2 py-1 mr-2"
                   v-for="(location, lIdx2) in currentLocs"
                   :key="lIdx2"
+                  class="btn btn-accent-flat text-muted px-2 py-1 mr-2"
                   @click="removeLocation(lIdx2)"
                 >
                   {{ location.label }}
@@ -48,12 +50,14 @@
 
               <div class="py-3 border-bottom">
                 <div v-if="loc2Add.length" class="my-3">
-                  <h6 class="text-sec text-underline m-0">Locations to add</h6>
+                  <h6 class="text-sec text-underline m-0">
+                    Locations to add
+                  </h6>
                   <button
-                    class="btn btn-main-flat px-2 py-1 mr-2"
                     v-for="(location, cIdx) in loc2Add"
-                    :key="cIdx"
                     id="new-locations"
+                    :key="cIdx"
+                    class="btn btn-main-flat px-2 py-1 mr-2"
                     @click="removeLoc2Add(cIdx)"
                   >
                     {{ location.label }}
@@ -65,17 +69,17 @@
                 </div>
 
                 <div
-                  class="d-flex align-items-center justify-content-center my-3"
                   id="select-location"
+                  class="d-flex align-items-center justify-content-center my-3"
                 >
                   <TypeaheadSelect
-                    wrapperClass="w-100"
-                    :queryFunction="queryLocation"
-                    @selected="addLoc2Add"
-                    :apiUrl="this.$genomicsurl"
-                    labelVariable="label"
-                    placeholder="Add location"
-                    totalLabel="total sequences"
+                      wrapperClass="w-100"
+                      :queryFunction="queryLocation"
+                      @selected="addLoc2Add"
+                      :apiUrl="this.$genomicsurl"
+                      labelVariable="label"
+                      placeholder="Add location"
+                      totalLabel="total sequences"
                   />
                 </div>
               </div>
@@ -88,8 +92,8 @@
               <button
                 type="button"
                 class="btn btn-accent"
-                @click="selectNewLocations"
                 data-dismiss="modal"
+                @click="selectNewLocations"
               >
                 Save changes
               </button>
@@ -103,7 +107,7 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
           <div class="modal-content">
             <div class="modal-header border-secondary">
-              <h5 class="modal-title" id="exampleModalLabel">
+              <h5 id="exampleModalLabel" class="modal-title">
                 Change selected location
               </h5>
               <button
@@ -117,37 +121,39 @@
             </div>
             <div class="modal-body">
               <div class="mb-3 py-3 border-bottom border-secondary">
-                <h6 class="text-muted text-underline m-0">Current locations</h6>
+                <h6 class="text-muted text-underline m-0">
+                  Current locations
+                </h6>
                 <button
                   class="btn btn-accent-flat text-muted px-2 py-1 mr-2"
-                  @click="switchLocation()"
                   data-dismiss="modal"
+                  @click="switchLocation()"
                 >
                   Worldwide
                 </button>
                 <button
-                  class="btn btn-accent-flat text-muted px-2 py-1 mr-2"
                   v-for="(location, lIdx3) in currentLocs"
                   :key="lIdx3"
-                  @click="switchLocation(location)"
+                  class="btn btn-accent-flat text-muted px-2 py-1 mr-2"
                   data-dismiss="modal"
+                  @click="switchLocation(location)"
                 >
                   {{ location.label }}
                 </button>
               </div>
 
               <div
-                class="d-flex align-items-center justify-content-center my-3"
                 id="select-location"
+                class="d-flex align-items-center justify-content-center my-3"
               >
                 <TypeaheadSelect
                   wrapperClass="w-100"
                   :queryFunction="queryLocation"
-                  @selected="updateSelectedLoc"
                   :apiUrl="this.$genomicsurl"
                   labelVariable="label"
                   placeholder="Change location"
                   totalLabel="total sequences"
+                  @selected="updateSelectedLoc"
                 />
               </div>
             </div>
@@ -167,7 +173,7 @@
         >
           <div class="modal-content">
             <div class="modal-header border-secondary">
-              <h5 class="modal-title" id="exampleModalLabel">
+              <h5 id="exampleModalLabel" class="modal-title">
                 Generate Custom Mutation Report
               </h5>
               <button
@@ -194,7 +200,7 @@
 
       <template v-if="hasData">
         <!-- SOCIAL MEDIA SHARE, BACK BTN -->
-        <div class="d-flex align-items-center mb-2 mt-3" v-if="!embedded">
+        <div v-if="!embedded" class="d-flex align-items-center mb-2 mt-3">
           <router-link :to="{ name: 'SituationReports' }" class="no-underline">
             <button class="btn py-0 px-2 d-flex align-items-center btn-grey">
               <font-awesome-icon
@@ -217,9 +223,9 @@
 
         <!-- REPORT HEADER -->
         <div
+          v-if="!embedded"
           class="d-flex flex-column text-light mutation-banner py-3"
           :class="[smallScreen ? 'mx-n2 px-2' : 'mx-n5 px-5']"
-          v-if="!embedded"
         >
           <h4 class="m-0 mt-n1 text-grey">
             Lineage
@@ -248,12 +254,12 @@
               </div>
               <div class="d-flex my-1 align-items-center">
                 <small
-                  class="text-muted mr-3"
                   v-if="
                     reportMetadata &&
                       reportMetadata.mutation_synonyms &&
                       reportMetadata.mutation_synonyms.length > 1
                   "
+                  class="text-muted mr-3"
                 >
                   <span>a.k.a.</span>
                   <span
@@ -268,22 +274,22 @@
                     </span>
                   </span>
                 </small>
-                <small class="mutation-hyperlink" v-if="pangoLink">
+                <small v-if="pangoLink" class="mutation-hyperlink">
                   <a :href="pangoLink" target="_blank" rel="noreferrer">
                     view on PANGO lineages
                   </a>
                 </small>
 
-                <small class="text-grey mx-2" v-if="pangoLink && aquariaLink">
+                <small v-if="pangoLink && aquariaLink" class="text-grey mx-2">
                   &bull;
                 </small>
 
                 <!-- link to Aquaria structures -->
                 <template v-if="aquariaLink">
                   <small
-                    class="mutation-hyperlink"
                     v-for="(link, lIdx) in aquariaLink"
                     :key="lIdx"
+                    class="mutation-hyperlink"
                   >
                     <a :href="link.value.link" target="_blank" rel="noreferrer">
                       view
@@ -294,8 +300,8 @@
                       3D structures (Aquaria)
                     </a>
                     <span
-                      class="text-grey mx-2"
                       v-if="lIdx < aquariaLink.length - 1"
+                      class="text-grey mx-2"
                     >
                       &bull;
                     </span>
@@ -304,13 +310,13 @@
               </div>
               <div class="d-flex align-items-center">
                 <small
-                  class="text-muted badge bg-grey__lightest mt-1"
                   v-if="lastUpdated"
+                  class="text-muted badge bg-grey__lightest mt-1"
                 >
                   <font-awesome-icon class="mr-1" :icon="['far', 'clock']" />
                   Updated {{ lastUpdated }} ago
                 </small>
-                <div class="text-grey font-size-2 ml-3" v-if="totalLineage">
+                <div v-if="totalLineage" class="text-grey font-size-2 ml-3">
                   with
                   <span class="text-light">{{ totalLineage }} sequences</span>
                   from GISAID
@@ -352,9 +358,9 @@
 
         <!-- Simplified form for embedded reports -->
         <div
+          v-else
           class="d-flex flex-column text-light mutation-banner py-3"
           :class="[smallScreen ? 'mx-n2 px-2' : 'mx-n5 px-5']"
-          v-else
         >
           <div class="d-flex align-items-center">
             <h4 class="m-0 mt-n1 text-grey">
@@ -379,16 +385,18 @@
 
           <div class="d-flex justify-content-between align-items-center">
             <div class="d-flex flex-column align-items-start">
-              <h1 class="m-0 font-weight-bold mutation-header">{{ title }}</h1>
+              <h1 class="m-0 font-weight-bold mutation-header">
+                {{ title }}
+              </h1>
 
               <div class="d-flex my-1 align-items-center">
                 <small
-                  class="text-muted mr-3"
                   v-if="
                     reportMetadata &&
                       reportMetadata.mutation_synonyms &&
                       reportMetadata.mutation_synonyms.length > 1
                   "
+                  class="text-muted mr-3"
                 >
                   <span>a.k.a.</span>
                   <span
@@ -403,22 +411,22 @@
                     </span>
                   </span>
                 </small>
-                <small class="mutation-hyperlink" v-if="pangoLink">
+                <small v-if="pangoLink" class="mutation-hyperlink">
                   <a :href="pangoLink" target="_blank" rel="noreferrer">
                     view on PANGO lineages
                   </a>
                 </small>
 
-                <small class="text-grey mx-2" v-if="pangoLink && aquariaLink">
+                <small v-if="pangoLink && aquariaLink" class="text-grey mx-2">
                   &bull;
                 </small>
 
                 <!-- link to Aquaria structures -->
                 <template v-if="aquariaLink">
                   <small
-                    class="mutation-hyperlink"
                     v-for="(link, lIdx) in aquariaLink"
                     :key="lIdx"
+                    class="mutation-hyperlink"
                   >
                     <a :href="link.value.link" target="_blank" rel="noreferrer">
                       view
@@ -429,8 +437,8 @@
                       3D structures (Aquaria)
                     </a>
                     <span
-                      class="text-grey mx-2"
                       v-if="lIdx < aquariaLink.length - 1"
+                      class="text-grey mx-2"
                     >
                       &bull;
                     </span>
@@ -443,13 +451,13 @@
             >
               <div class="d-flex align-items-center">
                 <small
-                  class="text-muted badge bg-grey__lightest mt-1"
                   v-if="lastUpdated"
+                  class="text-muted badge bg-grey__lightest mt-1"
                 >
                   <font-awesome-icon class="mr-1" :icon="['far', 'clock']" />
                   Updated {{ lastUpdated }} ago
                 </small>
-                <div class="text-grey font-size-2 ml-3" v-if="totalLineage">
+                <div v-if="totalLineage" class="text-grey font-size-2 ml-3">
                   with
                   <span class="text-light">{{ totalLineage }} sequences</span>
                   from GISAID
@@ -473,12 +481,13 @@
         </div>
 
         <div
+          v-if="
+            (alias && alias.toLowerCase() === 'omicron') ||
+              pango === 'B.1.1.529'
+          "
           id="warning"
           class="w-100 mt-3"
-          v-if="
-            (alias && alias.toLowerCase() == 'omicron') || pango == 'B.1.1.529'
-          "
-        ></div>
+        />
 
         <!-- Report Nav bar -->
         <div
@@ -507,13 +516,13 @@
         <!-- REPORT -->
         <div class="row">
           <section id="intro" class="col-sm-6 col-md-7 pr-4">
-            <div id="about-variant" class="mb-3 mx-4" v-if="reportMetadata">
+            <div v-if="reportMetadata" id="about-variant" class="mb-3 mx-4">
               <div
                 class="d-flex flex-wrap align-items-center justify-content-end"
               >
                 <small
-                  class="mx-3 text-muted"
                   v-if="reportMetadata.location_first_identified"
+                  class="mx-3 text-muted"
                 >
                   <em>
                     First identified in
@@ -521,26 +530,26 @@
                   </em>
                 </small>
                 <div
+                  v-if="reportMetadata.variantType === 'Variant of Concern'"
                   class="VOC"
-                  v-if="reportMetadata.variantType == 'Variant of Concern'"
                 >
                   Variant of Concern
                 </div>
                 <div
+                  v-if="reportMetadata.variantType === 'Variant of Interest'"
                   class="VOI"
-                  v-if="reportMetadata.variantType == 'Variant of Interest'"
                 >
                   Variant of Interest
                 </div>
                 <div
+                  v-if="reportMetadata.variantType === 'Mutation of Concern'"
                   class="MOC"
-                  v-if="reportMetadata.variantType == 'Mutation of Concern'"
                 >
                   Mutation of Concern
                 </div>
                 <div
+                  v-if="reportMetadata.variantType === 'Mutation of Interest'"
                   class="MOI"
-                  v-if="reportMetadata.variantType == 'Mutation of Interest'"
                 >
                   Mutation of Interest
                 </div>
@@ -548,8 +557,9 @@
             </div>
 
             <!-- CHARACTERISTIC MUTATIONS -->
-            <div class="mt-4" id="definition">
+            <div id="definition" class="mt-4">
               <CharacteristicMutations
+                v-if="mutations"
                 :mutationName="reportName"
                 :mutations="mutations"
                 :reportType="reportType"
@@ -558,26 +568,25 @@
                 :lineageName="lineageName"
                 :sublineages="sublineageOptions"
                 :aquariaLink="aquariaLink"
-                v-if="mutations"
               />
             </div>
 
             <!-- SUBLINEAGE BREAKDOWN -->
             <SublineageTotals
+              v-if="sublineagePrev && sublineagePrev.length"
               :routeTo="routeTo"
               :lineageName="lineageName"
               :location="selectedLocation.label"
               :data="sublineagePrev"
-              v-if="sublineagePrev && sublineagePrev.length"
             />
 
             <!-- BREAKDOWN BY PANGO LINEAGE -->
             <div
-              class="my-4"
               v-if="mutationsByLineage && mutationsByLineage.length"
+              class="my-4"
             >
               <div
-                v-if="reportType == 'lineage with added mutations'"
+                v-if="reportType === 'lineage with added mutations'"
                 class="mx-2 mb-1"
               >
                 <button
@@ -596,11 +605,11 @@
               </div>
 
               <div
+                id="collapsePangoBreakdown"
                 class="mx-3"
                 :class="{
-                  collapse: reportType == 'lineage with added mutations',
+                  collapse: reportType === 'lineage with added mutations',
                 }"
-                id="collapsePangoBreakdown"
               >
                 <MutationsByLineage
                   :routeTo="routeTo"
@@ -639,8 +648,8 @@
 
         <!-- DAILY PREVALENCE -->
         <section
-          class="vis my-3 py-3 d-flex flex-column align-items-center"
           id="longitudinal"
+          class="vis my-3 py-3 d-flex flex-column align-items-center"
         >
           <h4 class="mb-0">
             Average daily {{ reportName }} prevalence {{ locationLabel }}
@@ -650,10 +659,10 @@
           </small>
           <div id="location-buttons" class="d-flex flex-wrap">
             <button
-              class="btn btn-tab my-2"
-              :class="{ 'btn-active': location.isActive }"
               v-for="(location, lIdx) in selectedLocations"
               :key="lIdx"
+              class="btn btn-tab my-2"
+              :class="{ 'btn-active': location.isActive }"
               @click="switchLocation(location)"
             >
               {{ location.label }}
@@ -683,9 +692,9 @@
 
         <!-- DAILY SUBLINEAGE PREVALENCE -->
         <section
-          class="vis my-3 py-3 d-flex flex-column align-items-center"
-          id="longitudinal-sublineage"
           v-if="lineagesByDay"
+          id="longitudinal-sublineage"
+          class="vis my-3 py-3 d-flex flex-column align-items-center"
         >
           <h4 class="mb-0">
             Lineage breakdown of {{ reportName }} by day {{ locationLabel }}
@@ -700,10 +709,10 @@
             class="d-flex flex-wrap align-items-center"
           >
             <button
-              class="btn btn-tab my-2"
-              :class="{ 'btn-active': location.isActive }"
               v-for="(location, lIdx) in selectedLocations"
               :key="lIdx"
+              class="btn btn-tab my-2"
+              :class="{ 'btn-active': location.isActive }"
               @click="switchLocation(location)"
             >
               {{ location.label }}
@@ -724,20 +733,20 @@
             <div id="sublineage-overlay-selector ml-4">
               <div class="radio-item mr-3">
                 <input
-                  type="radio"
                   id="stack"
-                  :value="false"
                   v-model="sublineageOverlay"
+                  type="radio"
+                  :value="false"
                   @change="changeSublineageOverlay"
                 />
                 <label for="stack">stack lineages</label>
               </div>
               <div class="radio-item mr-3">
                 <input
-                  type="radio"
                   id="overlay"
-                  :value="true"
                   v-model="sublineageOverlay"
+                  type="radio"
+                  :value="true"
                   @change="changeSublineageOverlay"
                 />
                 <label for="overlay">overlay lineages</label>
@@ -745,23 +754,23 @@
             </div>
           </div>
 
-          <div id="sublinege-prevalence-overlay" v-if="sublineageOverlay">
+          <div v-if="sublineageOverlay" id="sublinege-prevalence-overlay">
             <div class="d-flex flex-wrap justify-content-center mt-2">
               <label
-                class="b-contain m-0 mr-3 mb-2 variant-checkbox"
                 v-for="option in sublineageOptions"
                 :key="option"
+                class="b-contain m-0 mr-3 mb-2 variant-checkbox"
               >
                 <small
-                  :style="`color: ${sublineageColorScale(option)}`"
                   v-if="sublineageColorScale"
+                  :style="`color: ${sublineageColorScale(option)}`"
                 >
                   {{ option }}
                 </small>
                 <input
+                  v-model.lazy="selectedSublineages"
                   type="checkbox"
                   :value="option"
-                  v-model.lazy="selectedSublineages"
                   @change="debounceSelectSublineage"
                 />
                 <div
@@ -774,11 +783,12 @@
                         }
                       : 'background:none',
                   ]"
-                ></div>
+                />
               </label>
             </div>
 
             <ReportPrevalenceOverlay
+              v-if="sublineageLongitudinal && sublineageLongitudinal.length"
               :data="sublineageLongitudinal"
               :epi="[]"
               :routeName="routeTo"
@@ -786,7 +796,6 @@
               :mutationName="reportName"
               :onlyTotals="false"
               :setWidth="width"
-              v-if="sublineageLongitudinal && sublineageLongitudinal.length"
               :xmin="xmin"
               :xmax="xmax"
               :locationID="selectedLocation.id"
@@ -796,7 +805,7 @@
           </div>
 
           <!-- SUBLINEAGE BREAKDOWN: STREAMGRAPH -->
-          <div id="sublineage-streamgraph" v-else>
+          <div v-else id="sublineage-streamgraph">
             <HorizontalCategoricalLegend
               :values="sublineageOptions"
               :colorScale="sublineageColorScale"
@@ -824,8 +833,8 @@
 
         <!-- GEOGRAPHIC PREVALENCE -->
         <section
-          class="my-4 d-flex flex-column align-items-center"
           id="geographic"
+          class="my-4 d-flex flex-column align-items-center"
         >
           <div class="d-flex align-items-center">
             <h4 class="mb-0 mr-3">{{ reportName }} prevalence</h4>
@@ -834,10 +843,10 @@
               class="d-flex flex-wrap align-items-center"
             >
               <button
-                class="btn btn-tab"
-                :class="{ 'btn-active': location.isActive }"
                 v-for="(location, cIdx) in choroplethLocations"
                 :key="cIdx"
+                class="btn btn-tab"
+                :class="{ 'btn-active': location.isActive }"
                 @click="switchLocation(location)"
               >
                 {{ location.label }}
@@ -863,7 +872,7 @@
               >
                 <router-link
                   v-if="
-                    selectedLocation.id && selectedLocation.id != 'Worldwide'
+                    selectedLocation.id && selectedLocation.id !== 'Worldwide'
                   "
                   class="btn btn-sec mr-3"
                   :to="{
@@ -880,8 +889,8 @@
               <div class="d-flex flex-wrap">
                 <!-- Legend -->
                 <div
-                  class="d-flex flex-wrap justify-content-around align-items-center"
                   id="choropleth-legend"
+                  class="d-flex flex-wrap justify-content-around align-items-center"
                 >
                   <ClassedLegend
                     :colorScale="choroColorScale"
@@ -902,14 +911,14 @@
                   <div class="d-flex align-items-center flex-shrink-0">
                     <small>Prevalence over the last</small>
                     <input
+                      v-model="choroNdays"
                       class="border p-1 mx-2"
                       :style="{
                         'border-color': '#bababa !important;',
                         width: '40px',
                       }"
-                      @change="debounceChoroWindowChange()"
-                      v-model="choroNdays"
                       placeholder="days"
+                      @change="debounceChoroWindowChange()"
                     />
                     <small>days</small>
                     <small>
@@ -941,14 +950,14 @@
               <div class="d-flex align-items-center flex-shrink-0">
                 <small>Prevalence over the last</small>
                 <input
+                  v-model="choroNdays"
                   class="border p-1 mx-2"
                   :style="{
                     'border-color': '#bababa !important;',
                     width: '40px',
                   }"
-                  @change="debounceChoroWindowChange()"
-                  v-model="choroNdays"
                   placeholder="days"
+                  @change="debounceChoroWindowChange()"
                 />
                 <small>days</small>
                 <small>
@@ -973,7 +982,7 @@
             </div>
           </div>
 
-          <div class="text-muted my-5" v-else>
+          <div v-else class="text-muted my-5">
             Geographic prevalence is not available for counties. Please select
             worldwide, a country, or a division/state.
           </div>
@@ -988,7 +997,7 @@
         </section>
 
         <!-- METHODOLOGY -->
-        <section class="mt-3 mb-5" id="methods">
+        <section id="methods" class="mt-3 mb-5">
           <h4>Methodology</h4>
           <ReportMethodology :dateUpdated="dateUpdated" :summary="true" />
           <!-- <small class=""><a @click="downloadGISAID" href="">Download associated GISAID IDs</a></small> -->
@@ -1022,7 +1031,9 @@
             <span class="mx-1">|</span>
             Mutation Tracker
           </h4>
-          <h1 class="m-0 font-weight-bold mutation-header">{{ title }}</h1>
+          <h1 class="m-0 font-weight-bold mutation-header">
+            {{ title }}
+          </h1>
         </div>
         <p class="my-5">
           Calculating prevalences for {{ title }}. Please be patient.
@@ -1039,7 +1050,9 @@
             <span class="mx-1">|</span>
             Mutation Tracker
           </h4>
-          <h1 class="m-0 font-weight-bold mutation-header">{{ title }}</h1>
+          <h1 class="m-0 font-weight-bold mutation-header">
+            {{ title }}
+          </h1>
         </div>
         <p class="my-5">
           No data found for
@@ -1052,28 +1065,37 @@
 </template>
 
 <script>
-import Vue from 'vue';
-
 import uniq from 'lodash/uniq';
 import isEqual from 'lodash/isEqual';
 import debounce from 'lodash/debounce';
 
-import { scaleOrdinal, nest } from 'd3';
+import { max, nest, scaleOrdinal, scaleThreshold, timeFormat } from 'd3';
 
 // --- font awesome --
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faClock } from '@fortawesome/free-regular-svg-icons';
 import {
-  faTrashAlt,
+  faInfoCircle,
   faPlusCircle,
   faSpinner,
-  faInfoCircle,
+  faTrashAlt,
 } from '@fortawesome/free-solid-svg-icons';
 
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons/faArrowLeft';
 
 import { faSync } from '@fortawesome/free-solid-svg-icons/faSync';
+import { mapState } from 'vuex';
+
+import {
+  findLocation,
+  findPangolin,
+  getReportData,
+  updateChoroData,
+  updateLocationData,
+} from '@/api/genomics.js';
+
+import { schemeYlGnBu } from 'd3-scale-chromatic';
 
 library.add(
   faClock,
@@ -1084,22 +1106,6 @@ library.add(
   faArrowLeft,
   faSync,
 );
-
-import { mapState } from 'vuex';
-
-import {
-  getReportData,
-  getCuratedMetadata,
-  updateLocationData,
-  updateChoroData,
-  findLocation,
-  findPangolin,
-  getLocationPrevalence,
-} from '@/api/genomics.js';
-
-import { timeFormat, max, scaleThreshold } from 'd3';
-
-import { schemeYlGnBu } from 'd3-scale-chromatic';
 
 export default {
   name: 'SituationReportComponent',
@@ -1178,96 +1184,6 @@ export default {
     routeTo: {
       type: String,
       default: 'MutationReport',
-    },
-  },
-  computed: {
-    ...mapState('admin', [
-      'mutationAuthors',
-      'genomicsCitation',
-      'reportloading',
-    ]),
-    smallScreen() {
-      return window.innerWidth < 500;
-    },
-    definitionLabel() {
-      return this.reportType == 'lineage'
-        ? 'Characteristic mutations in lineage'
-        : this.reportType == 'lineage with added mutations'
-        ? 'Characteristic mutations in variant'
-        : 'List of mutations';
-    },
-    locationLabel() {
-      if (this.selectedLocation) {
-        return this.selectedLocation.label == 'Worldwide'
-          ? 'globally'
-          : `in ${this.selectedLocation.label}`;
-      } else {
-        return null;
-      }
-    },
-    pangoLink() {
-      return this.lineageName
-        ? `https://cov-lineages.org/lineage.html?lineage=${this.lineageName}`
-        : null;
-    },
-    aquariaLink() {
-      if (this.additionalMutations && this.additionalMutations.length > 0) {
-        const aquariaStub = 'https://aquaria.app/SARS-CoV-2/';
-        const mutationsByGene = nest()
-          .key((d) => d.gene)
-          .rollup((values) => {
-            return {
-              link:
-                values[0].gene.toLowerCase() === 'orf1b'
-                  ? // convert between ORF1b and ORF1ab: e.g. ORF1b P314L becomes https://aquaria.app/SARS-CoV-2/PP1ab?P4715L
-                    // in general: gene?mutations, separated by &
-                    `${aquariaStub}PP1ab?${values
-                      .map((d) => this.calcORF1bLink(d))
-                      .join('&')}`
-                  : `${aquariaStub}${values[0].gene}?${values
-                      .map((d) =>
-                        d.mutation.replace(d.gene, '').replace(':', ''),
-                      )
-                      .join('&')}`,
-              count: values.length,
-            };
-          })
-          .entries(this.additionalMutations);
-
-        return mutationsByGene;
-      } else {
-        return null;
-      }
-    },
-    choroplethLocations() {
-      return this.selectedLocations
-        ? this.selectedLocations.filter((d) => d.admin_level < 2)
-        : null;
-    },
-    choroLabel() {
-      return `Est. ${this.reportName} prevalence ${this.choroTimeFrame}`;
-    },
-    choroTimeFrame() {
-      return this.choroNdays
-        ? `last ${this.choroNdays} days`
-        : 'since identification';
-    },
-  },
-  watch: {
-    $route: function(newVal, oldVal) {
-      if (
-        !isEqual(newVal.query.pango, oldVal.query.pango) ||
-        !isEqual(newVal.params.alias, oldVal.params.alias) ||
-        !isEqual(newVal.query.alias, oldVal.query.alias) ||
-        !isEqual(newVal.query.muts, oldVal.query.muts)
-      ) {
-        this.newPangolin = null;
-        this.lineageName = null;
-        this.reportMetadata = null;
-        this.setupReport();
-      } else {
-        this.updateLocations();
-      }
     },
   },
   data() {
@@ -1363,7 +1279,95 @@ export default {
       mutationsByLineage: [],
     };
   },
-  created: function() {
+  computed: {
+    ...mapState('admin', [
+      'mutationAuthors',
+      'genomicsCitation',
+      'reportloading',
+    ]),
+    smallScreen() {
+      return window.innerWidth < 500;
+    },
+    definitionLabel() {
+      return this.reportType === 'lineage'
+        ? 'Characteristic mutations in lineage'
+        : this.reportType === 'lineage with added mutations'
+        ? 'Characteristic mutations in variant'
+        : 'List of mutations';
+    },
+    locationLabel() {
+      if (this.selectedLocation) {
+        return this.selectedLocation.label === 'Worldwide'
+          ? 'globally'
+          : `in ${this.selectedLocation.label}`;
+      } else {
+        return null;
+      }
+    },
+    pangoLink() {
+      return this.lineageName
+        ? `https://cov-lineages.org/lineage.html?lineage=${this.lineageName}`
+        : null;
+    },
+    aquariaLink() {
+      if (this.additionalMutations && this.additionalMutations.length > 0) {
+        const aquariaStub = 'https://aquaria.app/SARS-CoV-2/';
+        return nest()
+          .key((d) => d.gene)
+          .rollup((values) => {
+            return {
+              link:
+                values[0].gene.toLowerCase() === 'orf1b'
+                  ? // convert between ORF1b and ORF1ab: e.g. ORF1b P314L becomes https://aquaria.app/SARS-CoV-2/PP1ab?P4715L
+                    // in general: gene?mutations, separated by &
+                    `${aquariaStub}PP1ab?${values
+                      .map((d) => this.calcORF1bLink(d))
+                      .join('&')}`
+                  : `${aquariaStub}${values[0].gene}?${values
+                      .map((d) =>
+                        d.mutation.replace(d.gene, '').replace(':', ''),
+                      )
+                      .join('&')}`,
+              count: values.length,
+            };
+          })
+          .entries(this.additionalMutations);
+      } else {
+        return null;
+      }
+    },
+    choroplethLocations() {
+      return this.selectedLocations
+        ? this.selectedLocations.filter((d) => d.admin_level < 2)
+        : null;
+    },
+    choroLabel() {
+      return `Est. ${this.reportName} prevalence ${this.choroTimeFrame}`;
+    },
+    choroTimeFrame() {
+      return this.choroNdays
+        ? `last ${this.choroNdays} days`
+        : 'since identification';
+    },
+  },
+  watch: {
+    $route: function(newVal, oldVal) {
+      if (
+        !isEqual(newVal.query.pango, oldVal.query.pango) ||
+        !isEqual(newVal.params.alias, oldVal.params.alias) ||
+        !isEqual(newVal.query.alias, oldVal.query.alias) ||
+        !isEqual(newVal.query.muts, oldVal.query.muts)
+      ) {
+        this.newPangolin = null;
+        this.lineageName = null;
+        this.reportMetadata = null;
+        this.setupReport();
+      } else {
+        this.updateLocations();
+      }
+    },
+  },
+  created() {
     this.debounceSetDims = debounce(this.setDims, 150);
     this.debounceSelectSublineage = debounce(this.selectSublineage, 250);
     this.debounceChoroWindowChange = debounce(this.updateChoroWindow, 700);
@@ -1381,11 +1385,11 @@ export default {
 
     // Get date for the citation object
     const formatDate = timeFormat('%e %B %Y');
-    var currentTime = new Date();
+    let currentTime = new Date();
     this.today = formatDate(currentTime);
 
     // set URL for sharing, etc.
-    this.$nextTick(function() {
+    this.$nextTick(() => {
       window.addEventListener('resize', this.debounceSetDims);
 
       const location = window.location;
@@ -1395,6 +1399,23 @@ export default {
           : `${location.origin}${location.pathname}`;
     });
     this.setupReport();
+  },
+  destroyed() {
+    if (this.dataSubscription) {
+      this.dataSubscription.unsubscribe();
+    }
+
+    if (this.choroSubscription) {
+      this.choroSubscription.unsubscribe();
+    }
+
+    if (this.curatedSubscription) {
+      this.curatedSubscription.unsubscribe();
+    }
+
+    if (this.locationChangeSubscription) {
+      this.locationChangeSubscription.unsubscribe();
+    }
   },
   methods: {
     setDims() {
@@ -1518,7 +1539,7 @@ export default {
           // selected locations
           this.selectedLocations = results.locations;
           this.currentLocs = results.locations.filter(
-            (d) => d.id != 'Worldwide',
+            (d) => d.id !== 'Worldwide',
           );
           const selected = results.locations.filter((d) => d.isActive);
           this.selectedLocation = selected.length === 1 ? selected[0] : null;
@@ -1529,7 +1550,7 @@ export default {
 
           // worldwide stats
           const global = results.locPrev.filter(
-            (d) => d.location_id == 'Worldwide',
+            (d) => d.location_id === 'Worldwide',
           );
           this.totalLineage =
             global.length === 1 ? global[0].lineage_count_formatted : null;
@@ -1566,7 +1587,7 @@ export default {
           if (results.md) {
             this.reportMetadata = results.md;
             this.searchTerms =
-              this.reportType != 'lineage with added mutations' &&
+              this.reportType !== 'lineage with added mutations' &&
               results.md.searchTerms
                 ? results.md.searchTerms
                 : [this.searchTerms];
@@ -1631,13 +1652,13 @@ export default {
         this.currentLocs
           .map((d) => d.id)
           .concat(locationIDs)
-          .filter((d) => d != 'Worldwide'),
+          .filter((d) => d !== 'Worldwide'),
       );
 
       // reset the fields.
       this.loc2Add = [];
 
-      if (this.routeTo == 'MutationReport') {
+      if (this.routeTo === 'MutationReport') {
         this.$router.push({
           name: 'MutationReport',
           params: {
@@ -1651,7 +1672,7 @@ export default {
             overlay: this.sublineageOverlay,
           },
         });
-      } else if (this.routeTo == 'GenomicsEmbedVariant') {
+      } else if (this.routeTo === 'GenomicsEmbedVariant') {
         this.$router.push({
           name: 'GenomicsEmbed',
           query: {
@@ -1683,9 +1704,9 @@ export default {
       // const countries = this.selectedLocations.filter(d => d.type == "country").map(d => d.name);
       const ids = this.selectedLocations
         .map((d) => d.id)
-        .filter((d) => d != 'Worldwide');
+        .filter((d) => d !== 'Worldwide');
 
-      if (this.routeTo == 'MutationReport') {
+      if (this.routeTo === 'MutationReport') {
         this.$router.push({
           name: 'MutationReport',
           query: {
@@ -1700,7 +1721,7 @@ export default {
             disableScroll: true,
           },
         });
-      } else if (this.routeTo == 'GenomicsEmbedVariant') {
+      } else if (this.routeTo === 'GenomicsEmbedVariant') {
         this.$router.push({
           name: 'GenomicsEmbed',
           query: {
@@ -1735,7 +1756,9 @@ export default {
       ).subscribe((results) => {
         // selected locations
         this.selectedLocations = results.locations;
-        this.currentLocs = results.locations.filter((d) => d.id != 'Worldwide');
+        this.currentLocs = results.locations.filter(
+          (d) => d.id !== 'Worldwide',
+        );
         const selected = results.locations.filter((d) => d.isActive);
         this.selectedLocation = selected.length === 1 ? selected[0] : null;
 
@@ -1774,7 +1797,7 @@ export default {
       });
     },
     changeSublineageOverlay(selected) {
-      if (this.routeTo == 'MutationReport') {
+      if (this.routeTo === 'MutationReport') {
         this.$router.push({
           name: 'MutationReport',
           query: {
@@ -1791,7 +1814,7 @@ export default {
             disableScroll: true,
           },
         });
-      } else if (this.routeTo == 'GenomicsEmbedVariant') {
+      } else if (this.routeTo === 'GenomicsEmbedVariant') {
         this.$router.push({
           name: 'GenomicsEmbed',
           query: {
@@ -1816,7 +1839,7 @@ export default {
     },
     selectNewPangolin() {
       // const queryParams = this.$route.query;
-      if (this.routeTo == 'MutationReport') {
+      if (this.routeTo === 'MutationReport') {
         this.$router.push({
           name: 'MutationReport',
           query: {
@@ -1827,7 +1850,7 @@ export default {
             overlay: this.sublineageOverlay,
           },
         });
-      } else if (this.routeTo == 'GenomicsEmbedVariant') {
+      } else if (this.routeTo === 'GenomicsEmbedVariant') {
         this.$router.push({
           name: 'GenomicsEmbed',
           query: {
@@ -1851,31 +1874,14 @@ export default {
     calcORF1bLink(mutation) {
       const codonOffset = 4401;
       // convert between ORF1b and ORF1ab: e.g. ORF1b P314L becomes https://aquaria.app/SARS-CoV-2/PP1ab?P4715L
-      if (mutation.type == 'substitution') {
+      if (mutation.type === 'substitution') {
         return `${mutation.ref_aa}${mutation.codon_num + codonOffset}${
           mutation.alt_aa
         }`;
-      } else if (mutation.type == 'deletion') {
+      } else if (mutation.type === 'deletion') {
         return `${mutation}`;
       }
     },
-  },
-  destroyed() {
-    if (this.dataSubscription) {
-      this.dataSubscription.unsubscribe();
-    }
-
-    if (this.choroSubscription) {
-      this.choroSubscription.unsubscribe();
-    }
-
-    if (this.curatedSubscription) {
-      this.curatedSubscription.unsubscribe();
-    }
-
-    if (this.locationChangeSubscription) {
-      this.locationChangeSubscription.unsubscribe();
-    }
   },
 };
 </script>

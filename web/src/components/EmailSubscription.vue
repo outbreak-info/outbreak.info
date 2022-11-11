@@ -8,9 +8,9 @@
     />
     <div id="mc_embed_signup">
       <form
+        id="mc-embedded-subscribe-form"
         action="https://outbreak.us6.list-manage.com/subscribe/post?u=4e2de78c4d7538511404a841b&amp;id=103e6134e0"
         method="post"
-        id="mc-embedded-subscribe-form"
         name="mc-embedded-subscribe-form"
         class="validate"
         target="_blank"
@@ -19,11 +19,11 @@
         <div id="mc_embed_signup_scroll" class="p-0">
           <label for="mce-EMAIL">Receive email updates</label>
           <input
+            id="mce-EMAIL"
             type="email"
             value=""
             name="EMAIL"
             class="email"
-            id="mce-EMAIL"
             placeholder="email address"
             required
           />
@@ -38,10 +38,10 @@
           </div>
           <div class="clear">
             <input
+              id="mc-embedded-subscribe"
               type="submit"
               value="Subscribe"
               name="subscribe"
-              id="mc-embedded-subscribe"
               class="button"
             />
           </div>

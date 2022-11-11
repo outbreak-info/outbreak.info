@@ -35,60 +35,58 @@
   </div>
 </template>
 
-<script lang="js">
-import Vue from "vue";
+<script>
+import Vue from 'vue';
 
-import {
-  scaleLinear
-} from "d3";
+import { scaleLinear } from 'd3';
 
 const width = 50;
 const height = 15;
 
 export default Vue.extend({
-  name: "RecoveredBar",
+  name: 'RecoveredBar',
   components: {},
   props: {
     data: Object,
-    color: String
-  },
-  watch: {
-    data: function() {
-      this.updateAxes();
-    }
-  },
-  computed: {
-    recoveredWidth: function() {
-      if(this.x){
-      return(this.x(this.data.recovered));
-    }
-    return(null)
-    },
-    deadWidth: function() {
-      if(this.x){
-      return(this.x(this.data.dead));
-    }
-    return(null)
-    }
+    color: String,
   },
   data() {
     return {
       width,
       height,
-      x: null
-    }
+      x: null,
+    };
   },
-  methods: {
-    updateAxes () {
-      this.x = scaleLinear()
-      .range([0, this.width])
-      .domain([0, this.data.confirmed]);
-    }
+  computed: {
+    recoveredWidth() {
+      if (this.x) {
+        return this.x(this.data.recovered);
+      }
+      return null;
+    },
+    deadWidth() {
+      if (this.x) {
+        return this.x(this.data.dead);
+      }
+      return null;
+    },
+  },
+  watch: {
+    data() {
+      this.updateAxes();
+    },
   },
   mounted() {
     this.updateAxes();
-  }
-})
+  },
+  methods: {
+    updateAxes() {
+      this.x = scaleLinear()
+        .range([0, this.width])
+        .domain([0, this.data.confirmed]);
+    },
+  },
+});
 </script>
 
 <style lang="scss">
