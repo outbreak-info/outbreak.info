@@ -24,7 +24,8 @@ jobs:
          - name: process data
            run: |
              echo "starting update"
-             python generate_curated_lineages_json_patch.py
+             python lineages_hierarchy.py
+             python generate_curated_lineages_json.py
              echo "removing log file"
              rm curated_lineages_json.log
          - name: commit if output is different 
