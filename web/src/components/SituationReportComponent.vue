@@ -692,7 +692,7 @@
 
         <!-- DAILY SUBLINEAGE PREVALENCE -->
         <section
-          v-if="lineagesByDay"
+          v-if="lineagesByDay && lineagesByDay.length"
           id="longitudinal-sublineage"
           class="vis my-3 py-3 d-flex flex-column align-items-center"
         >
