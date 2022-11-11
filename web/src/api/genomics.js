@@ -2384,18 +2384,27 @@ export const getBasicComparisonReportData = (apiurl) => {
     .map((d) => d.who_name)
     .sort();
 
-  const voc = CURATED.filter((d) => d.variantType === "Variant of Concern")
+
+  const current_voc = CURATED.filter((d) => d.variantType === "Variant of Concern")
   .map((d) => d.label);
 
   const previous_voc = CURATED.filter((d) => d.variantType === "Previously Circulating Variant of Concern")
   .map((d) => d.label);
   // const deescalated = CURATED.filter((d) => d.variantType === "De-escalated").map((d) => d.label);;
 
+  let voc = CURATED.filter((d) => d.variantType === "Variant of Concern" || d.variantType === "Previously Circulating Variant of Concern")
+  .map((d) => d.pango_descendants)
+  .flatMap((d) => d);
+
+  voc = voc.concat(current_voc)
+
+
   return forkJoin([getDateUpdated(apiurl), getSequenceCount(apiurl)]).pipe(
     map(([dateUpdated, total]) => {
       return {
         dateUpdated: dateUpdated,
         voc: voc,
+        current_voc: current_voc,
         previous_voc: previous_voc,
         // deescalated: deescalated,
         who: who,
@@ -2617,7 +2626,6 @@ export const getLineagesComparison = (
     lineages = lineages.map((d) => d.label);
   }
 
-  const ofInterest = getVOCs();
 
   return forkJoin([
     ...lineages.map((lineage) =>
@@ -2680,10 +2688,6 @@ export const getLineagesComparison = (
       return {
         data: nestedByGenes,
         dataFlat: filtered,
-        voc: ofInterest.voc,
-        voc_parent: ofInterest.voc_parent,
-        voi: ofInterest.voi,
-        voi_parent: ofInterest.voi_parent,
       };
     }),
     catchError((e) => {

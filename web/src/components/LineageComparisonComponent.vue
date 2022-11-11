@@ -178,7 +178,7 @@
                     class="btn btn-accent d-flex align-items-center py-2 px-2 mx-3 line-height-1"
                     @click="submitNewData()"
                   >
-                    go
+                    create report
                   </button>
 </div>
           <button
@@ -226,13 +226,6 @@
             </label>
           </div>
 
-          <button
-            role="button"
-            class="btn btn-accent d-flex align-items-center py-2 px-2 mx-3 line-height-1"
-            @click="submitNewData()"
-          >
-            go
-          </button>
 
           <button
             role="button"
@@ -268,7 +261,7 @@
               <div class="d-flex flex-column">
                 Current Variants of Concern
                 <div class="d-flex flex-wrap align-items-center">
-                  <button class="ml-2 mt-2 px-2 py-2 btn btn-outline-secondary fa-sm" v-for="(lineage, vIdx) in voc" :key="vIdx" @click="addVOC(lineage)">
+                  <button class="ml-2 mt-2 px-2 py-2 btn btn-outline-secondary fa-sm" v-for="(lineage, vIdx) in curated" :key="vIdx" @click="addVOC(lineage)">
                     {{lineage}}
                   </button>
                 </div>
@@ -1008,8 +1001,10 @@ export default {
       // selectedNdays: 60,
       selectedWindow: 60,
       queryLocation: null,
-      previous_voc: null,
-      voc: null,
+      previous_voc: null, // list of previously designated VOCs
+      curated: null, // list of currently designated VOCs -- curated lineages listed on our reports
+      voc: [], // full list of all VOCs, former and current, including sublineages also designated as VOCss
+      voi: [], // VOIs. as of 2022, not really used...
       moi: null,
       moc: null,
       countThreshold: null,
@@ -1130,6 +1125,7 @@ export default {
       this.lastUpdated = results.dateUpdated.lastUpdated;
       this.whoLineages = results.who;
       this.voc = results.voc;
+      this.curated = results.current_voc;
       this.previous_voc = results.previous_voc;
     });
 
