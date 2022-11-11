@@ -1126,6 +1126,11 @@ export default {
       this.voc = results.voc;
       this.previous_voc = results.previous_voc;
     });
+
+// only load data if lineages have been selected
+    if(this.selectedPango.length){
+      this.getData();
+    }
   },
   created() {
     this.debounceThreshold = debounce(this.changeThreshold, 250);
