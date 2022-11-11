@@ -257,10 +257,16 @@
                 <div class="mr-2 circle">
                   1
                 </div>
-                <span class="mr-1">Click to add Variants of Concern</span>
+                <span class="mr-1">Variants of Concern</span>
               </h6>
+              <div class="line-height-1" style="width: 200px">
+                <div class="fa-sm mb-2 ml-2">
+                  &gt;&gt; Click to add specific VOCs
+                </div>
+              </div>
+
               <div class="d-flex flex-column">
-                Variants of Concern
+                Current Variants of Concern
                 <div class="d-flex flex-wrap align-items-center">
                   <button class="ml-2 mt-2 px-2 py-2 btn btn-outline-secondary fa-sm" v-for="(lineage, vIdx) in voc" :key="vIdx" @click="addVOC(lineage)">
                     {{lineage}}
