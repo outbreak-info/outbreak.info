@@ -21,11 +21,10 @@ logging.info("Generating curated_lineages.json")
 
 # --- CONSTANTS: file locations ---
 # location where the Pango sublineages are stored
-<<<<<<< HEAD
+
 # lineage_url = "https://raw.githubusercontent.com/cov-lineages/lineages-website/master/data/lineages.yml"
-=======
 lineage_url = "lineages.yml"
->>>>>>> 1268e3f08bb3f858dcf64c8004ada8cb3efb8944
+
 
 # location where the Pango recombinants lineage definitions are stored.
 recombinants_url = "https://raw.githubusercontent.com/cov-lineages/pango-designation/master/pango_designation/alias_key.json"
