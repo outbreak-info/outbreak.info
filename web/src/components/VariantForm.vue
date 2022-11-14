@@ -80,7 +80,7 @@
               <TypeaheadSelect
                 :queryFunction="queryPangolin"
                 :selectedValue="selectedLineage"
-                :apiUrl="this.$genomicsurl"
+                :apiUrl="$genomicsurl"
                 :removeOnSelect="false"
                 placeholder="Select PANGO lineage"
                 @selected="updatePangolin"

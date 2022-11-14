@@ -271,7 +271,7 @@
       >
         <span v-if="data.dateModified" class="badge bg-grey__lightest">
           <font-awesome-icon class="mr-1" :icon="['far', 'clock']" />
-          updated {{ this.formatDate(data.dateModified) }}
+          updated {{ formatDate(data.dateModified) }}
         </span>
 
         <span v-if="data.datePublished && data.dateModified" class="mx-1">
@@ -283,7 +283,7 @@
             class="mr-1"
             :icon="['far', 'clock']"
           />
-          published {{ this.formatDate(data.datePublished) }}
+          published {{ formatDate(data.datePublished) }}
         </span>
 
         <span
@@ -299,7 +299,7 @@
             class="mr-1"
             :icon="['far', 'clock']"
           />
-          created {{ this.formatDate(data.dateCreated) }}
+          created {{ formatDate(data.dateCreated) }}
         </span>
 
         <span
@@ -316,7 +316,7 @@
           v-if="data.curatedBy && data.curatedBy.versionDate"
           class="badge bg-grey__lightest"
         >
-          version {{ this.formatDate(data.curatedBy.versionDate) }}
+          version {{ formatDate(data.curatedBy.versionDate) }}
         </span>
 
         <span
@@ -336,7 +336,7 @@
           v-if="data.curatedBy && data.curatedBy.curationDate"
           class="badge bg-grey__lightest"
         >
-          accessed {{ this.formatDate(data.curatedBy.curationDate) }}
+          accessed {{ formatDate(data.curatedBy.curationDate) }}
         </span>
       </div>
     </div>

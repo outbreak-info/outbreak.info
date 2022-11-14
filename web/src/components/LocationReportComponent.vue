@@ -37,7 +37,7 @@
                 >
                   <TypeaheadSelect
                     :queryFunction="queryLocation"
-                    :apiUrl="this.$genomicsurl"
+                    :apiUrl="$genomicsurl"
                     labelVariable="label"
                     :removeOnSelect="false"
                     placeholder="Select location"

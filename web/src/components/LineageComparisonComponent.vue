@@ -354,7 +354,7 @@
                 <div style="width: 170px" class="align-self-middle">
                   <TypeaheadSelect
                     :queryFunction="queryPangolin"
-                    :apiUrl="this.$genomicsurl"
+                    :apiUrl="$genomicsurl"
                     :removeOnSelect="true"
                     placeholder="Add lineage"
                     @selected="addPango"
@@ -495,7 +495,7 @@
                   <TypeaheadSelect
                     :queryFunction="queryLocation"
                     :selectedValue="selectedLocation"
-                    :apiUrl="this.$genomicsurl"
+                    :apiUrl="$genomicsurl"
                     labelVariable="label"
                     :removeOnSelect="false"
                     placeholder="Select location"

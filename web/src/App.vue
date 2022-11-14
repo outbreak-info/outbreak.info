@@ -249,9 +249,8 @@
             <li class="dropdown px-3 nav-link">
               <div
                 id="dropdownMenuButton"
-
-
                 class="dropdown-toggle"
+                type="button"
                 data-toggle="dropdown"
                 aria-haspopup="true"
                 aria-expanded="false"

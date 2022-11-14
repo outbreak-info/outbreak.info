@@ -72,7 +72,7 @@
       <!-- dates -->
       <span v-if="data.dateModified" class="badge bg-grey__lightest">
         <font-awesome-icon class="mr-1" :icon="['far', 'clock']" />
-        updated {{ this.formatDate(data.dateModified) }}
+        updated {{ formatDate(data.dateModified) }}
       </span>
       <span v-if="data.datePublished && data.dateModified" class="mx-1">
         &bull;
@@ -83,7 +83,7 @@
           class="mr-1"
           :icon="['far', 'clock']"
         />
-        published {{ this.formatDate(data.datePublished) }}
+        published {{ formatDate(data.datePublished) }}
       </span>
     </template>
 

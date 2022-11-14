@@ -434,6 +434,11 @@ export default Vue.extend({
     ResourceCitation,
     FontAwesomeIcon,
   },
+  beforeRouteUpdate(to, from, next) {
+    this.id = to.params.id;
+    this.getData(to.params.id);
+    next();
+  },
   data() {
     return {
       type: null,
@@ -510,11 +515,6 @@ export default Vue.extend({
         }
       });
     },
-  },
-  beforeRouteUpdate(to, from, next) {
-    this.id = to.params.id;
-    this.getData(to.params.id);
-    next();
   },
   metaInfo() {
     let metadata = null;

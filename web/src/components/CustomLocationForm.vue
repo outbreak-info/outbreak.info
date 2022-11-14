@@ -16,7 +16,7 @@
             :isStandalone="false"
             :queryFunction="queryLocation"
             @selected="updateLocation"
-            :apiUrl="this.$genomicsurl"
+            :apiUrl="$genomicsurl"
             labelVariable="label"
             placeholder="Select location"
             totalLabel="total sequences"

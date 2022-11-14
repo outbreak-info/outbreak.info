@@ -76,7 +76,7 @@
                       wrapperClass="w-100"
                       :queryFunction="queryLocation"
                       @selected="addLoc2Add"
-                      :apiUrl="this.$genomicsurl"
+                      :apiUrl="$genomicsurl"
                       labelVariable="label"
                       placeholder="Add location"
                       totalLabel="total sequences"
@@ -149,7 +149,7 @@
                 <TypeaheadSelect
                   wrapperClass="w-100"
                   :queryFunction="queryLocation"
-                  :apiUrl="this.$genomicsurl"
+                  :apiUrl="$genomicsurl"
                   labelVariable="label"
                   placeholder="Change location"
                   totalLabel="total sequences"
