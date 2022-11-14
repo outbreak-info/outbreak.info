@@ -2267,6 +2267,7 @@
       - CK.2
       - CK.2.1
       - CK.2.1.1
+      - CK.3
       - CL.1
       - CM.1
       - CM.2
@@ -4384,6 +4385,7 @@
       - CK.2
       - CK.2.1
       - CK.2.1.1
+      - CK.3
       - CL.1
       - CM.1
       - CM.2
@@ -5563,6 +5565,7 @@
       - CK.2
       - CK.2.1
       - CK.2.1.1
+      - CK.3
       - CL.1
       - CM.1
       - CM.2
@@ -9212,6 +9215,7 @@
       - CK.2
       - CK.2.1
       - CK.2.1.1
+      - CK.3
       - CL.1
       - CM.1
       - CM.2
@@ -11808,6 +11812,7 @@
       - CK.2
       - CK.2.1
       - CK.2.1.1
+      - CK.3
       - CL.1
       - CN.1
       - CP.1
@@ -12199,6 +12204,7 @@
       - CK.2
       - CK.2.1
       - CK.2.1.1
+      - CK.3
       - CN.1
       - CP.1
       - CP.1.1
@@ -12855,6 +12861,7 @@
       - CK.2
       - CK.2.1
       - CK.2.1.1
+      - CK.3
       - DG.1
   parent: BA.5.2
 - name: CK.1
@@ -12883,6 +12890,11 @@
       - CK.2.1.1
       - DG.1
   parent: CK.2.1
+- name: CK.3
+  alias: B.1.1.529.5.2.24.3
+  children:
+      - CK.3
+  parent: BA.5.2.24
 - name: DG.1
   alias: B.1.1.529.5.2.24.2.1.1.1
   children:
@@ -20378,3 +20390,8 @@
   children:
       - XBF
   recombinant_parents: BA.5.2.3,CJ.1
+- name: XBG
+  alias: XBG
+  children:
+      - XBG
+  recombinant_parents: BA.2.76,BA.5.2
