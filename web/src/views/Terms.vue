@@ -77,6 +77,7 @@
 
 <script>
 import Vue from 'vue';
+
 import { lazyLoad } from '@/js/lazy-load';
 
 export default Vue.extend({

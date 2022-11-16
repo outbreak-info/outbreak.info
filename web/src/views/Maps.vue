@@ -139,28 +139,23 @@
 </template>
 
 <script>
-import { getComparisonData } from '@/api/epi-comparison.js';
-
 import { mapState } from 'vuex';
-import { timeFormat, format, max, min } from 'd3';
-
-// --- font awesome --
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { timeFormat, format, max, min } from 'd3';
+
+import { getComparisonData } from '@/api/epi-comparison.js';
+import { lazyLoad } from '@/js/lazy-load';
 
 library.add(faSpinner);
-
-import Choropleth from '@/components/Choropleth.vue';
-import DataSource from '@/components/DataSource.vue';
-import DateSlider from '@/components/DateSlider.vue';
 
 export default {
   name: 'Maps',
   components: {
-    Choropleth,
-    DataSource,
-    DateSlider,
+    Choropleth: lazyLoad('Choropleth'),
+    DataSource: lazyLoad('DataSource'),
+    DateSlider: lazyLoad('DateSlider'),
     FontAwesomeIcon,
   },
   props: {

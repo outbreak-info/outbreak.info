@@ -27,27 +27,22 @@
   </div>
 </template>
 <script>
-// @ is an alias to /src
-import GlanceSummary from '@/components/GlanceSummary.vue';
-import Logos from '@/components/Logos.vue';
-import DataSource from '@/components/DataSource.vue';
-import { getGlanceSummary } from '@/api/genomics.js';
-
-// --- font awesome --
+import { mapState } from 'vuex';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 
-library.add(faSpinner);
+import { getGlanceSummary } from '@/api/genomics.js';
+import { lazyLoad } from '@/js/lazy-load';
 
-import { mapState } from 'vuex';
+library.add(faSpinner);
 
 export default {
   name: 'Summary',
   components: {
-    GlanceSummary,
-    Logos,
-    DataSource,
+    GlanceSummary: lazyLoad('GlanceSummary'),
+    Logos: lazyLoad('Logos'),
+    DataSource: lazyLoad('DataSource'),
     FontAwesomeIcon,
   },
   props: {

@@ -247,41 +247,32 @@
 </template>
 
 <script>
-// @ is an alias to /src
-import DataSource from '@/components/DataSource.vue';
-import EpiTable from '@/components/EpiTable.vue';
-import Autocomplete from '@/components/Autocomplete.vue';
-import Warning from '@/components/Warning.vue';
-
-// --- font awesome --
+import { mapState } from 'vuex';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { extent, max } from 'd3';
+
 import {
   epiDataSubject,
   epiTableSubject,
   getEpiData,
 } from '@/api/epi-traces.js';
-
 import { getLocation, processLocation } from '@/js/get-location.js';
+import { lazyLoad } from '@/js/lazy-load';
 import store from '@/store';
-import { mapState } from 'vuex';
-import { extent, max } from 'd3';
 
 library.add(faSpinner);
 
 export default {
   name: 'Epidemiology',
   components: {
-    DataSource,
-    Warning,
-    EpiCurve: () =>
-      import(/* webpackPrefetch: true */ '@/components/EpiCurve.vue'),
-    Bargraph: () =>
-      import(/* webpackPrefetch: true */ '@/components/Bargraph.vue'),
-
-    EpiTable,
-    Autocomplete,
+    DataSource: lazyLoad('DataSource'),
+    Warning: lazyLoad('Warning'),
+    EpiCurve: lazyLoad('EpiCurve'),
+    Bargraph: lazyLoad('Bargraph'),
+    EpiTable: lazyLoad('EpiTable'),
+    Autocomplete: lazyLoad('Autocomplete'),
     FontAwesomeIcon,
   },
   props: {

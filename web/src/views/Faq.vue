@@ -69,6 +69,7 @@
 import Vue from 'vue';
 
 import FAQ from '@/assets/faq.json';
+
 export default Vue.extend({
   name: 'Faq',
   data() {

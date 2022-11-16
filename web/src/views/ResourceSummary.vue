@@ -107,12 +107,6 @@
 </template>
 
 <script>
-import { getSourceSummary } from '@/api/resources.js';
-
-import WhatsNew from '@/components/WhatsNew.vue';
-import CirclePacking from '@/components/CirclePacking.vue';
-
-// --- font awesome --
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faClock } from '@fortawesome/free-regular-svg-icons';
@@ -121,17 +115,18 @@ import {
   faSearch,
 } from '@fortawesome/free-solid-svg-icons';
 
-library.add(faClock, faAngleDoubleRight, faSearch);
-
-// Example queries
+import { getSourceSummary } from '@/api/resources.js';
 import RESOURCEEXAMPLES from '@/assets/examples/resources_examples.json';
+import { lazyLoad } from '@/js/lazy-load';
+
+library.add(faClock, faAngleDoubleRight, faSearch);
 
 
 export default {
   name: 'ResourceSummary',
   components: {
-    WhatsNew,
-    CirclePacking,
+    WhatsNew: lazyLoad('WhatsNew'),
+    CirclePacking: lazyLoad('CirclePacking'),
     FontAwesomeIcon,
   },
   data() {

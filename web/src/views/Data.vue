@@ -17,28 +17,22 @@
   </div>
 </template>
 <script>
-// @ is an alias to /src
-import DataSource from '@/components/DataSource.vue';
-import EpiTable from '@/components/EpiTable.vue';
-
-import { getEpiTable } from '@/api/epi-traces.js';
-
 import { mapState } from 'vuex';
-
-import store from '@/store';
-
-// --- font awesome --
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
+
+import { getEpiTable } from '@/api/epi-traces.js';
+import { lazyLoad } from '@/js/lazy-load';
+import store from '@/store';
 
 library.add(faSpinner);
 
 export default {
   name: 'Home',
   components: {
-    DataSource,
-    EpiTable,
+    DataSource: lazyLoad('DataSource'),
+    EpiTable: lazyLoad('EpiTable'),
     FontAwesomeIcon,
   },
   data() {

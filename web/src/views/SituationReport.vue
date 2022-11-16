@@ -14,15 +14,12 @@
 </template>
 
 <script>
-import Vue from 'vue';
+import { lazyLoad } from '@/js/lazy-load';
 
 export default {
   name: 'SituationReport',
   components: {
-    SituationReportComponent: () =>
-      import(
-        /* webpackPrefetch: true */ '@/components/SituationReportComponent.vue'
-      ),
+    SituationReportComponent: lazyLoad('SituationReportComponent'),
   },
   props: {
     alias: String,

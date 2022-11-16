@@ -18,7 +18,7 @@
             height="30"
             class="d-inline-block align-top"
             alt="Outbreak.info"
-          >
+          />
           outbreak.info
         </router-link>
 
@@ -27,17 +27,14 @@
           v-else-if="!$route.meta.includeGISAIDLogo"
           class="d-flex w-100 align-items-center justify-content-between"
         >
-          <a
-            href="https://outbreak.info"
-            class="navbar-brand no-underline"
-          >
+          <a href="https://outbreak.info" class="navbar-brand no-underline">
             <img
               src="@/assets/icon-01.svg"
               width="30"
               height="30"
               class="d-inline-block align-top"
               alt="Outbreak.info"
-            >
+            />
             outbreak.info
           </a>
         </div>
@@ -81,7 +78,7 @@
                   class="nav-link"
                   :class="{ active: $route.name === 'Epidemiology' }"
                   :to="{
-                    name: 'Epidemiology'
+                    name: 'Epidemiology',
                   }"
                 >
                   Compare locations over time
@@ -92,7 +89,7 @@
                   class="nav-link"
                   :class="{ active: $route.name === 'Maps' }"
                   :to="{
-                    name: 'Maps'
+                    name: 'Maps',
                   }"
                 >
                   Explore interactive maps
@@ -104,7 +101,7 @@
                   class="nav-link"
                   :class="{ active: $route.name === 'Compare' }"
                   :to="{
-                    name: 'Compare'
+                    name: 'Compare',
                   }"
                 >
                   Find similar locations
@@ -116,7 +113,7 @@
                   class="nav-link"
                   :class="{ active: $route.name === 'Regions' }"
                   :to="{
-                    name: 'Regions'
+                    name: 'Regions',
                   }"
                 >
                   Explore regions
@@ -174,7 +171,7 @@
                   class="nav-link"
                   :to="{ name: 'SituationReportComparison' }"
                   :class="{
-                    active: $route.name === 'SituationReportComparison'
+                    active: $route.name === 'SituationReportComparison',
                   }"
                 >
                   Lineage Comparison
@@ -239,10 +236,7 @@
 
             <!-- API -->
             <li class="nav-item">
-              <a
-                class="nav-link"
-                href="https://api.outbreak.info/"
-              >API</a>
+              <a class="nav-link" href="https://api.outbreak.info/">API</a>
             </li>
 
             <!-- ABOUT -->
@@ -266,7 +260,6 @@
                   data-target=".navbar-collapse"
                   class="nav-link"
                   to="/about"
-
                   :class="{ active: $route.name === 'About' }"
                 >
                   About
@@ -276,21 +269,16 @@
                   data-target=".navbar-collapse"
                   class="nav-link"
                   to="/sources"
-
                   :class="{ active: $route.name === 'Sources' }"
                 >
                   Data sources
                 </router-link>
-                <a
-                  class="nav-link"
-                  href="https://blog.outbreak.info"
-                >Blog</a>
+                <a class="nav-link" href="https://blog.outbreak.info">Blog</a>
                 <router-link
                   data-toggle="collapse"
                   data-target=".navbar-collapse"
                   class="nav-link"
                   to="/faq"
-
                   :class="{ active: $route.name === 'Faq' }"
                 >
                   FAQ
@@ -300,7 +288,6 @@
                   data-target=".navbar-collapse"
                   class="nav-link"
                   to="/latest"
-
                   :class="{ active: $route.name === 'Latest' }"
                 >
                   Latest changes
@@ -309,7 +296,6 @@
                   data-toggle="collapse"
                   data-target=".navbar-collapse"
                   class="nav-link"
-
                   :class="{ active: $route.name === 'Citation' }"
                   :to="{ name: 'Citation' }"
                 >
@@ -320,7 +306,6 @@
                   data-toggle="collapse"
                   data-target=".navbar-collapse"
                   class="nav-link"
-
                   :class="{ active: $route.name === 'Press' }"
                   :to="{ name: 'Press' }"
                 >
@@ -337,22 +322,22 @@
       id="notices"
       class="bg-highlight py-2 px-3 text-light text-center fa-sm"
     >
-      <b
-        class="mr-1"
-      >The outbreak.info
-        <a
-          href="https://api.outbreak.info/"
-          class="text-light"
-          target="_blank"
-        >API</a>
+      <b class="mr-1">
+        The outbreak.info
+        <a href="https://api.outbreak.info/" class="text-light" target="_blank">
+          API
+        </a>
 
         &amp;
         <a
           href="https://outbreak-info.github.io/R-outbreak-info/"
           class="text-light"
           target="_blank"
-        >R package</a>
-        is now live!</b>
+        >
+          R package
+        </a>
+        is now live!
+      </b>
 
       Access all SARS-CoV-2 variant data, Research Library metadata, and cases
       &amp; deaths data from outbreak.info.
@@ -360,7 +345,9 @@
         href="https://www.scripps.edu/news-and-events/press-room/2022/20220606-hughes-gisaid.html"
         target="_blank"
         class="mx-3 text-light"
-      >Learn more</a>
+      >
+        Learn more
+      </a>
     </section>
 
     <transition name="fade">
@@ -389,11 +376,9 @@
                 data-toggle="collapse"
                 data-target=".navbar-collapse"
                 class="nav-link p-0"
-
                 :class="{ active: $route.name === 'Epidemiology' }"
                 :to="{
-                  name: 'Epidemiology'
-
+                  name: 'Epidemiology',
                 }"
               >
                 Compare locations over time
@@ -404,10 +389,9 @@
                 data-toggle="collapse"
                 data-target=".navbar-collapse"
                 class="nav-link p-0"
-
                 :class="{ active: $route.name === 'Maps' }"
                 :to="{
-                  name: 'Maps'
+                  name: 'Maps',
                 }"
               >
                 Explore interactive maps
@@ -418,10 +402,9 @@
                 data-toggle="collapse"
                 data-target=".navbar-collapse"
                 class="nav-link p-0"
-
                 :class="{ active: $route.name === 'Compare' }"
                 :to="{
-                  name: 'Compare'
+                  name: 'Compare',
                 }"
               >
                 Find similar locations
@@ -432,10 +415,9 @@
                 data-toggle="collapse"
                 data-target=".navbar-collapse"
                 class="nav-link p-0"
-
                 :class="{ active: $route.name === 'Regions' }"
                 :to="{
-                  name: 'Regions'
+                  name: 'Regions',
                 }"
               >
                 Explore regions
@@ -447,7 +429,6 @@
                 data-target=".navbar-collapse"
                 class="nav-link p-0"
                 to="/data"
-
                 :class="{ active: $route.name === 'Data' }"
               >
                 Access data tables
@@ -582,10 +563,7 @@
             </li>
 
             <li class="nav-item px-0 py-1">
-              <a
-                class="nav-link p-0"
-                href="https://blog.outbreak.info"
-              >Blog</a>
+              <a class="nav-link p-0" href="https://blog.outbreak.info">Blog</a>
             </li>
 
             <li class="nav-item px-0 py-1">
@@ -613,10 +591,7 @@
             </li>
 
             <li class="nav-item px-0 py-1">
-              <router-link
-                class="nav-link p-0"
-                :to="{ name: 'Citation' }"
-              >
+              <router-link class="nav-link p-0" :to="{ name: 'Citation' }">
                 How to cite
               </router-link>
             </li>
@@ -626,10 +601,7 @@
           </li> -->
 
             <li class="nav-item px-0 py-1">
-              <router-link
-                class="nav-link p-0"
-                :to="{ name: 'Press' }"
-              >
+              <router-link class="nav-link p-0" :to="{ name: 'Press' }">
                 In the media
               </router-link>
             </li>
@@ -658,7 +630,9 @@
                 href="https://github.com/outbreak-info/outbreak.info/issues"
                 rel="noreferrer"
                 target="_blank"
-              >Submit an issue on Github</a>
+              >
+                Submit an issue on Github
+              </a>
             </li>
             <EmailSubscription :isFooter="true" />
           </ul>
@@ -667,7 +641,6 @@
 
       <!-- LOGO FOOTER -->
       <Logos class="bg-grey" />
-
 
       <div
         id="terms"
@@ -684,10 +657,7 @@
         <div class="d-flex text-light xsmall">
           <ul class="m-0">
             <li class="d-inline m-3">
-              <router-link
-                class="text-light"
-                :to="{ name: 'Citation' }"
-              >
+              <router-link class="text-light" :to="{ name: 'Citation' }">
                 How to Cite
               </router-link>
             </li>
@@ -696,27 +666,19 @@
                 href="https://github.com/outbreak-info"
                 target="_blank"
                 class="text-light"
-              >GitHub
+              >
+                GitHub
 
-                <font-awesome-icon
-                  :icon="['fab', 'github']"
-                  class="mx-1"
-                />
+                <font-awesome-icon :icon="['fab', 'github']" class="mx-1" />
               </a>
             </li>
             <li class="d-inline m-3">
-              <router-link
-                class="text-light"
-                to="/privacy"
-              >
+              <router-link class="text-light" to="/privacy">
                 Privacy Policy
               </router-link>
             </li>
             <li class="d-inline m-3">
-              <router-link
-                class="text-light"
-                to="/terms"
-              >
+              <router-link class="text-light" to="/terms">
                 Terms
               </router-link>
             </li>
@@ -728,9 +690,10 @@
                 rel="noreferrer"
                 class="mx-1 white-underline"
               >
-
-                Hughes lab</a>
-              &copy; <span v-text="year" />
+                Hughes lab
+              </a>
+              &copy;
+              <span v-text="year" />
             </li>
             <li class="d-inline m-3">
               All rights reserved
@@ -743,23 +706,20 @@
 </template>
 
 <script>
-import Logos from '@/components/Logos.vue';
-import EmailSubscription from '@/components/EmailSubscription.vue';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faGithub } from '@fortawesome/free-brands-svg-icons/faGithub';
 
-// --- font awesome --
-import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
-import {library} from "@fortawesome/fontawesome-svg-core";
-import {faGithub} from "@fortawesome/free-brands-svg-icons/faGithub";
-
+import { lazyLoad } from '@/js/lazy-load';
 
 library.add(faGithub);
 
 export default {
   name: 'App',
   components: {
-    Logos,
+    Logos: lazyLoad('Logos'),
+    EmailSubscription: lazyLoad('EmailSubscription'),
     FontAwesomeIcon,
-    EmailSubscription,
   },
   data() {
     return {
@@ -770,8 +730,7 @@ export default {
     const self = this;
     const currentTime = new Date();
     self.year = currentTime.getFullYear();
-  }
-
+  },
 };
 </script>
 

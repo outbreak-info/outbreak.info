@@ -279,16 +279,11 @@
 <script>
 import Vue from 'vue';
 import { mapState } from 'vuex';
-
 import debounce from 'lodash/debounce';
-
-// --- font awesome --
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faClock } from '@fortawesome/free-regular-svg-icons';
 import { faSpinner, faSearch, faSync } from '@fortawesome/free-solid-svg-icons';
-
-library.add(faClock, faSpinner, faSearch, faSync);
 
 import {
   getStatusBasics,
@@ -299,20 +294,17 @@ import {
   findLocation,
   checkGisaidID,
 } from '@/api/genomics.js';
+import { lazyLoad } from '@/js/lazy-load';
+
+library.add(faClock, faSpinner, faSearch, faSync);
 
 export default Vue.extend({
   name: 'SituationReportStatus',
   components: {
-    TypeaheadSelect: () =>
-      import(/* webpackPrefetch: true */ '@/components/TypeaheadSelect.vue'),
-    SequencingHistogram: () =>
-      import(
-        /* webpackPrefetch: true */ '@/components/SequencingHistogram.vue'
-      ),
-    Histogram: () =>
-      import(/* webpackPrefetch: true */ '@/components/Histogram.vue'),
-    GapOverTime: () =>
-      import(/* webpackPrefetch: true */ '@/components/GapOverTime.vue'),
+    TypeaheadSelect: lazyLoad('TypeaheadSelect'),
+    SequencingHistogram: lazyLoad('SequencingHistogram'),
+    Histogram: lazyLoad('Histogram'),
+    GapOverTime: lazyLoad('GapOverTime'),
     FontAwesomeIcon,
   },
   props: {

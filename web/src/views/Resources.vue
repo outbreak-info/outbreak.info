@@ -680,27 +680,9 @@
 </template>
 
 <script>
-import { timeFormat, timeParse } from 'd3';
-
-import StripeAccent from '@/components/StripeAccent.vue';
-import TrialPhase from '@/components/TrialPhase.vue';
-import TrialStatus from '@/components/TrialStatus.vue';
-import TrialType from '@/components/TrialType.vue';
-import DownloadData from '@/components/DownloadData.vue';
-import Donut from '@/components/Donut.vue';
-import DateHistogram from '@/components/DateHistogram.vue';
-
 import { mapState } from 'vuex';
-
-import { getResources } from '@/api/resources.js';
-
-import tippy from 'tippy.js';
-import 'tippy.js/themes/light.css';
-
-// --- font awesome --
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
-
 import {
   faArrowLeft,
   faArrowRight,
@@ -711,9 +693,14 @@ import {
   faChevronDown,
 } from '@fortawesome/free-solid-svg-icons';
 import { faClock, faTimesCircle } from '@fortawesome/free-regular-svg-icons';
-
+import { timeFormat, timeParse } from 'd3';
 import cloneDeep from 'lodash/cloneDeep';
 import debounce from 'lodash/debounce';
+import tippy from 'tippy.js';
+
+import { getResources } from '@/api/resources.js';
+import { lazyLoad } from '@/js/lazy-load';
+import 'tippy.js/themes/light.css';
 
 library.add(
   faArrowLeft,
@@ -730,14 +717,14 @@ library.add(
 export default {
   name: 'Resources',
   components: {
-    StripeAccent,
-    TrialPhase,
-    TrialStatus,
-    TrialType,
+    StripeAccent: lazyLoad('StripeAccent'),
+    TrialPhase: lazyLoad('TrialPhase'),
+    TrialStatus: lazyLoad('TrialStatus'),
+    TrialType: lazyLoad('TrialType'),
+    DownloadData: lazyLoad('DownloadData'),
+    Donut: lazyLoad('Donut'),
+    DateHistogram: lazyLoad('DateHistogram'),
     FontAwesomeIcon,
-    DownloadData,
-    Donut,
-    DateHistogram,
   },
   props: {
     q: String,
