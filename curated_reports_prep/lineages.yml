@@ -20406,3 +20406,8 @@
   children:
       - XBG
   recombinant_parents: BA.2.76,BA.5.2
+- name: XBH
+  alias: XBH
+  children:
+      - XBH
+  recombinant_parents: BA.2.3.17,BA.2.75.2
