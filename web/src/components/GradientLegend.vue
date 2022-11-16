@@ -45,6 +45,7 @@
 <script>
 import Vue from 'vue';
 import { range } from 'd3';
+
 export default Vue.extend({
   name: 'GradientLegend',
   props: {

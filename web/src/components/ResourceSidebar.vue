@@ -225,13 +225,13 @@
 </template>
 
 <script>
-import { formatRIS } from '@/js/citationConverter.js';
-
 // --- font awesome --
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faLink, faShare, faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import { faTwitter } from '@fortawesome/free-brands-svg-icons';
+
+import { formatRIS } from '@/js/citationConverter.js';
 
 library.add(faLink, faShare, faEnvelope, faTwitter);
 

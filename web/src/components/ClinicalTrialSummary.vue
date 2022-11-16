@@ -25,19 +25,18 @@
 </template>
 
 <script>
-import TrialPhase from '@/components/TrialPhase.vue';
-import TrialStatus from '@/components/TrialStatus.vue';
-import TrialType from '@/components/TrialType.vue';
-
 import tippy from 'tippy.js';
+
+import { lazyLoad } from '@/js/lazy-load';
+
 import 'tippy.js/themes/light.css';
 
 export default {
   name: 'ClinicalTrialSummary',
   components: {
-    TrialPhase,
-    TrialStatus,
-    TrialType,
+    TrialPhase: lazyLoad('TrialPhase'),
+    TrialStatus: lazyLoad('TrialStatus'),
+    TrialType: lazyLoad('TrialType'),
   },
   props: {
     data: Object,

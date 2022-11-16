@@ -135,7 +135,12 @@
 
 <script>
 import Vue from 'vue';
-
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import {
+  faSearchPlus,
+  faCompressArrowsAlt,
+} from '@fortawesome/free-solid-svg-icons/';
 import {
   select,
   selectAll,
@@ -158,20 +163,11 @@ import {
   transition,
   line,
 } from 'd3';
-
-// --- font awesome --
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import {
-  faSearchPlus,
-  faCompressArrowsAlt,
-} from '@fortawesome/free-solid-svg-icons';
-
-library.add(faSearchPlus, faCompressArrowsAlt);
-
 import cloneDeep from 'lodash/cloneDeep';
 
 import store from '@/store';
+
+library.add(faSearchPlus, faCompressArrowsAlt);
 
 const width = 500;
 const height = 300;

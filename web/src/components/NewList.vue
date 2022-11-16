@@ -34,7 +34,6 @@
 
 <script>
 import Vue from 'vue';
-
 import { timeFormat, timeParse } from 'd3';
 
 export default Vue.extend({

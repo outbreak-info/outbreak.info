@@ -14,7 +14,7 @@
     <p class="text-muted m-0">
       There are
       <b>{{ data.length }}</b>
-      <a> Pango lineages</a>
+      <a>Pango lineages</a>
       currently associated with the {{ lineageName }} variant:
     </p>
 
@@ -120,28 +120,21 @@
 
 <script>
 import Vue from 'vue';
-import { select, selectAll, scaleLinear, scaleBand, axisLeft, sum } from 'd3';
-
-// --- font awesome --
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
-
 import { faQuestionCircle } from '@fortawesome/free-regular-svg-icons';
-
 import { faSync } from '@fortawesome/free-solid-svg-icons';
+import { select, selectAll, scaleLinear, scaleBand, axisLeft, sum } from 'd3';
+import cloneDeep from 'lodash/cloneDeep';
+
+import { lazyLoad } from '@/js/lazy-load';
 
 library.add(faSync, faQuestionCircle);
-
-import cloneDeep from 'lodash/cloneDeep';
-import DownloadReportData from '@/components/DownloadReportData.vue';
-
-// --- store / Vuex ---
-import { mapState } from 'vuex';
 
 export default Vue.extend({
   name: 'SublineageTotals',
   components: {
-    DownloadReportData,
+    DownloadReportData: lazyLoad('DownloadReportData'),
     FontAwesomeIcon,
   },
   props: {

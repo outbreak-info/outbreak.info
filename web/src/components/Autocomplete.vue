@@ -61,24 +61,17 @@
 </template>
 
 <script>
-// adapted from https://alligator.io/vuejs/vue-autocomplete-component/
 import Vue from 'vue';
-
-// --- store / Vuex ---
-import store from '@/store';
-
-import debounce from 'lodash/debounce';
-
-import { findEpiLocation, lookupEpiLocations } from '@/api/epi-basics.js';
-
-// --- font awesome --
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
-
 import {
   faTimesCircle,
   faPlusSquare,
 } from '@fortawesome/free-regular-svg-icons';
+import debounce from 'lodash/debounce';
+
+import { findEpiLocation, lookupEpiLocations } from '@/api/epi-basics.js';
+import store from '@/store';
 
 library.add(faTimesCircle, faPlusSquare);
 

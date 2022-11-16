@@ -282,25 +282,22 @@
 
 <script>
 import Vue from 'vue';
-import { format } from 'd3';
-
-// --- font awesome --
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faArrowUp } from '@fortawesome/free-solid-svg-icons';
 import { faTrashAlt } from '@fortawesome/free-regular-svg-icons';
+import { format } from 'd3';
+
+import { lazyLoad } from '@/js/lazy-load';
 
 library.add(faArrowUp, faTrashAlt);
-
-import Sparkline from '@/components/Sparkline.vue';
-import Bargraph from '@/components/Bargraph.vue';
 
 export default Vue.extend({
   name: 'GlanceSummary',
   components: {
+    Sparkline: lazyLoad('Sparkline'),
+    Bargraph: lazyLoad('Bargraph'),
     FontAwesomeIcon,
-    Sparkline,
-    Bargraph,
   },
   props: {
     data: Object,

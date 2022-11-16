@@ -179,7 +179,6 @@
 </template>
 
 <script>
-import cloneDeep from 'lodash/cloneDeep';
 import {
   geoEqualEarth,
   geoAlbersUsa,
@@ -194,21 +193,19 @@ import {
   select,
   selectAll,
 } from 'd3';
+import cloneDeep from 'lodash/cloneDeep';
 
-import HistogramLegend from '@/components/HistogramLegend.vue';
-import DataUpdated from '@/components/DataUpdated.vue';
-import Bargraph from '@/components/Bargraph.vue';
-import DotPlot from '@/components/DotPlot.vue';
 import { getSparklineTraces } from '@/api/epi-traces.js';
+import { lazyLoad } from '@/js/lazy-load';
 import store from '@/store';
 
 export default {
   name: 'Choropleth',
   components: {
-    HistogramLegend,
-    DataUpdated,
-    Bargraph,
-    DotPlot,
+    HistogramLegend: lazyLoad('HistogramLegend'),
+    DataUpdated: lazyLoad('DataUpdated'),
+    Bargraph: lazyLoad('Bargraph'),
+    DotPlot: lazyLoad('DotPlot'),
   },
   props: {
     data: Array,

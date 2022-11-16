@@ -39,9 +39,6 @@
 
 <script>
 import Vue from 'vue';
-
-import uniq from 'lodash/uniq';
-
 import {
   select,
   selectAll,
@@ -63,14 +60,13 @@ import {
   max,
 } from 'd3';
 
-import SequencingHistogram from '@/components/SequencingHistogram.vue';
-import DownloadReportData from '@/components/DownloadReportData.vue';
+import { lazyLoad } from '@/js/lazy-load';
 
 export default Vue.extend({
   name: 'LineagesByLocation',
   components: {
-    SequencingHistogram,
-    DownloadReportData,
+    SequencingHistogram: lazyLoad('SequencingHistogram'),
+    DownloadReportData: lazyLoad('DownloadReportData'),
   },
   props: {
     data: Array,

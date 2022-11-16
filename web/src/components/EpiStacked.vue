@@ -39,7 +39,6 @@
 
 <script>
 import Vue from 'vue';
-
 import {
   select,
   selectAll,
@@ -54,6 +53,7 @@ import {
   extent,
   max,
 } from 'd3';
+
 import store from '@/store';
 
 const margin = {

@@ -50,12 +50,11 @@
 // adapted from https://alligator.io/vuejs/vue-autocomplete-component/
 import Vue from 'vue';
 import { mapState } from 'vuex';
-
 // --- font awesome --
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
-// --- store / Vuex ---
+
 import { getLocations } from '@/api/epi-basics.js';
 
 library.add(faSearch);

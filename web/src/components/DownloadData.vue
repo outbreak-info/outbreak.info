@@ -108,31 +108,25 @@
 </template>
 
 <script>
-import DataUsage from '@/components/DataUsage.vue';
-import CiteUs from '@/components/CiteUs.vue';
 import { mapState } from 'vuex';
-
-import { getAll, progressState$ } from '@/api/biothings.js';
-
-import { getPng, getSvg } from '@/js/get_svg.js';
-
-import { timeFormat, format } from 'd3';
-
-// --- font awesome --
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
-
-library.add(faSpinner);
-
+import { timeFormat, format } from 'd3';
 import cloneDeep from 'lodash/cloneDeep';
 import uniq from 'lodash/uniq';
+
+import { getAll, progressState$ } from '@/api/biothings.js';
+import { getPng, getSvg } from '@/js/get_svg.js';
+import { lazyLoad } from '@/js/lazy-load';
+
+library.add(faSpinner);
 
 export default {
   name: 'DownloadData',
   components: {
-    DataUsage,
-    CiteUs,
+    DataUsage: lazyLoad('DataUsage'),
+    CiteUs: lazyLoad('CiteUs'),
     FontAwesomeIcon,
   },
   props: {

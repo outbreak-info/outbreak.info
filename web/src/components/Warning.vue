@@ -21,24 +21,23 @@
 </template>
 
 <script>
-import Vue from "vue";
-
+import Vue from 'vue';
 // --- font awesome --
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 
 library.add(faExclamationCircle);
 
 export default Vue.extend({
-  name: "Warning",
+  name: 'Warning',
   components: {
-    FontAwesomeIcon
+    FontAwesomeIcon,
   },
   props: {
     text: String,
     align_left: Boolean,
-    animate: Boolean
-  }
+    animate: Boolean,
+  },
 });
 </script>

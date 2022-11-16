@@ -221,6 +221,12 @@
 
 <script>
 import Vue from 'vue';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import {
+  faSearchPlus,
+  faCompressArrowsAlt,
+} from '@fortawesome/free-solid-svg-icons/';
 import {
   select,
   selectAll,
@@ -242,27 +248,17 @@ import {
   transition,
   timeDay,
 } from 'd3';
-
 import cloneDeep from 'lodash/cloneDeep';
 
-import DownloadReportData from '@/components/DownloadReportData.vue';
-import SequencingHistogram from '@/components/SequencingHistogram.vue';
-
-// --- font awesome --
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import {
-  faSearchPlus,
-  faCompressArrowsAlt,
-} from '@fortawesome/free-solid-svg-icons';
+import { lazyLoad } from '@/js/lazy-load';
 
 library.add(faSearchPlus, faCompressArrowsAlt);
 
 export default Vue.extend({
   name: 'ReportPrevalence',
   components: {
-    SequencingHistogram,
-    DownloadReportData,
+    SequencingHistogram: lazyLoad('SequencingHistogram'),
+    DownloadReportData: lazyLoad('DownloadReportData'),
     FontAwesomeIcon,
   },
   props: {

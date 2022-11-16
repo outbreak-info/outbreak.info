@@ -869,6 +869,20 @@
 
 <script>
 import Vue from 'vue';
+import { mapState } from 'vuex';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faTimesCircle } from '@fortawesome/free-regular-svg-icons';
+import { faInfoCircle } from '@fortawesome/free-solid-svg-icons/faInfoCircle';
+import { faSpinner } from '@fortawesome/free-solid-svg-icons/faSpinner';
+import { faSync } from '@fortawesome/free-solid-svg-icons/faSync';
+import { scaleSequential, format, timeFormat } from 'd3';
+import { interpolateRdPu } from 'd3-scale-chromatic';
+import debounce from 'lodash/debounce';
+import uniq from 'lodash/uniq';
+import tippy from 'tippy.js';
+
 import {
   findPangolin,
   findLocation,
@@ -878,54 +892,24 @@ import {
   getComparisonByLocation,
   getBadMutations,
 } from '@/api/genomics.js';
+import { lazyLoad } from '@/js/lazy-load';
 
-import tippy from 'tippy.js';
 import 'tippy.js/themes/light.css';
 
-// --- font awesome --
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
-import { faTimesCircle } from '@fortawesome/free-regular-svg-icons';
-
-import { faInfoCircle } from '@fortawesome/free-solid-svg-icons/faInfoCircle';
-import { faSpinner } from '@fortawesome/free-solid-svg-icons/faSpinner';
-import { faSync } from '@fortawesome/free-solid-svg-icons/faSync';
-
 library.add(faPlus, faTimesCircle, faSpinner, faSync, faInfoCircle);
-
-import { interpolateRdPu } from 'd3-scale-chromatic';
-
-import { mapState } from 'vuex';
-
-import { scaleSequential, format, timeFormat } from 'd3';
-
-import debounce from 'lodash/debounce';
-import uniq from 'lodash/uniq';
 
 export default {
   name: 'LineageComparisonComponent',
   components: {
-    TypeaheadSelect: () =>
-      import(/* webpackPrefetch: true */ '@/components/TypeaheadSelect.vue'),
-    ReportMethodology: () =>
-      import(/* webpackPrefetch: true */ '@/components/ReportMethodology.vue'),
-    Warning: () =>
-      import(/* webpackPrefetch: true */ '@/components/Warning.vue'),
-    ReportAcknowledgements: () =>
-      import(
-        /* webpackPrefetch: true */ '@/components/ReportAcknowledgements.vue'
-      ),
-    ShareReport: () =>
-      import(/* webpackPrefetch: true */ '@/components/ShareReport.vue'),
-    MutationHeatmap: () =>
-      import(/* webpackPrefetch: true */ '@/components/MutationHeatmap.vue'),
-    GradientLegend: () =>
-      import(/* webpackPrefetch: true */ '@/components/GradientLegend.vue'),
-    DownloadReportData: () =>
-      import(/* webpackPrefetch: true */ '@/components/DownloadReportData.vue'),
-    GenomicsCitation: () =>
-      import(/* webpackPrefetch: true */ '@/components/GenomicsCitation.vue'),
+    TypeaheadSelect: lazyLoad('TypeaheadSelect'),
+    ReportMethodology: lazyLoad('ReportMethodology'),
+    Warning: lazyLoad('Warning'),
+    ReportAcknowledgements: lazyLoad('ReportAcknowledgements'),
+    ShareReport: lazyLoad('ShareReport'),
+    MutationHeatmap: lazyLoad('MutationHeatmap'),
+    GradientLegend: lazyLoad('GradientLegend'),
+    DownloadReportData: lazyLoad('DownloadReportData'),
+    GenomicsCitation: lazyLoad('GenomicsCitation'),
     FontAwesomeIcon,
   },
   props: {

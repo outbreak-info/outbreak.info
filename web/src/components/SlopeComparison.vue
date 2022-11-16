@@ -35,7 +35,6 @@
 
 <script>
 import Vue from 'vue';
-
 import { select, selectAll, scaleLinear, axisBottom } from 'd3';
 
 const width = 125;

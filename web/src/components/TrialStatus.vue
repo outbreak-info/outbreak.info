@@ -44,20 +44,20 @@
 
 <script>
 import Vue from 'vue';
-import CountryMap from '@/components/CountryMap.vue';
-import uniq from 'lodash/uniq';
-
 // --- font awesome --
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faClock } from '@fortawesome/free-regular-svg-icons';
+import uniq from 'lodash/uniq';
+
+import { lazyLoad } from '@/js/lazy-load';
 
 library.add(faClock);
 
 export default Vue.extend({
   name: 'TrialStatus',
   components: {
-    CountryMap,
+    CountryMap: lazyLoad('CountryMap'),
     FontAwesomeIcon,
   },
   props: {

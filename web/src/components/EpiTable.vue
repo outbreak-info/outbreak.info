@@ -249,13 +249,6 @@
 
 <script>
 import Vue from 'vue';
-import cloneDeep from 'lodash/cloneDeep';
-import { format, timeFormat } from 'd3';
-import Sparkline from '@/components/Sparkline.vue';
-import tippy from 'tippy.js';
-import 'tippy.js/themes/light.css';
-
-// --- font awesome --
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import {
@@ -266,6 +259,17 @@ import {
   faSort,
   faChevronRight,
 } from '@fortawesome/free-solid-svg-icons';
+import { format, timeFormat } from 'd3';
+import tippy from 'tippy.js';
+
+import {
+  epiTableState$,
+  getEpiTable,
+  getSparklineTraces,
+} from '@/api/epi-traces.js';
+import { lazyLoad } from '@/js/lazy-load';
+
+import 'tippy.js/themes/light.css';
 
 library.add(
   faArrowUp,
@@ -276,20 +280,13 @@ library.add(
   faChevronRight,
 );
 
-import store from '@/store';
-import {
-  epiTableState$,
-  getEpiTable,
-  getSparklineTraces,
-} from '@/api/epi-traces.js';
-
 const formatDate = timeFormat('%a %d %b %Y');
 
 export default Vue.extend({
   name: 'EpiTable',
   components: {
+    Sparkline: lazyLoad('Sparkline'),
     FontAwesomeIcon,
-    Sparkline,
   },
   props: {
     locations: Array,

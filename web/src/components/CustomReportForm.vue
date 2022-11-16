@@ -35,12 +35,12 @@
 <script>
 import Vue from 'vue';
 
-import VariantForm from '@/components/VariantForm.vue';
+import { lazyLoad } from '@/js/lazy-load';
 
 export default Vue.extend({
   name: 'CustomReportForm',
   components: {
-    VariantForm,
+    VariantForm: lazyLoad('VariantForm'),
   },
   props: {
     minimalistic: {

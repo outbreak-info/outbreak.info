@@ -73,13 +73,13 @@
                   class="d-flex align-items-center justify-content-center my-3"
                 >
                   <TypeaheadSelect
-                      wrapperClass="w-100"
-                      :queryFunction="queryLocation"
-                      @selected="addLoc2Add"
-                      :apiUrl="$genomicsurl"
-                      labelVariable="label"
-                      placeholder="Add location"
-                      totalLabel="total sequences"
+                    wrapperClass="w-100"
+                    :queryFunction="queryLocation"
+                    @selected="addLoc2Add"
+                    :apiUrl="this.$genomicsurl"
+                    labelVariable="label"
+                    placeholder="Add location"
+                    totalLabel="total sequences"
                   />
                 </div>
               </div>
@@ -1065,12 +1065,7 @@
 </template>
 
 <script>
-import uniq from 'lodash/uniq';
-import isEqual from 'lodash/isEqual';
-import debounce from 'lodash/debounce';
-
-import { max, nest, scaleOrdinal, scaleThreshold, timeFormat } from 'd3';
-
+import { mapState } from 'vuex';
 // --- font awesome --
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
@@ -1081,11 +1076,13 @@ import {
   faSpinner,
   faTrashAlt,
 } from '@fortawesome/free-solid-svg-icons';
-
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons/faArrowLeft';
-
 import { faSync } from '@fortawesome/free-solid-svg-icons/faSync';
-import { mapState } from 'vuex';
+import { max, nest, scaleOrdinal, scaleThreshold, timeFormat } from 'd3';
+import { schemeYlGnBu } from 'd3-scale-chromatic';
+import uniq from 'lodash/uniq';
+import isEqual from 'lodash/isEqual';
+import debounce from 'lodash/debounce';
 
 import {
   findLocation,
@@ -1094,8 +1091,7 @@ import {
   updateChoroData,
   updateLocationData,
 } from '@/api/genomics.js';
-
-import { schemeYlGnBu } from 'd3-scale-chromatic';
+import { lazyLoad } from '@/js/lazy-load';
 
 library.add(
   faClock,
@@ -1111,56 +1107,26 @@ export default {
   name: 'SituationReportComponent',
   components: {
     FontAwesomeIcon,
-    CharacteristicMutations: () =>
-      import(
-        /* webpackPrefetch: true */ '@/components/CharacteristicMutations.vue'
-      ),
-    ClassedLegend: () =>
-      import(/* webpackPrefetch: true */ '@/components/ClassedLegend.vue'),
-    CustomReportForm: () =>
-      import(/* webpackPrefetch: true */ '@/components/CustomReportForm.vue'),
-    GenomicsCitation: () =>
-      import(/* webpackPrefetch: true */ '@/components/GenomicsCitation.vue'),
-    HorizontalCategoricalLegend: () =>
-      import(
-        /* webpackPrefetch: true */ '@/components/HorizontalCategoricalLegend.vue'
-      ),
-    LineagesByLocation: () =>
-      import(/* webpackPrefetch: true */ '@/components/LineagesByLocation.vue'),
-    MutationsByLineage: () =>
-      import(/* webpackPrefetch: true */ '@/components/MutationsByLineage.vue'),
-    ReportAcknowledgements: () =>
-      import(
-        /* webpackPrefetch: true */ '@/components/ReportAcknowledgements.vue'
-      ),
-    ReportChoropleth: () =>
-      import(/* webpackPrefetch: true */ '@/components/ReportChoropleth.vue'),
-    ReportMethodology: () =>
-      import(/* webpackPrefetch: true */ '@/components/ReportMethodology.vue'),
-    ReportPrevalence: () =>
-      import(/* webpackPrefetch: true */ '@/components/ReportPrevalence.vue'),
-    ReportPrevalenceByLocation: () =>
-      import(
-        /* webpackPrefetch: true */ '@/components/ReportPrevalenceByLocation.vue'
-      ),
-    ReportPrevalenceOverlay: () =>
-      import(
-        /* webpackPrefetch: true */ '@/components/ReportPrevalenceOverlay.vue'
-      ),
-    ReportResources: () =>
-      import(/* webpackPrefetch: true */ '@/components/ReportResources.vue'),
-    ReportSummary: () =>
-      import(/* webpackPrefetch: true */ '@/components/ReportSummary.vue'),
-    ShareReport: () =>
-      import(/* webpackPrefetch: true */ '@/components/ShareReport.vue'),
-    SublineageTotals: () =>
-      import(/* webpackPrefetch: true */ '@/components/SublineageTotals.vue'),
-    ThresholdSlider: () =>
-      import(/* webpackPrefetch: true */ '@/components/ThresholdSlider.vue'),
-    TypeaheadSelect: () =>
-      import(/* webpackPrefetch: true */ '@/components/TypeaheadSelect.vue'),
-    Warning: () =>
-      import(/* webpackPrefetch: true */ '@/components/Warning.vue'),
+    CharacteristicMutations: lazyLoad('CharacteristicMutations'),
+    ClassedLegend: lazyLoad('ClassedLegend'),
+    CustomReportForm: lazyLoad('CustomReportForm'),
+    GenomicsCitation: lazyLoad('GenomicsCitation'),
+    HorizontalCategoricalLegend: lazyLoad('HorizontalCategoricalLegend'),
+    LineagesByLocation: lazyLoad('LineagesByLocation'),
+    MutationsByLineage: lazyLoad('MutationsByLineage'),
+    ReportAcknowledgements: lazyLoad('ReportAcknowledgements'),
+    ReportChoropleth: lazyLoad('ReportChoropleth'),
+    ReportMethodology: lazyLoad('ReportMethodology'),
+    ReportPrevalence: lazyLoad('ReportPrevalence'),
+    ReportPrevalenceByLocation: lazyLoad('ReportPrevalenceByLocation'),
+    ReportPrevalenceOverlay: lazyLoad('ReportPrevalenceOverlay'),
+    ReportResources: lazyLoad('ReportResources'),
+    ReportSummary: lazyLoad('ReportSummary'),
+    ShareReport: lazyLoad('ShareReport'),
+    SublineageTotals: lazyLoad('SublineageTotals'),
+    ThresholdSlider: lazyLoad('ThresholdSlider'),
+    TypeaheadSelect: lazyLoad('TypeaheadSelect'),
+    Warning: lazyLoad('Warning'),
   },
   props: {
     alias: String,

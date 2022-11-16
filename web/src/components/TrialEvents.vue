@@ -99,12 +99,12 @@
 <script>
 import { nest, timeFormat, timeParse } from 'd3';
 
-import TrialStatus from '@/components/TrialStatus.vue';
+import { lazyLoad } from '@/js/lazy-load';
 
 export default {
   name: 'TrialEvents',
   components: {
-    TrialStatus,
+    TrialStatus: lazyLoad('TrialStatus'),
   },
   props: {
     data: Object,
