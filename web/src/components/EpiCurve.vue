@@ -140,7 +140,7 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import {
   faSearchPlus,
   faCompressArrowsAlt,
-} from '@fortawesome/free-solid-svg-icons/';
+} from '@fortawesome/free-solid-svg-icons';
 import {
   select,
   selectAll,
