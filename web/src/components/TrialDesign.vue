@@ -87,22 +87,17 @@
 </template>
 
 <script>
-// import {
-//   timeFormat,
-//   timeParse
-// } from "d3";
-
 import tippy from 'tippy.js';
-import 'tippy.js/themes/light.css';
 
-import TrialPhase from '@/components/TrialPhase.vue';
-import SearchLink from '@/components/SearchLink.vue';
+import { lazyLoad } from '@/js/lazy-load';
+
+import 'tippy.js/themes/light.css';
 
 export default {
   name: 'TrialDesign',
   components: {
-    TrialPhase,
-    SearchLink,
+    TrialPhase: lazyLoad('TrialPhase'),
+    SearchLink: lazyLoad('SearchLink'),
   },
   props: {
     data: Object,

@@ -220,25 +220,23 @@
 
 <script>
 import Vue from 'vue';
-
-import CountryMap from '@/components/CountryMap.vue';
-import Warning from '@/components/Warning.vue';
-
 // --- font awesome --
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faSync } from '@fortawesome/free-solid-svg-icons';
+import tippy from 'tippy.js';
+
+import { lazyLoad } from '@/js/lazy-load';
+
+import 'tippy.js/themes/light.css';
 
 library.add(faSync);
-
-import tippy from 'tippy.js';
-import 'tippy.js/themes/light.css';
 
 export default {
   name: 'ReportSummary',
   components: {
-    CountryMap,
-    Warning,
+    CountryMap: lazyLoad('CountryMap'),
+    Warning: lazyLoad('Warning'),
     FontAwesomeIcon,
   },
   props: {

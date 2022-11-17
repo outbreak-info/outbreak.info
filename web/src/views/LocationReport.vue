@@ -17,13 +17,12 @@
 <script>
 import Vue from 'vue';
 
+import { lazyLoad } from '@/js/lazy-load';
+
 export default {
   name: 'LocationReport',
   components: {
-    LocationReportComponent: () =>
-      import(
-        /* webpackPrefetch: true */ '@/components/LocationReportComponent.vue'
-      ),
+    LocationReportComponent: lazyLoad('LocationReportComponent'),
   },
   props: {
     loc: String,

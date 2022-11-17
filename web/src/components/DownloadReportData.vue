@@ -16,22 +16,18 @@
 
 <script>
 import Vue from 'vue';
-
-import { getPng } from '@/js/get_svg.js';
-// import DownloadData from "@/components/DownloadData.vue";
-import { timeFormat } from 'd3';
-
-// --- font awesome --
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faCopy } from '@fortawesome/free-regular-svg-icons';
+import { timeFormat } from 'd3';
+
+import { getPng } from '@/js/get_svg.js';
 
 library.add(faCopy);
 
 export default Vue.extend({
   name: 'DownloadReportData',
   components: {
-    // DownloadData,
     FontAwesomeIcon,
   },
   props: {

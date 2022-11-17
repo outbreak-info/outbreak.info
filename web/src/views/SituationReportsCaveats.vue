@@ -151,12 +151,12 @@
 <script>
 import Vue from 'vue';
 
-import SituationReportDefinitions from '@/components/SituationReportDefinitions.vue';
+import { lazyLoad } from '@/js/lazy-load';
 
 export default Vue.extend({
   name: 'SituationReportsCaveats',
   components: {
-    SituationReportDefinitions,
+    SituationReportDefinitions: lazyLoad('SituationReportDefinitions'),
   },
 });
 </script>

@@ -91,7 +91,7 @@
 
 <script>
 import Vue from 'vue';
-
+import { mapState } from 'vuex';
 import {
   select,
   selectAll,
@@ -106,15 +106,12 @@ import {
 } from 'd3';
 import cloneDeep from 'lodash/cloneDeep';
 
-import DownloadReportData from '@/components/DownloadReportData.vue';
-
-// --- store / Vuex ---
-import { mapState } from 'vuex';
+import { lazyLoad } from '@/js/lazy-load';
 
 export default Vue.extend({
   name: 'MutationsByLineage',
   components: {
-    DownloadReportData,
+    DownloadReportData: lazyLoad('DownloadReportData'),
   },
   props: {
     data: Array,

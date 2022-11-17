@@ -4,32 +4,29 @@
     <div class="d-flex align-items-center mt-3 mb-5">
       <div class="input-group w-50">
         <div class="input-group-prepend">
-          <span
-              id="sb"
-              class="input-group-text bg-grey text-muted border-0"
-          >
-            <font-awesome-icon :icon="['fas', 'search']"/>
+          <span id="sb" class="input-group-text bg-grey text-muted border-0">
+            <font-awesome-icon :icon="['fas', 'search']" />
           </span>
         </div>
         <TypeaheadSelect
-            class="form-control mr-4"
-            :isStandalone="false"
-            :queryFunction="queryLocation"
-            @selected="updateLocation"
-            :apiUrl="$genomicsurl"
-            labelVariable="label"
-            placeholder="Select location"
-            totalLabel="total sequences"
-            :removeOnSelect="false"
-            @click.prevent="submitQuery"
+          class="form-control mr-4"
+          :isStandalone="false"
+          :queryFunction="queryLocation"
+          @selected="updateLocation"
+          :apiUrl="$genomicsurl"
+          labelVariable="label"
+          placeholder="Select location"
+          totalLabel="total sequences"
+          :removeOnSelect="false"
+          @click.prevent="submitQuery"
         />
       </div>
       <button
-          v-if="!formValid"
-          :disabled="!location"
-          type="submit"
-          class="btn btn-accent btn-lg m-0"
-          @click="submitQuery"
+        v-if="!formValid"
+        :disabled="!location"
+        type="submit"
+        class="btn btn-accent btn-lg m-0"
+        @click="submitQuery"
       >
         Go
       </button>
@@ -88,25 +85,20 @@
 
 <script>
 import Vue from 'vue';
-
-import TypeaheadSelect from '@/components/TypeaheadSelect.vue';
-// import VariantForm from "@/components/VariantForm.vue";
-
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faSearch, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import uniq from 'lodash/uniq';
 
-import {findLocation} from '@/api/genomics.js';
-
-// --- font awesome --
-import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome';
-import {library} from '@fortawesome/fontawesome-svg-core';
-import {faSearch, faTimesCircle} from '@fortawesome/free-solid-svg-icons';
+import { findLocation } from '@/api/genomics.js';
+import { lazyLoad } from '@/js/lazy-load';
 
 library.add(faSearch, faTimesCircle);
 
 export default {
   name: 'CustomLocationForm',
   components: {
-    TypeaheadSelect,
+    TypeaheadSelect: lazyLoad('TypeaheadSelect'),
     // VariantForm,
     FontAwesomeIcon,
   },
@@ -130,12 +122,12 @@ export default {
   computed: {
     formValid() {
       return (
-          (this.selectedMutations.length > 0 ||
-              this.selectedLineage ||
-              this.pango.length ||
-              this.variant.length ||
-              this.muts.length) &&
-          this.location
+        (this.selectedMutations.length > 0 ||
+          this.selectedLineage ||
+          this.pango.length ||
+          this.variant.length ||
+          this.muts.length) &&
+        this.location
       );
     },
   },
@@ -150,16 +142,16 @@ export default {
       if (this.selectedLineage && this.selectedMutations.length) {
         this.variant.push({
           label: `${this.selectedLineage} + ${this.selectedMutations
-              .map((d) => d.mutation)
-              .join(', ')}`,
+            .map((d) => d.mutation)
+            .join(', ')}`,
           qParam: `${this.selectedLineage}|${this.selectedMutations
-              .map((d) => d.mutation)
-              .join(',')}`,
+            .map((d) => d.mutation)
+            .join(',')}`,
           mutation_string: `(${
-              this.selectedLineage
+            this.selectedLineage
           }) AND (${this.selectedMutations
-              .map((d) => d.mutation)
-              .join(' AND ')})`,
+            .map((d) => d.mutation)
+            .join(' AND ')})`,
         });
       } else if (this.selectedLineage) {
         this.pango.push({
@@ -170,12 +162,12 @@ export default {
       } else if (this.selectedMutations.length) {
         this.muts.push({
           label: `${this.selectedMutations.map((d) => d.mutation).join(', ')} ${
-              this.selectedMutations.length === 1 ? 'mutation' : 'variant'
+            this.selectedMutations.length === 1 ? 'mutation' : 'variant'
           }`,
           qParam: this.selectedMutations.map((d) => d.mutation).join(' AND '),
           mutation_string: this.selectedMutations
-              .map((d) => d.mutation)
-              .join(' AND '),
+            .map((d) => d.mutation)
+            .join(' AND '),
         });
       }
 

@@ -211,29 +211,24 @@
 
 <script>
 import Vue from 'vue';
-
-import AA_MAP from '@/assets/genomics/sarscov2_aa.json';
-import TypeaheadSelect from '@/components/TypeaheadSelect.vue';
-import SARSMutationMap from '@/components/SARSMutationMap.vue';
-
-import { findPangolin } from '@/api/genomics.js';
-
 // --- font awesome --
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { faTimesCircle } from '@fortawesome/free-regular-svg-icons';
+import debounce from 'lodash/debounce';
+
+import { findPangolin } from '@/api/genomics.js';
+import { lazyLoad } from '@/js/lazy-load';
 
 library.add(faPlus, faTimesCircle);
-
-import debounce from 'lodash/debounce';
 
 export default Vue.extend({
   name: 'CustomReportForm',
   components: {
+    TypeaheadSelect: lazyLoad('TypeaheadSelect'),
+    SARSMutationMap: lazyLoad('SARSMutationMap'),
     FontAwesomeIcon,
-    TypeaheadSelect,
-    SARSMutationMap,
   },
   props: {
     selectedLineage: Object,

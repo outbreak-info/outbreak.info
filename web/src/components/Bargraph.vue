@@ -139,7 +139,6 @@
 
 <script>
 import Vue from 'vue';
-
 import {
   scaleBand,
   scaleLinear,

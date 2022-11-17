@@ -108,19 +108,16 @@
 
 <script>
 import Vue from 'vue';
-
 import { mapState } from 'vuex';
 
-import SourceDescription from '@/components/SourceDescription.vue';
-import DownloadData from '@/components/DownloadData.vue';
-
 import { getIndivSourcesUpdated } from '@/api/metadata.js';
+import { lazyLoad } from '@/js/lazy-load';
 
 export default Vue.extend({
   name: 'Sources',
   components: {
-    SourceDescription,
-    DownloadData,
+    SourceDescription: lazyLoad('SourceDescription'),
+    DownloadData: lazyLoad('DownloadData'),
   },
   data() {
     return {

@@ -58,12 +58,12 @@
 <script>
 import { timeFormat, timeParse } from 'd3';
 
-import StripeAccent from '@/components/StripeAccent.vue';
+import { lazyLoad } from '@/js/lazy-load';
 
 export default {
   name: 'NewResources',
   components: {
-    StripeAccent,
+    StripeAccent: lazyLoad('StripeAccent'),
   },
   props: {
     newData: Array,

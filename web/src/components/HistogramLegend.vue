@@ -140,7 +140,6 @@ import {
   drag,
   event,
 } from 'd3';
-import { interpolateYlGnBu } from 'd3-scale-chromatic';
 
 export default {
   name: 'HistogramLegend',

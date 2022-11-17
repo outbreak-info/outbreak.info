@@ -13,7 +13,7 @@
           type="checkbox"
           :value="option"
           @change="debounceSelectMutation"
-        >
+        />
         <div class="b-input" />
       </label>
       <font-awesome-icon
@@ -39,31 +39,27 @@
 
 <script>
 import Vue from 'vue';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faPlusSquare } from '@fortawesome/free-regular-svg-icons/faPlusSquare';
+import uniq from 'lodash/uniq';
+import debounce from 'lodash/debounce';
+import tippy from 'tippy.js';
 
 import {
   getEpiMutationPrevalence,
   getAllTemporalPrevalences,
 } from '@/api/genomics.js';
-import { getEpiTraces } from '@/api/epi-traces.js';
-import ReportPrevalenceOverlay from '@/components/ReportPrevalenceOverlay.vue';
+import { lazyLoad } from '@/js/lazy-load';
 
-import uniq from 'lodash/uniq';
-import debounce from 'lodash/debounce';
-
-import tippy from 'tippy.js';
 import 'tippy.js/themes/light.css';
-
-// --- font awesome --
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faPlusSquare } from '@fortawesome/free-regular-svg-icons/faPlusSquare';
 
 library.add(faPlusSquare);
 
 export default {
   name: 'OverlayLineagePrevalence',
   components: {
-    ReportPrevalenceOverlay,
+    ReportPrevalenceOverlay: lazyLoad('ReportPrevalenceOverlay'),
     FontAwesomeIcon,
   },
   props: {

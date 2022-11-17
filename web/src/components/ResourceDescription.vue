@@ -466,20 +466,7 @@
 
 <script>
 import Vue from 'vue';
-
-import tippy from 'tippy.js';
-import 'tippy.js/themes/light.css';
-
-import { timeFormat, timeParse } from 'd3';
-
 import { mapState } from 'vuex';
-
-import { getResourceMetadata } from '@/api/resources.js';
-
-import ClinicalTrialSummary from '@/components/ClinicalTrialSummary.vue';
-import Warning from '@/components/Warning.vue';
-
-// --- font awesome --
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faClock } from '@fortawesome/free-regular-svg-icons';
@@ -487,14 +474,20 @@ import {
   faAngleDoubleDown,
   faAngleDoubleUp,
 } from '@fortawesome/free-solid-svg-icons';
+import { timeFormat, timeParse } from 'd3';
+import tippy from 'tippy.js';
+
+import { lazyLoad } from '@/js/lazy-load';
+
+import 'tippy.js/themes/light.css';
 
 library.add(faClock, faAngleDoubleDown, faAngleDoubleUp);
 
 export default Vue.extend({
   name: 'ResourceDescription',
   components: {
-    ClinicalTrialSummary,
-    Warning,
+    ClinicalTrialSummary: lazyLoad('ClinicalTrialSummary'),
+    Warning: lazyLoad('Warning'),
     FontAwesomeIcon,
   },
   props: {

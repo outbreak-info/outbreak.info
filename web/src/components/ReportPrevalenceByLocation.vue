@@ -20,10 +20,7 @@
         </button>
         <div class="d-flex align-items-center justify-content-end">
           sort by
-          <select
-            v-model="sortVar"
-            class="ml-2"
-          >
+          <select v-model="sortVar" class="ml-2">
             <option value="proportion">
               prevalence
             </option>
@@ -41,10 +38,7 @@
         class="d-flex flex-wrap"
         :class="[stacked ? 'justify-content-center' : 'justify-content-center']"
       >
-        <div
-          class="d-flex flex-column"
-          :class="{ 'mr-5': !stacked }"
-        >
+        <div class="d-flex flex-column" :class="{ 'mr-5': !stacked }">
           <h5 class="my-5 my-sm-4 my-md-2">
             <b>Prevalence by location</b>
           </h5>
@@ -55,42 +49,28 @@
           >
             <!-- scale bar with gradient -->
             <ClassedLegend
-                :colorScale="colorScale"
-                :horizontal="false"
-                :includeNulls="false"
-                :label="label"
-                :countThreshold="25"
-                :mutationName="mutationName"
-                nullColor="#EFEFEF"
-                filteredColor="#A5A5A5"
-                strokeColor="#2c3e50"
-                maxCount="maxEstFormatted"
+              :colorScale="colorScale"
+              :horizontal="false"
+              :includeNulls="false"
+              :label="label"
+              :countThreshold="25"
+              :mutationName="mutationName"
+              nullColor="#EFEFEF"
+              filteredColor="#A5A5A5"
+              strokeColor="#2c3e50"
+              maxCount="maxEstFormatted"
             />
 
             <div class="d-flex  align-items-center">
-              <svg
-                id="legend"
-                width="15"
-                height="15"
-                class="mr-2"
-              >
-                <line
-                  x1="0"
-                  x2="15"
-                  y1="8"
-                  y2="8"
-                  class="ci-legend"
-                />
+              <svg id="legend" width="15" height="15" class="mr-2">
+                <line x1="0" x2="15" y1="8" y2="8" class="ci-legend" />
               </svg>
               <small class="text-muted">95% confidence interval</small>
             </div>
           </div>
 
           <!-- LEFT: DOTPLOT -->
-          <div
-            v-if="y && !y.domain().length"
-            class="fa-lg text-muted mt-3"
-          >
+          <div v-if="y && !y.domain().length" class="fa-lg text-muted mt-3">
             No {{ mutationName }} detected
           </div>
 
@@ -103,16 +83,8 @@
           >
             <!-- <svg :width="width" :height="height + margin.bottom + margin.top" class="dotplot-prevalence prevalence-by-location" ref="svg_dot" :name="title" :subtitle="subtitle"> -->
             <defs>
-              <filter
-                id="dropshadow"
-                filterUnits="userSpaceOnUse"
-              >
-                <feOffset
-                  result="offOut"
-                  in="SourceAlpha"
-                  dx="2"
-                  dy="2"
-                />
+              <filter id="dropshadow" filterUnits="userSpaceOnUse">
+                <feOffset result="offOut" in="SourceAlpha" dx="2" dy="2" />
                 <feFlood
                   flood-color="#222222"
                   flood-opacity="0.5"
@@ -190,10 +162,7 @@
             </div>
           </div>
 
-          <div
-            v-if="y && !y.domain().length"
-            class="fa-lg text-muted mt-3"
-          >
+          <div v-if="y && !y.domain().length" class="fa-lg text-muted mt-3">
             No {{ mutationName }} detected
           </div>
 
@@ -243,14 +212,8 @@
       <h5 id="location-name" />
       <em id="no-sequencing">No reported sequencing</em>
       <div class="d-flex align-items-center">
-        <b
-          id="proportion"
-          class="font-size-2"
-        />
-        <span
-          id="confidence-interval"
-          class="text-muted ml-2"
-        />
+        <b id="proportion" class="font-size-2" />
+        <span id="confidence-interval" class="text-muted ml-2" />
       </div>
       <div id="sequencing-count" />
     </div>
@@ -266,8 +229,6 @@
 
 <script>
 import Vue from 'vue';
-import DownloadReportData from '@/components/DownloadReportData.vue';
-
 import {
   select,
   selectAll,
@@ -283,16 +244,15 @@ import {
   transition,
   event,
 } from 'd3';
-
 import cloneDeep from 'lodash/cloneDeep';
 
-import ClassedLegend from '@/components/ClassedLegend.vue';
+import { lazyLoad } from '@/js/lazy-load';
 
 export default Vue.extend({
   name: 'ReportPrevalenceByLocation',
   components: {
-    ClassedLegend,
-    DownloadReportData,
+    ClassedLegend: lazyLoad('ClassedLegend'),
+    DownloadReportData: lazyLoad('DownloadReportData'),
   },
   props: {
     data: Array,

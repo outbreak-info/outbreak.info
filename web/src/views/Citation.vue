@@ -15,14 +15,13 @@
 <script>
 import Vue from 'vue';
 
-import CiteUs from '@/components/CiteUs.vue';
-import DataUsage from '@/components/DataUsage.vue';
+import { lazyLoad } from '@/js/lazy-load';
 
 export default Vue.extend({
   name: 'Citation',
   components: {
-    CiteUs,
-    DataUsage,
+    CiteUs: lazyLoad('CiteUs'),
+    DataUsage: lazyLoad('DataUsage'),
   },
 });
 </script>

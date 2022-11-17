@@ -1412,20 +1412,7 @@
 </template>
 
 <script>
-import Vue from 'vue';
-
-// import ReportLogos from "@/components/ReportLogos.vue";
-import ReportCard from '@/components/ReportCard.vue';
-import CustomReportForm from '@/components/CustomReportForm.vue';
-import ReportAcknowledgements from '@/components/ReportAcknowledgements.vue';
-// import MutationHeatmap from '@/components/MutationHeatmap.vue';
-// import DownloadReportData from '@/components/DownloadReportData.vue';
-// import Warning from "@/components/Warning.vue";
-
-import tippy from 'tippy.js';
-import 'tippy.js/themes/light.css';
-
-// --- font awesome --
+import { mapState } from 'vuex';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faClock } from '@fortawesome/free-regular-svg-icons';
@@ -1435,17 +1422,10 @@ import {
   faSearch,
   faExclamationCircle,
 } from '@fortawesome/free-solid-svg-icons';
-
-library.add(faClock, faSpinner, faInfoCircle, faSearch, faExclamationCircle);
-
-import { mapState } from 'vuex';
-
-import store from '@/store';
-
 import { format } from 'd3';
-
 import cloneDeep from 'lodash/cloneDeep';
 import debounce from 'lodash/debounce';
+import tippy from 'tippy.js';
 
 import {
   getReportList,
@@ -1453,16 +1433,19 @@ import {
   getCuratedMutations,
   getBadMutations,
 } from '@/api/genomics.js';
+import { lazyLoad } from '@/js/lazy-load';
+import store from '@/store';
+
+import 'tippy.js/themes/light.css';
+
+library.add(faClock, faSpinner, faInfoCircle, faSearch, faExclamationCircle);
 
 export default {
   name: 'SituationReports',
   components: {
-    // DownloadReportData,
-    CustomReportForm,
-    ReportAcknowledgements,
+    CustomReportForm: lazyLoad('CustomReportForm'),
+    ReportAcknowledgements: lazyLoad('ReportAcknowledgements'),
     FontAwesomeIcon,
-    // MutationHeatmap,
-    // Warning
   },
   props: {
     voc: [Array, String],

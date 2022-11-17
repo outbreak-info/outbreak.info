@@ -88,9 +88,13 @@
               rel="noreferrer"
               target="_blank"
             >
-              Hughes</a>,
-            <a href="http://sulab.org/" rel="noreferrer" target="_blank">Su</a>,
-            <a href="http://wulab.io/" rel="noreferrer" target="_blank">Wu</a>, and
+              Hughes
+            </a>
+            ,
+            <a href="http://sulab.org/" rel="noreferrer" target="_blank">Su</a>
+            ,
+            <a href="http://wulab.io/" rel="noreferrer" target="_blank">Wu</a>
+            , and
             <a
               href="https://andersen-lab.com/"
               rel="noreferrer"
@@ -103,8 +107,11 @@
               by the
               <span v-for="(grant, idx) in funding" :key="idx">
                 <span v-if="grant.funder.name">{{ grant.funder.name }}</span>
-                ({{ grant.identifier }})<span v-if="idx < funding.length - 2">, </span>
-                <span v-if="idx === funding.length - 2">, and </span></span>.
+                ({{ grant.identifier }})
+                <span v-if="idx < funding.length - 2">,</span>
+                <span v-if="idx === funding.length - 2">, and</span>
+              </span>
+              .
             </span>
           </p>
 
@@ -229,30 +236,25 @@
 
 <script>
 import Vue from 'vue';
-
 import { mapState } from 'vuex';
-
-// --- font awesome --
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faClock } from '@fortawesome/free-regular-svg-icons';
 import { faAt } from '@fortawesome/free-solid-svg-icons';
 import { faTwitter, faLinkedinIn } from '@fortawesome/free-brands-svg-icons';
 
-library.add(faAt, faTwitter, faLinkedinIn);
-
 import { getResourceTotal } from '@/api/resources.js';
 import { getSequenceCount } from '@/api/genomics.js';
+import { lazyLoad } from '@/js/lazy-load';
 
-import EmailSubscription from '@/components/EmailSubscription.vue';
-import Jobs from '@/components/Jobs.vue';
+library.add(faAt, faTwitter, faLinkedinIn);
 
 export default Vue.extend({
   name: 'About',
   components: {
-    Jobs,
+    Jobs: lazyLoad('Jobs'),
+    EmailSubscription: lazyLoad('EmailSubscription'),
     FontAwesomeIcon,
-    EmailSubscription,
   },
   data() {
     return {

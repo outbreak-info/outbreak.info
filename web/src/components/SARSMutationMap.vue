@@ -49,9 +49,7 @@
 
 <script>
 import Vue from 'vue';
-
-import NT_MAP from '@/assets/genomics/sarscov2_NC045512_genes_nt.json';
-
+import chroma from 'chroma-js';
 import {
   select,
   selectAll,
@@ -67,11 +65,10 @@ import {
   forceSimulation,
   forceX,
 } from 'd3';
-
 import cloneDeep from 'lodash/cloneDeep';
 import uniqBy from 'lodash/uniqBy';
 
-import chroma from 'chroma-js';
+import NT_MAP from '@/assets/genomics/sarscov2_NC045512_genes_nt.json';
 
 export default Vue.extend({
   name: 'SARSMutationMap',

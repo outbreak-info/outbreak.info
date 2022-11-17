@@ -404,34 +404,25 @@
 
 <script>
 import Vue from 'vue';
-
-import { timeFormat, timeParse } from 'd3';
-
 import { mapState } from 'vuex';
-
-// --- font awesome --
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
-
-library.add(faSpinner);
-
-import { getResourceMetadata } from '@/api/resources.js';
-
+import { timeFormat, timeParse } from 'd3';
 import cloneDeep from 'lodash/cloneDeep';
 
-import ResourceDescription from '@/components/ResourceDescription.vue';
-import ResourceSidebar from '@/components/ResourceSidebar.vue';
-import ClinicalTrialDescription from '@/components/ClinicalTrialDescription.vue';
-import ResourceCitation from '@/components/ResourceCitation.vue';
+import { getResourceMetadata } from '@/api/resources.js';
+import { lazyLoad } from '@/js/lazy-load';
+
+library.add(faSpinner);
 
 export default Vue.extend({
   name: 'ResourcePage',
   components: {
-    ResourceDescription,
-    ResourceSidebar,
-    ClinicalTrialDescription,
-    ResourceCitation,
+    ResourceDescription: lazyLoad('ResourceDescription'),
+    ResourceSidebar: lazyLoad('ResourceSidebar'),
+    ClinicalTrialDescription: lazyLoad('ClinicalTrialDescription'),
+    ResourceCitation: lazyLoad('ResourceCitation'),
     FontAwesomeIcon,
   },
   beforeRouteUpdate(to, from, next) {

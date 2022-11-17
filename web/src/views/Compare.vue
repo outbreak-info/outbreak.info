@@ -2,10 +2,7 @@
   <div class="full-page p-5 bg-light">
     <!-- dataLoading -->
 
-    <div
-      v-if="dataloading"
-      class="map-loader"
-    >
+    <div v-if="dataloading" class="map-loader">
       <font-awesome-icon
         class="fa-pulse fa-4x text-highlight"
         :icon="['fas', 'spinner']"
@@ -27,9 +24,7 @@
           {{ option.label }}
         </option>
       </select>
-      <template
-        v-if="locationData"
-      >
+      <template v-if="locationData">
         to
 
         <router-link
@@ -47,10 +42,7 @@
       @location="changeLocation"
     />
 
-    <div
-      id="admin-selector"
-      class="d-flex align-items-center"
-    >
+    <div id="admin-selector" class="d-flex align-items-center">
       <small class="mr-1">include</small>
       <label
         v-for="option in adminOptions"
@@ -63,21 +55,15 @@
           type="checkbox"
           :value="option"
           @change="changeAdmin"
-        >
+        />
         <div class="b-input" />
       </label>
     </div>
 
-    <div
-      v-if="similar && similar.length"
-      class="mt-5"
-    >
+    <div v-if="similar && similar.length" class="mt-5">
       <div class="legend d-flex justify-content-end my-3">
         <div class="mr-3 d-flex align-items-center">
-          <div
-            :style="{ background: '#d6d6d6' }"
-            class="legend-rect mr-1"
-          />
+          <div :style="{ background: '#d6d6d6' }" class="legend-rect mr-1" />
           <small>{{ locationData.name }}</small>
         </div>
 
@@ -120,7 +106,8 @@
               </router-link>
               <div class="d-flex justify-content-between">
                 <div>
-                  {{ similarity }}: <b>{{ formatValue(place.similarValue) }}</b>
+                  {{ similarity }}:
+                  <b>{{ formatValue(place.similarValue) }}</b>
                 </div>
                 <div v-if="similarity !== 'population'">
                   population:
@@ -134,7 +121,6 @@
                   <b>{{ formatValue(locationData.similarValue) }}</b>
                 </small>
                 <small v-if="similarity !== 'population'">
-
                   population:
                   <b>{{ formatValue(locationData.values[0].population) }}</b>
                 </small>
@@ -171,60 +157,38 @@
       </table>
     </div>
 
-    <div
-      v-else
-      class="mt-5"
-    >
+    <div v-else class="mt-5">
       No similar locations found
     </div>
   </div>
 </template>
 
 <script>
-import Vue from "vue";
-import {
-  mapState
-} from "vuex";
+import Vue from 'vue';
+import { mapState } from 'vuex';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { format, scaleOrdinal } from 'd3';
 
-import MiniLocation from "@/components/MiniLocation.vue";
-import LineComparison from "@/components/LineComparison.vue";
-import SearchBar from "@/components/SearchBar.vue";
-
-// --- font awesome --
-import {
-  FontAwesomeIcon
-} from "@fortawesome/vue-fontawesome";
-import {
-  library
-} from "@fortawesome/fontawesome-svg-core";
-import {
-  faSpinner
-} from "@fortawesome/free-solid-svg-icons";
+import { findSimilar } from '@/api/find-similar.js';
+import { lazyLoad } from '@/js/lazy-load';
 
 library.add(faSpinner);
 
-import {
-  findSimilar
-} from "@/api/find-similar.js";
-
-import {
-  format,
-  scaleOrdinal
-} from "d3";
-
 export default Vue.extend({
-  name: "Compare",
+  name: 'Compare',
   components: {
-    MiniLocation,
-    LineComparison,
-    SearchBar,
-    FontAwesomeIcon
+    MiniLocation: lazyLoad('MiniLocation'),
+    LineComparison: lazyLoad('LineComparison'),
+    SearchBar: lazyLoad('SearchBar'),
+    FontAwesomeIcon,
   },
   props: {
     location: String,
     admin_levels: String,
     variable: String,
-    similarity: String
+    similarity: String,
   },
   data() {
     return {
@@ -238,53 +202,77 @@ export default Vue.extend({
       colorScale: null,
       selectedLocation: null,
       selectedSimilarity: null,
-      similarOptions: [{
-        value: "population",
-        label: "population"
-      }, {
-        value: "confirmed",
-        label: "total cases"
-      }, {
-        value: "confirmed_per_100k",
-        label: "total cases per capita"
-      }, {
-        value: "confirmed_rolling",
-        label: "new cases today"
-      }, {
-        value: "confirmed_rolling_per_100k",
-        label: "new cases today per capita"
-      }, {
-        value: "dead",
-        label: "total deaths"
-      }, {
-        value: "dead_per_100k",
-        label: "total deaths per capita"
-      }, {
-        value: "dead_rolling",
-        label: "new deaths today"
-      }, {
-        value: "dead_rolling_per_100k",
-        label: "new deaths today per capita"
-      }],
-      selectedAdminLevels: ["countries", "non-U.S. States/Provinces", "U.S. States", "U.S. Metro Areas", "U.S. Counties"],
-      adminOptions: ["countries", "non-U.S. States/Provinces", "U.S. States", "U.S. Metro Areas", "U.S. Counties"],
-      dataSubscription: null
-    }
+      similarOptions: [
+        {
+          value: 'population',
+          label: 'population',
+        },
+        {
+          value: 'confirmed',
+          label: 'total cases',
+        },
+        {
+          value: 'confirmed_per_100k',
+          label: 'total cases per capita',
+        },
+        {
+          value: 'confirmed_rolling',
+          label: 'new cases today',
+        },
+        {
+          value: 'confirmed_rolling_per_100k',
+          label: 'new cases today per capita',
+        },
+        {
+          value: 'dead',
+          label: 'total deaths',
+        },
+        {
+          value: 'dead_per_100k',
+          label: 'total deaths per capita',
+        },
+        {
+          value: 'dead_rolling',
+          label: 'new deaths today',
+        },
+        {
+          value: 'dead_rolling_per_100k',
+          label: 'new deaths today per capita',
+        },
+      ],
+      selectedAdminLevels: [
+        'countries',
+        'non-U.S. States/Provinces',
+        'U.S. States',
+        'U.S. Metro Areas',
+        'U.S. Counties',
+      ],
+      adminOptions: [
+        'countries',
+        'non-U.S. States/Provinces',
+        'U.S. States',
+        'U.S. Metro Areas',
+        'U.S. Counties',
+      ],
+      dataSubscription: null,
+    };
   },
   computed: {
-    ...mapState("admin", ["dataloading"]),
-    ...mapState("colors", ["colors"])
+    ...mapState('admin', ['dataloading']),
+    ...mapState('colors', ['colors']),
   },
   watch: {
     $route: {
       immediate: true,
       handler(to, from) {
         this.selectedSimilarity = this.similarity;
-        this.selectedAdminLevels = this.admin_levels ? this.admin_levels.split(";") : [];
+        this.selectedAdminLevels = this.admin_levels
+          ? this.admin_levels.split(';')
+          : [];
 
         this.getSimilar();
-      }
-    }
+      },
+    },
   },
   beforeDestroy() {
     if (this.dataSubscription) {
@@ -294,55 +282,66 @@ export default Vue.extend({
   methods: {
     getSimilar() {
       if (this.location && this.similarity) {
-        this.dataSubscription = findSimilar(this.$apiurl, this.location, this.variable, this.similarity, this.selectedAdminLevels).subscribe(results => {
+        this.dataSubscription = findSimilar(
+          this.$apiurl,
+          this.location,
+          this.variable,
+          this.similarity,
+          this.selectedAdminLevels,
+        ).subscribe((results) => {
           this.similar = results.similar;
           this.locationData = results.location;
           this.xDomain = results.xDomain;
           this.yMaxC = results.yMaxC;
           this.yMaxD = results.yMaxD;
-          this.colorScale = scaleOrdinal().range(this.colors).domain(this.similar.map(d => d.key));
+          this.colorScale = scaleOrdinal()
+            .range(this.colors)
+            .domain(this.similar.map((d) => d.key));
         });
       }
     },
     changeSimilarity() {
       this.$router.push({
-        name: "Compare",
+        name: 'Compare',
         query: {
           location: this.location,
           admin_levels: this.admin_levels,
           variable: this.variable,
-          similarity: this.selectedSimilarity
-        }
-      })
+          similarity: this.selectedSimilarity,
+        },
+      });
     },
     changeAdmin() {
       this.$router.push({
-        name: "Compare",
+        name: 'Compare',
         query: {
           location: this.location,
-          admin_levels: this.selectedAdminLevels.join(";"),
+          admin_levels: this.selectedAdminLevels.join(';'),
           variable: this.variable,
-          similarity: this.similarity
-        }
-      })
+          similarity: this.similarity,
+        },
+      });
     },
     changeLocation(location_id) {
       this.selectedLocation = location_id;
       this.$router.push({
-        name: "Compare",
+        name: 'Compare',
         query: {
           location: location_id,
           admin_levels: this.admin_levels,
           variable: this.variable,
-          similarity: this.similarity
-        }
-      })
+          similarity: this.similarity,
+        },
+      });
     },
     formatValue(val) {
-      return (this.similarity.includes("_per_100k") || this.similarity.includes("rolling") ? format(",.1f")(val) : format(",.0f")(val))
-    }
-  }
-})
+      return this.similarity.includes('_per_100k') ||
+        this.similarity.includes('rolling')
+        ? format(',.1f')(val)
+        : format(',.0f')(val);
+    },
+  },
+});
 </script>
 
 <style lang="scss">

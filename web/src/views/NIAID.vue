@@ -62,35 +62,28 @@
 </template>
 
 <script>
-import { getQuerySummaries, getSourceSummary } from '@/api/resources.js';
-
 import { mapState } from 'vuex';
-
-import WhatsNew from '@/components/WhatsNew.vue';
-import CirclePacking from '@/components/CirclePacking.vue';
-import HorizontalBargraph from '@/components/HorizontalBargraph.vue';
-import ResourceTimeline from '@/components/ResourceTimeline.vue';
-
-// --- font awesome --
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faClock } from '@fortawesome/free-regular-svg-icons';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
-
-library.add(faClock, faSpinner);
-
+import { nest } from 'd3';
 import tippy from 'tippy.js';
+
+import { getQuerySummaries, getSourceSummary } from '@/api/resources.js';
+import { lazyLoad } from '@/js/lazy-load';
+
 import 'tippy.js/themes/light.css';
 
-import { nest } from 'd3';
+library.add(faClock, faSpinner);
 
 export default {
   name: 'NIAID',
   components: {
-    WhatsNew,
-    CirclePacking,
-    HorizontalBargraph,
-    ResourceTimeline,
+    WhatsNew: lazyLoad('WhatsNew'),
+    CirclePacking: lazyLoad('CirclePacking'),
+    HorizontalBargraph: lazyLoad('HorizontalBargraph'),
+    ResourceTimeline: lazyLoad('ResourceTimeline'),
     FontAwesomeIcon,
   },
   data() {

@@ -10,12 +10,12 @@
 </template>
 
 <script>
-import ReportMethodology from '@/components/ReportMethodology';
+import { lazyLoad } from '@/js/lazy-load';
 
 export default {
   name: 'SituationReportMethodology',
   components: {
-    ReportMethodology,
+    ReportMethodology: lazyLoad('ReportMethodology'),
   },
 };
 </script>

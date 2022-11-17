@@ -7,12 +7,12 @@
 
 <script>
 import Vue from 'vue';
-import { getDateUpdated } from '@/api/biothings.js';
-
 // --- font awesome --
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faClock } from '@fortawesome/free-regular-svg-icons';
+
+import { getDateUpdated } from '@/api/biothings.js';
 
 library.add(faClock);
 
