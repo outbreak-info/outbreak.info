@@ -4,9 +4,7 @@
       class="d-flex justify-content-between px-3"
       :style="{ width: width + 'px' }"
     >
-      <h5 class="m-0">
-        Lineage prevalence over time
-      </h5>
+      <h5 class="m-0">Lineage prevalence over time</h5>
       <div class="d-flex justify-content-end">
         <button
           class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2"
@@ -94,13 +92,6 @@
 
 <script>
 import Vue from 'vue';
-// --- font awesome --
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import {
-  faSearchPlus,
-  faCompressArrowsAlt,
-} from '@fortawesome/free-solid-svg-icons';
 import {
   select,
   selectAll,
@@ -123,14 +114,11 @@ import {
 
 import { lazyLoad } from '@/js/lazy-load';
 
-library.add(faSearchPlus, faCompressArrowsAlt);
-
 export default Vue.extend({
   name: 'LineagesByLocation',
   components: {
     SequencingHistogram: lazyLoad('SequencingHistogram'),
     DownloadReportData: lazyLoad('DownloadReportData'),
-    FontAwesomeIcon,
   },
   props: {
     data: Array,
@@ -276,9 +264,9 @@ export default Vue.extend({
         .tickFormat(format('.0%'));
 
       // stacking
-      this.series = stack()
-        .keys(this.lineages)
-        .order(stackOrderInsideOut)(this.data);
+      this.series = stack().keys(this.lineages).order(stackOrderInsideOut)(
+        this.data,
+      );
 
       select(this.$refs.yAxis).call(this.yAxis);
     },
@@ -390,10 +378,7 @@ export default Vue.extend({
         },
         (exit) =>
           exit.call((exit) =>
-            exit
-              .transition()
-              .style('opacity', 1e-5)
-              .remove(),
+            exit.transition().style('opacity', 1e-5).remove(),
           ),
       );
 
@@ -469,10 +454,7 @@ export default Vue.extend({
         },
         (exit) =>
           exit.call((exit) =>
-            exit
-              .transition()
-              .style('opacity', 1e-5)
-              .remove(),
+            exit.transition().style('opacity', 1e-5).remove(),
           ),
       );
 

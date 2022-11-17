@@ -120,22 +120,15 @@
 
 <script>
 import Vue from 'vue';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faQuestionCircle } from '@fortawesome/free-regular-svg-icons';
-import { faSync } from '@fortawesome/free-solid-svg-icons';
 import { select, selectAll, scaleLinear, scaleBand, axisLeft, sum } from 'd3';
 import cloneDeep from 'lodash/cloneDeep';
 
 import { lazyLoad } from '@/js/lazy-load';
 
-library.add(faSync, faQuestionCircle);
-
 export default Vue.extend({
   name: 'SublineageTotals',
   components: {
     DownloadReportData: lazyLoad('DownloadReportData'),
-    FontAwesomeIcon,
   },
   props: {
     data: Array,
@@ -198,9 +191,9 @@ export default Vue.extend({
         : this.lineageName;
     },
     swoopyPosition() {
-      return `M ${this.width - this.margin.left - 20} ${this.height -
-        this.margin.top -
-        5} c 0 0, 15 0, 0 -25`;
+      return `M ${this.width - this.margin.left - 20} ${
+        this.height - this.margin.top - 5
+      } c 0 0, 15 0, 0 -25`;
     },
   },
   watch: {
@@ -266,9 +259,7 @@ export default Vue.extend({
     tooltipOn(d) {
       this.svg.selectAll('.lineage-group').style('opacity', 0.3);
 
-      select(this.$refs.yAxis)
-        .selectAll('text')
-        .style('opacity', 0.3);
+      select(this.$refs.yAxis).selectAll('text').style('opacity', 0.3);
 
       select(this.$refs.yAxis)
         .selectAll('text')
@@ -280,9 +271,7 @@ export default Vue.extend({
     tooltipOff() {
       this.svg.selectAll('.lineage-group').style('opacity', 1);
 
-      select(this.$refs.yAxis)
-        .selectAll('text')
-        .style('opacity', 1);
+      select(this.$refs.yAxis).selectAll('text').style('opacity', 1);
     },
     showZeros() {
       this.hideZeros = !this.hideZeros;
@@ -386,11 +375,7 @@ export default Vue.extend({
         },
         (exit) => {
           exit.call((exit) =>
-            exit
-              .transition()
-              .duration(10)
-              .style('opacity', 1e-5)
-              .remove(),
+            exit.transition().duration(10).style('opacity', 1e-5).remove(),
           );
         },
       );

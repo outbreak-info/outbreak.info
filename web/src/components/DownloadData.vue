@@ -63,35 +63,27 @@
         <div
           v-if="
             type === 'epidemiology' ||
-              type === 'regions' ||
-              type === 'maps' ||
-              type === 'report'
+            type === 'regions' ||
+            type === 'maps' ||
+            type === 'report'
           "
           class="mb-4"
         >
           <h4 class="m-0">Figure</h4>
           <a class="text-uppercase pointer" @click="downloadSvg">
-            <p class="focustext m-0">
-              svg
-            </p>
+            <p class="focustext m-0">svg</p>
           </a>
           <a class="text-uppercase pointer" @click="downloadPng">
-            <p class="focustext m-0">
-              png
-            </p>
+            <p class="focustext m-0">png</p>
           </a>
         </div>
 
         <h4 class="m-0">Data</h4>
         <a class="text-uppercase pointer" @click="prepData('json')">
-          <p class="focustext m-0">
-            json
-          </p>
+          <p class="focustext m-0">json</p>
         </a>
         <a class="text-uppercase pointer" @click="prepData('tsv')">
-          <p class="focustext m-0">
-            tsv
-          </p>
+          <p class="focustext m-0">tsv</p>
         </a>
 
         <!-- close button -->
@@ -109,9 +101,6 @@
 
 <script>
 import { mapState } from 'vuex';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { timeFormat, format } from 'd3';
 import cloneDeep from 'lodash/cloneDeep';
 import uniq from 'lodash/uniq';
@@ -120,14 +109,11 @@ import { getAll, progressState$ } from '@/api/biothings.js';
 import { getPng, getSvg } from '@/js/get_svg.js';
 import { lazyLoad } from '@/js/lazy-load';
 
-library.add(faSpinner);
-
 export default {
   name: 'DownloadData',
   components: {
     DataUsage: lazyLoad('DataUsage'),
     CiteUs: lazyLoad('CiteUs'),
-    FontAwesomeIcon,
   },
   props: {
     data: Array,
@@ -443,9 +429,9 @@ ${resourcesString}
       dwnld_data += colnames.join(columnDelimiter);
       dwnld_data += lineDelimiter;
 
-      data.forEach(function(item) {
+      data.forEach(function (item) {
         let counter = 0;
-        colnames.forEach(function(key) {
+        colnames.forEach(function (key) {
           if (counter > 0) dwnld_data += columnDelimiter;
 
           // For null values, return empty string.

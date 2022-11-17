@@ -207,8 +207,8 @@
             <span
               v-else-if="
                 column.value.includes('dead') ||
-                  column.value.includes('recovered') ||
-                  column.value.includes('_increase')
+                column.value.includes('recovered') ||
+                column.value.includes('_increase')
               "
             >
               {{ row[column.value] ? row[column.value] : 0 }}
@@ -249,16 +249,6 @@
 
 <script>
 import Vue from 'vue';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import {
-  faArrowUp,
-  faArrowDown,
-  faArrowLeft,
-  faArrowRight,
-  faSort,
-  faChevronRight,
-} from '@fortawesome/free-solid-svg-icons';
 import { format, timeFormat } from 'd3';
 import tippy from 'tippy.js';
 
@@ -271,22 +261,12 @@ import { lazyLoad } from '@/js/lazy-load';
 
 import 'tippy.js/themes/light.css';
 
-library.add(
-  faArrowUp,
-  faArrowDown,
-  faArrowLeft,
-  faArrowRight,
-  faSort,
-  faChevronRight,
-);
-
 const formatDate = timeFormat('%a %d %b %Y');
 
 export default Vue.extend({
   name: 'EpiTable',
   components: {
     Sparkline: lazyLoad('Sparkline'),
-    FontAwesomeIcon,
   },
   props: {
     locations: Array,

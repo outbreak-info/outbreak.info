@@ -119,12 +119,6 @@
 
 <script>
 import Vue from 'vue';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import {
-  faSearchPlus,
-  faCompressArrowsAlt,
-} from '@fortawesome/free-solid-svg-icons';
 import {
   select,
   selectAll,
@@ -151,14 +145,11 @@ import cloneDeep from 'lodash/cloneDeep';
 
 import { lazyLoad } from '@/js/lazy-load';
 
-library.add(faSearchPlus, faCompressArrowsAlt);
-
 export default Vue.extend({
   name: 'LineagesByLocation',
   components: {
     SequencingHistogram: lazyLoad('SequencingHistogram'),
     DownloadReportData: lazyLoad('DownloadReportData'),
-    FontAwesomeIcon,
   },
   props: {
     data: Array,
@@ -356,9 +347,7 @@ export default Vue.extend({
         .range([0, this.width - this.margin.left - this.margin.right])
         .domain(xDomain);
 
-      this.xAxis = axisBottom(this.x)
-        .tickSizeOuter(0)
-        .ticks(this.numXTicks);
+      this.xAxis = axisBottom(this.x).tickSizeOuter(0).ticks(this.numXTicks);
 
       select(this.$refs.xAxis).call(this.xAxis);
 
@@ -386,9 +375,9 @@ export default Vue.extend({
         .tickFormat(format('.0%'));
 
       // stacking
-      this.series = stack()
-        .keys(this.lineages)
-        .order(stackOrderInsideOut)(this.plottedData);
+      this.series = stack().keys(this.lineages).order(stackOrderInsideOut)(
+        this.plottedData,
+      );
 
       select(this.$refs.yAxis).call(this.yAxis);
     },
@@ -665,10 +654,7 @@ export default Vue.extend({
           },
           (exit) =>
             exit.call((exit) =>
-              exit
-                .transition()
-                .style('opacity', 1e-5)
-                .remove(),
+              exit.transition().style('opacity', 1e-5).remove(),
             ),
         );
       }
@@ -697,10 +683,7 @@ export default Vue.extend({
         },
         (exit) =>
           exit.call((exit) =>
-            exit
-              .transition()
-              .style('opacity', 1e-5)
-              .remove(),
+            exit.transition().style('opacity', 1e-5).remove(),
           ),
       );
 
@@ -779,10 +762,7 @@ export default Vue.extend({
           },
           (exit) =>
             exit.call((exit) =>
-              exit
-                .transition()
-                .style('opacity', 1e-5)
-                .remove(),
+              exit.transition().style('opacity', 1e-5).remove(),
             ),
         );
       }

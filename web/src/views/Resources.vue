@@ -61,7 +61,7 @@
                 Wrap terms in quotes if you want to search for an exact phrase,
                 like
                 <router-link
-                  class=" inline-block"
+                  class="inline-block"
                   :to="{
                     name: 'Resources',
                     query: { q: quotedSearch },
@@ -94,9 +94,7 @@
                 @click="dateFacet.expanded = !dateFacet.expanded"
               >
                 <div class="col-sm-10 p-1">
-                  <h6 class="p-0 m-0">
-                    Date
-                  </h6>
+                  <h6 class="p-0 m-0">Date</h6>
                 </div>
                 <div class="col-sm-2 text-center p-1">
                   <!-- toggle fa class up->down -->
@@ -275,8 +273,8 @@
             <div
               v-if="
                 (selectedFilters && selectedFilters.length) ||
-                  dateMin ||
-                  dateMax
+                dateMin ||
+                dateMax
               "
               id="selectedFilters"
               class="row d-flex flex-wrap px-1 mt-2"
@@ -348,7 +346,7 @@
               v-if="dates && dates.length"
               class="d-flex flex-wrap align-items-start border-top py-2 mt-2"
             >
-              <div class="d-flex flex-column pr-2 mr-2  mb-3">
+              <div class="d-flex flex-column pr-2 mr-2 mb-3">
                 <small class="text-left">Date</small>
                 <DateHistogram :data="dates" :filterable="false" />
               </div>
@@ -438,8 +436,8 @@
                       <small
                         v-if="
                           item.dateModified ||
-                            item.dateCreated ||
-                            item.datePublished
+                          item.dateCreated ||
+                          item.datePublished
                         "
                       >
                         <font-awesome-icon :icon="['far', 'clock']" />
@@ -456,7 +454,7 @@
                         <span
                           v-if="
                             (item.dateModified && item.dateCreated) ||
-                              (item.datePublished && item.dateCreated)
+                            (item.datePublished && item.dateCreated)
                           "
                         >
                           &bull;
@@ -538,7 +536,7 @@
 
                     <div
                       v-else-if="item.curatedBy.name === 'ClinicalTrials.gov'"
-                      class="d-flex flex-column  align-items-center"
+                      class="d-flex flex-column align-items-center"
                     >
                       <div
                         class="altmetric-embed my-2"
@@ -627,9 +625,7 @@
                       </a>
                     </span>
                   </template>
-                  <template v-else>
-                    No description provided
-                  </template>
+                  <template v-else>No description provided</template>
                 </div>
 
                 <!-- Bottom -->
@@ -681,18 +677,6 @@
 
 <script>
 import { mapState } from 'vuex';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import {
-  faArrowLeft,
-  faArrowRight,
-  faSpinner,
-  faSearch,
-  faInfoCircle,
-  faChevronUp,
-  faChevronDown,
-} from '@fortawesome/free-solid-svg-icons';
-import { faClock, faTimesCircle } from '@fortawesome/free-regular-svg-icons';
 import { timeFormat, timeParse } from 'd3';
 import cloneDeep from 'lodash/cloneDeep';
 import debounce from 'lodash/debounce';
@@ -701,18 +685,6 @@ import tippy from 'tippy.js';
 import { getResources } from '@/api/resources.js';
 import { lazyLoad } from '@/js/lazy-load';
 import 'tippy.js/themes/light.css';
-
-library.add(
-  faArrowLeft,
-  faArrowRight,
-  faClock,
-  faTimesCircle,
-  faSpinner,
-  faSearch,
-  faInfoCircle,
-  faChevronUp,
-  faChevronDown,
-);
 
 export default {
   name: 'Resources',
@@ -724,7 +696,6 @@ export default {
     DownloadData: lazyLoad('DownloadData'),
     Donut: lazyLoad('Donut'),
     DateHistogram: lazyLoad('DateHistogram'),
-    FontAwesomeIcon,
   },
   props: {
     q: String,

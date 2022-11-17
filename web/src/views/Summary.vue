@@ -28,14 +28,9 @@
 </template>
 <script>
 import { mapState } from 'vuex';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 import { getGlanceSummary } from '@/api/genomics.js';
 import { lazyLoad } from '@/js/lazy-load';
-
-library.add(faSpinner);
 
 export default {
   name: 'Summary',
@@ -43,7 +38,6 @@ export default {
     GlanceSummary: lazyLoad('GlanceSummary'),
     Logos: lazyLoad('Logos'),
     DataSource: lazyLoad('DataSource'),
-    FontAwesomeIcon,
   },
   props: {
     location: String,

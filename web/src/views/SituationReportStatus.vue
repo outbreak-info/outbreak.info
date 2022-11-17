@@ -1,12 +1,8 @@
 <template>
   <div>
     <div class="bg-main__darker status-banner border-top py-4">
-      <h3 class="m-0 text-grey">
-        SARS-CoV-2 (hCoV-19) Mutation Reports
-      </h3>
-      <h1 class="m-0 status-header font-weight-bold">
-        Current Status
-      </h1>
+      <h3 class="m-0 text-grey">SARS-CoV-2 (hCoV-19) Mutation Reports</h3>
+      <h1 class="m-0 status-header font-weight-bold">Current Status</h1>
     </div>
 
     <!-- LOADING -->
@@ -232,9 +228,7 @@
             <Histogram
               :data="seqGaps"
               :median="seqGapMedian"
-              :title="
-                `Difference between sample collection and sequence submission in days ${locationTitle}`
-              "
+              :title="`Difference between sample collection and sequence submission in days ${locationTitle}`"
             />
           </div>
         </section>
@@ -280,10 +274,6 @@
 import Vue from 'vue';
 import { mapState } from 'vuex';
 import debounce from 'lodash/debounce';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faClock } from '@fortawesome/free-regular-svg-icons';
-import { faSpinner, faSearch, faSync } from '@fortawesome/free-solid-svg-icons';
 
 import {
   getStatusBasics,
@@ -296,8 +286,6 @@ import {
 } from '@/api/genomics.js';
 import { lazyLoad } from '@/js/lazy-load';
 
-library.add(faClock, faSpinner, faSearch, faSync);
-
 export default Vue.extend({
   name: 'SituationReportStatus',
   components: {
@@ -305,7 +293,6 @@ export default Vue.extend({
     SequencingHistogram: lazyLoad('SequencingHistogram'),
     Histogram: lazyLoad('Histogram'),
     GapOverTime: lazyLoad('GapOverTime'),
-    FontAwesomeIcon,
   },
   props: {
     loc: String,

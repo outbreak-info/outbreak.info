@@ -1,7 +1,7 @@
 <template>
   <div class="px-2">
     <h3>Summary</h3>
-    <div class="summary-counts mb-3" style="overflow-x:auto;">
+    <div class="summary-counts mb-3" style="overflow-x: auto">
       <span class="font-size-2">
         <span v-if="dateUpdated">As of {{ dateUpdated }},</span>
         <b>{{ totalLineage }}</b>
@@ -53,20 +53,14 @@
             </th>
           </tr>
           <tr class="border-bottom">
-            <th class="text-center padded">
-              total
-            </th>
+            <th class="text-center padded">total</th>
             <th class="text-center padded">
               cumulative prevalence
               <sup>*</sup>
             </th>
             <th />
-            <th class="text-center padded">
-              first
-            </th>
-            <th class="text-center padded">
-              last
-            </th>
+            <th class="text-center padded">first</th>
+            <th class="text-center padded">last</th>
           </tr>
         </thead>
 
@@ -80,7 +74,7 @@
               <router-link
                 v-if="
                   location.name !== 'Worldwide' &&
-                    routeTo === 'GenomicsEmbedVariant'
+                  routeTo === 'GenomicsEmbedVariant'
                 "
                 class="bright-hyperlink"
                 :to="{
@@ -115,15 +109,13 @@
                   'no-estimate':
                     location.proportion_formatted === 'no estimate',
                 }"
-                :data-tippy-info="
-                  `Prevalence estimates are unreliable since only ${
-                    location.total_count
-                  } ${
-                    location.total_count === 1 ? 'sample has' : 'samples have'
-                  } been sequenced since ${mutationName} detection in ${
-                    location.name
-                  }`
-                "
+                :data-tippy-info="`Prevalence estimates are unreliable since only ${
+                  location.total_count
+                } ${
+                  location.total_count === 1 ? 'sample has' : 'samples have'
+                } been sequenced since ${mutationName} detection in ${
+                  location.name
+                }`"
               >
                 {{ location.proportion_formatted }}
               </span>
@@ -220,24 +212,17 @@
 
 <script>
 import Vue from 'vue';
-// --- font awesome --
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faSync } from '@fortawesome/free-solid-svg-icons';
 import tippy from 'tippy.js';
 
 import { lazyLoad } from '@/js/lazy-load';
 
 import 'tippy.js/themes/light.css';
 
-library.add(faSync);
-
 export default {
   name: 'ReportSummary',
   components: {
     CountryMap: lazyLoad('CountryMap'),
     Warning: lazyLoad('Warning'),
-    FontAwesomeIcon,
   },
   props: {
     selected: String,

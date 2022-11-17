@@ -74,9 +74,7 @@
             id="downloads"
             class="text-left border-bottom text-muted py-3 my-3"
           >
-            <h6 class="m-0">
-              Downloads
-            </h6>
+            <h6 class="m-0">Downloads</h6>
             <ul v-if="data.distribution" id="download-list">
               <li v-for="(item, idx) in data.distribution" :key="idx">
                 <a :href="item.contentUrl" target="_blank" rel="noreferrer">
@@ -95,9 +93,7 @@
             id="funder"
             class="text-left border-bottom text-muted py-3 mb-3"
           >
-            <h6 class="m-0">
-              Funder
-            </h6>
+            <h6 class="m-0">Funder</h6>
             <div v-if="data.funding || data.funder">
               <div v-if="data.funding">
                 <ul>
@@ -129,8 +125,8 @@
                           <span
                             v-if="
                               funding.funder &&
-                                funding.funder.name &&
-                                funding.identifier
+                              funding.funder.name &&
+                              funding.identifier
                             "
                           >
                             :&nbsp;
@@ -179,8 +175,8 @@
                           <span
                             v-if="
                               data.funding.funder &&
-                                data.funding.funder.name &&
-                                data.funding.identifier
+                              data.funding.funder.name &&
+                              data.funding.identifier
                             "
                           >
                             :&nbsp;
@@ -255,9 +251,7 @@
             id="corrections"
             class="text-left border-bottom text-muted py-1 my-3"
           >
-            <h6 class="m-0">
-              Corrections
-            </h6>
+            <h6 class="m-0">Corrections</h6>
             <ul v-if="data.correction" id="correction-list">
               <li v-for="(item, idx) in data.correction" :key="idx">
                 {{ item.correctionType[0].toUpperCase()
@@ -296,9 +290,7 @@
             id="license"
             class="text-left border-bottom text-muted pb-3 mb-3"
           >
-            <h6 class="m-0">
-              License
-            </h6>
+            <h6 class="m-0">License</h6>
             <div v-if="data.license">
               <a
                 v-if="data.license.startsWith('http')"
@@ -320,9 +312,7 @@
             id="based_on"
             class="text-left border-bottom text-muted pb-3 mb-3"
           >
-            <h6 class="m-0 mb-2">
-              Based on
-            </h6>
+            <h6 class="m-0 mb-2">Based on</h6>
             <div v-if="data.isBasedOn && data.isBasedOn.length">
               <ResourceCitation
                 v-for="(item, idx) in data.isBasedOn"
@@ -341,9 +331,7 @@
             id="cited_by"
             class="text-left border-bottom text-muted pb-3 mb-3"
           >
-            <h6 class="m-0 mb-2">
-              Cited by
-            </h6>
+            <h6 class="m-0 mb-2">Cited by</h6>
             <div v-if="data.citedBy && data.citedBy.length">
               <ResourceCitation
                 v-for="(item, idx) in data.citedBy"
@@ -362,9 +350,7 @@
             id="related"
             class="text-left border-bottom text-muted pb-3 mb-3"
           >
-            <h6 class="m-0 mb-2">
-              Related resources
-            </h6>
+            <h6 class="m-0 mb-2">Related resources</h6>
             <div v-if="data.relatedTo && data.relatedTo.length">
               <ResourceCitation
                 v-for="(item, idx) in data.relatedTo"
@@ -391,9 +377,7 @@
     <div v-else class="min-height">
       Sorry, data on {{ id }} is not found. Let us know at
       <a
-        :href="
-          `mailto:help@outbreak.info?subject=Missing metadata for id ${id}`
-        "
+        :href="`mailto:help@outbreak.info?subject=Missing metadata for id ${id}`"
         target="_blank"
       >
         help@outbreak.info
@@ -405,16 +389,11 @@
 <script>
 import Vue from 'vue';
 import { mapState } from 'vuex';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { timeFormat, timeParse } from 'd3';
 import cloneDeep from 'lodash/cloneDeep';
 
 import { getResourceMetadata } from '@/api/resources.js';
 import { lazyLoad } from '@/js/lazy-load';
-
-library.add(faSpinner);
 
 export default Vue.extend({
   name: 'ResourcePage',
@@ -423,7 +402,6 @@ export default Vue.extend({
     ResourceSidebar: lazyLoad('ResourceSidebar'),
     ClinicalTrialDescription: lazyLoad('ClinicalTrialDescription'),
     ResourceCitation: lazyLoad('ResourceCitation'),
-    FontAwesomeIcon,
   },
   beforeRouteUpdate(to, from, next) {
     this.id = to.params.id;

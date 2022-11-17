@@ -3,7 +3,7 @@
     <div class="row m-0">
       <div
         class="col-sm-12 bg-light d-flex justify-content-center align-items-center my-5"
-        style="min-height: 70vh;"
+        style="min-height: 70vh"
       >
         <div class="container half-page">
           <h1>Latest changes</h1>
@@ -100,20 +100,13 @@
 <script>
 import Vue from 'vue';
 import { mapState } from 'vuex';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faClock } from '@fortawesome/free-regular-svg-icons';
 import { timeFormat } from 'd3';
 
 import { getSourcesUpdated } from '@/api/metadata.js';
 
-library.add(faClock);
-
 export default Vue.extend({
   name: 'Latest',
-  components: {
-    FontAwesomeIcon,
-  },
+  components: {},
   data() {
     return {
       updateSubscription: null,

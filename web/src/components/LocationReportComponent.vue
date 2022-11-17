@@ -93,9 +93,7 @@
               />
 
               <div v-if="customMutations.length" class="mx-4 border-top pt-3">
-                <h6 class="font-weight-bold text-muted">
-                  Already selected:
-                </h6>
+                <h6 class="font-weight-bold text-muted">Already selected:</h6>
                 <div class="d-flex flex-wrap">
                   <button
                     v-for="(mutation, mIdx) in customMutations"
@@ -174,9 +172,7 @@
           class="d-flex flex-column text-light location-banner py-3"
           :class="[smallScreen ? 'mx-n2 px-2' : 'mx-n5 px-5']"
         >
-          <h4 class="m-0 mt-n1 text-grey">
-            Location Tracker
-          </h4>
+          <h4 class="m-0 mt-n1 text-grey">Location Tracker</h4>
           <div
             class="d-flex flex-wrap justify-content-between align-items-center"
           >
@@ -269,9 +265,7 @@
           :class="[smallScreen ? 'mx-n2 px-2' : 'mx-n5 px-5']"
         >
           <div class="d-flex align-items-center">
-            <h4 class="m-0 mt-n1 text-grey">
-              Location Tracker
-            </h4>
+            <h4 class="m-0 mt-n1 text-grey">Location Tracker</h4>
             <a
               href="https://outbreak.info"
               class="ml-4 navbar-brand no-underline text-light"
@@ -429,9 +423,7 @@
                   :margin="marginHist"
                   :mutationName="null"
                   className="sequencing-histogram"
-                  :title="
-                    `Samples sequenced per day over last ${recentWindow} days`
-                  "
+                  :title="`Samples sequenced per day over last ${recentWindow} days`"
                   :onlyTotals="true"
                   notDetectedColor="#bab0ab"
                 />
@@ -492,9 +484,7 @@
                   id="most-recent-lineages"
                   :class="{ 'flex-shrink-0': !mediumScreen }"
                 >
-                  <h5 class="mb-0">
-                    Common lineages
-                  </h5>
+                  <h5 class="mb-0">Common lineages</h5>
                   <small class="text-muted">
                     Prevalence over last {{ recentWindow }} days
                   </small>
@@ -555,9 +545,9 @@
             <Warning
               v-if="
                 mostRecentDomain &&
-                  (mostRecentDomain.includes('Omicron') ||
-                    mostRecentDomain.includes('omicron') ||
-                    mostRecentDomain.includes('B.1.1.529'))
+                (mostRecentDomain.includes('Omicron') ||
+                  mostRecentDomain.includes('omicron') ||
+                  mostRecentDomain.includes('B.1.1.529'))
               "
               text="<p>Most Omicron sequences also contain a <b>3 amino acid insertion (EPE) at position 214 in the Spike</b> protein.</p> outbreak.info currently only reports substitution and deletion changes, due to the computational challenges with identifying insertions in 5+ million sequences every day. We’re working towards incorporating insertions into our data processing pipeline, and we encourage you to refer back to the sequence data available on GISAID for more information about these insertions."
               class="fa-sm mt-1 mb-2"
@@ -576,7 +566,7 @@
                 <div
                   class="d-flex align-items-center dark-mode-helper my-2"
                   :data-tippy-info="darkModeHelper"
-                  style="margin-left: 85px; margin-right: 100px;"
+                  style="margin-left: 85px; margin-right: 100px"
                 >
                   <input
                     id="checkbox1"
@@ -642,7 +632,7 @@
                   Variant / Mutation of Concern
                 </span>
                 <span
-                  class="mx-2 line-height-1 fa-sm  flex-shrink-1 text-center w-75px"
+                  class="mx-2 line-height-1 fa-sm flex-shrink-1 text-center w-75px"
                   style="color: #feb56c"
                 >
                   Variant / Mutation of Interest
@@ -789,9 +779,7 @@
                   :margin="marginHist"
                   :mutationName="null"
                   className="sequencing-histogram"
-                  :title="
-                    `Samples sequenced per day over last ${recentWindow} days`
-                  "
+                  :title="`Samples sequenced per day over last ${recentWindow} days`"
                   :onlyTotals="true"
                   notDetectedColor="#bab0ab"
                 />
@@ -822,7 +810,7 @@
                     <small
                       v-if="
                         choro.variantType.includes('Variant') ||
-                          choro.variantType.includes('Mutation')
+                        choro.variantType.includes('Mutation')
                       "
                       :class="{
                         VOC: choro.variantType === 'Variant of Concern',
@@ -951,15 +939,6 @@
 <script>
 import Vue from 'vue';
 import { mapState } from 'vuex';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faClock } from '@fortawesome/free-regular-svg-icons/faClock';
-import { faTimesCircle } from '@fortawesome/free-regular-svg-icons/faTimesCircle';
-import { faInfoCircle } from '@fortawesome/free-solid-svg-icons/faInfoCircle';
-import { faPlus } from '@fortawesome/free-solid-svg-icons/faPlus';
-import { faArrowLeft } from '@fortawesome/free-solid-svg-icons/faArrowLeft';
-import { faSpinner } from '@fortawesome/free-solid-svg-icons/faSpinner';
-import { faSync } from '@fortawesome/free-solid-svg-icons/faSync';
 import {
   max,
   timeFormat,
@@ -991,16 +970,6 @@ import { lazyLoad } from '@/js/lazy-load';
 
 import 'tippy.js/themes/material.css';
 
-library.add(
-  faClock,
-  faSpinner,
-  faSync,
-  faInfoCircle,
-  faArrowLeft,
-  faPlus,
-  faTimesCircle,
-);
-
 export default {
   name: 'LocationReportComponent',
   components: {
@@ -1023,7 +992,6 @@ export default {
     DownloadReportData: lazyLoad('DownloadReportData'),
     GradientLegend: lazyLoad('GradientLegend'),
     GenomicsCitation: lazyLoad('GenomicsCitation'),
-    FontAwesomeIcon,
   },
   props: {
     loc: String,
@@ -1364,7 +1332,7 @@ export default {
     },
   },
   watch: {
-    '$route.query': function(newVal, oldVal) {
+    '$route.query': function (newVal, oldVal) {
       if (newVal.loc !== oldVal.loc) {
         this.newLocation = null;
         this.createReport();

@@ -113,43 +113,13 @@
 </template>
 
 <script>
-// --- font awesome --
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import {
-  faPills,
-  faDna,
-  faVirus,
-  faMortarPestle,
-  faNotesMedical,
-  faTabletAlt,
-  faVial,
-  faCapsules,
-  faUserNurse,
-  faRadiation,
-} from '@fortawesome/free-solid-svg-icons';
-
 import { lazyLoad } from '@/js/lazy-load';
-
-library.add(
-  faPills,
-  faDna,
-  faVirus,
-  faMortarPestle,
-  faNotesMedical,
-  faTabletAlt,
-  faVial,
-  faCapsules,
-  faUserNurse,
-  faRadiation,
-);
 
 export default {
   name: 'TrialInterventions',
   components: {
     TrialType: lazyLoad('TrialType'),
     SearchLink: lazyLoad('SearchLink'),
-    FontAwesomeIcon,
   },
   props: {
     data: Object,

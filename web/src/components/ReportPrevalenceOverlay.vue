@@ -255,9 +255,9 @@
           >
             <g
               ref="xEpiAxis"
-              :transform="
-                `translate(${margin.left}, ${epiHeight - margin.bottom})`
-              "
+              :transform="`translate(${margin.left}, ${
+                epiHeight - margin.bottom
+              })`"
               class="epi-axis epi-x axis--x"
             />
             <g
@@ -313,12 +313,6 @@
 
 <script>
 import Vue from 'vue';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import {
-  faSearchPlus,
-  faCompressArrowsAlt,
-} from '@fortawesome/free-solid-svg-icons';
 import {
   select,
   selectAll,
@@ -348,14 +342,11 @@ import cloneDeep from 'lodash/cloneDeep';
 
 import { lazyLoad } from '@/js/lazy-load';
 
-library.add(faSearchPlus, faCompressArrowsAlt);
-
 export default Vue.extend({
   name: 'ReportPrevalence',
   components: {
     DownloadReportData: lazyLoad('DownloadReportData'),
     SequencingHistogram: lazyLoad('SequencingHistogram'),
-    FontAwesomeIcon,
   },
   props: {
     data: Array,
@@ -916,10 +907,7 @@ export default Vue.extend({
       this.chart.select(`#${d.id}`).style('opacity', 1);
 
       // edit text
-      ttip
-        .select('h5')
-        .text(d.label)
-        .style('color', this.colorScale(d.label));
+      ttip.select('h5').text(d.label).style('color', this.colorScale(d.label));
 
       ttip
         .select('#sublineages')
@@ -975,10 +963,7 @@ export default Vue.extend({
             },
             (exit) =>
               exit.call((exit) =>
-                exit
-                  .transition()
-                  .style('opacity', 1e-5)
-                  .remove(),
+                exit.transition().style('opacity', 1e-5).remove(),
               ),
           );
         }
@@ -1040,10 +1025,7 @@ export default Vue.extend({
             },
             (exit) =>
               exit.call((exit) =>
-                exit
-                  .transition()
-                  .style('opacity', 1e-5)
-                  .remove(),
+                exit.transition().style('opacity', 1e-5).remove(),
               ),
           );
         }
@@ -1119,10 +1101,7 @@ export default Vue.extend({
           },
           (exit) =>
             exit.call((exit) =>
-              exit
-                .transition()
-                .style('opacity', 1e-5)
-                .remove(),
+              exit.transition().style('opacity', 1e-5).remove(),
             ),
         );
 
@@ -1177,10 +1156,7 @@ export default Vue.extend({
           },
           (exit) =>
             exit.call((exit) =>
-              exit
-                .transition()
-                .style('opacity', 1e-5)
-                .remove(),
+              exit.transition().style('opacity', 1e-5).remove(),
             ),
         );
 

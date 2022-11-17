@@ -63,10 +63,6 @@
 
 <script>
 import { mapState } from 'vuex';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faClock } from '@fortawesome/free-regular-svg-icons';
-import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { nest } from 'd3';
 import tippy from 'tippy.js';
 
@@ -75,8 +71,6 @@ import { lazyLoad } from '@/js/lazy-load';
 
 import 'tippy.js/themes/light.css';
 
-library.add(faClock, faSpinner);
-
 export default {
   name: 'NIAID',
   components: {
@@ -84,7 +78,6 @@ export default {
     CirclePacking: lazyLoad('CirclePacking'),
     HorizontalBargraph: lazyLoad('HorizontalBargraph'),
     ResourceTimeline: lazyLoad('ResourceTimeline'),
-    FontAwesomeIcon,
   },
   data() {
     return {

@@ -60,9 +60,7 @@
 
       <section class="border-top py-2">
         <h2>Sequencing data</h2>
-        <h4 id="pipeline">
-          Sequence alignment
-        </h4>
+        <h4 id="pipeline">Sequence alignment</h4>
         <p>
           All SARS-CoV sequences are received via direct provision from the
           <a href="https://www.gisaid.org/" rel="noreferrer" target="_blank">
@@ -99,9 +97,7 @@
           .
         </p>
 
-        <h4 id="filters">
-          Data processing
-        </h4>
+        <h4 id="filters">Data processing</h4>
         <ul>
           <li>
             Sequences with collection dates specifying only the year or dates in
@@ -112,18 +108,14 @@
             Sequences with lengths &le; 20,000 base pairs were removed from the
             analysis.
           </li>
-          <li>
-            Sequences with more than 5,000 nucleotide substitutions.
-          </li>
+          <li>Sequences with more than 5,000 nucleotide substitutions.</li>
           <li>
             Sequences with a contiguous deletion spanning > 500 base pairs were
             removed from the analysis.
           </li>
         </ul>
 
-        <h4 id="prevalence">
-          Prevalence calculation
-        </h4>
+        <h4 id="prevalence">Prevalence calculation</h4>
         <p>
           Mutation prevalence was calculated as a ratio of the count of
           sequences containing a given set of mutations on a day at a particular
@@ -145,9 +137,7 @@
           .
         </p>
 
-        <h4 id="dates">
-          Date reporting
-        </h4>
+        <h4 id="dates">Date reporting</h4>
         <p>
           Dates when the lineage, variant, or mutation(s) were first and last
           found are based on the sample collection date, not the sequencing date
@@ -159,9 +149,7 @@
 
       <section class="border-top border-bottom py-2">
         <h2>Lineages</h2>
-        <h4 id="lineages">
-          Lineage assignment
-        </h4>
+        <h4 id="lineages">Lineage assignment</h4>
         <p>
           PANGO lineage classification for each individual sequence was provided
           by GISAID. Note that classifications of newer lineages by the
@@ -181,9 +169,7 @@
           .
         </p>
 
-        <h4 id="sublineages">
-          Sublineage assignment
-        </h4>
+        <h4 id="sublineages">Sublineage assignment</h4>
         <p>
           outbreak.info Variant of Concern (VOC) reports pull all descendants of
           a parent VOC lineage from
@@ -201,9 +187,7 @@
           maintained by the cov-lineages.org team.
         </p>
 
-        <h4 id="characteristic">
-          Characteristic mutations of a lineage
-        </h4>
+        <h4 id="characteristic">Characteristic mutations of a lineage</h4>
 
         <p>
           Characteristic mutations for a lineage are defined as nonsynonymous
@@ -231,22 +215,15 @@
 <script>
 import Vue from 'vue';
 import { mapState } from 'vuex';
-// --- font awesome --
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faClock } from '@fortawesome/free-regular-svg-icons/faClock';
 import { format } from 'd3';
 
 import { getDateUpdated } from '@/api/genomics.js';
 import { lazyLoad } from '@/js/lazy-load';
 
-library.add(faClock);
-
 export default {
   name: 'ReportMethodology',
   components: {
     Warning: lazyLoad('Warning'),
-    FontAwesomeIcon,
   },
   props: {
     dateUpdated: String,

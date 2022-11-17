@@ -221,12 +221,6 @@
 
 <script>
 import Vue from 'vue';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import {
-  faSearchPlus,
-  faCompressArrowsAlt,
-} from '@fortawesome/free-solid-svg-icons';
 import {
   select,
   selectAll,
@@ -252,14 +246,11 @@ import cloneDeep from 'lodash/cloneDeep';
 
 import { lazyLoad } from '@/js/lazy-load';
 
-library.add(faSearchPlus, faCompressArrowsAlt);
-
 export default Vue.extend({
   name: 'ReportPrevalence',
   components: {
     SequencingHistogram: lazyLoad('SequencingHistogram'),
     DownloadReportData: lazyLoad('DownloadReportData'),
-    FontAwesomeIcon,
   },
   props: {
     data: Array,
@@ -584,10 +575,7 @@ export default Vue.extend({
             },
             (exit) =>
               exit.call((exit) =>
-                exit
-                  .transition()
-                  .style('opacity', 1e-5)
-                  .remove(),
+                exit.transition().style('opacity', 1e-5).remove(),
               ),
           );
         }
@@ -611,10 +599,7 @@ export default Vue.extend({
               .attr('d', this.area),
           (exit) =>
             exit.call((exit) =>
-              exit
-                .transition()
-                .style('opacity', 1e-5)
-                .remove(),
+              exit.transition().style('opacity', 1e-5).remove(),
             ),
         );
 
@@ -643,10 +628,7 @@ export default Vue.extend({
           // exit
           (exit) =>
             exit.call((exit) =>
-              exit
-                .transition()
-                .style('opacity', 1e-5)
-                .remove(),
+              exit.transition().style('opacity', 1e-5).remove(),
             ),
         );
 

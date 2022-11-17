@@ -30,7 +30,7 @@
           {{ status.enrollmentCount.toLocaleString() }}
         </small>
       </div>
-      <small v-if="status.whyStopped" class="status-stopped  px-2">
+      <small v-if="status.whyStopped" class="status-stopped px-2">
         Why stopped: {{ status.whyStopped }}
       </small>
     </div>
@@ -44,21 +44,14 @@
 
 <script>
 import Vue from 'vue';
-// --- font awesome --
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faClock } from '@fortawesome/free-regular-svg-icons';
 import uniq from 'lodash/uniq';
 
 import { lazyLoad } from '@/js/lazy-load';
-
-library.add(faClock);
 
 export default Vue.extend({
   name: 'TrialStatus',
   components: {
     CountryMap: lazyLoad('CountryMap'),
-    FontAwesomeIcon,
   },
   props: {
     status: Object,

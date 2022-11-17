@@ -94,32 +94,9 @@ import {
   event,
 } from 'd3';
 
-// --- font awesome --
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import {
-  faPlay,
-  faPause,
-  faStepForward,
-  faFastForward,
-  faStepBackward,
-  faFastBackward,
-} from '@fortawesome/free-solid-svg-icons';
-
-library.add(
-  faPlay,
-  faPause,
-  faStepForward,
-  faFastForward,
-  faStepBackward,
-  faFastBackward,
-);
-
 export default Vue.extend({
   name: 'DateSlider',
-  components: {
-    FontAwesomeIcon,
-  },
+  components: {},
   props: {
     min: Date,
     max: Date,
@@ -278,9 +255,7 @@ export default Vue.extend({
         .range([0, this.width])
         .domain([this.min, this.max]);
 
-      this.xAxis = axisBottom(this.x)
-        .ticks(2)
-        .tickSizeOuter(0);
+      this.xAxis = axisBottom(this.x).ticks(2).tickSizeOuter(0);
 
       select(this.$refs.xAxis).call(this.xAxis);
 

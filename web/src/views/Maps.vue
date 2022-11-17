@@ -140,15 +140,10 @@
 
 <script>
 import { mapState } from 'vuex';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { timeFormat, format, max, min } from 'd3';
 
 import { getComparisonData } from '@/api/epi-comparison.js';
 import { lazyLoad } from '@/js/lazy-load';
-
-library.add(faSpinner);
 
 export default {
   name: 'Maps',
@@ -156,7 +151,6 @@ export default {
     Choropleth: lazyLoad('Choropleth'),
     DataSource: lazyLoad('DataSource'),
     DateSlider: lazyLoad('DateSlider'),
-    FontAwesomeIcon,
   },
   props: {
     admin_level: {

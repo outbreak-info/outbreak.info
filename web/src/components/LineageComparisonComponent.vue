@@ -216,17 +216,13 @@
         </div>
 
         <div class="border-top pt-3 my-3 mb-1">
-          <h4 class="mb-3">
-            Add lineages
-          </h4>
+          <h4 class="mb-3">Add lineages</h4>
           <div class="d-flex flex-wrap justify-content-between">
             <div
               class="d-flex flex-column mr-5 bg-grey__lightest p-2 rounded mb-3"
             >
               <h6 class="d-flex align-items-center">
-                <div class="mr-2 circle">
-                  1
-                </div>
+                <div class="mr-2 circle">1</div>
                 <span class="mr-1">By Variants of Concern &amp; Interest</span>
               </h6>
               <div class="d-flex flex-column align-items-center">
@@ -273,9 +269,7 @@
               class="d-flex flex-column mr-5 bg-grey__lightest p-2 rounded mb-3"
             >
               <h6 class="d-flex align-items-center">
-                <div class="mr-2 circle">
-                  2
-                </div>
+                <div class="mr-2 circle">2</div>
                 <span class="mr-1" />
                 <a
                   href="https://cov-lineages.org/lineage_list.html"
@@ -334,9 +328,7 @@
               class="d-flex flex-column mr-5 bg-grey__lightest p-2 rounded mb-3"
             >
               <h6 class="d-flex align-items-center">
-                <div class="mr-2 circle">
-                  3
-                </div>
+                <div class="mr-2 circle">3</div>
                 <span class="mr-1">By</span>
                 <a
                   href="https://cov-lineages.org/lineage_list.html"
@@ -365,9 +357,7 @@
 
             <div class="mr-5 mb-3 bg-grey__lightest p-2 rounded mb-3">
               <h6 class="d-flex align-items-center p-0 m-0">
-                <div class="mr-2 circle">
-                  4
-                </div>
+                <div class="mr-2 circle">4</div>
                 Containing a mutation(s)
               </h6>
 
@@ -418,9 +408,7 @@
                   id="warnings"
                   style="width: 400px"
                 >
-                  <div class="warning">
-                    Please check the mutation format:
-                  </div>
+                  <div class="warning">Please check the mutation format:</div>
                   <ul class="warning">
                     <li>
                       Add the gene before the mutation, like
@@ -474,9 +462,7 @@
 
             <div class="mr-5 mb-3 bg-grey__lightest p-2 rounded mb-3">
               <h6 class="d-flex align-items-center p-0 m-0">
-                <div class="mr-2 circle">
-                  5
-                </div>
+                <div class="mr-2 circle">5</div>
                 Prevalent in a location
               </h6>
               <div class="d-flex">
@@ -604,7 +590,7 @@
             <div
               class="dark-mode-helper"
               :data-tippy-info="darkModeHelper"
-              style="margin-left: 90px;"
+              style="margin-left: 90px"
             >
               <input
                 id="checkbox1"
@@ -646,7 +632,7 @@
               </div>
             </div>
 
-            <div class="d-flex" style="margin-right: 90px;">
+            <div class="d-flex" style="margin-right: 90px">
               <!-- MIN MUTATION % -->
               <div class="d-flex flex-column ml-3">
                 <small class="text-muted line-height-1" style="width: 100px">
@@ -696,9 +682,7 @@
           >
             <div class="d-flex flex-column">
               <div class="d-flex align-items-center">
-                <h2 class="m-0">
-                  Mutation prevalence across lineages
-                </h2>
+                <h2 class="m-0">Mutation prevalence across lineages</h2>
                 <button
                   class="btn py-1 px-2 mx-4 my-2 btn-grey flex-shrink-0"
                   data-toggle="collapse"
@@ -787,7 +771,7 @@
                 Variant / Mutation of Concern
               </span>
               <span
-                class="line-height-1 fa-sm  flex-shrink-1 text-center w-75px"
+                class="line-height-1 fa-sm flex-shrink-1 text-center w-75px"
                 style="color: #feb56c"
               >
                 Variant / Mutation of Interest
@@ -811,10 +795,10 @@
               <Warning
                 v-if="
                   geneData.key === 'S' &&
-                    selectedPango &&
-                    (selectedPango.includes('Omicron') ||
-                      selectedPango.includes('omicron') ||
-                      selectedPango.includes('B.1.1.529'))
+                  selectedPango &&
+                  (selectedPango.includes('Omicron') ||
+                    selectedPango.includes('omicron') ||
+                    selectedPango.includes('B.1.1.529'))
                 "
                 text="<p>Most Omicron sequences also contain a <b>3 amino acid insertion (EPE) at position 214 in the Spike</b> protein.</p> outbreak.info currently only reports substitution and deletion changes, due to the computational challenges with identifying insertions in 5+ million sequences every day. We’re working towards incorporating insertions into our data processing pipeline, and we encourage you to refer back to the sequence data available on GISAID for more information about these insertions."
                 class="fa-sm mt-1 mb-2"
@@ -870,13 +854,6 @@
 <script>
 import Vue from 'vue';
 import { mapState } from 'vuex';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
-import { faTimesCircle } from '@fortawesome/free-regular-svg-icons';
-import { faInfoCircle } from '@fortawesome/free-solid-svg-icons/faInfoCircle';
-import { faSpinner } from '@fortawesome/free-solid-svg-icons/faSpinner';
-import { faSync } from '@fortawesome/free-solid-svg-icons/faSync';
 import { scaleSequential, format, timeFormat } from 'd3';
 import { interpolateRdPu } from 'd3-scale-chromatic';
 import debounce from 'lodash/debounce';
@@ -896,8 +873,6 @@ import { lazyLoad } from '@/js/lazy-load';
 
 import 'tippy.js/themes/light.css';
 
-library.add(faPlus, faTimesCircle, faSpinner, faSync, faInfoCircle);
-
 export default {
   name: 'LineageComparisonComponent',
   components: {
@@ -910,7 +885,6 @@ export default {
     GradientLegend: lazyLoad('GradientLegend'),
     DownloadReportData: lazyLoad('DownloadReportData'),
     GenomicsCitation: lazyLoad('GenomicsCitation'),
-    FontAwesomeIcon,
   },
   props: {
     embedded: {

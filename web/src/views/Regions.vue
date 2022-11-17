@@ -213,16 +213,11 @@
 
 <script>
 import { mapState } from 'vuex';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 import { getStackedRegions } from '@/api/region-summary.js';
 import { getWorldDailyCases } from '@/api/epi-traces.js';
 import { lazyLoad } from '@/js/lazy-load';
 import store from '@/store';
-
-library.add(faSpinner);
 
 export default {
   name: 'Regions',
@@ -231,7 +226,6 @@ export default {
     Bargraph: lazyLoad('Bargraph'),
     CountryBarGraph: lazyLoad('CountryBarGraph'),
     DataSource: lazyLoad('DataSource'),
-    FontAwesomeIcon,
   },
   data() {
     return {

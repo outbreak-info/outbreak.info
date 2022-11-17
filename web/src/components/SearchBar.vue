@@ -28,9 +28,7 @@
         id="autocomplete-results"
         class="autocomplete-results bg-dark text-light"
       >
-        <li v-if="isLoading" class="loading">
-          Loading results...
-        </li>
+        <li v-if="isLoading" class="loading">Loading results...</li>
         <li
           v-for="(result, i) in results"
           v-else
@@ -50,20 +48,12 @@
 // adapted from https://alligator.io/vuejs/vue-autocomplete-component/
 import Vue from 'vue';
 import { mapState } from 'vuex';
-// --- font awesome --
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faSearch } from '@fortawesome/free-solid-svg-icons';
 
 import { getLocations } from '@/api/epi-basics.js';
 
-library.add(faSearch);
-
 export default Vue.extend({
   name: 'SearchBar',
-  components: {
-    FontAwesomeIcon,
-  },
+  components: {},
   props: {
     items: {
       type: Array,

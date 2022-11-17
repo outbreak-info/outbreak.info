@@ -10,14 +10,14 @@
     </h4>
 
     <svg
-      :width="
-        `${width +
-          margin.left +
-          margin.right +
-          sparkWidth +
-          newCasesWidth +
-          4 * margin.gap}`
-      "
+      :width="`${
+        width +
+        margin.left +
+        margin.right +
+        sparkWidth +
+        newCasesWidth +
+        4 * margin.gap
+      }`"
       :height="`${height + margin.top + margin.bottom}`"
       class="region-country-counts"
     >
@@ -61,15 +61,8 @@ import {
 } from 'd3';
 import cloneDeep from 'lodash/cloneDeep';
 
-// --- font awesome --
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faWindowClose } from '@fortawesome/free-regular-svg-icons';
-
 import { getCountryData } from '@/api/region-summary.js';
 import store from '@/store';
-
-library.add(faWindowClose);
 
 const width = 250;
 const sparkWidth = 75;
@@ -86,9 +79,7 @@ const transitionDuration = 3500;
 
 export default Vue.extend({
   name: 'CountryBarGraph',
-  components: {
-    FontAwesomeIcon,
-  },
+  components: {},
   props: {
     region: String,
     variable: String,
@@ -265,10 +256,9 @@ export default Vue.extend({
         .attr('class', 'bar-axis axis--y')
         .attr(
           'transform',
-          `translate(${this.margin.left +
-            this.width +
-            this.margin.right -
-            10}, ${this.margin.top})`,
+          `translate(${
+            this.margin.left + this.width + this.margin.right - 10
+          }, ${this.margin.top})`,
         );
 
       this.line = area()
@@ -391,9 +381,9 @@ export default Vue.extend({
         .attr(
           'transform',
           (d) =>
-            `translate(${this.width +
-              this.margin.gap +
-              this.margin.right}, ${this.y(d.name)})`,
+            `translate(${
+              this.width + this.margin.gap + this.margin.right
+            }, ${this.y(d.name)})`,
         )
         .attr('class', 'sparkline');
 
@@ -428,10 +418,12 @@ export default Vue.extend({
         .attr(
           'transform',
           (d) =>
-            `translate(${this.width +
+            `translate(${
+              this.width +
               this.margin.gap * 3 +
               this.margin.right +
-              this.sparkWidth}, ${0})`,
+              this.sparkWidth
+            }, ${0})`,
         )
         .attr('x', 5)
         .attr('y', (d) => this.y(d.name) + this.y.bandwidth() / 2)

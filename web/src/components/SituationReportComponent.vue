@@ -31,9 +31,7 @@
             </div>
             <div class="modal-body">
               <div class="mb-3 py-3 border-bottom border-secondary">
-                <h6 class="text-muted text-underline m-0">
-                  Current locations
-                </h6>
+                <h6 class="text-muted text-underline m-0">Current locations</h6>
                 <button
                   v-for="(location, lIdx2) in currentLocs"
                   :key="lIdx2"
@@ -50,9 +48,7 @@
 
               <div class="py-3 border-bottom">
                 <div v-if="loc2Add.length" class="my-3">
-                  <h6 class="text-sec text-underline m-0">
-                    Locations to add
-                  </h6>
+                  <h6 class="text-sec text-underline m-0">Locations to add</h6>
                   <button
                     v-for="(location, cIdx) in loc2Add"
                     id="new-locations"
@@ -121,9 +117,7 @@
             </div>
             <div class="modal-body">
               <div class="mb-3 py-3 border-bottom border-secondary">
-                <h6 class="text-muted text-underline m-0">
-                  Current locations
-                </h6>
+                <h6 class="text-muted text-underline m-0">Current locations</h6>
                 <button
                   class="btn btn-accent-flat text-muted px-2 py-1 mr-2"
                   data-dismiss="modal"
@@ -256,8 +250,8 @@
                 <small
                   v-if="
                     reportMetadata &&
-                      reportMetadata.mutation_synonyms &&
-                      reportMetadata.mutation_synonyms.length > 1
+                    reportMetadata.mutation_synonyms &&
+                    reportMetadata.mutation_synonyms.length > 1
                   "
                   class="text-muted mr-3"
                 >
@@ -393,8 +387,8 @@
                 <small
                   v-if="
                     reportMetadata &&
-                      reportMetadata.mutation_synonyms &&
-                      reportMetadata.mutation_synonyms.length > 1
+                    reportMetadata.mutation_synonyms &&
+                    reportMetadata.mutation_synonyms.length > 1
                   "
                   class="text-muted mr-3"
                 >
@@ -483,7 +477,7 @@
         <div
           v-if="
             (alias && alias.toLowerCase() === 'omicron') ||
-              pango === 'B.1.1.529'
+            pango === 'B.1.1.529'
           "
           id="warning"
           class="w-100 mt-3"
@@ -613,9 +607,7 @@
               >
                 <MutationsByLineage
                   :routeTo="routeTo"
-                  :title="
-                    `Global prevalence of ${mutationName} per PANGO lineage`
-                  "
+                  :title="`Global prevalence of ${mutationName} per PANGO lineage`"
                   subtitle="Since first identification"
                   :lineage="lineageName"
                   :mutationName="mutationName"
@@ -1066,18 +1058,6 @@
 
 <script>
 import { mapState } from 'vuex';
-// --- font awesome --
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faClock } from '@fortawesome/free-regular-svg-icons';
-import {
-  faInfoCircle,
-  faPlusCircle,
-  faSpinner,
-  faTrashAlt,
-} from '@fortawesome/free-solid-svg-icons';
-import { faArrowLeft } from '@fortawesome/free-solid-svg-icons/faArrowLeft';
-import { faSync } from '@fortawesome/free-solid-svg-icons/faSync';
 import { max, nest, scaleOrdinal, scaleThreshold, timeFormat } from 'd3';
 import { schemeYlGnBu } from 'd3-scale-chromatic';
 import uniq from 'lodash/uniq';
@@ -1093,20 +1073,9 @@ import {
 } from '@/api/genomics.js';
 import { lazyLoad } from '@/js/lazy-load';
 
-library.add(
-  faClock,
-  faTrashAlt,
-  faPlusCircle,
-  faSpinner,
-  faInfoCircle,
-  faArrowLeft,
-  faSync,
-);
-
 export default {
   name: 'SituationReportComponent',
   components: {
-    FontAwesomeIcon,
     CharacteristicMutations: lazyLoad('CharacteristicMutations'),
     ClassedLegend: lazyLoad('ClassedLegend'),
     CustomReportForm: lazyLoad('CustomReportForm'),
@@ -1317,7 +1286,7 @@ export default {
     },
   },
   watch: {
-    $route: function(newVal, oldVal) {
+    $route: function (newVal, oldVal) {
       if (
         !isEqual(newVal.query.pango, oldVal.query.pango) ||
         !isEqual(newVal.params.alias, oldVal.params.alias) ||

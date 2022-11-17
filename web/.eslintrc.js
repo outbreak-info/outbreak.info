@@ -20,5 +20,6 @@ module.exports = {
     'vue/no-v-html': 'off',
     'vue/no-lone-template': 'off',
     'vue/no-template-shadow': 'off',
+    'vue/component-definition-name-casing': 'off',
   },
 };

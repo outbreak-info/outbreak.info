@@ -43,22 +43,16 @@
 <script>
 import Vue from 'vue';
 import { mapState } from 'vuex';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faCopy } from '@fortawesome/free-regular-svg-icons';
 import { timeFormat } from 'd3';
 
 import { getPng } from '@/js/get_svg.js';
 import { lazyLoad } from '@/js/lazy-load';
-
-library.add(faCopy);
 
 export default Vue.extend({
   name: 'DataSource',
   components: {
     DownloadData: lazyLoad('DownloadData'),
     DataUpdated: lazyLoad('DataUpdated'),
-    FontAwesomeIcon,
   },
   props: {
     ids: Array,

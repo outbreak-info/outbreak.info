@@ -9,27 +9,13 @@
       :style="{ width: width + 'px' }"
     >
       <button
-        class="
-          btn btn-accent-flat
-          text-highlight
-          d-flex
-          align-items-center
-          m-0
-          p-2
-        "
+        class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2"
         @click="enableZoom"
       >
         <font-awesome-icon class="text-right" :icon="['fas', 'search-plus']" />
       </button>
       <button
-        class="
-          btn btn-accent-flat
-          text-highlight
-          d-flex
-          align-items-center
-          m-0
-          p-2
-        "
+        class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2"
         @click="resetZoom"
       >
         <font-awesome-icon
@@ -135,12 +121,6 @@
 
 <script>
 import Vue from 'vue';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import {
-  faSearchPlus,
-  faCompressArrowsAlt,
-} from '@fortawesome/free-solid-svg-icons';
 import {
   select,
   selectAll,
@@ -167,8 +147,6 @@ import cloneDeep from 'lodash/cloneDeep';
 
 import store from '@/store';
 
-library.add(faSearchPlus, faCompressArrowsAlt);
-
 const width = 500;
 const height = 300;
 const radius = 3.5;
@@ -182,9 +160,7 @@ const transitionDuration = 1500;
 
 export default Vue.extend({
   name: 'EpiCurve',
-  components: {
-    FontAwesomeIcon,
-  },
+  components: {},
   props: {
     data: Array,
     location: String,
@@ -462,9 +438,7 @@ export default Vue.extend({
       select(`#tooltip-${d._id}`).attr('display', 'block');
       select(`#${d._id}`).attr('r', this.radius * 2);
 
-      selectAll(`#${d[location_id]}`)
-        .select('text')
-        .style('font-weight', 700);
+      selectAll(`#${d[location_id]}`).select('text').style('font-weight', 700);
 
       selectAll(`.epi-region`).style('opacity', 0.35);
       selectAll(`.epi-line`).style('opacity', 0.35);
@@ -647,9 +621,7 @@ export default Vue.extend({
             return Math.abs(Math.round(log) - log) < 1e-6 ? format(',')(d) : '';
           });
       } else {
-        this.yAxis = axisLeft(this.y)
-          .tickSizeOuter(0)
-          .ticks(this.numYTicks);
+        this.yAxis = axisLeft(this.y).tickSizeOuter(0).ticks(this.numYTicks);
       }
 
       if (this.percent) {
@@ -687,13 +659,12 @@ export default Vue.extend({
             'd',
             `M ${xSwoop} ${this.height + ySwoop}
           C ${xSwoop + swoopOffset} ${this.height + ySwoop},
-          ${this.margin.left + ySwoop + 20} ${this.height -
-              this.margin.bottom +
-              15 +
-              swoopOffset},
-          ${this.margin.left + ySwoop + 20} ${this.height -
-              this.margin.bottom +
-              15}`,
+          ${this.margin.left + ySwoop + 20} ${
+              this.height - this.margin.bottom + 15 + swoopOffset
+            },
+          ${this.margin.left + ySwoop + 20} ${
+              this.height - this.margin.bottom + 15
+            }`,
           );
 
         const switchTextEnter = this.switchBtn
@@ -704,14 +675,12 @@ export default Vue.extend({
           .attr('y', this.height + 6 - 12.8);
 
         if (this.switchBtn.select('text').node()) {
-          this.switchBtn.select('rect').attr(
-            'width',
-            this.switchBtn
-              .select('text')
-              .node()
-              .getBBox().width +
-              3.84 * 4,
-          );
+          this.switchBtn
+            .select('rect')
+            .attr(
+              'width',
+              this.switchBtn.select('text').node().getBBox().width + 3.84 * 4,
+            );
           // .attr(
           //   "height",
           //   .select("text")
@@ -865,10 +834,7 @@ export default Vue.extend({
           },
           (exit) =>
             exit.call((exit) =>
-              exit
-                .transition()
-                .style('opacity', 1e-5)
-                .remove(),
+              exit.transition().style('opacity', 1e-5).remove(),
             ),
         );
 
