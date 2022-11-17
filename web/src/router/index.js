@@ -350,6 +350,15 @@ const routes = [
         '../views/SituationReportsCaveats.vue'
       ),
   },
+  {
+    path: '/tree',
+    name: 'LineageTree',
+    component: () =>
+      import(
+        /* webpackChunkName: "lineage-tree" */
+        '../views/LineageTree.vue'
+      ),
+  },
   // redirect old reports
   {
     path: '/situation-reports/B-1-1-7',
