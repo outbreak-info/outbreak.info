@@ -109,21 +109,21 @@
 <script>
 import Vue from 'vue';
 import { mapState } from 'vuex';
-import tippy from 'tippy.js';
-import 'tippy.js/themes/light.css';
-import GlanceSummary from '@/components/GlanceSummary';
-import SearchBar from '@/components/SearchBar';
-
 import { timeFormat } from 'd3';
+import tippy from 'tippy.js';
+
 import { getSummary } from '@/api/epi-basics.js';
 import { getGlanceSummary } from '@/api/genomics.js';
 import { getCurrentDate } from '@/api/biothings.js';
+import { lazyLoad } from '@/js/lazy-load';
+
+import 'tippy.js/themes/light.css';
 
 export default Vue.extend({
   name: 'CaseSummary',
   components: {
-    GlanceSummary,
-    SearchBar,
+    GlanceSummary: lazyLoad('GlanceSummary'),
+    SearchBar: lazyLoad('SearchBar'),
   },
   props: {},
   data() {

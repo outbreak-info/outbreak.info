@@ -11,13 +11,12 @@
 </template>
 
 <script>
+import { lazyLoad } from '@/js/lazy-load';
+
 export default {
   name: 'SituationReportComparison',
   components: {
-    LineageComparisonComponent: () =>
-      import(
-        /* webpackPrefetch: true */ '@/components/LineageComparisonComponent.vue'
-      ),
+    LineageComparisonComponent: lazyLoad('LineageComparisonComponent'),
   },
   props: {
     pango: [Array, String],

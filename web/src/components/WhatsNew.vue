@@ -104,13 +104,12 @@
 
 <script>
 import { getMostRecentGroup } from '@/api/resources.js';
-
-import NewList from '@/components/NewList.vue';
+import { lazyLoad } from '@/js/lazy-load';
 
 export default {
   name: 'WhatsNew',
   components: {
-    NewList,
+    NewList: lazyLoad('NewList'),
   },
   props: {
     query: String,

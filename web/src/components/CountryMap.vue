@@ -18,10 +18,10 @@
 
 <script>
 import Vue from 'vue';
+import { select, geoPath, geoEqualEarth, min } from 'd3';
 
 import GEODATA from '@/assets/geo/countries_ne.json';
 import GADM from '@/assets/geo/gadm_adm0_simplified.json';
-import { select, geoPath, geoEqualEarth, min } from 'd3';
 
 export default Vue.extend({
   name: 'CountryMap',

@@ -119,22 +119,12 @@
 
 <script>
 import Vue from 'vue';
-
-import uniq from 'lodash/uniq';
-
-// --- font awesome --
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import {
   faSearchPlus,
   faCompressArrowsAlt,
-} from '@fortawesome/free-solid-svg-icons/';
-
-library.add(faSearchPlus, faCompressArrowsAlt);
-
-import SequencingHistogram from '@/components/SequencingHistogram.vue';
-import DownloadReportData from '@/components/DownloadReportData.vue';
-
+} from '@fortawesome/free-solid-svg-icons';
 import {
   select,
   selectAll,
@@ -157,14 +147,17 @@ import {
   max,
   format,
 } from 'd3';
-
 import cloneDeep from 'lodash/cloneDeep';
+
+import { lazyLoad } from '@/js/lazy-load';
+
+library.add(faSearchPlus, faCompressArrowsAlt);
 
 export default Vue.extend({
   name: 'LineagesByLocation',
   components: {
-    SequencingHistogram,
-    DownloadReportData,
+    SequencingHistogram: lazyLoad('SequencingHistogram'),
+    DownloadReportData: lazyLoad('DownloadReportData'),
     FontAwesomeIcon,
   },
   props: {

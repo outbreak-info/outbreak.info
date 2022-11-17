@@ -37,7 +37,6 @@
 
 <script>
 import Vue from 'vue';
-
 import { scaleLinear } from 'd3';
 
 const width = 50;

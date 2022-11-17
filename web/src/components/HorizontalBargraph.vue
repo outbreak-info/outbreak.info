@@ -20,9 +20,7 @@
 
 <script>
 import Vue from 'vue';
-
 import { select, selectAll, scaleLinear, scaleBand, axisRight, max } from 'd3';
-import cloneDeep from 'lodash/cloneDeep';
 
 export default Vue.extend({
   name: 'HorizontalBargraph',

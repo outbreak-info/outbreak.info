@@ -62,9 +62,6 @@
 </template>
 
 <script>
-import cloneDeep from 'lodash/cloneDeep';
-import DownloadReportData from '@/components/DownloadReportData.vue';
-
 import {
   geoEqualEarth,
   geoAlbersUsa,
@@ -81,16 +78,18 @@ import {
   select,
   selectAll,
 } from 'd3';
+import cloneDeep from 'lodash/cloneDeep';
 
 import ADMIN0_SIMPLE from '@/assets/geo/gadm_adm0_simplified.json';
 import ADMIN0 from '@/assets/geo/gadm_adm0.json';
 import USADATA from '@/assets/geo/US_states.json';
 import ADMIN1 from '@/assets/geo/gadm_adm1_simplified.json';
+import { lazyLoad } from '@/js/lazy-load';
 
 export default {
   name: 'ReportChoropleth',
   components: {
-    DownloadReportData,
+    DownloadReportData: lazyLoad('DownloadReportData'),
   },
   props: {
     data: Array,
@@ -203,7 +202,7 @@ export default {
     this.debounceSetDims = this.debounce(this.setDims, 150);
   },
   mounted() {
-    this.$nextTick(function () {
+    this.$nextTick(function() {
       window.addEventListener('resize', this.debounceSetDims);
 
       this.$root.$on('update:countThreshold', (newThreshold) => {
@@ -699,7 +698,7 @@ export default {
     // modified to save the d3. event to vue::this
     debounce(fn, delay) {
       let timer = null;
-      return function () {
+      return function() {
         const context = this,
           args = arguments,
           evt = event;

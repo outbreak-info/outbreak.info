@@ -107,27 +107,22 @@
 </template>
 
 <script>
-import { getCTPublications, getResourceMetadata } from '@/api/resources.js';
-
-import TrialDesign from '@/components/TrialDesign.vue';
-import TrialInterventions from '@/components/TrialInterventions.vue';
-import TrialEligibility from '@/components/TrialEligibility.vue';
-import TrialOutcome from '@/components/TrialOutcome.vue';
-import TrialEvents from '@/components/TrialEvents.vue';
-import ResourceCitation from '@/components/ResourceCitation.vue';
-
 import tippy from 'tippy.js';
+
+import { getCTPublications } from '@/api/resources.js';
+import { lazyLoad } from '@/js/lazy-load';
+
 import 'tippy.js/themes/light.css';
 
 export default {
   name: 'ClinicalTrialDescription',
   components: {
-    TrialDesign,
-    TrialInterventions,
-    TrialEligibility,
-    TrialOutcome,
-    TrialEvents,
-    ResourceCitation,
+    TrialDesign: lazyLoad('TrialDesign'),
+    TrialInterventions: lazyLoad('TrialInterventions'),
+    TrialEligibility: lazyLoad('TrialEligibility'),
+    TrialOutcome: lazyLoad('TrialOutcome'),
+    TrialEvents: lazyLoad('TrialEvents'),
+    ResourceCitation: lazyLoad('ResourceCitation'),
   },
   props: {
     data: Object,

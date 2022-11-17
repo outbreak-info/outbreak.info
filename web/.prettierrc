@@ -1,5 +1,6 @@
 {
   "arrowParens": "always",
+  "bracketSpacing": true,
   "trailingComma": "all",
   "singleQuote": true,
   "printWidth": 80,

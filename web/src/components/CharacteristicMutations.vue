@@ -157,26 +157,20 @@
 
 <script>
 import Vue from 'vue';
-// --- store / Vuex ---
 import { mapState } from 'vuex';
-
 import { format, scaleOrdinal } from 'd3';
 
-import SARSMutationMap from '@/components/SARSMutationMap.vue';
-import MutationTable from '@/components/MutationTable.vue';
-import DownloadReportData from '@/components/DownloadReportData.vue';
-import Warning from '@/components/Warning.vue';
-import NT_MAP from '@/assets/genomics/sarscov2_NC045512_genes_nt.json';
-
 import { getBadMutations } from '@/api/genomics.js';
+import NT_MAP from '@/assets/genomics/sarscov2_NC045512_genes_nt.json';
+import { lazyLoad } from '@/js/lazy-load';
 
 export default {
   name: 'CharacteristicMutations',
   components: {
-    SARSMutationMap,
-    MutationTable,
-    Warning,
-    DownloadReportData,
+    SARSMutationMap: lazyLoad('SARSMutationMap'),
+    MutationTable: lazyLoad('MutationTable'),
+    Warning: lazyLoad('Warning'),
+    DownloadReportData: lazyLoad('DownloadReportData'),
   },
   props: {
     mutations: Array,

@@ -37,6 +37,7 @@
 <script>
 import Vue from 'vue';
 import cloneDeep from 'lodash/cloneDeep';
+
 import NT_MAP from '@/assets/genomics/sarscov2_NC045512_genes_nt.json';
 
 export default Vue.extend({

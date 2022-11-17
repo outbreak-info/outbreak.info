@@ -72,7 +72,7 @@
       <!-- dates -->
       <span v-if="data.dateModified" class="badge bg-grey__lightest">
         <font-awesome-icon class="mr-1" :icon="['far', 'clock']" />
-        updated {{ this.formatDate(data.dateModified) }}
+        updated {{ formatDate(data.dateModified) }}
       </span>
       <span v-if="data.datePublished && data.dateModified" class="mx-1">
         &bull;
@@ -83,7 +83,7 @@
           class="mr-1"
           :icon="['far', 'clock']"
         />
-        published {{ this.formatDate(data.datePublished) }}
+        published {{ formatDate(data.datePublished) }}
       </span>
     </template>
 
@@ -106,22 +106,20 @@
 
 <script>
 import Vue from 'vue';
-
-import { timeFormat, timeParse } from 'd3';
-
-import StripeAccent from '@/components/StripeAccent.vue';
-
 // --- font awesome --
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faClock } from '@fortawesome/free-regular-svg-icons';
+import { timeFormat, timeParse } from 'd3';
+
+import { lazyLoad } from '@/js/lazy-load';
 
 library.add(faClock);
 
 export default Vue.extend({
   name: 'Citation',
   components: {
-    StripeAccent,
+    StripeAccent: lazyLoad('StripeAccent'),
     FontAwesomeIcon,
   },
   props: {

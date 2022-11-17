@@ -51,6 +51,7 @@
 
 <script>
 import Vue from 'vue';
+
 export default {
   name: 'PageNotFound',
   computed: {

@@ -56,7 +56,7 @@
         v-if="width > 250"
         class="text-uppercase"
         :style="{
-          'margin-left': this.margin.left + 'px',
+          'margin-left': margin.left + 'px',
           color: notDetectedColor,
         }"
       >
@@ -106,7 +106,6 @@
 
 <script>
 import Vue from 'vue';
-
 import {
   select,
   selectAll,

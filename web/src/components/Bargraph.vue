@@ -81,7 +81,7 @@
         />
         <g class="annotations" :class="{ hidden: noRollingAvg }">
           <line
-            :style="{ stroke: this.colorAverage, 'stroke-width': 2.5 }"
+            :style="{ stroke: colorAverage, 'stroke-width': 2.5 }"
             :x1="margin.left + 5"
             :x2="margin.left + 20"
             :y1="margin.top + 6"
@@ -92,7 +92,7 @@
             :x="margin.left + 25"
             :y="margin.top"
             :style="{
-              fill: this.colorAverage,
+              fill: colorAverage,
               'dominant-baseline': 'hanging',
 
               'font-family': 'DM Sans, Avenir, Helvetica, Arial, sans-serif',
@@ -139,7 +139,6 @@
 
 <script>
 import Vue from 'vue';
-
 import {
   scaleBand,
   scaleLinear,

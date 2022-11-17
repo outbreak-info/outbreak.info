@@ -99,19 +99,15 @@
 
 <script>
 import Vue from 'vue';
-
 import { mapState } from 'vuex';
-
-import { timeFormat } from 'd3';
-
-// --- font awesome --
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faClock } from '@fortawesome/free-regular-svg-icons';
-
-library.add(faClock);
+import { timeFormat } from 'd3';
 
 import { getSourcesUpdated } from '@/api/metadata.js';
+
+library.add(faClock);
 
 export default Vue.extend({
   name: 'Latest',

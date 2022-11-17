@@ -151,7 +151,7 @@
                   :isStandalone="false"
                   class="form-control border"
                   :queryFunction="queryPangolin"
-                  :apiUrl="this.$genomicsurl"
+                  :apiUrl="$genomicsurl"
                   :removeOnSelect="true"
                   placeholder="Search PANGO lineage"
                   @selected="updatePangolin"
@@ -203,7 +203,7 @@
                   :isStandalone="false"
                   class="form-control border"
                   :queryFunction="queryLocation"
-                  :apiUrl="this.$genomicsurl"
+                  :apiUrl="$genomicsurl"
                   labelVariable="label"
                   :removeOnSelect="false"
                   placeholder="Select location"
@@ -838,41 +838,29 @@
   </div>
 </template>
 <script>
-// @ is an alias to /src
-// import Vue from "vue";
-import SearchBar from '@/components/SearchBar.vue';
-import CustomReportForm from '@/components/CustomReportForm';
-import TypeaheadSelect from '@/components/TypeaheadSelect';
-
 import Vue from 'vue';
 import { mapState } from 'vuex';
-
-import store from '@/store';
-
-// Example queries
-import RESOURCEEXAMPLES from '@/assets/examples/resources_examples.json';
-import GENOMICSEXAMPLES from '@/assets/examples/genomics_examples.json';
-
-// --- font awesome --
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
-
 import {
   faAngleDoubleRight,
   faSearch,
 } from '@fortawesome/free-solid-svg-icons';
 
 import { findPangolin, findLocation } from '@/api/genomics.js';
+import RESOURCEEXAMPLES from '@/assets/examples/resources_examples.json';
+import GENOMICSEXAMPLES from '@/assets/examples/genomics_examples.json';
+import { lazyLoad } from '@/js/lazy-load';
 
 library.add(faAngleDoubleRight, faSearch);
 
 export default {
   name: 'Home',
   components: {
-    SearchBar,
+    SearchBar: lazyLoad('SearchBar'),
+    CustomReportForm: lazyLoad('CustomReportForm'),
+    TypeaheadSelect: lazyLoad('TypeaheadSelect'),
     FontAwesomeIcon,
-    CustomReportForm,
-    TypeaheadSelect,
   },
   data() {
     return {

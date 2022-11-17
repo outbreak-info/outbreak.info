@@ -92,32 +92,24 @@
 
 <script>
 import Vue from 'vue';
-
-// import ReportLogos from "@/components/ReportLogos.vue";
-import ReportAcknowledgements from '@/components/ReportAcknowledgements.vue';
-
-import CustomLocationForm from '@/components/CustomLocationForm.vue';
-
-import { nest } from 'd3';
-
-// --- font awesome --
+import { mapState } from 'vuex';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faClock } from '@fortawesome/free-regular-svg-icons';
 import { faSpinner, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import { nest } from 'd3';
+
+import { getLocationBasics } from '@/api/genomics.js';
+import { lazyLoad } from '@/js/lazy-load';
 
 library.add(faClock, faSpinner, faInfoCircle);
-
-import { getLocationBasics, getSequenceCount } from '@/api/genomics.js';
-
-import { mapState } from 'vuex';
 
 export default {
   name: 'LocationReports',
   components: {
     // ReportLogos,
-    ReportAcknowledgements,
-    CustomLocationForm,
+    ReportAcknowledgements: lazyLoad('ReportAcknowledgements'),
+    CustomLocationForm: lazyLoad('CustomLocationForm'),
     FontAwesomeIcon,
   },
   data() {

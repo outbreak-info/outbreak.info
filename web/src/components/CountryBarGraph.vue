@@ -61,14 +61,13 @@ import {
 } from 'd3';
 import cloneDeep from 'lodash/cloneDeep';
 
-import store from '@/store';
-
-import { getCountryData } from '@/api/region-summary.js';
-
 // --- font awesome --
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faWindowClose } from '@fortawesome/free-regular-svg-icons';
+
+import { getCountryData } from '@/api/region-summary.js';
+import store from '@/store';
 
 library.add(faWindowClose);
 

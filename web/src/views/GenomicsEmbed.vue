@@ -33,7 +33,7 @@
                 :isStandalone="false"
                 class="form-control border"
                 :queryFunction="queryPangolin"
-                :apiUrl="this.$genomicsurl"
+                :apiUrl="$genomicsurl"
                 :removeOnSelect="true"
                 placeholder="Search PANGO lineage"
                 @selected="updatePangolin"
@@ -108,7 +108,7 @@
                 :isStandalone="false"
                 class="form-control border"
                 :queryFunction="queryLocation"
-                :apiUrl="this.$genomicsurl"
+                :apiUrl="$genomicsurl"
                 labelVariable="label"
                 :removeOnSelect="false"
                 placeholder="Select location"
@@ -258,11 +258,6 @@
 </template>
 
 <script>
-// @ is an alias to /src
-
-import { findPangolin, findLocation } from '@/api/genomics.js';
-
-// --- font awesome --
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import {
@@ -271,28 +266,19 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import isEqual from 'lodash/isEqual';
 
-library.add(faAngleDoubleRight, faSearch);
-
-// Example queries
+import { findPangolin, findLocation } from '@/api/genomics.js';
 import GENOMICSEXAMPLES from '@/assets/examples/genomics_examples.json';
+import { lazyLoad } from '@/js/lazy-load';
+
+library.add(faAngleDoubleRight, faSearch);
 
 export default {
   name: 'GenomicsEmbed',
   components: {
-    TypeaheadSelect: () =>
-      import(/* webpackPrefetch: true */ '@/components/TypeaheadSelect.vue'),
-    SituationReportComponent: () =>
-      import(
-        /* webpackPrefetch: true */ '@/components/SituationReportComponent.vue'
-      ),
-    LocationReportComponent: () =>
-      import(
-        /* webpackPrefetch: true */ '@/components/LocationReportComponent.vue'
-      ),
-    LineageComparisonComponent: () =>
-      import(
-        /* webpackPrefetch: true */ '@/components/LineageComparisonComponent.vue'
-      ),
+    TypeaheadSelect: lazyLoad('TypeaheadSelect'),
+    SituationReportComponent: lazyLoad('SituationReportComponent'),
+    LocationReportComponent: lazyLoad('LocationReportComponent'),
+    LineageComparisonComponent: lazyLoad('LineageComparisonComponent'),
     FontAwesomeIcon,
   },
   props: {
