@@ -292,7 +292,7 @@
           class="lineage-group my-10"
         >
           <template
-            v-if="group.id != 'deescalated' && group.id != 'previous_voc'"
+            v-if="group.id !== 'deescalated' && group.id !== 'previous_voc'"
           >
             <div class="d-flex justify-content-between">
               <h2
@@ -334,7 +334,7 @@
             <template v-if="group.values.length">
               <!-- filter to hide VOCs / VOIs -->
               <div
-                v-if="group.id != 'vum'"
+                v-if="group.id !== 'vum'"
                 class="d-flex flex-wrap align-items-center ml-3 my-3 border-top border-bottom bg-white py-2 justify-content-center"
               >
                 <small class="text-muted mr-2">
@@ -351,7 +351,7 @@
                   >
                   <span>{{ curator.label }}</span>
                   <input
-                    v-if="group.id == 'voc'"
+                    v-if="group.id === 'voc'"
                     :id="curator.label"
                     v-model.lazy="selectedVOC"
                     type="checkbox"
@@ -359,7 +359,7 @@
                     @change="filterVOC()"
                   >
                   <input
-                    v-if="group.id == 'voi'"
+                    v-if="group.id === 'voi'"
                     :id="curator.label"
                     v-model.lazy="selectedVOI"
                     type="checkbox"
@@ -1189,7 +1189,7 @@
                   >
                   <span>outbreak.info</span>
                   <input
-                    v-if="group.id == 'moc'"
+                    v-if="group.id === 'moc'"
                     id="outbreak.info"
                     v-model.lazy="selectedMOC"
                     type="checkbox"
@@ -1197,7 +1197,7 @@
                     @change="filterMOC()"
                   >
                   <input
-                    v-if="group.id == 'moi'"
+                    v-if="group.id === 'moi'"
                     id="outbreak.info"
                     v-model.lazy="selectedMOI"
                     type="checkbox"

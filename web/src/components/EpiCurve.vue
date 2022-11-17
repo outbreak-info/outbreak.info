@@ -136,8 +136,6 @@
 <script>
 import Vue from 'vue';
 
-import { epiDataState$ } from '@/api/epi-traces.js';
-
 import {
   select,
   selectAll,
@@ -158,9 +156,7 @@ import {
   forceY,
   forceSimulation,
   transition,
-  easeLinear,
   line,
-  mouse,
 } from 'd3';
 
 // --- font awesome --
@@ -169,7 +165,7 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import {
   faSearchPlus,
   faCompressArrowsAlt,
-} from '@fortawesome/free-solid-svg-icons/';
+} from '@fortawesome/free-solid-svg-icons';
 
 library.add(faSearchPlus, faCompressArrowsAlt);
 

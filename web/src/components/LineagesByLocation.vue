@@ -120,15 +120,13 @@
 <script>
 import Vue from 'vue';
 
-import uniq from 'lodash/uniq';
-
 // --- font awesome --
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import {
   faSearchPlus,
   faCompressArrowsAlt,
-} from '@fortawesome/free-solid-svg-icons/';
+} from '@fortawesome/free-solid-svg-icons';
 
 library.add(faSearchPlus, faCompressArrowsAlt);
 
