@@ -367,9 +367,7 @@
       >
         <!-- epi group -->
         <div class="text-light px-4 footer-section">
-          <div class="navbar-footer-title">
-            COVID-19 Cases &amp; Deaths
-          </div>
+          <div class="navbar-footer-title">COVID-19 Cases &amp; Deaths</div>
           <ul class="navbar-nav navbar-footer">
             <li class="nav-item px-0 py-1">
               <router-link
@@ -439,9 +437,7 @@
 
         <!-- genomics group -->
         <div class="text-light px-4 footer-section">
-          <div class="navbar-footer-title">
-            Variants
-          </div>
+          <div class="navbar-footer-title">Variants</div>
           <ul class="navbar-nav navbar-footer">
             <li class="nav-item px-0 py-1">
               <router-link
@@ -492,9 +488,7 @@
 
         <!-- resources group -->
         <div class="text-light px-4 footer-section">
-          <div class="navbar-footer-title">
-            Research Library
-          </div>
+          <div class="navbar-footer-title">Research Library</div>
           <ul class="navbar-nav navbar-footer">
             <li class="nav-item px-0 py-1">
               <router-link
@@ -534,9 +528,7 @@
 
         <!-- about group -->
         <div class="text-light px-4 footer-section">
-          <div class="navbar-footer-title">
-            About
-          </div>
+          <div class="navbar-footer-title">About</div>
           <ul class="navbar-nav navbar-footer">
             <li class="nav-item px-0 py-1">
               <router-link
@@ -610,9 +602,7 @@
 
         <!-- contact us group -->
         <div class="text-light px-4 footer-section">
-          <div class="navbar-footer-title">
-            Contact us
-          </div>
+          <div class="navbar-footer-title">Contact us</div>
           <ul class="navbar-nav navbar-footer">
             <li class="nav-item px-0 py-1">
               <a
@@ -644,15 +634,7 @@
 
       <div
         id="terms"
-        class="
-          row
-          m-0
-          bg-main__darker
-          d-flex
-          justify-content-center
-          align-items-center
-          py-1
-        "
+        class="row m-0 bg-main__darker d-flex justify-content-center align-items-center py-1"
       >
         <div class="d-flex text-light xsmall">
           <ul class="m-0">
@@ -678,9 +660,7 @@
               </router-link>
             </li>
             <li class="d-inline m-3">
-              <router-link class="text-light" to="/terms">
-                Terms
-              </router-link>
+              <router-link class="text-light" to="/terms">Terms</router-link>
             </li>
             <li class="d-inline m-3">
               All content copyright
@@ -695,9 +675,7 @@
               &copy;
               <span v-text="year" />
             </li>
-            <li class="d-inline m-3">
-              All rights reserved
-            </li>
+            <li class="d-inline m-3">All rights reserved</li>
           </ul>
         </div>
       </div>
@@ -706,20 +684,13 @@
 </template>
 
 <script>
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faGithub } from '@fortawesome/free-brands-svg-icons/faGithub';
-
 import { lazyLoad } from '@/js/lazy-load';
-
-library.add(faGithub);
 
 export default {
   name: 'App',
   components: {
     Logos: lazyLoad('Logos'),
     EmailSubscription: lazyLoad('EmailSubscription'),
-    FontAwesomeIcon,
   },
   data() {
     return {

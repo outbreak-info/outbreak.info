@@ -39,9 +39,6 @@
 
 <script>
 import Vue from 'vue';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faPlusSquare } from '@fortawesome/free-regular-svg-icons/faPlusSquare';
 import uniq from 'lodash/uniq';
 import debounce from 'lodash/debounce';
 import tippy from 'tippy.js';
@@ -54,13 +51,10 @@ import { lazyLoad } from '@/js/lazy-load';
 
 import 'tippy.js/themes/light.css';
 
-library.add(faPlusSquare);
-
 export default {
   name: 'OverlayLineagePrevalence',
   components: {
     ReportPrevalenceOverlay: lazyLoad('ReportPrevalenceOverlay'),
-    FontAwesomeIcon,
   },
   props: {
     options: Array,

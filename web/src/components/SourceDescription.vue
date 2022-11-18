@@ -3,7 +3,7 @@
     <div
       v-for="source in sources"
       :key="source.id"
-      class="source-container mb-5 "
+      class="source-container mb-5"
     >
       <h5 class="m-0 mb-1 d-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center">
@@ -116,19 +116,9 @@
 
 <script>
 import Vue from 'vue';
-// --- font awesome --
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faClock } from '@fortawesome/free-regular-svg-icons/faClock';
-import { faFile } from '@fortawesome/free-regular-svg-icons/faFile';
-
-library.add(faClock, faFile);
 
 export default Vue.extend({
   name: 'SourceDescription',
-  components: {
-    FontAwesomeIcon,
-  },
   props: {
     sources: Array,
     metadata: Object,

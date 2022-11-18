@@ -60,7 +60,7 @@
           <div
             v-if="
               selectedType &&
-                (selectedType.id === 'pango' || selectedType.id === 'variant')
+              (selectedType.id === 'pango' || selectedType.id === 'variant')
             "
             id="pango"
             class="ml-5"
@@ -109,8 +109,8 @@
           <div
             v-if="
               selectedType &&
-                (selectedType.id === 'mut' ||
-                  (selectedType.id === 'variant' && selectedLineage))
+              (selectedType.id === 'mut' ||
+                (selectedType.id === 'variant' && selectedLineage))
             "
             id="mutation-set"
             class="ml-5"
@@ -129,12 +129,8 @@
                 />
               </div>
               <div v-if="badBulkGene && selectedBulkString" class="warning">
-                <p>
-                  Add the gene before the mutation, like "S:N501Y"
-                </p>
-                <p>
-                  Separate mutations with commas
-                </p>
+                <p>Add the gene before the mutation, like "S:N501Y"</p>
+                <p>Separate mutations with commas</p>
               </div>
               <div v-if="badBulkSubstitution" class="warning">
                 Specify the mutation like "S:N501Y"
@@ -167,8 +163,8 @@
     <div
       v-if="
         !minimalistic &&
-          selectedType &&
-          (selectedType.id === 'mut' || selectedType.id === 'variant')
+        selectedType &&
+        (selectedType.id === 'mut' || selectedType.id === 'variant')
       "
       class="row flex-column d-flex"
     >
@@ -211,24 +207,16 @@
 
 <script>
 import Vue from 'vue';
-// --- font awesome --
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
-import { faTimesCircle } from '@fortawesome/free-regular-svg-icons';
 import debounce from 'lodash/debounce';
 
 import { findPangolin } from '@/api/genomics.js';
 import { lazyLoad } from '@/js/lazy-load';
-
-library.add(faPlus, faTimesCircle);
 
 export default Vue.extend({
   name: 'CustomReportForm',
   components: {
     TypeaheadSelect: lazyLoad('TypeaheadSelect'),
     SARSMutationMap: lazyLoad('SARSMutationMap'),
-    FontAwesomeIcon,
   },
   props: {
     selectedLineage: Object,
@@ -268,9 +256,7 @@ export default Vue.extend({
     title() {
       if (this.selectedLineage) {
         return this.selectedMutations.length
-          ? `${
-              this.selectedLineage.name
-            } lineage with ${this.selectedMutations
+          ? `${this.selectedLineage.name} lineage with ${this.selectedMutations
               .map((d) => d.mutation)
               .join(', ')}`
           : `${this.selectedLineage.name} lineage`;

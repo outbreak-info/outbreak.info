@@ -106,21 +106,14 @@
 
 <script>
 import Vue from 'vue';
-// --- font awesome --
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faClock } from '@fortawesome/free-regular-svg-icons';
 import { timeFormat, timeParse } from 'd3';
 
 import { lazyLoad } from '@/js/lazy-load';
-
-library.add(faClock);
 
 export default Vue.extend({
   name: 'Citation',
   components: {
     StripeAccent: lazyLoad('StripeAccent'),
-    FontAwesomeIcon,
   },
   props: {
     data: Object,

@@ -104,9 +104,7 @@
               }}
             </b>
             :
-            <template v-if="!author.affiliation">
-              N/A
-            </template>
+            <template v-if="!author.affiliation">N/A</template>
             <template v-else-if="Array.isArray(author.affiliation)">
               <span
                 v-for="(affiliation, idx) in author.affiliation"
@@ -261,11 +259,11 @@
       <div
         v-if="
           data.dateModified ||
-            data.dateCreated ||
-            data.dataUpdated ||
-            data.datePublished ||
-            data.curatedBy.curationDate ||
-            data.curatedBy.versionDate
+          data.dateCreated ||
+          data.dataUpdated ||
+          data.datePublished ||
+          data.curatedBy.curationDate ||
+          data.curatedBy.versionDate
         "
         class="text-muted"
       >
@@ -305,8 +303,8 @@
         <span
           v-if="
             data.curatedBy &&
-              data.curatedBy.versionDate &&
-              (data.dateCreated || data.datePublished || data.dateModified)
+            data.curatedBy.versionDate &&
+            (data.dateCreated || data.datePublished || data.dateModified)
           "
           class="mx-1"
         >
@@ -322,11 +320,11 @@
         <span
           v-if="
             data.curatedBy &&
-              data.curatedBy.curationDate &&
-              (data.dateCreated ||
-                data.datePublished ||
-                data.dateModified ||
-                data.curatedBy.versionDate)
+            data.curatedBy.curationDate &&
+            (data.dateCreated ||
+              data.datePublished ||
+              data.dateModified ||
+              data.curatedBy.versionDate)
           "
           class="mx-1"
         >
@@ -455,9 +453,7 @@
       <div v-if="data.description" v-html="data.description" />
       <div v-else-if="data.abstract" v-html="data.abstract" />
       <div v-else>
-        <h6 class="m-0 text-muted">
-          Description
-        </h6>
+        <h6 class="m-0 text-muted">Description</h6>
         <small class="text-muted">not provided</small>
       </div>
     </div>
@@ -467,13 +463,6 @@
 <script>
 import Vue from 'vue';
 import { mapState } from 'vuex';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faClock } from '@fortawesome/free-regular-svg-icons';
-import {
-  faAngleDoubleDown,
-  faAngleDoubleUp,
-} from '@fortawesome/free-solid-svg-icons';
 import { timeFormat, timeParse } from 'd3';
 import tippy from 'tippy.js';
 
@@ -481,14 +470,11 @@ import { lazyLoad } from '@/js/lazy-load';
 
 import 'tippy.js/themes/light.css';
 
-library.add(faClock, faAngleDoubleDown, faAngleDoubleUp);
-
 export default Vue.extend({
   name: 'ResourceDescription',
   components: {
     ClinicalTrialSummary: lazyLoad('ClinicalTrialSummary'),
     Warning: lazyLoad('Warning'),
-    FontAwesomeIcon,
   },
   props: {
     data: Object,

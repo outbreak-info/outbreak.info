@@ -5,9 +5,7 @@
       class="d-flex justify-content-center align-items-top"
     >
       <div class="ml-3 text-left">
-        <h2 class="">
-          Finding research is hard
-        </h2>
+        <h2 class="">Finding research is hard</h2>
         <p>
           During the COVID-19 epidemic, researchers from around the world have
           not only been working around the clock to better understand the
@@ -107,27 +105,15 @@
 </template>
 
 <script>
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faClock } from '@fortawesome/free-regular-svg-icons';
-import {
-  faAngleDoubleRight,
-  faSearch,
-} from '@fortawesome/free-solid-svg-icons';
-
 import { getSourceSummary } from '@/api/resources.js';
 import RESOURCEEXAMPLES from '@/assets/examples/resources_examples.json';
 import { lazyLoad } from '@/js/lazy-load';
-
-library.add(faClock, faAngleDoubleRight, faSearch);
-
 
 export default {
   name: 'ResourceSummary',
   components: {
     WhatsNew: lazyLoad('WhatsNew'),
     CirclePacking: lazyLoad('CirclePacking'),
-    FontAwesomeIcon,
   },
   data() {
     return {

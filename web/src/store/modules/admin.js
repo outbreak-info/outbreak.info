@@ -9,6 +9,28 @@ const state = {
     "<b>Outbreak.info Research Library: A standardized, searchable platform to discover and explore COVID-19 resources</b>. Ginger Tsueng,  Julia Mullen,  Manar Alkuzweny,  Marco Alvarado Cano,  Benjamin Rush, Emily Haag, Outbreak Curators, Alaa Abdel Latif,  Xinghua Zhou, Zhongchao Qian, Kristian G. Andersen,  Chunlei Wu,  Andrew I. Su, Karthik Gangavarapu, Laura D. Hughes. bioRxiv (2022). doi: <a href='https://doi.org/10.1101/2022.01.20.477133' target='_blank'>10.1101/2022.01.20.477133</a>",
   mutationAuthors:
     'Karthik Gangavarapu, Alaa Abdel Latif, Julia Mullen, Manar Alkuzweny, Emory Hufbauer, Ginger Tsueng, Emily Haag, Mark Zeller, Christine M. Aceves, Karina Zaiets, Marco Cano, Jerry Zhou, Zhongchao Qian, Rachel Sattler, Nathaniel L Matteson, Joshua I. Levy, Raphael TC Lee, Lucas Freitas, Sebastian Maurer-Stroh, GISAID core and curation team, Marc A. Suchard, Chunlei Wu, Andrew I. Su, Kristian G. Andersen, Laura D. Hughes, and the Center for Viral Systems Biology',
+    formerTeam: [
+      {
+        name: 'Kaleigh Jaeger',
+        img: 'kaleigh.png',
+      },
+      {
+        name: 'Zhongchao Qian',
+        img: 'zhongchao.jpg',
+      },
+      {
+        name: 'Rachel Sattler',
+        img: 'rachel.jpg',
+      },
+      {
+        name: 'Karina Zaiets',
+        img: 'karina.jpg',
+      },
+      {
+        name: 'Jerry Zhou',
+        img: 'jerry.jpg',
+      },
+    ],
   team: [
     {
       name: 'Chrissy Aceves',
@@ -50,10 +72,6 @@ const state = {
       linkedin: 'https://www.linkedin.com/in/lauradhughes/',
     },
     {
-      name: 'Kaleigh Jaeger',
-      img: 'kaleigh.png',
-    },
-    {
       name: 'Alaa Abdel Latif',
       img: 'alaa.jpg',
     },
@@ -66,12 +84,8 @@ const state = {
       img: 'julia.jpg',
     },
     {
-      name: 'Zhongchao Qian',
-      img: 'zhongchao.jpg',
-    },
-    {
-      name: 'Rachel Sattler',
-      img: 'rachel.jpg',
+      name: 'Everaldo Rodolpho',
+      img: 'everaldo.jpg',
     },
     {
       name: 'Andrew Su',
@@ -94,14 +108,6 @@ const state = {
     {
       name: 'Mark Zeller',
       img: 'mark.jpg',
-    },
-    {
-      name: 'Karina Zaiets',
-      img: 'karina.jpg',
-    },
-    {
-      name: 'Jerry Zhou',
-      img: 'jerry.jpg',
     },
   ],
   funding: [

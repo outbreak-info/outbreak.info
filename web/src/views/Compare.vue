@@ -157,24 +157,17 @@
       </table>
     </div>
 
-    <div v-else class="mt-5">
-      No similar locations found
-    </div>
+    <div v-else class="mt-5">No similar locations found</div>
   </div>
 </template>
 
 <script>
 import Vue from 'vue';
 import { mapState } from 'vuex';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { format, scaleOrdinal } from 'd3';
 
 import { findSimilar } from '@/api/find-similar.js';
 import { lazyLoad } from '@/js/lazy-load';
-
-library.add(faSpinner);
 
 export default Vue.extend({
   name: 'Compare',
@@ -182,7 +175,6 @@ export default Vue.extend({
     MiniLocation: lazyLoad('MiniLocation'),
     LineComparison: lazyLoad('LineComparison'),
     SearchBar: lazyLoad('SearchBar'),
-    FontAwesomeIcon,
   },
   props: {
     location: String,

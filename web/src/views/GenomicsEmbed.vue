@@ -46,24 +46,36 @@
           >
             <span class="mr-2">Try:</span>
 
-            <span class="mr-3" v-for='(example, gIdx) in genomicsExamples' :key='gIdx'>
-            <template v-if="example.who_name">
-              <router-link
-                :to="{ name: 'GenomicsEmbed', query: { alias: example.who_name, type: 'var' } }"
-                class="text-light"
-              >{{example.short_name}}
-                <font-awesome-icon :icon="['fas', 'angle-double-right']" />
-              </router-link>
-            </template>
-            <template v-else>
-              <router-link
-                :to="{ name: 'GenomicsEmbed', query: { pango: example.pangolin_lineage, type: 'var' } }"
-                class="text-light"
-              >{{example.short_name}}
-                <font-awesome-icon :icon="['fas', 'angle-double-right']" />
-              </router-link>
-            </template>
-          </span>
+            <span
+              class="mr-3"
+              v-for="(example, gIdx) in genomicsExamples"
+              :key="gIdx"
+            >
+              <template v-if="example.who_name">
+                <router-link
+                  :to="{
+                    name: 'GenomicsEmbed',
+                    query: { alias: example.who_name, type: 'var' },
+                  }"
+                  class="text-light"
+                >
+                  {{ example.short_name }}
+                  <font-awesome-icon :icon="['fas', 'angle-double-right']" />
+                </router-link>
+              </template>
+              <template v-else>
+                <router-link
+                  :to="{
+                    name: 'GenomicsEmbed',
+                    query: { pango: example.pangolin_lineage, type: 'var' },
+                  }"
+                  class="text-light"
+                >
+                  {{ example.short_name }}
+                  <font-awesome-icon :icon="['fas', 'angle-double-right']" />
+                </router-link>
+              </template>
+            </span>
           </small>
         </div>
       </div>
@@ -258,19 +270,11 @@
 </template>
 
 <script>
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import {
-  faAngleDoubleRight,
-  faSearch,
-} from '@fortawesome/free-solid-svg-icons';
 import isEqual from 'lodash/isEqual';
 
 import { findPangolin, findLocation } from '@/api/genomics.js';
 import GENOMICSEXAMPLES from '@/assets/examples/genomics_examples.json';
 import { lazyLoad } from '@/js/lazy-load';
-
-library.add(faAngleDoubleRight, faSearch);
 
 export default {
   name: 'GenomicsEmbed',
@@ -279,7 +283,6 @@ export default {
     SituationReportComponent: lazyLoad('SituationReportComponent'),
     LocationReportComponent: lazyLoad('LocationReportComponent'),
     LineageComparisonComponent: lazyLoad('LineageComparisonComponent'),
-    FontAwesomeIcon,
   },
   props: {
     type: String,
@@ -306,7 +309,7 @@ export default {
   },
   computed: {},
   watch: {
-    '$route.query': function(newVal, oldVal) {
+    '$route.query': function (newVal, oldVal) {
       if (!isEqual(newVal, oldVal)) {
         this.selectedReportType = this.type ? this.type : 'var';
       }

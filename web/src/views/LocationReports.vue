@@ -1,12 +1,8 @@
 <template>
   <div>
     <div class="py-4 border-top location-banner">
-      <h1 class="m-0 text-grey">
-        SARS-CoV-2 (hCoV-19) Mutation Reports
-      </h1>
-      <h2 class="m-0 font-weight-bold location-header">
-        Location Tracker
-      </h2>
+      <h1 class="m-0 text-grey">SARS-CoV-2 (hCoV-19) Mutation Reports</h1>
+      <h2 class="m-0 font-weight-bold location-header">Location Tracker</h2>
     </div>
     <div class="my-2 mx-4 px-4">
       <!-- LOADING -->
@@ -93,16 +89,10 @@
 <script>
 import Vue from 'vue';
 import { mapState } from 'vuex';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faClock } from '@fortawesome/free-regular-svg-icons';
-import { faSpinner, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { nest } from 'd3';
 
 import { getLocationBasics } from '@/api/genomics.js';
 import { lazyLoad } from '@/js/lazy-load';
-
-library.add(faClock, faSpinner, faInfoCircle);
 
 export default {
   name: 'LocationReports',
@@ -110,7 +100,6 @@ export default {
     // ReportLogos,
     ReportAcknowledgements: lazyLoad('ReportAcknowledgements'),
     CustomLocationForm: lazyLoad('CustomLocationForm'),
-    FontAwesomeIcon,
   },
   data() {
     return {

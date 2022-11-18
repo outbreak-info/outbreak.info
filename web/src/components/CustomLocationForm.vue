@@ -85,22 +85,16 @@
 
 <script>
 import Vue from 'vue';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faSearch, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import uniq from 'lodash/uniq';
 
 import { findLocation } from '@/api/genomics.js';
 import { lazyLoad } from '@/js/lazy-load';
-
-library.add(faSearch, faTimesCircle);
 
 export default {
   name: 'CustomLocationForm',
   components: {
     TypeaheadSelect: lazyLoad('TypeaheadSelect'),
     // VariantForm,
-    FontAwesomeIcon,
   },
   props: {
     curated: Array,

@@ -182,9 +182,7 @@
                 },
               }"
             >
-              <h6 class="text-dark">
-                new cases per day
-              </h6>
+              <h6 class="text-dark">new cases per day</h6>
               <Bargraph
                 :id="'glance_' + idx"
                 :data="data.longitudinal"
@@ -210,9 +208,7 @@
                 },
               }"
             >
-              <h6 class="text-dark">
-                new deaths per day
-              </h6>
+              <h6 class="text-dark">new deaths per day</h6>
               <Bargraph
                 :id="'glance2_' + idx"
                 :data="data.longitudinal"
@@ -262,9 +258,7 @@
             </div>
           </div>
 
-          <small v-else class="text-muted">
-            No known sequencing
-          </small>
+          <small v-else class="text-muted">No known sequencing</small>
         </div>
       </router-link>
     </div>
@@ -282,22 +276,15 @@
 
 <script>
 import Vue from 'vue';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faArrowUp } from '@fortawesome/free-solid-svg-icons';
-import { faTrashAlt } from '@fortawesome/free-regular-svg-icons';
 import { format } from 'd3';
 
 import { lazyLoad } from '@/js/lazy-load';
-
-library.add(faArrowUp, faTrashAlt);
 
 export default Vue.extend({
   name: 'GlanceSummary',
   components: {
     Sparkline: lazyLoad('Sparkline'),
     Bargraph: lazyLoad('Bargraph'),
-    FontAwesomeIcon,
   },
   props: {
     data: Object,

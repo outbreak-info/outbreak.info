@@ -21,7 +21,7 @@
     >
       <div
         class="text-center m-auto p-2 bg-grey__lightest"
-        style="max-width:700px;"
+        style="max-width: 700px"
       >
         <label class="b-contain m-auto">
           <span>show more than {{ lengthThreshold }} curves</span>
@@ -30,15 +30,15 @@
         </label>
       </div>
 
-      <div style="max-width:700px;" class="m-auto">
+      <div style="max-width: 700px" class="m-auto">
         <Warning
           v-if="!showAll"
           :animate="true"
           class="mt-2"
           :text="
             'You have selected a lot of places. Showing the top ' +
-              lengthThreshold +
-              ' with the highest current case counts'
+            lengthThreshold +
+            ' with the highest current case counts'
           "
         />
       </div>
@@ -47,7 +47,7 @@
     <!-- fixed y selector for small multiple bar graphs -->
     <div
       class="text-center m-auto p-2 bg-grey__lightest d-flex"
-      style="max-width:700px;"
+      style="max-width: 700px"
     >
       <label v-if="variableObj.percapita !== false" class="b-contain m-auto">
         <span>normalize to population</span>
@@ -127,26 +127,26 @@
           class="w-100 px-3 d-flex justify-content-center flex-wrap"
         >
           <Bargraph
-              v-for="(countryData, idx) in data$[0]"
-              :key="idx"
-              class="mr-3 mb-3"
-              :data="countryData.value"
-              :title="countryData.value[0].name"
-              :variableObj="variableObj"
-              :includeAxis="true"
-              :width="bargraphWidth"
-              :height="bargraphHeight"
-              :transformChart="bargraphTransform"
-              :tooltipIdx="'n-' + idx"
-              :includeTooltips="true"
-              :location="location"
-              :log="isLogY"
-              :percapita="isPerCapita"
-              :xVariableLim="xLim"
-              :fixedYMax="yMax"
-              :animate="true"
-              :id="String(idx)"
-              :color="colorScale(countryData.key)"
+            v-for="(countryData, idx) in data$[0]"
+            :key="idx"
+            class="mr-3 mb-3"
+            :data="countryData.value"
+            :title="countryData.value[0].name"
+            :variableObj="variableObj"
+            :includeAxis="true"
+            :width="bargraphWidth"
+            :height="bargraphHeight"
+            :transformChart="bargraphTransform"
+            :tooltipIdx="'n-' + idx"
+            :includeTooltips="true"
+            :location="location"
+            :log="isLogY"
+            :percapita="isPerCapita"
+            :xVariableLim="xLim"
+            :fixedYMax="yMax"
+            :animate="true"
+            :id="String(idx)"
+            :color="colorScale(countryData.key)"
           />
         </div>
 
@@ -248,9 +248,6 @@
 
 <script>
 import { mapState } from 'vuex';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { extent, max } from 'd3';
 
 import {
@@ -262,8 +259,6 @@ import { getLocation, processLocation } from '@/js/get-location.js';
 import { lazyLoad } from '@/js/lazy-load';
 import store from '@/store';
 
-library.add(faSpinner);
-
 export default {
   name: 'Epidemiology',
   components: {
@@ -273,7 +268,6 @@ export default {
     Bargraph: lazyLoad('Bargraph'),
     EpiTable: lazyLoad('EpiTable'),
     Autocomplete: lazyLoad('Autocomplete'),
-    FontAwesomeIcon,
   },
   props: {
     variable: {
@@ -510,7 +504,7 @@ export default {
   },
   mounted() {
     this.setLocation(this.location);
-    this.$nextTick(function() {
+    this.$nextTick(function () {
       window.addEventListener('resize', this.setDims);
       // set initial dimensions for the stacked area plots.
       this.setDims();

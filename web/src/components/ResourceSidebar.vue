@@ -193,9 +193,7 @@
       <span class="sidebar-header">Share</span>
       <div class="d-flex flex-wrap justify-content-center mt-1">
         <a
-          :href="
-            `https://twitter.com/intent/tweet?url=${outbreakUrl}&hashtags=covid-19,outbreak.info`
-          "
+          :href="`https://twitter.com/intent/tweet?url=${outbreakUrl}&hashtags=covid-19,outbreak.info`"
           target="_blank"
           rel="noreferrer"
           class="twitter-share-button"
@@ -225,21 +223,11 @@
 </template>
 
 <script>
-// --- font awesome --
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faLink, faShare, faEnvelope } from '@fortawesome/free-solid-svg-icons';
-import { faTwitter } from '@fortawesome/free-brands-svg-icons';
-
 import { formatRIS } from '@/js/citationConverter.js';
-
-library.add(faLink, faShare, faEnvelope, faTwitter);
 
 export default {
   name: 'ResourceSidebar',
-  components: {
-    FontAwesomeIcon,
-  },
+  components: {},
   props: {
     data: Object,
     type: String,

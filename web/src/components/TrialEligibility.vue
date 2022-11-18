@@ -56,9 +56,7 @@
 
     <!-- inclusionCriteria -->
     <div id="inclusion-eligiblity" class="mt-2">
-      <div class="orange-title uppercase">
-        Inclusion Criteria
-      </div>
+      <div class="orange-title uppercase">Inclusion Criteria</div>
       <div v-if="data.inclusionCriteria && data.inclusionCriteria.length">
         <ul class="text-dark">
           <li v-for="(criterion, idx) in data.inclusionCriteria" :key="idx">
@@ -73,9 +71,7 @@
 
     <!-- exclusionCriteria -->
     <div id="exclusion-eligiblity" class="mt-2">
-      <div class="orange-title uppercase">
-        Exclusion Criteria
-      </div>
+      <div class="orange-title uppercase">Exclusion Criteria</div>
       <div v-if="data.exclusionCriteria && data.exclusionCriteria.length">
         <ul class="text-dark">
           <li v-for="(criterion, idx) in data.exclusionCriteria" :key="idx">
@@ -114,34 +110,9 @@
 </template>
 
 <script>
-// import SearchLink from "@/components/SearchLink";
-//
-// // --- font awesome --
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import {
-  faVenus,
-  faMars,
-  faAngleDoubleDown,
-  faAngleDoubleUp,
-} from '@fortawesome/free-solid-svg-icons';
-import { faCheckSquare, faSquare } from '@fortawesome/free-regular-svg-icons';
-
-library.add(
-  faCheckSquare,
-  faSquare,
-  faVenus,
-  faMars,
-  faAngleDoubleDown,
-  faAngleDoubleUp,
-);
-
 export default {
   name: 'TrialEligibility',
-  components: {
-    FontAwesomeIcon,
-    // SearchLink
-  },
+  components: {},
   props: {
     data: Object,
   },

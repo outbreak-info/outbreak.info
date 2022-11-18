@@ -3,7 +3,7 @@
     <div class="row m-0">
       <div
         class="col-sm-12 bg-light d-flex justify-content-center align-items-center my-5"
-        style="min-height: 70vh;"
+        style="min-height: 70vh"
       >
         <div class="container half-page">
           <h1>About</h1>
@@ -25,7 +25,7 @@
             aggregates data across scientific sources, providing tools to meet
             three major aims:
           </p>
-          <ul class="focustext text-left ">
+          <ul class="focustext text-left">
             <li class="large">
               Track daily developments in SARS-CoV-2 variants
             </li>
@@ -34,15 +34,11 @@
               protocols, and other resources into one searchable library of
               COVID-19 research
             </li>
-            <li class="large">
-              Track trends in COVID-19 cases and deaths
-            </li>
+            <li class="large">Track trends in COVID-19 cases and deaths</li>
           </ul>
           <div class="text-left focustext ml-4">
             <router-link :to="{ name: 'SituationReports' }">
-              <h4 class="mb-0">
-                SARS-CoV-2 Variants
-              </h4>
+              <h4 class="mb-0">SARS-CoV-2 Variants</h4>
             </router-link>
             <p>
               Outbreak.info collects and visualizes genomic data from the
@@ -56,9 +52,7 @@
             </p>
 
             <router-link :to="{ name: 'Resource Summary' }">
-              <h4 class="mb-0">
-                Research Library
-              </h4>
+              <h4 class="mb-0">Research Library</h4>
             </router-link>
             <p>
               Outbreak.info aggregates SARS-CoV-2 and COVID-19 information into
@@ -69,9 +63,7 @@
             </p>
 
             <router-link :to="{ name: 'Epidemiology' }">
-              <h4 class="mb-0">
-                COVID-19 Cases &amp; Deaths
-              </h4>
+              <h4 class="mb-0">COVID-19 Cases &amp; Deaths</h4>
             </router-link>
             <p>
               Outbreak.info serves as a data integration tool to make COVID-19
@@ -148,9 +140,7 @@
         <div
           class="bg-light d-flex flex-column justify-content-center align-items-center w-75 border-top py-5"
         >
-          <h4 class="mb-4">
-            Outbreak.info team
-          </h4>
+          <h4 class="mb-4">Outbreak.info team</h4>
           <div class="d-flex flex-wrap">
             <div
               v-for="(person, idx) in team"
@@ -193,11 +183,27 @@
         </div>
       </div>
 
+      <!-- FORMER TEAM -->
+      <div class="bg-light d-flex justify-content-center align-items-center w-100">
+        <div
+          class="bg-light d-flex flex-column justify-content-center align-items-center w-75 border-top py-5"
+        >
+          <h5 class="mb-4">Former team members</h5>
+          <div class="d-flex flex-wrap">
+            <div
+              v-for="(person, idx) in formerTeam"
+              :key="idx"
+              class="team-member d-flex flex-column align-items-center mx-5 my-3"
+            >
+              <span class="mt-1">{{ person.name }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="bg-light d-flex justify-content-center align-items-center">
         <div id="jobs" class="bg-light border-top pt-3 pb-5">
-          <h4 class="mb-4">
-            Open positions
-          </h4>
+          <h4 class="mb-4">Open positions</h4>
           <Jobs />
         </div>
       </div>
@@ -237,24 +243,16 @@
 <script>
 import Vue from 'vue';
 import { mapState } from 'vuex';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faClock } from '@fortawesome/free-regular-svg-icons';
-import { faAt } from '@fortawesome/free-solid-svg-icons';
-import { faTwitter, faLinkedinIn } from '@fortawesome/free-brands-svg-icons';
 
 import { getResourceTotal } from '@/api/resources.js';
 import { getSequenceCount } from '@/api/genomics.js';
 import { lazyLoad } from '@/js/lazy-load';
-
-library.add(faAt, faTwitter, faLinkedinIn);
 
 export default Vue.extend({
   name: 'About',
   components: {
     Jobs: lazyLoad('Jobs'),
     EmailSubscription: lazyLoad('EmailSubscription'),
-    FontAwesomeIcon,
   },
   data() {
     return {
@@ -265,7 +263,7 @@ export default Vue.extend({
     };
   },
   computed: {
-    ...mapState('admin', ['funding', 'team']),
+    ...mapState('admin', ['funding', 'team', 'formerTeam']),
   },
   mounted() {
     let twitterScript = document.createElement('script');

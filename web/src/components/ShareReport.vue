@@ -54,46 +54,16 @@
       <font-awesome-icon class="share-link ml-3" :icon="['fas', 'link']" />
     </a>
 
-    <p :class="{ snackbar: true, show: showSnackbar }">
-      copied to clipboard
-    </p>
+    <p :class="{ snackbar: true, show: showSnackbar }">copied to clipboard</p>
   </div>
 </template>
 
 <script>
 import Vue from 'vue';
-// --- font awesome --
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faClock } from '@fortawesome/free-regular-svg-icons';
-import {
-  faLink,
-  faShare,
-  faEnvelope,
-  faSync,
-} from '@fortawesome/free-solid-svg-icons';
-import {
-  faTwitter,
-  faFacebookF,
-  faRedditAlien,
-  faLinkedinIn,
-} from '@fortawesome/free-brands-svg-icons';
-
-library.add(
-  faLink,
-  faShare,
-  faEnvelope,
-  faTwitter,
-  faFacebookF,
-  faRedditAlien,
-  faLinkedinIn,
-);
 
 export default Vue.extend({
   name: 'ShareReport',
-  components: {
-    FontAwesomeIcon,
-  },
+  components: {},
   props: {
     title: String,
     url: String,

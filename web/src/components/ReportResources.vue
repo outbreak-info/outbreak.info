@@ -90,36 +90,12 @@
 
 <script>
 import Vue from 'vue';
-// --- font awesome --
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import {
-  faArrowLeft,
-  faArrowRight,
-  faSpinner,
-  faSearch,
-  faInfoCircle,
-  faChevronUp,
-  faChevronDown,
-} from '@fortawesome/free-solid-svg-icons';
 
 import { getLineageResources } from '@/api/genomics.js';
 
-library.add(
-  faArrowLeft,
-  faArrowRight,
-  faSpinner,
-  faSearch,
-  faInfoCircle,
-  faChevronUp,
-  faChevronDown,
-);
-
 export default Vue.extend({
   name: 'ReportResources',
-  components: {
-    FontAwesomeIcon,
-  },
+  components: {},
   props: {
     mutationName: String,
     searchTerms: Array,

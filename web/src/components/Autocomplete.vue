@@ -1,5 +1,5 @@
 <template>
-  <div class="autocomplete" style="background:white;">
+  <div class="autocomplete" style="background: white">
     <div
       :content="selected"
       class="autocomplete-input flex-column user-input-wrp"
@@ -43,9 +43,7 @@
     </div>
 
     <ul v-show="isOpen" id="autocomplete-results" class="autocomplete-results">
-      <li v-if="isLoading" class="loading">
-        Loading results...
-      </li>
+      <li v-if="isLoading" class="loading">Loading results...</li>
       <li
         v-for="(result, i) in results"
         v-else
@@ -62,24 +60,14 @@
 
 <script>
 import Vue from 'vue';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import {
-  faTimesCircle,
-  faPlusSquare,
-} from '@fortawesome/free-regular-svg-icons';
 import debounce from 'lodash/debounce';
 
 import { findEpiLocation, lookupEpiLocations } from '@/api/epi-basics.js';
 import store from '@/store';
 
-library.add(faTimesCircle, faPlusSquare);
-
 export default Vue.extend({
   name: 'Autocomplete',
-  components: {
-    FontAwesomeIcon,
-  },
+  components: {},
   props: {
     selected: {
       type: Array,

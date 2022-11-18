@@ -64,38 +64,9 @@
 <script>
 import Vue from 'vue';
 
-// --- font awesome --
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import {
-  faPills,
-  faDna,
-  faVirus,
-  faMortarPestle,
-  faNotesMedical,
-  faTabletAlt,
-  faVial,
-  faCapsules,
-  faUserNurse,
-  faRadiation,
-} from '@fortawesome/free-solid-svg-icons';
-
-library.add(
-  faPills,
-  faDna,
-  faVirus,
-  faMortarPestle,
-  faNotesMedical,
-  faTabletAlt,
-  faVial,
-  faCapsules,
-  faUserNurse,
-  faRadiation,
-);
-
 export default Vue.extend({
   name: 'TrialType',
-  components: { FontAwesomeIcon },
+  components: {},
   props: {
     design: Object,
     arms: Array,
