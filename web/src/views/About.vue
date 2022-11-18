@@ -183,6 +183,24 @@
         </div>
       </div>
 
+      <!-- FORMER TEAM -->
+      <div class="bg-light d-flex justify-content-center align-items-center w-100">
+        <div
+          class="bg-light d-flex flex-column justify-content-center align-items-center w-75 border-top py-5"
+        >
+          <h5 class="mb-4">Former team members</h5>
+          <div class="d-flex flex-wrap">
+            <div
+              v-for="(person, idx) in formerTeam"
+              :key="idx"
+              class="team-member d-flex flex-column align-items-center mx-5 my-3"
+            >
+              <span class="mt-1">{{ person.name }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="bg-light d-flex justify-content-center align-items-center">
         <div id="jobs" class="bg-light border-top pt-3 pb-5">
           <h4 class="mb-4">Open positions</h4>
@@ -245,7 +263,7 @@ export default Vue.extend({
     };
   },
   computed: {
-    ...mapState('admin', ['funding', 'team']),
+    ...mapState('admin', ['funding', 'team', 'formerTeam']),
   },
   mounted() {
     let twitterScript = document.createElement('script');
