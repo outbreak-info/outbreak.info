@@ -83,25 +83,6 @@ export default Vue.extend({
             'We are looking for <strong>Front-end Developers</strong> to build interfaces to explore, visualize, and analyze biomedical data, including current data from the ongoing COVID-19 pandemic. Current projects include <a href="https://outbreak.info" target="_blank" rel="noopener">outbreak.info</a> and the <a href="http://data.cvisb.org/" target="_blank" rel="noopener">Center for Viral Systems Biology Data Portal</a>.',
           ],
         },
-        {
-          title: 'Security Engineer',
-          contact: 'lhughes@scripps.edu',
-          url: 'https://bit.ly/scrippssecurity',
-          qualifications: 'BSc or equivalent',
-          content: [
-            'We are looking for a <strong>Security Engineer</strong> to improve the performance and security of our tools. Current projects include <a href="https://outbreak.info" target="_blank" rel="noopener">outbreak.info</a>, <a href="http://biothings.io" target="_blank" rel="noopener">BioThings API</a>, and the <a href="http://data.cvisb.org/" target="_blank" rel="noopener">Center for Viral Systems Biology Data Portal</a>.',
-          ],
-        },
-        {
-          title: 'Research Programmer',
-          contact: 'gkarthik@scripps.edu',
-          url:
-            'https://www.scripps.edu/careers/?gnk=job&amp;gni=8a78879f7823d1090178240894ba01f1',
-          qualifications: 'BSc or equivalent',
-          content: [
-            'We are looking for a <strong>Research Programmer</strong> to build tools and analysis pipelines to process viral sequencing data including current data from the ongoing COVID-19 pandemic. Current tools and pipelines, including <a href="https://github.com/andersen-lab/ivar" target="_blank" rel="noopener">iVar</a> and <a href="https://outbreak.info" target="_blank" rel="noopener">outbreak.info</a>, can be seen on our <a href="https://github.com/andersen-lab/" target="_blank" rel="noopener">Github account</a>.',
-          ],
-        },
       ],
     };
   },
