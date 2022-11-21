@@ -2192,6 +2192,7 @@
       - BV.1
       - BV.2
       - BW.1
+      - BW.1.1
       - BY.1
       - BY.1.1
       - BY.1.1.1
@@ -4311,6 +4312,7 @@
       - BV.1
       - BV.2
       - BW.1
+      - BW.1.1
       - BY.1
       - BY.1.1
       - BY.1.1.1
@@ -5492,6 +5494,7 @@
       - BV.1
       - BV.2
       - BW.1
+      - BW.1.1
       - BY.1
       - BY.1.1
       - BY.1.1.1
@@ -9190,6 +9193,7 @@
       - BV.1
       - BV.2
       - BW.1
+      - BW.1.1
       - BY.1
       - BY.1.1
       - BY.1.1.1
@@ -11806,6 +11810,7 @@
       - BV.1
       - BV.2
       - BW.1
+      - BW.1.1
       - BZ.1
       - CC.1
       - CD.1
@@ -13997,6 +14002,7 @@
       - BA.5.6.3
       - BA.5.6.4
       - BW.1
+      - BW.1.1
   parent: BA.5
 - name: BA.5.6.1
   alias: B.1.1.529.5.6.1
@@ -14008,6 +14014,7 @@
   children:
       - BA.5.6.2
       - BW.1
+      - BW.1.1
   parent: BA.5.6
 - name: BA.5.6.3
   alias: B.1.1.529.5.6.3
@@ -14023,7 +14030,13 @@
   alias: B.1.1.529.5.6.2.1
   children:
       - BW.1
+      - BW.1.1
   parent: BA.5.6.2
+- name: BW.1.1
+  alias: B.1.1.529.5.6.2.1.1
+  children:
+      - BW.1.1
+  parent: BW.1
 - name: BA.5.7
   alias: B.1.1.529.5.7
   children:
