@@ -2324,6 +2324,8 @@
       - DF.1
       - DG.1
       - DH.1
+      - DJ.1
+      - DJ.1.1
       - G.1
       - K.1
       - K.2
@@ -4447,6 +4449,8 @@
       - DF.1
       - DG.1
       - DH.1
+      - DJ.1
+      - DJ.1.1
       - G.1
       - K.1
       - K.2
@@ -5632,6 +5636,8 @@
       - DF.1
       - DG.1
       - DH.1
+      - DJ.1
+      - DJ.1.1
       - K.1
       - K.2
       - K.3
@@ -9283,6 +9289,8 @@
       - DF.1
       - DG.1
       - DH.1
+      - DJ.1
+      - DJ.1.1
   parent: B.1.1
 - name: BA.1
   alias: B.1.1.529.1
@@ -11885,6 +11893,8 @@
       - DF.1
       - DG.1
       - DH.1
+      - DJ.1
+      - DJ.1.1
   parent: B.1.1.529
 - name: BA.5.1
   alias: B.1.1.529.5.1
@@ -11929,6 +11939,8 @@
       - DE.1
       - DE.2
       - DH.1
+      - DJ.1
+      - DJ.1.1
   parent: BA.5
 - name: BA.5.1.1
   alias: B.1.1.529.5.1.1
@@ -12090,7 +12102,20 @@
   alias: B.1.1.529.5.1.25
   children:
       - BA.5.1.25
+      - DJ.1
+      - DJ.1.1
   parent: BA.5.1
+- name: DJ.1
+  alias: B.1.1.529.5.1.25.1
+  children:
+      - DJ.1
+      - DJ.1.1
+  parent: BA.5.1.25
+- name: DJ.1.1
+  alias: B.1.1.529.5.1.25.1.1
+  children:
+      - DJ.1.1
+  parent: DJ.1
 - name: BA.5.1.26
   alias: B.1.1.529.5.1.26
   children:
