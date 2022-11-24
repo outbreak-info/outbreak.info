@@ -342,7 +342,7 @@ export default Vue.extend({
       this.setXScale();
     },
     getMinDate(date) {
-      const beforeDate = getBeforeDate(date, -this.month);
+      const beforeDate = getBeforeDate(date, this.month);
       const minDateItem = this.data.filter(
         (d) =>
           d[this.xVariable].getMonth() === beforeDate.getMonth() &&
