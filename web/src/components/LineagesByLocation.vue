@@ -7,9 +7,9 @@
       <h5 class="m-0">
         {{ plotTitle }}
       </h5>
-      <div class="d-flex justify-content-end">
+      <div class="d-flex justify-content-end align-items-center">
         <button
-          class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2"
+          class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2 mr-2"
           @click="enableZoom"
         >
           <font-awesome-icon
@@ -18,11 +18,30 @@
           />
         </button>
         <button
-          class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2"
+          class="btn btn-accent-outline timeline-btn m-0 px-2 py-1 mr-2"
+          @click="changeXScale(3)"
+        >
+          3 months
+        </button>
+        <button
+          class="btn btn-accent-outline timeline-btn m-0 px-2 py-1 mr-2"
+          @click="changeXScale(6)"
+        >
+          6 months
+        </button>
+        <button
+          class="btn btn-accent-outline timeline-btn m-0 px-2 py-1 mr-2"
+          @click="changeXScale(12)"
+        >
+          1 year
+        </button>
+        <button
+          class="btn btn-accent-outline timeline-btn text-highlight d-flex align-items-center m-0 px-2 py-1"
           @click="resetZoom"
         >
+          all time
           <font-awesome-icon
-            class="text-right"
+            class="text-right ml-1"
             :icon="['fas', 'compress-arrows-alt']"
           />
         </button>
@@ -144,6 +163,7 @@ import {
 import cloneDeep from 'lodash/cloneDeep';
 
 import { lazyLoad } from '@/js/lazy-load';
+import { getBeforeDate } from '@/js/get-date';
 
 export default Vue.extend({
   name: 'LineagesByLocation',
@@ -225,6 +245,7 @@ export default Vue.extend({
       brushRef: null,
       // controls
       zoomAllowed: false,
+      month: 6,
     };
   },
   computed: {
@@ -320,16 +341,37 @@ export default Vue.extend({
 
       this.setXScale();
     },
+    getMinDate(date) {
+      const beforeDate = getBeforeDate(date, -this.month);
+      const minDateItem = this.data.filter(
+        (d) =>
+          d[this.xVariable].getMonth() === beforeDate.getMonth() &&
+          d[this.xVariable].getFullYear() === beforeDate.getFullYear() &&
+          d[this.xVariable].getDate() === beforeDate.getDate(),
+      );
+      if (minDateItem.length > 0) {
+        return minDateItem[0][this.xVariable];
+      }
+    },
+    changeXScale(month) {
+      this.month = month;
+      this.setXScale();
+      this.updatePlot();
+    },
     setXScale() {
       let xDomain;
-
       if (this.xMin && this.xMax && this.xMin < this.xMax) {
         xDomain = [this.xMin, this.xMax];
       } else {
         if (this.includeToday) {
           const today = new Date();
           this.maxDate = max(this.data, (d) => d[this.xVariable]);
-          xDomain = [min(this.data, (d) => d[this.xVariable]), today];
+          xDomain = [
+            this.month === 0
+              ? min(this.data, (d) => d[this.xVariable])
+              : this.getMinDate(new Date()),
+            today,
+          ];
         } else {
           xDomain = extent(this.data.map((d) => d[this.xVariable]));
         }
@@ -554,6 +596,7 @@ export default Vue.extend({
 
       this.xMin = null;
       this.xMax = null;
+      this.month = 0;
       this.setXScale();
 
       if (this.routeName === 'MutationReport') {
@@ -843,5 +886,10 @@ export default Vue.extend({
   .stream-axis.axis--y text {
     font-size: 14pt;
   }
+}
+.timeline-btn {
+  font-size: 0.75em;
+  height: 30px;
+  text-transform: lowercase !important;
 }
 </style>
