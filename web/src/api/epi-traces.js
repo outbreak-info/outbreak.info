@@ -42,7 +42,6 @@ export const getWorldDailyCases = (
   apiUrl,
   fields = 'wb_region,confirmed_numIncrease, confirmed_rolling, date, dead_numIncrease, dead_rolling',
 ) => {
-  store.state.admin.loading = true;
   const parseDate = timeParse('%Y-%m-%d');
 
   const queryString = `admin_level:"-1"&sort=date&fields=${fields}&size=1000`;

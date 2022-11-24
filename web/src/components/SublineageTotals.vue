@@ -73,13 +73,16 @@
 
     <div class="d-flex align-items-center mt-3">
       <button
-        v-if="areZerosFiltered || (!areZerosFiltered && !hideZeros)"
         id="zeros-filtered"
         class="btn btn-main-outline m-0 btn-sublineages mr-3"
         @click="showZeros"
       >
-        <small>
+        <small v-if="showZero">
           {{ hideZeros ? 'show' : 'hide' }} lineages with zero sequences
+        </small>
+
+        <small v-else>
+          {{ showAll ? 'show top 10 lineages' : 'show all lineages' }}
         </small>
       </button>
 
@@ -175,6 +178,8 @@ export default Vue.extend({
       y: null,
       combinedTotal: null,
       yAxis: null,
+      showAll: false,
+      showZero: false,
     };
   },
   computed: {
@@ -247,6 +252,14 @@ export default Vue.extend({
       this.processedData.sort((a, b) => {
         return b.lineage_count - a.lineage_count;
       });
+
+      if (this.processedData.length > 10) {
+        if (!this.showAll) {
+          this.processedData = this.processedData.slice(0, 10);
+        }
+      } else {
+        this.showZero = true;
+      }
     },
     setupPlot() {
       this.svg = select(this.$refs.horizontal_bargraph);
@@ -274,7 +287,10 @@ export default Vue.extend({
       select(this.$refs.yAxis).selectAll('text').style('opacity', 1);
     },
     showZeros() {
-      this.hideZeros = !this.hideZeros;
+      if (this.showZero) {
+        this.hideZeros = !this.hideZeros;
+      }
+      this.showAll = !this.showAll;
       this.preprocessData();
       this.updatePlot();
     },

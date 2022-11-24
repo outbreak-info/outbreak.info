@@ -11,11 +11,11 @@
         @keydown.down="down"
         @keydown.up="up"
         @input="debounceSearch"
-      >
+      />
       <div
         class="dropdown-menu overflow-auto"
         :class="{ show: isOpen }"
-        style="width:100%"
+        style="width: 100%"
       >
         <a
           v-for="(suggestion, idx) in matches"
@@ -79,10 +79,10 @@ export default {
   watch: {
     selectedValue() {
       this.selected = this.selectedValue
-          ? typeof this.selectedValue == 'string'
-              ? this.selectedValue
-              : this.selectedValue[this.labelVariable]
-          : null;
+        ? typeof this.selectedValue == 'string'
+          ? this.selectedValue
+          : this.selectedValue[this.labelVariable]
+        : null;
     },
   },
   created() {
@@ -115,10 +115,14 @@ export default {
     change() {
       if (this.selected.length > 0) {
         this.querySubscription = this.queryFunction(
-            this.apiUrl,
-            this.selected,
+          this.apiUrl,
+          this.selected,
         ).subscribe((results) => {
-          this.matches = results;
+          if (results.length > 10) {
+            this.matches = results.slice(0, 10);
+          } else {
+            this.matches = results;
+          }
           if (this.isOpen === false) {
             this.isOpen = true;
             this.current = 0;
