@@ -1453,9 +1453,9 @@ export default {
     },
     setupReport() {
       // set default, if needed.
-      if (!this.selected) {
-        this.selected = 'Worldwide';
-      }
+      // if (!this.selected) {
+      //   this.selected = 'Worldwide';
+      // }
 
       this.setLineageAndMutationStr();
       if (this.lineageName || this.selectedMutationArr || this.alias) {
@@ -1476,8 +1476,8 @@ export default {
           this.currentLocs = results.locations.filter(
             (d) => d.id !== 'Worldwide',
           );
-          const selected = results.locations.filter((d) => d.isActive);
-          this.selectedLocation = selected.length === 1 ? selected[0] : null;
+          const _selected = results.locations.filter((d) => d.isActive);
+          this.selectedLocation = _selected.length === 1 ? _selected[0] : null;
 
           // date updated
           this.dateUpdated = results.dateUpdated.dateUpdated;
@@ -1675,10 +1675,6 @@ export default {
       }
     },
     updateLocations() {
-      // set default, if needed.
-      if (!this.selected) {
-        this.selected = 'Worldwide';
-      }
       this.locationChangeSubscription = updateLocationData(
         this.$genomicsurl,
         this.alias,
@@ -1694,8 +1690,8 @@ export default {
         this.currentLocs = results.locations.filter(
           (d) => d.id !== 'Worldwide',
         );
-        const selected = results.locations.filter((d) => d.isActive);
-        this.selectedLocation = selected.length === 1 ? selected[0] : null;
+        const _selected = results.locations.filter((d) => d.isActive);
+        this.selectedLocation = _selected.length === 1 ? _selected[0] : null;
 
         // longitudinal data: prevalence over time
         this.prevalence = results.longitudinal;
