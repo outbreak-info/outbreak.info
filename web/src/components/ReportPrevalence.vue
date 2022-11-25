@@ -785,7 +785,25 @@ export default Vue.extend({
 #report-prevalence-svg {
   & .mutation-axis,
   & .prevalence-axis {
-    font-size: 16pt !important;
+    font-size: 16pt;
+    @media (max-width: 664px) {
+      font-size: 10pt;
+    }
+    @media (min-width: 664px) {
+      font-size: 8pt;
+    }
+    @media (min-width: 900px) {
+      font-size: 10pt;
+    }
+    @media (min-width: 1000px) {
+      font-size: 12pt;
+    }
+    @media (min-width: 1200px) {
+      font-size: 14pt;
+    }
+    @media (min-width: 1310px) {
+      font-size: 16pt;
+    }
     text {
       fill: $grey-90;
     }

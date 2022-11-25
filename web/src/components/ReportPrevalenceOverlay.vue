@@ -1224,25 +1224,97 @@ export default Vue.extend({
   & .count-axis,
   & .mutation-axis {
     font-size: 16pt;
+    @media (max-width: 812px) {
+      font-size: 12pt;
+    }
+    @media (min-width: 812px) {
+      font-size: 8pt;
+    }
+    @media (min-width: 900px) {
+      font-size: 10pt;
+    }
+    @media (min-width: 1000px) {
+      font-size: 12pt;
+    }
+    @media (min-width: 1200px) {
+      font-size: 14pt;
+    }
+    @media (min-width: 1310px) {
+      font-size: 16pt;
+    }
+
     text {
       fill: $grey-90;
     }
   }
 
+  & .mutation-axis.axis--y text {
+    font-size: 16pt;
+    @media (max-width: 812px) {
+      font-size: 12pt;
+    }
+    @media (min-width: 812px) {
+      font-size: 10pt;
+    }
+    @media (min-width: 900px) {
+      font-size: 12pt;
+    }
+    @media (min-width: 1000px) {
+      font-size: 12pt;
+    }
+    @media (min-width: 1200px) {
+      font-size: 14pt;
+    }
+    @media (min-width: 1310px) {
+      font-size: 16pt;
+    }
+  }
   & .epi-y {
     font-size: 14pt;
   }
 
   & .epi-x {
     font-size: 16pt;
+    @media (max-width: 812px) {
+      font-size: 12pt;
+    }
+    @media (min-width: 812px) {
+      font-size: 8pt;
+    }
+    @media (min-width: 900px) {
+      font-size: 10pt;
+    }
+    @media (min-width: 1000px) {
+      font-size: 12pt;
+    }
+    @media (min-width: 1200px) {
+      font-size: 14pt;
+    }
+    @media (min-width: 1310px) {
+      font-size: 16pt;
+    }
   }
 
   & .axis--y text {
     font-size: 12pt;
-  }
-
-  & .mutation-axis.axis--y text {
-    font-size: 16pt;
+    @media (max-width: 812px) {
+      font-size: 12pt;
+    }
+    @media (min-width: 812px) {
+      font-size: 10pt;
+    }
+    @media (min-width: 900px) {
+      font-size: 12pt;
+    }
+    @media (min-width: 1000px) {
+      font-size: 12pt;
+    }
+    @media (min-width: 1200px) {
+      font-size: 14pt;
+    }
+    @media (min-width: 1310px) {
+      font-size: 16pt;
+    }
   }
 
   & .axis--x line {
