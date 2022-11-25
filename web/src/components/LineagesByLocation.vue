@@ -1,7 +1,7 @@
 <template>
   <div id="streamgraph">
     <div
-      class="d-flex justify-content-between px-3"
+      class="btn-flex justify-content-between px-3"
       :style="{ width: width + 'px' }"
     >
       <h5 class="m-0">
@@ -18,25 +18,17 @@
           />
         </button>
         <button
+          v-for="(beforeTime, lIdx) in timeOptions"
+          :key="lIdx"
           class="btn btn-accent-outline timeline-btn m-0 px-2 py-1 mr-2"
-          @click="changeXScale(3)"
+          :class="{ 'time-btn-active': beforeTime.value === month }"
+          @click="changeXScale(beforeTime.value)"
         >
-          3 months
-        </button>
-        <button
-          class="btn btn-accent-outline timeline-btn m-0 px-2 py-1 mr-2"
-          @click="changeXScale(6)"
-        >
-          6 months
-        </button>
-        <button
-          class="btn btn-accent-outline timeline-btn m-0 px-2 py-1 mr-2"
-          @click="changeXScale(12)"
-        >
-          1 year
+          {{ beforeTime.label }}
         </button>
         <button
           class="btn btn-accent-outline timeline-btn text-highlight d-flex align-items-center m-0 px-2 py-1"
+          :class="{ 'time-btn-active': month === 0 }"
           @click="resetZoom"
         >
           all time
@@ -246,6 +238,11 @@ export default Vue.extend({
       // controls
       zoomAllowed: false,
       month: 6,
+      timeOptions: [
+        { label: '3 months', value: 3 },
+        { label: '6 months', value: 6 },
+        { label: '1 year', value: 12 },
+      ],
     };
   },
   computed: {
@@ -553,22 +550,22 @@ export default Vue.extend({
             },
           });
         } else if (this.routeName === 'LocationReport') {
-          this.$router.push({
-            name: 'LocationReport',
-            params: {
-              disableScroll: true,
-            },
-            query: {
-              xmin: timeFormat('%Y-%m-%d')(newMin),
-              xmax: timeFormat('%Y-%m-%d')(newMax),
-              loc: queryParams.loc,
-              muts: queryParams.muts,
-              alias: queryParams.alias,
-              pango: queryParams.pango,
-              variant: queryParams.variant,
-              selected: queryParams.selected,
-            },
-          });
+          // this.$router.push({
+          //   name: 'LocationReport',
+          //   params: {
+          //     disableScroll: true,
+          //   },
+          //   query: {
+          //     xmin: timeFormat('%Y-%m-%d')(newMin),
+          //     xmax: timeFormat('%Y-%m-%d')(newMax),
+          //     loc: queryParams.loc,
+          //     muts: queryParams.muts,
+          //     alias: queryParams.alias,
+          //     pango: queryParams.pango,
+          //     variant: queryParams.variant,
+          //     selected: queryParams.selected,
+          //   },
+          // });
         } else if (this.routeName === 'GenomicsEmbedLocation') {
           this.$router.push({
             name: 'GenomicsEmbed',
@@ -631,20 +628,20 @@ export default Vue.extend({
           },
         });
       } else if (this.routeName === 'LocationReport') {
-        this.$router.push({
-          name: 'LocationReport',
-          params: {
-            disableScroll: true,
-          },
-          query: {
-            loc: queryParams.loc,
-            muts: queryParams.muts,
-            alias: queryParams.alias,
-            pango: queryParams.pango,
-            variant: queryParams.variant,
-            selected: queryParams.selected,
-          },
-        });
+        // this.$router.push({
+        //   name: 'LocationReport',
+        //   params: {
+        //     disableScroll: true,
+        //   },
+        //   query: {
+        //     loc: queryParams.loc,
+        //     muts: queryParams.muts,
+        //     alias: queryParams.alias,
+        //     pango: queryParams.pango,
+        //     variant: queryParams.variant,
+        //     selected: queryParams.selected,
+        //   },
+        // });
       } else if (this.routeName === 'GenomicsEmbedLocation') {
         this.$router.push({
           name: 'GenomicsEmbed',
@@ -886,10 +883,5 @@ export default Vue.extend({
   .stream-axis.axis--y text {
     font-size: 14pt;
   }
-}
-.timeline-btn {
-  font-size: 0.75em;
-  height: 30px;
-  text-transform: lowercase !important;
 }
 </style>

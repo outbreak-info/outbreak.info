@@ -15,25 +15,17 @@
         <font-awesome-icon class="text-right" :icon="['fas', 'search-plus']" />
       </button>
       <button
+        v-for="(beforeTime, lIdx) in timeOptions"
+        :key="lIdx"
         class="btn btn-accent-outline timeline-btn m-0 px-2 py-1 mr-2"
-        @click="changeXScale(3)"
+        :class="{ 'time-btn-active': beforeTime.value === month }"
+        @click="changeXScale(beforeTime.value)"
       >
-        3 months
-      </button>
-      <button
-        class="btn btn-accent-outline timeline-btn m-0 px-2 py-1 mr-2"
-        @click="changeXScale(6)"
-      >
-        6 months
-      </button>
-      <button
-        class="btn btn-accent-outline timeline-btn m-0 px-2 py-1 mr-2"
-        @click="changeXScale(12)"
-      >
-        1 year
+        {{ beforeTime.label }}
       </button>
       <button
         class="btn btn-accent-outline timeline-btn text-highlight d-flex align-items-center m-0 px-2 py-1"
+        :class="{ 'time-btn-active': month === 0 }"
         @click="resetZoom"
       >
         all time
@@ -324,6 +316,11 @@ export default Vue.extend({
       brushRef: null,
       chart: null,
       month: 6,
+      timeOptions: [
+        { label: '3 months', value: 3 },
+        { label: '6 months', value: 6 },
+        { label: '1 year', value: 12 },
+      ],
     };
   },
   computed: {
@@ -726,22 +723,22 @@ export default Vue.extend({
         const queryParams = this.$route.query;
 
         if (this.routeName === 'MutationReport') {
-          const params = this.$route.params;
-          this.$router.push({
-            name: this.routeName,
-            params: {
-              disableScroll: true,
-              alias: params.alias,
-            },
-            query: {
-              xmin: timeFormat('%Y-%m-%d')(newMin),
-              xmax: timeFormat('%Y-%m-%d')(newMax),
-              loc: queryParams.loc,
-              muts: queryParams.muts,
-              pango: queryParams.pango,
-              selected: queryParams.selected,
-            },
-          });
+          // const params = this.$route.params;
+          // this.$router.push({
+          //   name: this.routeName,
+          //   params: {
+          //     disableScroll: true,
+          //     alias: params.alias,
+          //   },
+          //   query: {
+          //     xmin: timeFormat('%Y-%m-%d')(newMin),
+          //     xmax: timeFormat('%Y-%m-%d')(newMax),
+          //     loc: queryParams.loc,
+          //     muts: queryParams.muts,
+          //     pango: queryParams.pango,
+          //     selected: queryParams.selected,
+          //   },
+          // });
         } else if (this.routeName === 'GenomicsEmbedVariant') {
           const params = this.$route.params;
           this.$router.push({
@@ -774,19 +771,19 @@ export default Vue.extend({
       this.setXScale();
 
       if (this.routeName === 'MutationReport') {
-        this.$router.push({
-          name: this.routeName,
-          params: {
-            disableScroll: true,
-            alias: params.alias,
-          },
-          query: {
-            loc: queryParams.loc,
-            muts: queryParams.muts,
-            pango: queryParams.pango,
-            selected: queryParams.selected,
-          },
-        });
+        // this.$router.push({
+        //   name: this.routeName,
+        //   params: {
+        //     disableScroll: true,
+        //     alias: params.alias,
+        //   },
+        //   query: {
+        //     loc: queryParams.loc,
+        //     muts: queryParams.muts,
+        //     pango: queryParams.pango,
+        //     selected: queryParams.selected,
+        //   },
+        // });
       } else if (this.routeName === 'GenomicsEmbedVariant') {
         this.$router.push({
           name: 'GenomicsEmbed',
@@ -871,10 +868,5 @@ export default Vue.extend({
 .trace-legend {
   stroke: $base-grey;
   stroke-width: 2.5;
-}
-.timeline-btn {
-  font-size: 0.75em;
-  height: 30px;
-  text-transform: lowercase !important;
 }
 </style>
