@@ -59,9 +59,10 @@
             <!-- EPIDEMIOLOGY -->
             <li class="dropdown px-3 nav-link">
               <div
-                id="dropdownMenuButton"
+                id="dropdownMenuButtonCasesDeaths"
                 class="dropdown-toggle"
                 type="button"
+                role="button"
                 data-toggle="dropdown"
                 aria-haspopup="true"
                 aria-expanded="false"
@@ -70,7 +71,7 @@
               </div>
               <div
                 class="dropdown-menu dropdown-menu-dark"
-                aria-labelledby="dropdownMenuButton"
+                aria-labelledby="dropdownMenuButtonCasesDeaths"
               >
                 <router-link
                   data-toggle="collapse"
@@ -134,9 +135,10 @@
             <!-- Genomics -->
             <li class="dropdown px-3 nav-link">
               <div
-                id="dropdownMenuButton"
+                id="dropdownMenuButtonVariants"
                 class="dropdown-toggle"
                 type="button"
+                role="button"
                 data-toggle="dropdown"
                 aria-haspopup="true"
                 aria-expanded="false"
@@ -145,7 +147,7 @@
               </div>
               <div
                 class="dropdown-menu dropdown-menu-dark p-1"
-                aria-labelledby="dropdownMenuButton"
+                aria-labelledby="dropdownMenuButtonVariants"
               >
                 <router-link
                   data-toggle="collapse"
@@ -191,9 +193,10 @@
             <!-- RESOURCES -->
             <li class="dropdown px-3 nav-link">
               <div
-                id="dropdownMenuButton"
+                id="dropdownMenuButtonResearchLibrary"
                 class="dropdown-toggle"
                 type="button"
+                role="button"
                 data-toggle="dropdown"
                 aria-haspopup="true"
                 aria-expanded="false"
@@ -202,7 +205,7 @@
               </div>
               <div
                 class="dropdown-menu dropdown-menu-dark p-1"
-                aria-labelledby="dropdownMenuButton"
+                aria-labelledby="dropdownMenuButtonResearchLibrary"
               >
                 <router-link
                   data-toggle="collapse"
@@ -242,9 +245,10 @@
             <!-- ABOUT -->
             <li class="dropdown px-3 nav-link">
               <div
-                id="dropdownMenuButton"
+                id="dropdownMenuButtonAbout"
                 class="dropdown-toggle"
                 type="button"
+                role="button"
                 data-toggle="dropdown"
                 aria-haspopup="true"
                 aria-expanded="false"
@@ -253,7 +257,7 @@
               </div>
               <div
                 class="dropdown-menu dropdown-menu-dark p-1"
-                aria-labelledby="dropdownMenuButton"
+                aria-labelledby="dropdownMenuButtonAbout"
               >
                 <router-link
                   data-toggle="collapse"

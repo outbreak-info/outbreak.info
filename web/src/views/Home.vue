@@ -137,7 +137,7 @@
               <div class="input-group">
                 <div class="input-group-prepend">
                   <span
-                    id="sb"
+                    id="sb-lineage"
                     class="input-group-text bg-grey text-muted border-0"
                   >
                     <font-awesome-icon :icon="['fas', 'search']" />
@@ -201,7 +201,7 @@
               <div class="input-group">
                 <div class="input-group-prepend">
                   <span
-                    id="sb"
+                    id="sb-variant"
                     class="input-group-text bg-grey text-muted border-0"
                   >
                     <font-awesome-icon :icon="['fas', 'search']" />
@@ -295,7 +295,7 @@
               <div class="input-group">
                 <div class="input-group-prepend">
                   <span
-                    id="sb"
+                    id="sb-resources"
                     class="input-group-text bg-grey text-muted border-0"
                   >
                     <font-awesome-icon :icon="['fas', 'search']" />
@@ -306,7 +306,7 @@
                   v-model="searchQuery"
                   class="form-control border"
                   placeholder="Search resources"
-                  aria-label="search"
+                  aria-label="search resources"
                   aria-describedby="sb"
                   type="text"
                   @keydown.enter.prevent="submitSearch"
