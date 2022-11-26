@@ -875,13 +875,49 @@ export default Vue.extend({
 <style lang="scss">
 .lineages-by-location {
   .axis--x text {
-    font-size: 16pt !important;
+    font-size: 16pt;
+    @media (max-width: 812px) {
+      font-size: 8pt;
+    }
+    @media (min-width: 812px) {
+      font-size: 8pt;
+    }
+    @media (min-width: 900px) {
+      font-size: 10pt;
+    }
+    @media (min-width: 1000px) {
+      font-size: 12pt;
+    }
+    @media (min-width: 1200px) {
+      font-size: 14pt;
+    }
+    @media (min-width: 1310px) {
+      font-size: 16pt;
+    }
   }
   .axis--y text {
     font-size: 9pt;
   }
   .stream-axis.axis--y text {
     font-size: 14pt;
+    @media (max-width: 812px) {
+      font-size: 12pt;
+    }
+    @media (min-width: 812px) {
+      font-size: 10pt;
+    }
+    @media (min-width: 900px) {
+      font-size: 12pt;
+    }
+    @media (min-width: 1000px) {
+      font-size: 12pt;
+    }
+    @media (min-width: 1200px) {
+      font-size: 14pt;
+    }
+    @media (min-width: 1310px) {
+      font-size: 14pt;
+    }
   }
 }
 </style>
