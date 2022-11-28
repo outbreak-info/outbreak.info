@@ -1,8 +1,6 @@
 <template>
-  <div>
-    <div
-      class="row m-0 bg-grey d-flex justify-content-center align-items-center"
-    >
+  <div class="bg-grey">
+    <div class="row m-0 d-flex justify-content-center align-items-center">
       <div
         class="col-sm-2 d-flex justify-content-center align-items-center picBox"
       >
@@ -72,7 +70,7 @@
       <div
         class="col-sm-3 d-flex flex-column justify-content-center p-0 z pl-3 border-left"
       >
-        <div class="text-light xsmall text-left">
+        <div class="text-light x-small text-left">
           Supported with funding from
         </div>
 
@@ -142,7 +140,7 @@ export default Vue.extend({
   max-width: 150px;
 }
 
-.xsmall {
+.x-small {
   font-size: smaller;
 }
 

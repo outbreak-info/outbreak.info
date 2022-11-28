@@ -359,15 +359,11 @@
     </transition>
 
     <!-- FOOTER -->
-    <footer
-      v-if="!$route.meta.hideNavigation"
-      id="outbreak-footer"
-      class="bg-main__darker pt-4"
-    >
+    <footer v-if="!$route.meta.hideNavigation" id="outbreak-footer">
       <!-- sitemap -->
       <div
         id="footer-sitemap"
-        class="w-100 d-flex justify-content-between text-left text-muted row border-bottom navbar-dark m-0 px-3 pb-3"
+        class="bg-main__darker w-100 d-flex justify-content-between text-left text-muted row border-bottom navbar-dark m-0 px-3 pb-3 pt-4"
       >
         <!-- epi group -->
         <div class="text-light px-4 footer-section">
@@ -634,13 +630,13 @@
       </div>
 
       <!-- LOGO FOOTER -->
-      <Logos class="bg-grey" />
+      <Logos />
 
       <div
         id="terms"
-        class="row m-0 bg-main__darker d-flex justify-content-center align-items-center py-1"
+        class="row m-0 d-flex justify-content-center align-items-center py-1"
       >
-        <div class="d-flex text-light xsmall">
+        <div class="d-flex text-light x-small">
           <ul class="m-0">
             <li class="d-inline m-3">
               <router-link class="text-light" :to="{ name: 'Citation' }">
@@ -689,12 +685,13 @@
 
 <script>
 import { lazyLoad } from '@/js/lazy-load';
+import Logos from '@/components/Logos';
 
 export default {
   name: 'App',
   components: {
-    Logos: lazyLoad('Logos'),
     EmailSubscription: lazyLoad('EmailSubscription'),
+    Logos,
   },
   data() {
     return {
