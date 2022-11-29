@@ -387,6 +387,9 @@ export default Vue.extend({
       if (this.width < 600) {
         this.numXTicks = 2;
         this.numYTicks = 4;
+      } else if(this.width < 1000){
+          this.numXTicks = 4;
+          this.numYTicks = 5;
       } else {
         this.numXTicks = 6;
         this.numYTicks = 5;
@@ -787,19 +790,19 @@ export default Vue.extend({
   & .prevalence-axis {
     font-size: 16pt;
     @media (max-width: 664px) {
-      font-size: 10pt;
-    }
-    @media (min-width: 664px) {
-      font-size: 8pt;
-    }
-    @media (min-width: 900px) {
-      font-size: 10pt;
-    }
-    @media (min-width: 1000px) {
       font-size: 12pt;
     }
-    @media (min-width: 1200px) {
+    @media (min-width: 664px) {
+      font-size: 12pt;
+    }
+    @media (min-width: 900px) {
       font-size: 14pt;
+    }
+    @media (min-width: 1000px) {
+      font-size: 14pt;
+    }
+    @media (min-width: 1200px) {
+      font-size: 16pt;
     }
     @media (min-width: 1310px) {
       font-size: 16pt;
