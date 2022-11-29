@@ -301,7 +301,8 @@ export default Vue.extend({
         this.margin.top +
         this.margin.bottom;
 
-      this.combinedTotal = sum(this.processedData, (d) => d.lineage_count);
+      const originData = cloneDeep(this.data);
+      this.combinedTotal = sum(originData, (d) => d.lineage_count);
 
       this.x = scaleLinear()
         .range([0, this.width - this.margin.right - this.margin.left])
