@@ -2,12 +2,24 @@
   <div
     class="bg-light d-flex flex-column justify-content-center align-items-center my-5"
   >
-    <h1 class="d-block">
-      outbreak.info in the media
-    </h1>
-    <div id="press" class="text-left w-75">
+    <h1 class="d-block">outbreak.info in the media</h1>
+    <div class="d-flex">
+      <a
+        :key="idx"
+        :id="y"
+        class="px-2"
+        v-for="(y, idx) in yearOptions"
+        @click="changeYear(y)"
+      >
+        {{ y }}
+      </a>
+    </div>
+    <div class="w-75">
+      <h2 class="text-left">{{ year }}</h2>
+    </div>
+    <div id="press" class="text-left w-75" v-if="pressList">
       <div
-        v-for="(article, aIdx) in press"
+        v-for="(article, aIdx) in pressList"
         :key="aIdx"
         class="my-3 checkbook p-2"
       >
@@ -38,11 +50,30 @@ import { mapState } from 'vuex';
 
 export default Vue.extend({
   name: 'Press',
+  data() {
+    return {
+      currentYear: new Date().getFullYear(),
+      year: null,
+      pressList: null,
+      yearOptions: [2021, 2022],
+    };
+  },
   computed: {
     ...mapState('press', ['press']),
   },
   mounted() {
-    this.press.sort((a, b) => a.order - b.order);
+    this.year = this.currentYear;
+    this.updatePress();
+  },
+  methods: {
+    changeYear(y) {
+      this.year = y;
+      this.updatePress();
+    },
+    updatePress() {
+      this.pressList = this.press.filter((p) => p.date.includes(this.year));
+      this.pressList.sort((a, b) => a.order - b.order);
+    },
   },
 });
 </script>
@@ -59,5 +90,11 @@ export default Vue.extend({
 
 .checkbook:nth-child(2n + 1) {
   background: lighten($base-grey, 70%);
+}
+
+a {
+  text-underline: #007bff !important;
+  color: #007bff !important;
+  cursor: pointer;
 }
 </style>
