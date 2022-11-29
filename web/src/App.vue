@@ -337,6 +337,7 @@
           href="https://outbreak-info.github.io/R-outbreak-info/"
           class="text-light"
           target="_blank"
+          aria-label="outbreak-info-github"
         >
           R package
         </a>
@@ -349,6 +350,7 @@
         href="https://www.scripps.edu/news-and-events/press-room/2022/20220606-hughes-gisaid.html"
         target="_blank"
         class="mx-3 text-light"
+        aria-label="scripps edu"
       >
         Learn more
       </a>
@@ -723,10 +725,6 @@ export default {
 
 .dropdown-menu {
   line-height: 1.2em;
-}
-
-.navbar-footer {
-  font-size: small;
 }
 
 .navbar-footer-title {

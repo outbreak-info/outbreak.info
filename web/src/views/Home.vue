@@ -336,10 +336,8 @@
     </section>
 
     <!-- INTRO + VIDEO -->
-    <div
-      class="col-sm-12 d-flex justify-content-center align-items-center p-0 bg-grey__lightest"
-    >
-      <div class="d-flex align-items-center p-3">
+    <div class="col-sm-12 p-0 bg-grey__lightest">
+      <div class="d-flex p-3">
         <div
           class="mx-lg-5 mx-sm-0 d-flex flex-column align-items-center justify-content-center px-4 large"
         >
@@ -349,16 +347,27 @@
               href="https://www.scripps.edu/faculty/hughes/"
               rel="noreferrer"
               target="_blank"
+              aria-label="scripps edu hughes"
             >
               Hughes
             </a>
             ,
-            <a href="http://sulab.org/" target="_blank">Su</a>
+            <a href="http://sulab.org/" target="_blank" aria-label="sulab">
+              Su
+            </a>
             ,
-            <a href="https://wulab.io/" target="_blank">Wu</a>
+            <a href="https://wulab.io/" target="_blank" aria-label="wulab">
+              Wu
+            </a>
             , and
 
-            <a href="https://andersen-lab.com/" target="_blank">Andersen</a>
+            <a
+              href="https://andersen-lab.com/"
+              target="_blank"
+              aria-label="andersen-lab"
+            >
+              Andersen
+            </a>
             labs at Scripps Research to unify COVID-19 and SARS-CoV-2
             epidemiology and genomic data, published research, and other
             resources.
