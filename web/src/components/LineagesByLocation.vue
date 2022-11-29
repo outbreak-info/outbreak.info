@@ -280,7 +280,7 @@ export default Vue.extend({
         .extent([
           [0, 0],
           [
-            this.width - this.margin.left - this.margin.right,
+            this.width ? this.width - this.margin.left - this.margin.right : 0,
             this.height - this.margin.top - this.margin.bottom,
           ],
         ])
@@ -635,7 +635,12 @@ export default Vue.extend({
               .append('rect')
               .attr('class', 'no-data')
               .attr('x', 0)
-              .attr('width', this.width - this.margin.left - this.margin.right)
+              .attr(
+                'width',
+                this.width
+                  ? this.width - this.margin.left - this.margin.right
+                  : 0,
+              )
               .attr(
                 'height',
                 this.height - this.margin.top - this.margin.bottom,
@@ -645,7 +650,12 @@ export default Vue.extend({
           (update) => {
             update
               .attr('x', 0)
-              .attr('width', this.width - this.margin.left - this.margin.right)
+              .attr(
+                'width',
+                this.width
+                  ? this.width - this.margin.left - this.margin.right
+                  : 0,
+              )
               .attr(
                 'height',
                 this.height - this.margin.top - this.margin.bottom,
