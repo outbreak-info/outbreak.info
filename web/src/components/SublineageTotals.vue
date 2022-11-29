@@ -241,7 +241,6 @@ export default Vue.extend({
     },
     preprocessData() {
       this.processedData = cloneDeep(this.data);
-
       if (this.hideZeros) {
         this.processedData = this.processedData.filter((d) => d.lineage_count);
         this.areZerosFiltered = this.data.length !== this.processedData.length;

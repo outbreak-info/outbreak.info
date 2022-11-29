@@ -252,11 +252,11 @@ import {
   area,
   transition,
   timeDay,
+  timeMonth,
 } from 'd3';
 import cloneDeep from 'lodash/cloneDeep';
 
 import { lazyLoad } from '@/js/lazy-load';
-import { getBeforeDate } from '@/js/get-date';
 
 export default Vue.extend({
   name: 'ReportPrevalence',
@@ -372,6 +372,7 @@ export default Vue.extend({
     this.setDims();
     this.setupPlot();
     this.updatePlot();
+    this.changeXScale(6);
   },
   created() {
     this.debounceSetDims = this.debounce(this.setDims, 150);
@@ -435,22 +436,33 @@ export default Vue.extend({
 
       this.setXScale();
     },
-    getMinDate(date) {
-      const beforeDate = getBeforeDate(date, this.month);
-      const minDateItem = this.data.filter(
-        (d) =>
-          d[this.xVariable].getMonth() === beforeDate.getMonth() &&
-          d[this.xVariable].getFullYear() === beforeDate.getFullYear() &&
-          d[this.xVariable].getDate() === beforeDate.getDate(),
-      );
-      if (minDateItem.length > 0) {
-        return minDateItem[0][this.xVariable];
-      }
-    },
     changeXScale(month) {
       this.month = month;
-      this.setXScale();
+      const newMax = new Date();
+      const newMin = timeMonth.offset(newMax, -month);
+
+      this.x = scaleTime()
+        .range([0, this.width - this.margin.left - this.margin.right])
+        .domain([newMin, newMax]);
+
+      this.plottedData = cloneDeep(this.data);
+
+      this.plottedData = this.plottedData.filter(
+        (d) => d[this.xVariable] >= newMin && d[this.xVariable] <= newMax,
+      );
+
+      // reset the axis
+      this.xAxis = axisBottom(this.x).ticks(this.numXTicks);
+
+      select(this.$refs.xAxis).call(this.xAxis);
+
+      // move the brush
+      // this.brushRef.call(this.brush.move, null);
+      this.zoomAllowed = false;
       this.updatePlot();
+
+      // update the url
+      this.updateUrl(newMin, newMax);
     },
     setXScale() {
       let xDomain;
@@ -461,12 +473,7 @@ export default Vue.extend({
         if (this.includeToday) {
           const today = new Date();
           this.maxDate = max(this.data, (d) => d[this.xVariable]);
-          xDomain = [
-            this.month === 0
-              ? min(this.data, (d) => d[this.xVariable])
-              : this.getMinDate(new Date()),
-            today,
-          ];
+          xDomain = [min(this.data, (d) => d[this.xVariable]), today];
         } else {
           xDomain = extent(this.data.map((d) => d[this.xVariable]));
         }
@@ -720,44 +727,47 @@ export default Vue.extend({
         this.updatePlot();
 
         // update route
-        const queryParams = this.$route.query;
+        this.updateUrl(newMin, newMax);
+      }
+    },
+    updateUrl(newMin, newMax) {
+      const queryParams = this.$route.query;
 
-        if (this.routeName === 'MutationReport') {
-          // const params = this.$route.params;
-          // this.$router.push({
-          //   name: this.routeName,
-          //   params: {
-          //     disableScroll: true,
-          //     alias: params.alias,
-          //   },
-          //   query: {
-          //     xmin: timeFormat('%Y-%m-%d')(newMin),
-          //     xmax: timeFormat('%Y-%m-%d')(newMax),
-          //     loc: queryParams.loc,
-          //     muts: queryParams.muts,
-          //     pango: queryParams.pango,
-          //     selected: queryParams.selected,
-          //   },
-          // });
-        } else if (this.routeName === 'GenomicsEmbedVariant') {
-          const params = this.$route.params;
-          this.$router.push({
-            name: 'GenomicsEmbed',
-            params: {
-              disableScroll: true,
-            },
-            query: {
-              type: 'var',
-              alias: queryParams.alias,
-              xmin: timeFormat('%Y-%m-%d')(newMin),
-              xmax: timeFormat('%Y-%m-%d')(newMax),
-              loc: queryParams.loc,
-              muts: queryParams.muts,
-              pango: queryParams.pango,
-              selected: queryParams.selected,
-            },
-          });
-        }
+      if (this.routeName === 'MutationReport') {
+        const params = this.$route.params;
+        this.$router.push({
+          name: this.routeName,
+          params: {
+            disableScroll: true,
+            alias: params.alias,
+          },
+          query: {
+            xmin: timeFormat('%Y-%m-%d')(newMin),
+            xmax: timeFormat('%Y-%m-%d')(newMax),
+            loc: queryParams.loc,
+            muts: queryParams.muts,
+            pango: queryParams.pango,
+            selected: queryParams.selected,
+          },
+        });
+      } else if (this.routeName === 'GenomicsEmbedVariant') {
+        const params = this.$route.params;
+        this.$router.push({
+          name: 'GenomicsEmbed',
+          params: {
+            disableScroll: true,
+          },
+          query: {
+            type: 'var',
+            alias: queryParams.alias,
+            xmin: timeFormat('%Y-%m-%d')(newMin),
+            xmax: timeFormat('%Y-%m-%d')(newMax),
+            loc: queryParams.loc,
+            muts: queryParams.muts,
+            pango: queryParams.pango,
+            selected: queryParams.selected,
+          },
+        });
       }
     },
     resetZoom() {
@@ -771,19 +781,19 @@ export default Vue.extend({
       this.setXScale();
 
       if (this.routeName === 'MutationReport') {
-        // this.$router.push({
-        //   name: this.routeName,
-        //   params: {
-        //     disableScroll: true,
-        //     alias: params.alias,
-        //   },
-        //   query: {
-        //     loc: queryParams.loc,
-        //     muts: queryParams.muts,
-        //     pango: queryParams.pango,
-        //     selected: queryParams.selected,
-        //   },
-        // });
+        this.$router.push({
+          name: this.routeName,
+          params: {
+            disableScroll: true,
+            alias: params.alias,
+          },
+          query: {
+            loc: queryParams.loc,
+            muts: queryParams.muts,
+            pango: queryParams.pango,
+            selected: queryParams.selected,
+          },
+        });
       } else if (this.routeName === 'GenomicsEmbedVariant') {
         this.$router.push({
           name: 'GenomicsEmbed',
