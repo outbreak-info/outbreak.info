@@ -8,7 +8,7 @@
       :xmin="xmin"
       :xmax="xmax"
       :overlay="overlay"
-      :selected="selected"
+      :selected="selectedLocation"
     />
   </div>
 </template>
@@ -35,6 +35,11 @@ export default {
     selected: {
       type: String,
       default: 'Worldwide',
+    },
+  },
+  computed: {
+    selectedLocation() {
+      return this.selected ? this.selected : 'Worldwide';
     },
   },
 };
