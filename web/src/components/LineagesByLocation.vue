@@ -21,14 +21,16 @@
           v-for="(beforeTime, lIdx) in timeOptions"
           :key="lIdx"
           class="btn btn-accent-outline timeline-btn m-0 px-2 py-1 mr-2"
-          :class="{ 'time-btn-active': beforeTime.value === month }"
+          :class="{
+            'time-btn-active': beforeTime.value === countMonth && !isZooming,
+          }"
           @click="changeXScale(beforeTime.value)"
         >
           {{ beforeTime.label }}
         </button>
         <button
           class="btn btn-accent-outline timeline-btn text-highlight d-flex align-items-center m-0 px-2 py-1"
-          :class="{ 'time-btn-active': month === 0 }"
+          :class="{ 'time-btn-active': countMonth === 0 && !isZooming }"
           @click="resetZoom"
         >
           all time
@@ -241,11 +243,19 @@ export default Vue.extend({
         { label: '6 months', value: 6 },
         { label: '1 year', value: 12 },
       ],
+      isZooming: false,
     };
   },
   computed: {
     title() {
       return `Lineage prevalence over time in ${this.location}`;
+    },
+    countMonth() {
+      if (this.xmin && this.xmax) {
+        return timeMonth.count(new Date(this.xmin), new Date(this.xmax));
+      } else {
+        return this.month === 0 ? 0 : 6;
+      }
     },
   },
   watch: {
@@ -339,6 +349,7 @@ export default Vue.extend({
     },
     changeXScale(month) {
       this.month = month;
+      this.isZooming = false;
       const newMax = new Date();
       const newMin = timeMonth.offset(newMax, -month);
 
@@ -490,6 +501,7 @@ export default Vue.extend({
       select(this.$refs.tooltip_streamgraph).style('display', 'none');
     },
     zoom(evt) {
+      this.isZooming = true;
       // reset domain to new coords
       const selection = this.event.selection;
 
@@ -602,6 +614,7 @@ export default Vue.extend({
       this.xMin = null;
       this.xMax = null;
       this.month = 0;
+      this.isZooming = false;
       this.setXScale();
 
       if (this.routeName === 'MutationReport') {
@@ -669,6 +682,7 @@ export default Vue.extend({
       }
 
       this.updatePlot();
+      this.isZooming = false;
     },
     enableZoom() {
       this.zoomAllowed = true;

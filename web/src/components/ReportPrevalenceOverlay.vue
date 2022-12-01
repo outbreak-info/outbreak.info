@@ -15,9 +15,22 @@
         <font-awesome-icon class="text-right" :icon="['fas', 'search-plus']" />
       </button>
       <button
-        class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2"
+        v-for="(beforeTime, lIdx) in timeOptions"
+        :key="lIdx"
+        class="btn btn-accent-outline timeline-btn m-0 px-2 py-1 mr-2"
+        :class="{
+          'time-btn-active': beforeTime.value === countMonth && !isZooming,
+        }"
+        @click="changeXScale(beforeTime.value)"
+      >
+        {{ beforeTime.label }}
+      </button>
+      <button
+        class="btn btn-accent-outline timeline-btn text-highlight d-flex align-items-center m-0 p-2"
+        :class="{ 'time-btn-active': countMonth === 0 && !isZooming }"
         @click="resetZoom"
       >
+        all time
         <font-awesome-icon
           class="text-right"
           :icon="['fas', 'compress-arrows-alt']"
@@ -207,9 +220,22 @@
             />
           </button>
           <button
-            class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2"
+            v-for="(beforeTime, lIdx) in timeOptions"
+            :key="lIdx"
+            class="btn btn-accent-outline timeline-btn m-0 px-2 py-1 mr-2"
+            :class="{
+              'time-btn-active': beforeTime.value === countMonth && !isZooming,
+            }"
+            @click="changeXScale(beforeTime.value)"
+          >
+            {{ beforeTime.label }}
+          </button>
+          <button
+            class="btn btn-accent-outline timeline-btn text-highlight d-flex align-items-center m-0 p-2"
+            :class="{ 'time-btn-active': countMonth === 0 && !isZooming }"
             @click="resetZoom"
           >
+            all time
             <font-awesome-icon
               class="text-right"
               :icon="['fas', 'compress-arrows-alt']"
@@ -337,6 +363,7 @@ import {
   area,
   transition,
   timeDay,
+  timeMonth,
 } from 'd3';
 import cloneDeep from 'lodash/cloneDeep';
 
@@ -457,6 +484,13 @@ export default Vue.extend({
       counts: null,
       brushRef: null,
       brush2Ref: null,
+      month: 6,
+      timeOptions: [
+        { label: '3 months', value: 3 },
+        { label: '6 months', value: 6 },
+        { label: '1 year', value: 12 },
+      ],
+      isZooming: false,
     };
   },
   computed: {
@@ -470,6 +504,13 @@ export default Vue.extend({
     },
     countTitle() {
       return `Total samples sequenced by collection date in ${this.location}`;
+    },
+    countMonth() {
+      if (this.xmin && this.xmax) {
+        return timeMonth.count(new Date(this.xmin), new Date(this.xmax));
+      } else {
+        return this.month === 0 ? 0 : 6;
+      }
     },
   },
   watch: {
@@ -509,6 +550,7 @@ export default Vue.extend({
     this.setDims();
     this.setupPlot();
     this.updatePlot();
+    this.changeXScale(6);
   },
   created() {
     this.debounceSetDims = this.debounce(this.setDims, 150);
@@ -560,7 +602,7 @@ export default Vue.extend({
       if (this.width < 600) {
         this.numXTicks = 2;
         this.numYTicks = 4;
-      } else if(this.width < 1000){
+      } else if (this.width < 1000) {
         this.numXTicks = 4;
         this.numYTicks = 5;
       } else {
@@ -569,6 +611,7 @@ export default Vue.extend({
       }
     },
     zoom(evt, ref) {
+      this.isZooming = true;
       // reset domain to new coords
       const selection = this.event.selection;
 
@@ -601,79 +644,7 @@ export default Vue.extend({
         this.updatePlot();
 
         // update route
-        const queryParams = this.$route.query;
-
-        if (this.routeName === 'MutationReport') {
-          const params = this.$route.params;
-          this.$router.push({
-            name: this.routeName,
-            params: {
-              disableScroll: true,
-              alias: params.alias,
-            },
-            query: {
-              xmin: timeFormat('%Y-%m-%d')(newMin),
-              xmax: timeFormat('%Y-%m-%d')(newMax),
-              loc: queryParams.loc,
-              muts: queryParams.muts,
-              pango: queryParams.pango,
-              selected: queryParams.selected,
-            },
-          });
-        } else if (this.routeName === 'GenomicsEmbedVariant') {
-          const params = this.$route.params;
-          this.$router.push({
-            name: 'GenomicsEmbed',
-            params: {
-              disableScroll: true,
-            },
-            query: {
-              type: 'var',
-              alias: queryParams.alias,
-              xmin: timeFormat('%Y-%m-%d')(newMin),
-              xmax: timeFormat('%Y-%m-%d')(newMax),
-              loc: queryParams.loc,
-              muts: queryParams.muts,
-              pango: queryParams.pango,
-              selected: queryParams.selected,
-            },
-          });
-        } else if (this.routeName === 'LocationReport') {
-          this.$router.push({
-            name: 'LocationReport',
-            params: {
-              disableScroll: true,
-            },
-            query: {
-              loc: queryParams.loc,
-              muts: queryParams.muts,
-              alias: queryParams.alias,
-              pango: queryParams.pango,
-              variant: queryParams.variant,
-              selected: queryParams.selected,
-              xmin: timeFormat('%Y-%m-%d')(newMin),
-              xmax: timeFormat('%Y-%m-%d')(newMax),
-            },
-          });
-        } else if (this.routeName === 'GenomicsEmbedLocation') {
-          this.$router.push({
-            name: 'GenomicsEmbed',
-            params: {
-              disableScroll: true,
-            },
-            query: {
-              type: 'loc',
-              loc: queryParams.loc,
-              muts: queryParams.muts,
-              alias: queryParams.alias,
-              pango: queryParams.pango,
-              variant: queryParams.variant,
-              selected: queryParams.selected,
-              xmin: timeFormat('%Y-%m-%d')(newMin),
-              xmax: timeFormat('%Y-%m-%d')(newMax),
-            },
-          });
-        }
+        this.updateUrl(newMin, newMax);
       }
     },
     resetZoom() {
@@ -683,6 +654,8 @@ export default Vue.extend({
 
       this.xMin = null;
       this.xMax = null;
+      this.month = 0;
+      this.isZooming = false;
       this.setXScale();
 
       if (this.routeName === 'MutationReport') {
@@ -750,6 +723,114 @@ export default Vue.extend({
         .y1((d) => this.y(d.proportion_ci_upper));
 
       this.setXScale();
+    },
+    changeXScale(month) {
+      console.log('#######ddddd', this.countMonth);
+      this.month = month;
+      this.isZooming = false;
+      const newMax = new Date();
+      const newMin = timeMonth.offset(newMax, -month);
+
+      this.x = scaleTime()
+        .range([0, this.width - this.margin.left - this.margin.right])
+        .domain([newMin, newMax])
+        .clamp(true);
+
+      // update plotted data
+      this.plottedData = cloneDeep(this.data);
+      this.plottedData.forEach((mutation) => {
+        mutation.data = mutation.data.filter(
+          (d) => d[this.xVariable] >= newMin && d[this.xVariable] <= newMax,
+        );
+      });
+
+      this.plottedData = this.plottedData.filter((d) => d.data.length);
+      this.plottedEpi = this.epi.filter(
+        (d) => d[this.xEpiVariable] >= newMin && d[this.xEpiVariable] <= newMax,
+      );
+      // move the brush
+      // this.brushRef.call(this.brush.move, null);
+      // this.brushRef2.call(this.brush.move, null);
+      this.zoomAllowed = false;
+      this.updatePlot();
+
+      // update route
+      this.updateUrl(newMin, newMax);
+    },
+    updateUrl(newMin, newMax) {
+      const queryParams = this.$route.query;
+
+      if (this.routeName === 'MutationReport') {
+        const params = this.$route.params;
+        this.$router.push({
+          name: this.routeName,
+          params: {
+            disableScroll: true,
+            alias: params.alias,
+          },
+          query: {
+            xmin: timeFormat('%Y-%m-%d')(newMin),
+            xmax: timeFormat('%Y-%m-%d')(newMax),
+            loc: queryParams.loc,
+            muts: queryParams.muts,
+            pango: queryParams.pango,
+            selected: queryParams.selected,
+          },
+        });
+      } else if (this.routeName === 'GenomicsEmbedVariant') {
+        const params = this.$route.params;
+        this.$router.push({
+          name: 'GenomicsEmbed',
+          params: {
+            disableScroll: true,
+          },
+          query: {
+            type: 'var',
+            alias: queryParams.alias,
+            xmin: timeFormat('%Y-%m-%d')(newMin),
+            xmax: timeFormat('%Y-%m-%d')(newMax),
+            loc: queryParams.loc,
+            muts: queryParams.muts,
+            pango: queryParams.pango,
+            selected: queryParams.selected,
+          },
+        });
+      } else if (this.routeName === 'LocationReport') {
+        this.$router.push({
+          name: 'LocationReport',
+          params: {
+            disableScroll: true,
+          },
+          query: {
+            loc: queryParams.loc,
+            muts: queryParams.muts,
+            alias: queryParams.alias,
+            pango: queryParams.pango,
+            variant: queryParams.variant,
+            selected: queryParams.selected,
+            xmin: timeFormat('%Y-%m-%d')(newMin),
+            xmax: timeFormat('%Y-%m-%d')(newMax),
+          },
+        });
+      } else if (this.routeName === 'GenomicsEmbedLocation') {
+        this.$router.push({
+          name: 'GenomicsEmbed',
+          params: {
+            disableScroll: true,
+          },
+          query: {
+            type: 'loc',
+            loc: queryParams.loc,
+            muts: queryParams.muts,
+            alias: queryParams.alias,
+            pango: queryParams.pango,
+            variant: queryParams.variant,
+            selected: queryParams.selected,
+            xmin: timeFormat('%Y-%m-%d')(newMin),
+            xmax: timeFormat('%Y-%m-%d')(newMax),
+          },
+        });
+      }
     },
     setXScale() {
       let xDomain;
