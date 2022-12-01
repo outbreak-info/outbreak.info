@@ -1,11 +1,9 @@
 <template>
-  <div style="overflow-x:auto;">
+  <div style="overflow-x: auto">
     <table class="mx-auto">
       <thead>
         <tr>
-          <th rowspan="2" class="border-bottom">
-            lineage
-          </th>
+          <th rowspan="2" class="border-bottom">lineage</th>
           <th
             class="text-center padded border-bottom border-secondary"
             colspan="2"
@@ -22,20 +20,14 @@
           </th>
         </tr>
         <tr class="border-bottom">
-          <th class="text-center padded">
-            total
-          </th>
+          <th class="text-center padded">total</th>
           <th class="text-center padded">
             cumulative prevalence
             <sup>*</sup>
           </th>
           <th />
-          <th class="text-center padded">
-            first
-          </th>
-          <th class="text-center padded">
-            last
-          </th>
+          <th class="text-center padded">first</th>
+          <th class="text-center padded">last</th>
         </tr>
       </thead>
       <tbody v-for="(lineageGroup, gIdx) in data" :key="gIdx">
@@ -76,8 +68,8 @@
             <router-link
               v-if="
                 routeTo === 'GenomicsEmbedLocation' &&
-                  lineage.params &&
-                  lineage.params.alias
+                lineage.params &&
+                lineage.params.alias
               "
               class="variant-table"
               :to="{
@@ -115,7 +107,7 @@
               class="variant-table"
               :to="{
                 name: 'MutationReport',
-                params: lineage.params,
+                params: lineage.params ? lineage.params : {},
                 query: lineage.route,
               }"
               :data-tippy-info="lineage.tooltip"
@@ -137,15 +129,13 @@
               :class="{
                 'no-estimate': lineage.proportion_formatted === 'no estimate',
               }"
-              :data-tippy-info="
-                `Prevalence estimates are unreliable since only ${
-                  lineage.total_count
-                } ${
-                  lineage.total_count === 1 ? 'sample has' : 'samples have'
-                } been sequenced since ${
-                  lineage.label
-                } detection in ${locationName}`
-              "
+              :data-tippy-info="`Prevalence estimates are unreliable since only ${
+                lineage.total_count
+              } ${
+                lineage.total_count === 1 ? 'sample has' : 'samples have'
+              } been sequenced since ${
+                lineage.label
+              } detection in ${locationName}`"
             >
               {{ lineage.proportion_formatted }}
             </span>
