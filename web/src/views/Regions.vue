@@ -13,7 +13,11 @@
         <div class="col-sm-12 d-flex flex-column">
           <h3>
             Daily worldwide COVID-19
-            <select v-model="variableObj" class="select-dropdown">
+            <select
+              v-model="variableObj"
+              class="select-dropdown"
+              @change="changeVariableObject"
+            >
               <option
                 v-for="option in totalOptions"
                 :key="option.value"
@@ -164,7 +168,11 @@
         <div class="col-sm-12 d-flex flex-column">
           <h3>
             Daily COVID-19
-            <select v-model="variableObj" class="select-dropdown">
+            <select
+              v-model="variableObj"
+              class="select-dropdown"
+              @change="changeVariableObject"
+            >
               <option
                 v-for="option in totalOptions"
                 :key="option.value"
@@ -265,10 +273,6 @@ export default {
           value: 'confirmed',
         },
         {
-          label: 'Recoveries',
-          value: 'recovered',
-        },
-        {
           label: 'Deaths',
           value: 'dead',
         },
@@ -310,6 +314,12 @@ export default {
   methods: {
     changeVariable() {
       this.nestedData = this.data[this.selectedVariable];
+    },
+    changeVariableObject() {
+      store.state.admin.loading = true;
+      setTimeout(() => {
+        store.state.admin.loading = false;
+      }, 3000);
     },
     handleTooltip(selected) {
       store.commit('geo/setRegionTooltip', selected);
