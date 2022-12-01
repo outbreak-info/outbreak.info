@@ -36,6 +36,7 @@
                   class="d-flex align-items-center justify-content-center my-3"
                 >
                   <TypeaheadSelect
+                    wrapperClass="w-100"
                     :queryFunction="queryLocation"
                     :apiUrl="$genomicsurl"
                     labelVariable="label"

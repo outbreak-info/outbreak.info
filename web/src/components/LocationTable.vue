@@ -91,6 +91,7 @@
               class="variant-table"
               :to="{
                 name: 'GenomicsEmbed',
+                params: lineage.params,
                 query: {
                   type: 'var',
                   selected: lineage.route.selected,
@@ -172,23 +173,8 @@
 </template>
 
 <script>
-import Vue from 'vue';
-
 import tippy from 'tippy.js';
 import 'tippy.js/themes/light.css';
-
-// // --- font awesome --
-// import {
-//   FontAwesomeIcon
-// } from "@fortawesome/vue-fontawesome";
-// import {
-//   library
-// } from "@fortawesome/fontawesome-svg-core";
-// import {
-//   faPlusSquare
-// } from "@fortawesome/free-regular-svg-icons/faPlusSquare";
-//
-// library.add(faPlusSquare);
 
 export default {
   name: 'LocationTable',

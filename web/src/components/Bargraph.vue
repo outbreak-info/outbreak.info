@@ -14,7 +14,7 @@
         :style="{ transform: `translate(${margin.left}px,${margin.top}px)` }"
       >
         <div :class="tooltipIdx">
-          <div class="tooltip  p-2">
+          <div class="tooltip p-2">
             <h6 class="country-name m-0" />
             <p class="date m-0" />
             <p class="count m-0" />
@@ -106,7 +106,7 @@
         ref="svg_arrows"
         :width="width + margin.left + margin.right"
         :height="height + margin.top + margin.bottom"
-        style="left:0; bottom:0"
+        style="left: 0; bottom: 0"
         class="epi-bargraph-arrows position-absolute"
       >
         <g
@@ -392,9 +392,7 @@ export default Vue.extend({
       if (this.isLogY) {
         this.yMin = 0.5;
 
-        this.y = scaleLog()
-          .range([this.height, 0])
-          .domain([this.yMin, yMax]);
+        this.y = scaleLog().range([this.height, 0]).domain([this.yMin, yMax]);
       } else {
         this.yMin = 0;
 
@@ -418,18 +416,15 @@ export default Vue.extend({
 
       this.switchBtn.select('path').attr(
         'd',
-        `M ${xSwoop} ${this.height +
-          this.margin.top +
-          this.margin.bottom +
-          ySwoop}
-            C ${xSwoop} ${this.height +
-          this.margin.top +
-          this.margin.bottom +
-          ySwoop -
-          10},
-            ${this.margin.left + ySwoop - 10} ${this.height +
-          this.margin.top +
-          5},
+        `M ${xSwoop} ${
+          this.height + this.margin.top + this.margin.bottom + ySwoop
+        }
+            C ${xSwoop} ${
+          this.height + this.margin.top + this.margin.bottom + ySwoop - 10
+        },
+            ${this.margin.left + ySwoop - 10} ${
+          this.height + this.margin.top + 5
+        },
             ${this.margin.left + ySwoop + 5} ${this.height + this.margin.top}`,
       );
 
@@ -443,19 +438,11 @@ export default Vue.extend({
           .select('rect')
           .attr(
             'width',
-            this.switchBtn
-
-              .select('text')
-              .node()
-              .getBBox().width + 10,
+            this.switchBtn.select('text').node().getBBox().width + 10,
           )
           .attr(
             'height',
-            this.switchBtn
-
-              .select('text')
-              .node()
-              .getBBox().height + 5,
+            this.switchBtn.select('text').node().getBBox().height + 5,
           );
       }
 
@@ -465,7 +452,7 @@ export default Vue.extend({
         this.xAxis = axisBottom(this.x)
           .tickSizeOuter(0)
           .tickValues(
-            this.x.domain().filter(function(d, i) {
+            this.x.domain().filter(function (d, i) {
               return !(i % plotInterval);
             }),
           )
@@ -483,9 +470,7 @@ export default Vue.extend({
                   ? format(',')(d)
                   : '';
               })
-          : axisLeft(this.y)
-              .tickSizeOuter(0)
-              .ticks(this.numYTicks);
+          : axisLeft(this.y).tickSizeOuter(0).ticks(this.numYTicks);
 
         select(this.$refs.yAxis).call(this.yAxis);
       }
@@ -522,11 +507,7 @@ export default Vue.extend({
 
             (exit) =>
               exit.call((exit) =>
-                exit
-                  .transition()
-                  .duration(10)
-                  .style('opacity', 1e-5)
-                  .remove(),
+                exit.transition().duration(10).style('opacity', 1e-5).remove(),
               ),
           );
 
@@ -625,11 +606,7 @@ export default Vue.extend({
           },
           (exit) =>
             exit.call((exit) =>
-              exit
-                .transition()
-                .duration(10)
-                .style('opacity', 1e-5)
-                .remove(),
+              exit.transition().duration(10).style('opacity', 1e-5).remove(),
             ),
         );
       }

@@ -1,15 +1,15 @@
 <template>
   <div id="streamgraph">
     <div
-      class="d-flex justify-content-between px-3"
+      class="btn-flex justify-content-between px-3"
       :style="{ width: width + 'px' }"
     >
       <h5 class="m-0">
         {{ plotTitle }}
       </h5>
-      <div class="d-flex justify-content-end">
+      <div class="d-flex justify-content-end align-items-center">
         <button
-          class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2"
+          class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2 mr-2"
           @click="enableZoom"
         >
           <font-awesome-icon
@@ -18,11 +18,24 @@
           />
         </button>
         <button
-          class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2"
+          v-for="(beforeTime, lIdx) in timeOptions"
+          :key="lIdx"
+          class="btn btn-accent-outline timeline-btn m-0 px-2 py-1 mr-2"
+          :class="{
+            'time-btn-active': beforeTime.value === countMonth && !isZooming,
+          }"
+          @click="changeXScale(beforeTime.value)"
+        >
+          {{ beforeTime.label }}
+        </button>
+        <button
+          class="btn btn-accent-outline timeline-btn text-highlight d-flex align-items-center m-0 px-2 py-1"
+          :class="{ 'time-btn-active': countMonth === 0 && !isZooming }"
           @click="resetZoom"
         >
+          all time
           <font-awesome-icon
-            class="text-right"
+            class="text-right ml-1"
             :icon="['fas', 'compress-arrows-alt']"
           />
         </button>
@@ -129,8 +142,6 @@ import {
   area,
   stack,
   stackOrderInsideOut,
-  // stackOrderAscending,
-  // stackOrderDescending,
   transition,
   event,
   brushX,
@@ -140,6 +151,7 @@ import {
   min,
   max,
   format,
+  timeMonth,
 } from 'd3';
 import cloneDeep from 'lodash/cloneDeep';
 
@@ -225,11 +237,25 @@ export default Vue.extend({
       brushRef: null,
       // controls
       zoomAllowed: false,
+      month: 6,
+      timeOptions: [
+        { label: '3 months', value: 3 },
+        { label: '6 months', value: 6 },
+        { label: '1 year', value: 12 },
+      ],
+      isZooming: false,
     };
   },
   computed: {
     title() {
       return `Lineage prevalence over time in ${this.location}`;
+    },
+    countMonth() {
+      if (this.xmin && this.xmax) {
+        return timeMonth.count(new Date(this.xmin), new Date(this.xmax));
+      } else {
+        return 0;
+      }
     },
   },
   watch: {
@@ -268,6 +294,7 @@ export default Vue.extend({
 
     this.setupPlot();
     this.updatePlot();
+    this.changeXScale(6);
   },
   created() {
     this.debounceSetDims = this.debounce(this.setDims, 150);
@@ -320,9 +347,37 @@ export default Vue.extend({
 
       this.setXScale();
     },
+    changeXScale(month) {
+      this.month = month;
+      this.isZooming = false;
+      const newMax = new Date();
+      const newMin = timeMonth.offset(newMax, -month);
+
+      this.x = scaleTime()
+        .range([0, this.width - this.margin.left - this.margin.right])
+        .domain([newMin, newMax]);
+
+      this.plottedData = cloneDeep(this.data);
+
+      this.plottedData = this.plottedData.filter(
+        (d) => d[this.xVariable] >= newMin && d[this.xVariable] <= newMax,
+      );
+
+      // reset the axis
+      this.xAxis = axisBottom(this.x).ticks(this.numXTicks);
+
+      select(this.$refs.xAxis).call(this.xAxis);
+
+      // move the brush
+      // this.brushRef.call(this.brush.move, null);
+      this.zoomAllowed = false;
+      this.drawPlot();
+
+      // update the url
+      this.updateUrl(newMin, newMax);
+    },
     setXScale() {
       let xDomain;
-
       if (this.xMin && this.xMax && this.xMin < this.xMax) {
         xDomain = [this.xMin, this.xMax];
       } else {
@@ -446,6 +501,7 @@ export default Vue.extend({
       select(this.$refs.tooltip_streamgraph).style('display', 'none');
     },
     zoom(evt) {
+      this.isZooming = true;
       // reset domain to new coords
       const selection = this.event.selection;
 
@@ -474,78 +530,81 @@ export default Vue.extend({
         this.drawPlot();
 
         // update the url
-        const queryParams = this.$route.query;
-        if (this.routeName === 'MutationReport') {
-          const params = this.$route.params;
-          this.$router.push({
-            name: this.routeName,
-            params: {
-              disableScroll: true,
-              alias: params.alias,
-            },
-            query: {
-              xmin: timeFormat('%Y-%m-%d')(newMin),
-              xmax: timeFormat('%Y-%m-%d')(newMax),
-              loc: queryParams.loc,
-              muts: queryParams.muts,
-              pango: queryParams.pango,
-              selected: queryParams.selected,
-            },
-          });
-        } else if (this.routeName === 'GenomicsEmbedVariant') {
-          const params = this.$route.params;
-          this.$router.push({
-            name: 'GenomicsEmbed',
-            params: {
-              disableScroll: true,
-            },
-            query: {
-              type: 'var',
-              alias: queryParams.alias,
-              xmin: timeFormat('%Y-%m-%d')(newMin),
-              xmax: timeFormat('%Y-%m-%d')(newMax),
-              loc: queryParams.loc,
-              muts: queryParams.muts,
-              pango: queryParams.pango,
-              selected: queryParams.selected,
-            },
-          });
-        } else if (this.routeName === 'LocationReport') {
-          this.$router.push({
-            name: 'LocationReport',
-            params: {
-              disableScroll: true,
-            },
-            query: {
-              xmin: timeFormat('%Y-%m-%d')(newMin),
-              xmax: timeFormat('%Y-%m-%d')(newMax),
-              loc: queryParams.loc,
-              muts: queryParams.muts,
-              alias: queryParams.alias,
-              pango: queryParams.pango,
-              variant: queryParams.variant,
-              selected: queryParams.selected,
-            },
-          });
-        } else if (this.routeName === 'GenomicsEmbedLocation') {
-          this.$router.push({
-            name: 'GenomicsEmbed',
-            params: {
-              disableScroll: true,
-            },
-            query: {
-              var: 'loc',
-              xmin: timeFormat('%Y-%m-%d')(newMin),
-              xmax: timeFormat('%Y-%m-%d')(newMax),
-              loc: queryParams.loc,
-              muts: queryParams.muts,
-              alias: queryParams.alias,
-              pango: queryParams.pango,
-              variant: queryParams.variant,
-              selected: queryParams.selected,
-            },
-          });
-        }
+        this.updateUrl(newMin, newMax);
+      }
+    },
+    updateUrl(newMin, newMax) {
+      const queryParams = this.$route.query;
+      if (this.routeName === 'MutationReport') {
+        const params = this.$route.params;
+        this.$router.push({
+          name: this.routeName,
+          params: {
+            disableScroll: true,
+            alias: params.alias,
+          },
+          query: {
+            xmin: timeFormat('%Y-%m-%d')(newMin),
+            xmax: timeFormat('%Y-%m-%d')(newMax),
+            loc: queryParams.loc,
+            muts: queryParams.muts,
+            pango: queryParams.pango,
+            selected: queryParams.selected,
+          },
+        });
+      } else if (this.routeName === 'GenomicsEmbedVariant') {
+        const params = this.$route.params;
+        this.$router.push({
+          name: 'GenomicsEmbed',
+          params: {
+            disableScroll: true,
+          },
+          query: {
+            type: 'var',
+            alias: queryParams.alias,
+            xmin: timeFormat('%Y-%m-%d')(newMin),
+            xmax: timeFormat('%Y-%m-%d')(newMax),
+            loc: queryParams.loc,
+            muts: queryParams.muts,
+            pango: queryParams.pango,
+            selected: queryParams.selected,
+          },
+        });
+      } else if (this.routeName === 'LocationReport') {
+        this.$router.push({
+          name: 'LocationReport',
+          params: {
+            disableScroll: true,
+          },
+          query: {
+            xmin: timeFormat('%Y-%m-%d')(newMin),
+            xmax: timeFormat('%Y-%m-%d')(newMax),
+            loc: queryParams.loc,
+            muts: queryParams.muts,
+            alias: queryParams.alias,
+            pango: queryParams.pango,
+            variant: queryParams.variant,
+            selected: queryParams.selected,
+          },
+        });
+      } else if (this.routeName === 'GenomicsEmbedLocation') {
+        this.$router.push({
+          name: 'GenomicsEmbed',
+          params: {
+            disableScroll: true,
+          },
+          query: {
+            var: 'loc',
+            xmin: timeFormat('%Y-%m-%d')(newMin),
+            xmax: timeFormat('%Y-%m-%d')(newMax),
+            loc: queryParams.loc,
+            muts: queryParams.muts,
+            alias: queryParams.alias,
+            pango: queryParams.pango,
+            variant: queryParams.variant,
+            selected: queryParams.selected,
+          },
+        });
       }
     },
     resetZoom() {
@@ -554,6 +613,8 @@ export default Vue.extend({
 
       this.xMin = null;
       this.xMax = null;
+      this.month = 0;
+      this.isZooming = false;
       this.setXScale();
 
       if (this.routeName === 'MutationReport') {
@@ -621,6 +682,7 @@ export default Vue.extend({
       }
 
       this.updatePlot();
+      this.isZooming = false;
     },
     enableZoom() {
       this.zoomAllowed = true;
@@ -835,13 +897,49 @@ export default Vue.extend({
 <style lang="scss">
 .lineages-by-location {
   .axis--x text {
-    font-size: 16pt !important;
+    font-size: 16pt;
+    @media (max-width: 812px) {
+      font-size: 8pt;
+    }
+    @media (min-width: 812px) {
+      font-size: 8pt;
+    }
+    @media (min-width: 900px) {
+      font-size: 10pt;
+    }
+    @media (min-width: 1000px) {
+      font-size: 12pt;
+    }
+    @media (min-width: 1200px) {
+      font-size: 14pt;
+    }
+    @media (min-width: 1310px) {
+      font-size: 16pt;
+    }
   }
   .axis--y text {
     font-size: 9pt;
   }
   .stream-axis.axis--y text {
     font-size: 14pt;
+    @media (max-width: 812px) {
+      font-size: 12pt;
+    }
+    @media (min-width: 812px) {
+      font-size: 10pt;
+    }
+    @media (min-width: 900px) {
+      font-size: 12pt;
+    }
+    @media (min-width: 1000px) {
+      font-size: 12pt;
+    }
+    @media (min-width: 1200px) {
+      font-size: 14pt;
+    }
+    @media (min-width: 1310px) {
+      font-size: 14pt;
+    }
   }
 }
 </style>

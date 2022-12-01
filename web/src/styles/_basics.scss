@@ -843,3 +843,20 @@ $status-color: #bab0ab;
 .fa-sm {
   line-height: 1em !important;
 }
+
+.timeline-btn {
+  font-size: 0.75em;
+  height: 30px;
+  text-transform: lowercase !important;
+}
+
+.time-btn-active {
+  background-color: $warning-color !important;
+  color: white !important;
+}
+
+@media only screen and (min-width: 1024px) {
+  .btn-flex {
+    display: flex;
+  }
+}
