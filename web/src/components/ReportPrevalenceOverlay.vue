@@ -32,7 +32,7 @@
       >
         all time
         <font-awesome-icon
-          class="text-right"
+          class="text-right ml-1"
           :icon="['fas', 'compress-arrows-alt']"
         />
       </button>
@@ -237,7 +237,7 @@
           >
             all time
             <font-awesome-icon
-              class="text-right"
+              class="text-right ml-1"
               :icon="['fas', 'compress-arrows-alt']"
             />
           </button>
@@ -509,7 +509,7 @@ export default Vue.extend({
       if (this.xmin && this.xmax) {
         return timeMonth.count(new Date(this.xmin), new Date(this.xmax));
       } else {
-        return this.month === 0 ? 0 : 6;
+        return 0;
       }
     },
   },
@@ -725,7 +725,6 @@ export default Vue.extend({
       this.setXScale();
     },
     changeXScale(month) {
-      console.log('#######ddddd', this.countMonth);
       this.month = month;
       this.isZooming = false;
       const newMax = new Date();

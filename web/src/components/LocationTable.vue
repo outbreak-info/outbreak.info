@@ -225,6 +225,8 @@ export default {
         instance.setContent(info);
       },
     });
+
+    console.log('Data check######', this.data);
   },
 };
 </script>

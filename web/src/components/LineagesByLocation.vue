@@ -254,7 +254,7 @@ export default Vue.extend({
       if (this.xmin && this.xmax) {
         return timeMonth.count(new Date(this.xmin), new Date(this.xmax));
       } else {
-        return this.month === 0 ? 0 : 6;
+        return 0;
       }
     },
   },
