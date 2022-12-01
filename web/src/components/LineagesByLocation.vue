@@ -1,7 +1,16 @@
 <template>
   <div id="streamgraph">
     <div
-      class="btn-flex justify-content-between px-3"
+      v-if="!recent"
+      class="alert bg-highlight text-light px-2 py-1 m-0 rounded-0 mb-2 suggest-note"
+    >
+      <p class="m-0 x-small">
+        All lineages are grouped into the other category. Try increasing the
+        most recent data window.
+      </p>
+    </div>
+    <div
+      class="d-flex justify-content-between px-3"
       :style="{ width: width + 'px' }"
     >
       <h5 class="m-0">
@@ -256,6 +265,9 @@ export default Vue.extend({
       } else {
         return 0;
       }
+    },
+    recent() {
+      return !!this.recentData;
     },
   },
   watch: {
@@ -941,5 +953,8 @@ export default Vue.extend({
       font-size: 14pt;
     }
   }
+}
+.suggest-note {
+  display: inline-block;
 }
 </style>
