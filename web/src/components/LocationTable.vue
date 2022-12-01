@@ -91,6 +91,7 @@
               class="variant-table"
               :to="{
                 name: 'GenomicsEmbed',
+                params: lineage.params,
                 query: {
                   type: 'var',
                   selected: lineage.route.selected,
@@ -225,8 +226,6 @@ export default {
         instance.setContent(info);
       },
     });
-
-    console.log('Data check######', this.data);
   },
 };
 </script>
