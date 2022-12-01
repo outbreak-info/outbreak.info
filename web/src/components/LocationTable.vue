@@ -1,6 +1,6 @@
 <template>
   <div style="overflow-x: auto">
-    <table class="mx-auto" v-if="data">
+    <table class="mx-auto">
       <thead>
         <tr>
           <th rowspan="2" class="border-bottom">lineage</th>
@@ -108,7 +108,7 @@
               class="variant-table"
               :to="{
                 name: 'MutationReport',
-                params: lineage.params,
+                params: lineage.params ? lineage.params : {},
                 query: lineage.route,
               }"
               :data-tippy-info="lineage.tooltip"
