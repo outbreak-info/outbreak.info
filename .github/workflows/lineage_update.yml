@@ -16,7 +16,7 @@ jobs:
          - name: Checkout
            uses: actions/checkout@main
            with:
-              token: ${{secrets.ACTION_TOKEN}}
+              repo-token: ${{ secrets.GITHUB_TOKEN }}
   
          - name: Install python dependencies
            run: python -m pip install --upgrade pip pandas
