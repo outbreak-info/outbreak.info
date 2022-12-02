@@ -18,14 +18,14 @@
         v-for="(beforeTime, lIdx) in timeOptions"
         :key="lIdx"
         class="btn btn-accent-outline timeline-btn m-0 px-2 py-1 mr-2"
-        :class="{ 'time-btn-active': beforeTime.value === month }"
+        :class="{ 'time-btn-active': beforeTime.value === month && !isZooming }"
         @click="changeXScale(beforeTime.value)"
       >
         {{ beforeTime.label }}
       </button>
       <button
         class="btn btn-accent-outline timeline-btn text-highlight d-flex align-items-center m-0 px-2 py-1"
-        :class="{ 'time-btn-active': month === 0 }"
+        :class="{ 'time-btn-active': month === 0 && !isZooming }"
         @click="resetZoom"
       >
         all time
@@ -321,6 +321,7 @@ export default Vue.extend({
         { label: '6 months', value: 6 },
         { label: '1 year', value: 12 },
       ],
+      isZooming: false,
     };
   },
   computed: {
@@ -406,9 +407,9 @@ export default Vue.extend({
       if (this.width < 600) {
         this.numXTicks = 2;
         this.numYTicks = 4;
-      } else if(this.width < 1000){
-          this.numXTicks = 4;
-          this.numYTicks = 5;
+      } else if (this.width < 1000) {
+        this.numXTicks = 4;
+        this.numYTicks = 5;
       } else {
         this.numXTicks = 6;
         this.numYTicks = 5;
@@ -437,6 +438,7 @@ export default Vue.extend({
       this.setXScale();
     },
     changeXScale(month) {
+      this.isZooming = false;
       this.month = month;
       const newMax = new Date();
       const newMin = timeMonth.offset(newMax, -month);
@@ -586,7 +588,6 @@ export default Vue.extend({
         // hash to highlight the gap between today
         if (this.includeToday) {
           const noDataSelector = this.chart.selectAll('.no-data').data([0]);
-
           noDataSelector.join(
             (enter) => {
               enter
@@ -595,10 +596,12 @@ export default Vue.extend({
                 .attr('x', this.x(this.maxDate))
                 .attr(
                   'width',
-                  this.width -
-                    this.margin.left -
-                    this.margin.right -
-                    this.x(this.maxDate),
+                  this.width
+                    ? this.width -
+                        this.margin.left -
+                        this.margin.right -
+                        (this.maxDate ? this.x(this.maxDate) : 0)
+                    : 0,
                 )
                 .attr(
                   'height',
@@ -617,10 +620,12 @@ export default Vue.extend({
                 .attr('x', this.x(this.maxDate))
                 .attr(
                   'width',
-                  this.width -
-                    this.margin.left -
-                    this.margin.right -
-                    this.x(this.maxDate),
+                  this.width
+                    ? this.width -
+                        this.margin.left -
+                        this.margin.right -
+                        (this.maxDate ? this.x(this.maxDate) : 0)
+                    : 0,
                 );
             },
             (exit) =>
@@ -695,7 +700,7 @@ export default Vue.extend({
         .extent([
           [0, 0],
           [
-            this.width - this.margin.left - this.margin.right,
+            this.width ? this.width - this.margin.left - this.margin.right : 0,
             this.height - this.margin.top - this.margin.bottom,
           ],
         ])
@@ -704,6 +709,7 @@ export default Vue.extend({
       this.brushRef.call(this.brush).on('dblclick', this.resetZoom);
     },
     zoom(evt, ref) {
+      this.isZooming = true;
       // reset domain to new coords
       const selection = this.event.selection;
 
@@ -777,6 +783,7 @@ export default Vue.extend({
 
       this.xMin = null;
       this.xMax = null;
+      this.isZooming = false;
       this.month = 0;
       this.setXScale();
 
