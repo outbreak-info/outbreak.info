@@ -9,14 +9,11 @@
         most recent data window.
       </p>
     </div>
-    <div
-      class="d-flex justify-content-between px-3"
-      :style="{ width: width + 'px' }"
-    >
+    <div class="px-3" :style="{ width: width + 'px' }">
       <h5 class="m-0">
         {{ plotTitle }}
       </h5>
-      <div class="d-flex justify-content-end align-items-center">
+      <div class="d-flex justify-content-end align-items-center mt-1">
         <button
           class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2 mr-2"
           @click="enableZoom"
