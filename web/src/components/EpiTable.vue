@@ -249,7 +249,7 @@
 
 <script>
 import Vue from 'vue';
-import { format, timeFormat } from 'd3';
+import { timeFormat } from 'd3-time-format';
 import tippy from 'tippy.js';
 
 import {

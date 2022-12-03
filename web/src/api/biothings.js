@@ -9,7 +9,7 @@ import {
   expand,
   reduce,
 } from 'rxjs/operators';
-import { timeParse, timeFormat } from 'd3';
+import { timeParse, timeFormat } from 'd3-time-format';
 import store from '@/store';
 
 export const progressSubject = new BehaviorSubject(0);

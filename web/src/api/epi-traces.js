@@ -1,7 +1,10 @@
 import { BehaviorSubject, forkJoin, from } from 'rxjs';
 import axios from 'axios';
 import { catchError, finalize, map, mergeMap, pluck } from 'rxjs/operators';
-import { format, nest, sum, timeParse } from 'd3';
+import { sum } from 'd3-array';
+import { nest } from 'd3-collection';
+import { format } from 'd3-format';
+import { timeParse } from 'd3-time-format';
 
 import { getAll } from '@/api/biothings.js';
 import store from '@/store';

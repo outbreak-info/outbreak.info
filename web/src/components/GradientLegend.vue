@@ -44,7 +44,7 @@
 
 <script>
 import Vue from 'vue';
-import { range } from 'd3';
+import { range } from 'd3-array';
 
 export default Vue.extend({
   name: 'GradientLegend',
@@ -83,11 +83,9 @@ export default Vue.extend({
           // legend gradient
           const domain = this.colorScale.domain();
           const step = (domain[1] - domain[0]) / 10;
-          this.legendColors = range(
-            domain[0],
-            domain[1] + step,
-            step,
-          ).map((d) => this.colorScale(d));
+          this.legendColors = range(domain[0], domain[1] + step, step).map(
+            (d) => this.colorScale(d),
+          );
         }
       },
     },

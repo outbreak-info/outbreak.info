@@ -1,13 +1,15 @@
 import { from, forkJoin } from 'rxjs';
 import axios from 'axios';
 import { finalize, catchError, map } from 'rxjs/operators';
-import { nest, timeParse, sum } from 'd3';
+import { sum } from 'd3-array';
+import { nest } from 'd3-collection';
+import { timeParse } from 'd3-time-format';
 
 import { getAll } from '@/api/biothings.js';
 
 import store from '@/store';
 
-export const getStackedRegions = apiUrl => {
+export const getStackedRegions = (apiUrl) => {
   store.state.admin.loading = true;
   const parseDate = timeParse('%Y-%m-%d');
 

@@ -66,24 +66,14 @@
 <script>
 import Vue from 'vue';
 
-import {
-  select,
-  selectAll,
-  scaleLinear,
-  scaleTime,
-  axisBottom,
-  nest,
-  min,
-  max,
-  sum,
-  extent,
-  timeWeek,
-  isoParse,
-  timeFormat,
-  timeParse,
-  drag,
-  event,
-} from 'd3';
+import { nest } from 'd3-collection';
+import { axisBottom } from 'd3-axis';
+import { min, max, sum, extent } from 'd3-array';
+import { drag } from 'd3-drag';
+import { select, selectAll, event } from 'd3-selection';
+import { scaleLinear, scaleTime } from 'd3-scale';
+import { timeWeek } from 'd3-time';
+import { timeFormat, timeParse, isoParse } from 'd3-time-format';
 
 export default Vue.extend({
   name: 'DateHistogram',
@@ -192,9 +182,7 @@ export default Vue.extend({
         ])
         .clamp(true);
 
-      this.xAxis = axisBottom(this.x)
-        .tickSizeOuter(0)
-        .ticks(2);
+      this.xAxis = axisBottom(this.x).tickSizeOuter(0).ticks(2);
       this.xAxisRef.call(this.xAxis);
 
       selectAll('.axis').call(this.xAxis);

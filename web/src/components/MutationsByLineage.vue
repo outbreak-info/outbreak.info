@@ -92,18 +92,11 @@
 <script>
 import Vue from 'vue';
 import { mapState } from 'vuex';
-import {
-  select,
-  selectAll,
-  scaleLinear,
-  scaleBand,
-  max,
-  axisLeft,
-  axisBottom,
-  format,
-  min,
-  event,
-} from 'd3';
+import { max, min } from 'd3-array';
+import { axisBottom, axisLeft } from 'd3-axis';
+import { format } from 'd3-format';
+import { scaleLinear, scaleBand } from 'd3-scale';
+import { selectAll, select, event } from 'd3-selection';
 import cloneDeep from 'lodash/cloneDeep';
 
 import { lazyLoad } from '@/js/lazy-load';
@@ -405,11 +398,7 @@ export default Vue.extend({
         },
         (exit) => {
           exit.call((exit) =>
-            exit
-              .transition()
-              .duration(10)
-              .style('opacity', 1e-5)
-              .remove(),
+            exit.transition().duration(10).style('opacity', 1e-5).remove(),
           );
         },
       );
@@ -461,11 +450,7 @@ export default Vue.extend({
         },
         (exit) => {
           exit.call((exit) =>
-            exit
-              .transition()
-              .duration(10)
-              .style('opacity', 1e-5)
-              .remove(),
+            exit.transition().duration(10).style('opacity', 1e-5).remove(),
           );
         },
       );

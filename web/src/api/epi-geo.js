@@ -1,6 +1,6 @@
 import { from } from 'rxjs';
 import { finalize, catchError, map } from 'rxjs/operators';
-import { timeParse } from 'd3';
+import { timeParse } from 'd3-time-format';
 
 import store from '@/store';
 import { getAll } from '@/api/biothings.js';

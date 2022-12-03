@@ -39,20 +39,11 @@
 
 <script>
 import Vue from 'vue';
-import {
-  select,
-  selectAll,
-  scaleTime,
-  scaleLinear,
-  axisLeft,
-  axisBottom,
-  area,
-  stack,
-  stackOrderReverse,
-  event,
-  extent,
-  max,
-} from 'd3';
+import { max, extent } from 'd3-array';
+import { axisLeft, axisBottom } from 'd3-axis';
+import { select, selectAll, event } from 'd3-selection';
+import { scaleLinear, scaleTime } from 'd3-scale';
+import { area, stack, stackOrderReverse } from 'd3-shape';
 
 import store from '@/store';
 
@@ -192,9 +183,9 @@ export default Vue.extend({
         .select('.axis--x')
         .attr(
           'transform',
-          `translate(${this.margin.left}, ${this.height -
-            this.margin.bottom +
-            2})`,
+          `translate(${this.margin.left}, ${
+            this.height - this.margin.bottom + 2
+          })`,
         )
         .call(this.xAxis);
 

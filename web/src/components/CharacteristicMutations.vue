@@ -57,8 +57,8 @@
     <Warning
       v-if="
         lineageName === 'omicron' ||
-          lineageName === 'Omicron' ||
-          lineageName === 'B.1.1.529'
+        lineageName === 'Omicron' ||
+        lineageName === 'B.1.1.529'
       "
       text="<p>Most Omicron sequences also contain a <b>3 amino acid insertion (EPE) at position 214 in the Spike</b> protein.</p> outbreak.info currently only reports substitution and deletion changes, due to the computational challenges with identifying insertions in 5+ million sequences every day. We’re working towards incorporating insertions into our data processing pipeline, and we encourage you to refer back to the sequence data available on GISAID for more information about these insertions."
       class="fa-sm mt-2 mb-4"
@@ -74,7 +74,7 @@
       :copyable="true"
     />
 
-    <div class="d-flex flex-wrap  ml-2 mr-3">
+    <div class="d-flex flex-wrap ml-2 mr-3">
       <button
         class="btn btn-main-outline btn-mut router-link px-1 collapsed"
         data-toggle="collapse"
@@ -156,9 +156,9 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import { mapState } from 'vuex';
-import { format, scaleOrdinal } from 'd3';
+import { format } from 'd3-format';
+import { scaleOrdinal } from 'd3-scale';
 
 import { getBadMutations } from '@/api/genomics.js';
 import NT_MAP from '@/assets/genomics/sarscov2_NC045512_genes_nt.json';

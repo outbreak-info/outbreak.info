@@ -18,7 +18,9 @@
 
 <script>
 import Vue from 'vue';
-import { select, geoPath, geoEqualEarth, min } from 'd3';
+import { min } from 'd3-array';
+import { geoPath, geoEqualEarth } from 'd3-geo';
+import { select } from 'd3-selection';
 
 import GEODATA from '@/assets/geo/countries_ne.json';
 import GADM from '@/assets/geo/gadm_adm0_simplified.json';
@@ -118,11 +120,7 @@ export default Vue.extend({
               .attr('d', path.projection(projection)),
           (exit) =>
             exit.call((exit) =>
-              exit
-                .transition()
-                .duration(10)
-                .style('opacity', 1e-5)
-                .remove(),
+              exit.transition().duration(10).style('opacity', 1e-5).remove(),
             ),
         );
     },

@@ -211,7 +211,6 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import tippy from 'tippy.js';
 
 import { lazyLoad } from '@/js/lazy-load';

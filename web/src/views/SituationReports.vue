@@ -1301,7 +1301,7 @@
 
 <script>
 import { mapState } from 'vuex';
-import { format } from 'd3';
+import { format } from 'd3-format';
 import cloneDeep from 'lodash/cloneDeep';
 import debounce from 'lodash/debounce';
 import tippy from 'tippy.js';

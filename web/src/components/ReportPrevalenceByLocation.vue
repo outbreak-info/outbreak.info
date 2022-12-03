@@ -21,15 +21,9 @@
         <div class="d-flex align-items-center justify-content-end">
           sort by
           <select v-model="sortVar" class="ml-2">
-            <option value="proportion">
-              prevalence
-            </option>
-            <option value="cum_total_count">
-              total sequenced
-            </option>
-            <option value="country">
-              name
-            </option>
+            <option value="proportion">prevalence</option>
+            <option value="cum_total_count">total sequenced</option>
+            <option value="country">name</option>
           </select>
         </div>
       </div>
@@ -61,7 +55,7 @@
               maxCount="maxEstFormatted"
             />
 
-            <div class="d-flex  align-items-center">
+            <div class="d-flex align-items-center">
               <svg id="legend" width="15" height="15" class="mr-2">
                 <line x1="0" x2="15" y1="8" y2="8" class="ci-legend" />
               </svg>
@@ -117,9 +111,9 @@
             <g
               id="dot-axis-bottom"
               ref="xAxis2"
-              :transform="
-                `translate(${margin.left}, ${height + margin.top + 5})`
-              "
+              :transform="`translate(${margin.left}, ${
+                height + margin.top + 5
+              })`"
               class="prevalence-axis axis--x"
               :hidden="!data.length"
             />
@@ -183,9 +177,9 @@
             <g
               id="bar-axis-top"
               ref="xAxisBar2"
-              :transform="
-                `translate(${margin.left}, ${height + margin.top + 5})`
-              "
+              :transform="`translate(${margin.left}, ${
+                height + margin.top + 5
+              })`"
               class="count-axis axis--x"
               :hidden="!data.length"
             />
@@ -229,21 +223,12 @@
 
 <script>
 import Vue from 'vue';
-import {
-  select,
-  selectAll,
-  scaleLinear,
-  scaleLog,
-  scaleBand,
-  range,
-  axisTop,
-  axisBottom,
-  axisLeft,
-  max,
-  format,
-  transition,
-  event,
-} from 'd3';
+import { max } from 'd3-array';
+import { axisTop, axisBottom, axisLeft } from 'd3-axis';
+import { format } from 'd3-format';
+import { select, event } from 'd3-selection';
+import { scaleLinear, scaleLog, scaleBand } from 'd3-scale';
+import { transition } from 'd3-transition';
 import cloneDeep from 'lodash/cloneDeep';
 
 import { lazyLoad } from '@/js/lazy-load';
@@ -432,9 +417,7 @@ export default Vue.extend({
       this.dotplot = select(this.$refs.dotplot);
       this.bargraph = select(this.$refs.bargraph);
 
-      this.y = scaleBand()
-        .paddingInner(0.25)
-        .paddingOuter(0.15);
+      this.y = scaleBand().paddingInner(0.25).paddingOuter(0.15);
     },
     updateScales() {
       // resize the canvas to cover the length of the data.
@@ -688,11 +671,7 @@ export default Vue.extend({
                 ),
             (exit) =>
               exit.call((exit) =>
-                exit
-                  .transition()
-                  .duration(10)
-                  .style('opacity', 1e-5)
-                  .remove(),
+                exit.transition().duration(10).style('opacity', 1e-5).remove(),
               ),
           );
 
@@ -738,11 +717,7 @@ export default Vue.extend({
                 ),
             (exit) =>
               exit.call((exit) =>
-                exit
-                  .transition()
-                  .duration(10)
-                  .style('opacity', 1e-5)
-                  .remove(),
+                exit.transition().duration(10).style('opacity', 1e-5).remove(),
               ),
           );
         }
@@ -821,11 +796,7 @@ export default Vue.extend({
           },
           (exit) =>
             exit.call((exit) =>
-              exit
-                .transition()
-                .duration(10)
-                .style('opacity', 1e-5)
-                .remove(),
+              exit.transition().duration(10).style('opacity', 1e-5).remove(),
             ),
         );
 

@@ -232,28 +232,16 @@
 
 <script>
 import Vue from 'vue';
-import {
-  select,
-  selectAll,
-  scaleLinear,
-  scaleTime,
-  axisBottom,
-  axisLeft,
-  axisRight,
-  extent,
-  brushX,
-  timeParse,
-  timeFormat,
-  event,
-  min,
-  max,
-  format,
-  line,
-  area,
-  transition,
-  timeDay,
-  timeMonth,
-} from 'd3';
+import { min, max, extent } from 'd3-array';
+import { axisLeft, axisBottom } from 'd3-axis';
+import { brushX } from 'd3-brush';
+import { format } from 'd3-format';
+import { select, selectAll, event } from 'd3-selection';
+import { scaleLinear, scaleTime } from 'd3-scale';
+import { line, area } from 'd3-shape';
+import { timeDay, timeMonth } from 'd3-time';
+import { timeFormat, timeParse } from 'd3-time-format';
+import { transition } from 'd3-transition';
 import cloneDeep from 'lodash/cloneDeep';
 
 import { lazyLoad } from '@/js/lazy-load';
@@ -406,9 +394,9 @@ export default Vue.extend({
       if (this.width < 600) {
         this.numXTicks = 2;
         this.numYTicks = 4;
-      } else if(this.width < 1000){
-          this.numXTicks = 4;
-          this.numYTicks = 5;
+      } else if (this.width < 1000) {
+        this.numXTicks = 4;
+        this.numYTicks = 5;
       } else {
         this.numXTicks = 6;
         this.numYTicks = 5;

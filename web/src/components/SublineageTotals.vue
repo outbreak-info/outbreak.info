@@ -123,7 +123,10 @@
 
 <script>
 import Vue from 'vue';
-import { select, selectAll, scaleLinear, scaleBand, axisLeft, sum } from 'd3';
+import { sum } from 'd3-array';
+import { axisLeft } from 'd3-axis';
+import { scaleLinear, scaleBand } from 'd3-scale';
+import { select, selectAll } from 'd3-selection';
 import cloneDeep from 'lodash/cloneDeep';
 
 import { lazyLoad } from '@/js/lazy-load';

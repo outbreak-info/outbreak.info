@@ -106,7 +106,7 @@
 
 <script>
 import Vue from 'vue';
-import { timeFormat, timeParse } from 'd3';
+import { timeFormat, timeParse } from 'd3-time-format';
 
 import { lazyLoad } from '@/js/lazy-load';
 

@@ -34,7 +34,7 @@
 
 <script>
 import Vue from 'vue';
-import { timeFormat, timeParse } from 'd3';
+import { timeFormat, timeParse } from 'd3-time-format';
 
 export default Vue.extend({
   name: 'NewList',
@@ -42,7 +42,7 @@ export default Vue.extend({
     data: Array,
   },
   methods: {
-    format: function(dateStr) {
+    format: function (dateStr) {
       const parsed = timeParse('%Y-%m-%d')(dateStr);
       return parsed ? timeFormat('%d %B %Y')(parsed) : null;
     },

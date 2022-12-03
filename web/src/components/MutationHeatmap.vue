@@ -86,34 +86,20 @@
         <small class="ml-2 text-muted">of all sequences</small>
       </div>
       <div id="count" />
-      <div id="not-detected" class="text-muted">
-        not detected
-      </div>
+      <div id="not-detected" class="text-muted">not detected</div>
     </div>
   </div>
 </template>
 
 <script>
 import Vue from 'vue';
-
-import { cloneDeep, uniq } from 'lodash';
-
+import { axisBottom, axisTop } from 'd3-axis';
+import { nest } from 'd3-collection';
+import { format } from 'd3-format';
+import { selectAll, select, event } from 'd3-selection';
+import { scaleBand } from 'd3-scale';
 import { interpolateRdPu } from 'd3-scale-chromatic';
-
-import {
-  select,
-  selectAll,
-  scaleBand,
-  axisBottom,
-  axisTop,
-  transition,
-  max,
-  format,
-  nest,
-  event,
-} from 'd3';
-
-import chroma from 'chroma-js';
+import cloneDeep from 'lodash/cloneDeep';
 import tippy from 'tippy.js';
 import 'tippy.js/themes/light.css';
 
@@ -269,9 +255,7 @@ export default Vue.extend({
       this.isOverflow = this.width > 0.95 * window.innerWidth;
       this.x.range([0, this.width]);
 
-      this.y = scaleBand()
-        .paddingInner(this.paddingInner)
-        .domain(this.yDomain);
+      this.y = scaleBand().paddingInner(this.paddingInner).domain(this.yDomain);
 
       this.height = this.yDomain.length * this.bandWidth;
       this.y.range([0, this.height]);
@@ -428,13 +412,9 @@ export default Vue.extend({
         .style('opacity', 1);
     },
     highlightColumn(d) {
-      select(this.$refs.xAxisBottom)
-        .selectAll('text')
-        .style('opacity', 0.2);
+      select(this.$refs.xAxisBottom).selectAll('text').style('opacity', 0.2);
 
-      select(this.$refs.xAxisTop)
-        .selectAll('text')
-        .style('opacity', 0.2);
+      select(this.$refs.xAxisTop).selectAll('text').style('opacity', 0.2);
 
       this.svg.selectAll('rect').style('fill-opacity', 0.2);
 
@@ -444,13 +424,9 @@ export default Vue.extend({
         .style('opacity', 1);
     },
     highlightOff(d) {
-      select(this.$refs.xAxisBottom)
-        .selectAll('text')
-        .style('opacity', 1);
+      select(this.$refs.xAxisBottom).selectAll('text').style('opacity', 1);
 
-      select(this.$refs.xAxisTop)
-        .selectAll('text')
-        .style('opacity', 1);
+      select(this.$refs.xAxisTop).selectAll('text').style('opacity', 1);
 
       this.svg.selectAll('.y-axis-left').style('opacity', 1);
 
@@ -575,10 +551,7 @@ export default Vue.extend({
         },
         (exit) =>
           exit.call((exit) =>
-            exit
-              .transition()
-              .style('opacity', 1e-5)
-              .remove(),
+            exit.transition().style('opacity', 1e-5).remove(),
           ),
       );
 
@@ -627,10 +600,7 @@ export default Vue.extend({
         },
         (exit) =>
           exit.call((exit) =>
-            exit
-              .transition()
-              .style('opacity', 1e-5)
-              .remove(),
+            exit.transition().style('opacity', 1e-5).remove(),
           ),
       );
 
@@ -773,10 +743,7 @@ export default Vue.extend({
           },
           (exit) =>
             exit.call((exit) =>
-              exit
-                .transition()
-                .style('opacity', 1e-5)
-                .remove(),
+              exit.transition().style('opacity', 1e-5).remove(),
             ),
         );
 
@@ -844,10 +811,7 @@ export default Vue.extend({
           },
           (exit) =>
             exit.call((exit) =>
-              exit
-                .transition()
-                .style('opacity', 1e-5)
-                .remove(),
+              exit.transition().style('opacity', 1e-5).remove(),
             ),
         );
       }

@@ -276,7 +276,7 @@
 
 <script>
 import Vue from 'vue';
-import { format } from 'd3';
+import { format } from 'd3-format';
 
 import { lazyLoad } from '@/js/lazy-load';
 

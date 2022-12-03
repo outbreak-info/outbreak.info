@@ -10,7 +10,7 @@
           :width="35"
           :height="rectWidth + 15"
           class="categorical-rect my-1"
-          style="margin-right: 15px;"
+          style="margin-right: 15px"
         >
           <g transform="translate(2,2)">
             <rect
@@ -42,7 +42,7 @@
           :width="35"
           :height="rectWidth + 15"
           class="categorical-rect my-1"
-          style="margin-right: 15px;"
+          style="margin-right: 15px"
         >
           <g transform="translate(2,2)">
             <rect
@@ -141,7 +141,7 @@
         />
 
         <text
-          style='font-family:"DM Sans", Avenir, Helvetica, Arial, sans-serif;'
+          style="font-family: 'DM Sans', Avenir, Helvetica, Arial, sans-serif"
           x="22"
           y="40"
           dy="7"
@@ -152,7 +152,7 @@
           sequenced &lt; {{ countThreshold }} samples
         </text>
         <text
-          style='font-family:"DM Sans", Avenir, Helvetica, Arial, sans-serif;'
+          style="font-family: 'DM Sans', Avenir, Helvetica, Arial, sans-serif"
           x="22"
           y="20"
           dy="7"
@@ -163,7 +163,7 @@
           {{ mutationName }} not detected
         </text>
         <text
-          style='font-family:"DM Sans", Avenir, Helvetica, Arial, sans-serif;'
+          style="font-family: 'DM Sans', Avenir, Helvetica, Arial, sans-serif"
           x="22"
           y="0"
           dy="7"
@@ -179,7 +179,7 @@
 </template>
 
 <script>
-import { select, selectAll } from 'd3';
+import { select, selectAll } from 'd3-selection';
 
 export default {
   name: 'ClassedLegend',
@@ -229,7 +229,7 @@ export default {
     updateColorLegend() {
       if (this.colorScale) {
         this.colorDomain = this.colorScale.domain();
-        selectAll('.categorical-rect').each(function() {
+        selectAll('.categorical-rect').each(function () {
           const bbox = this.getBBox();
           select(this).attr('width', bbox.width + 1 < 18 ? 18 : bbox.width + 1);
 

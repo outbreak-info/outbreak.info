@@ -32,19 +32,17 @@
       />
       <g
         ref="yAxisLeft"
-        :transform="
-          `translate(${margin.left - xBandwidth / 2 - 5}, ${margin.top})`
-        "
+        :transform="`translate(${margin.left - xBandwidth / 2 - 5}, ${
+          margin.top
+        })`"
         class="prevalence-axis total-axis axis--y"
         :hidden="!data.length"
       />
       <g
         ref="yAxisRight"
-        :transform="
-          `translate(${width - margin.right + xBandwidth / 2 + 5}, ${
-            margin.top
-          })`
-        "
+        :transform="`translate(${width - margin.right + xBandwidth / 2 + 5}, ${
+          margin.top
+        })`"
         class="prevalence-axis total-axis axis--y"
         :hidden="!data.length"
       />
@@ -106,21 +104,13 @@
 
 <script>
 import Vue from 'vue';
-import {
-  select,
-  selectAll,
-  scaleLinear,
-  scaleTime,
-  axisBottom,
-  axisLeft,
-  axisRight,
-  extent,
-  event,
-  max,
-  format,
-  transition,
-  timeDay,
-} from 'd3';
+import { max, extent } from 'd3-array';
+import { axisLeft, axisBottom, axisRight } from 'd3-axis';
+import { format } from 'd3-format';
+import { scaleLinear, scaleTime } from 'd3-scale';
+import { select, selectAll, event } from 'd3-selection';
+import { timeDay } from 'd3-time';
+import { transition } from 'd3-transition';
 
 export default Vue.extend({
   name: 'SequencingHistogram',
@@ -346,10 +336,7 @@ export default Vue.extend({
               .attr('y', (d) => this.y(d[this.totalVariable])),
           (exit) =>
             exit.call((exit) =>
-              exit
-                .transition()
-                .style('opacity', 1e-5)
-                .remove(),
+              exit.transition().style('opacity', 1e-5).remove(),
             ),
         );
 
@@ -398,10 +385,7 @@ export default Vue.extend({
               .style('stroke-width', this.xBandwidth),
           (exit) =>
             exit.call((exit) =>
-              exit
-                .transition()
-                .style('opacity', 1e-5)
-                .remove(),
+              exit.transition().style('opacity', 1e-5).remove(),
             ),
         );
 

@@ -53,13 +53,13 @@
               <tr>
                 <td
                   class="line-height-1 text-right pb-1"
-                  style="vertical-align: top;"
+                  style="vertical-align: top"
                 >
                   <b>{{ timeConfirmed }}</b>
                 </td>
                 <td
                   class="line-height-1 pl-2"
-                  style="width: 125px; vertical-align: top;"
+                  style="width: 125px; vertical-align: top"
                 >
                   new cases
                 </td>
@@ -67,13 +67,13 @@
               <tr>
                 <td
                   class="line-height-1 text-right"
-                  style="vertical-align: top;"
+                  style="vertical-align: top"
                 >
                   <b>{{ timeConfirmedPC }}</b>
                 </td>
                 <td
                   class="line-height-1 pl-2"
-                  style="width: 125px; vertical-align: top;"
+                  style="width: 125px; vertical-align: top"
                 >
                   new cases per 100,000
                 </td>
@@ -103,13 +103,13 @@
               <tr>
                 <td
                   class="line-height-1 text-right pb-1"
-                  style="vertical-align: top;"
+                  style="vertical-align: top"
                 >
                   <b>{{ timeDead }}</b>
                 </td>
                 <td
                   class="line-height-1 pl-2"
-                  style="width: 125px; vertical-align: top;"
+                  style="width: 125px; vertical-align: top"
                 >
                   new deaths
                 </td>
@@ -117,13 +117,13 @@
               <tr>
                 <td
                   class="line-height-1 text-right"
-                  style="vertical-align: top;"
+                  style="vertical-align: top"
                 >
                   <b>{{ timeDeadPC }}</b>
                 </td>
                 <td
                   class="line-height-1 pl-2"
-                  style="width: 125px; vertical-align: top;"
+                  style="width: 125px; vertical-align: top"
                 >
                   new deaths per 100,000
                 </td>
@@ -179,20 +179,11 @@
 </template>
 
 <script>
-import {
-  geoEqualEarth,
-  geoAlbersUsa,
-  geoPath,
-  max,
-  min,
-  timeParse,
-  timeFormat,
-  format,
-  event,
-  transition,
-  select,
-  selectAll,
-} from 'd3';
+import { geoEqualEarth, geoAlbersUsa, geoPath } from 'd3-geo';
+import { max, min } from 'd3-array';
+import { format } from 'd3-format';
+import { select, selectAll, event } from 'd3-selection';
+import { timeFormat, timeParse } from 'd3-time-format';
 import cloneDeep from 'lodash/cloneDeep';
 
 import { getSparklineTraces } from '@/api/epi-traces.js';
@@ -444,10 +435,7 @@ export default {
             (update) => update.attr('d', this.path),
             (exit) =>
               exit.call((exit) =>
-                exit
-                  .transition()
-                  .style('opacity', 1e-5)
-                  .remove(),
+                exit.transition().style('opacity', 1e-5).remove(),
               ),
           );
 
@@ -490,10 +478,7 @@ export default {
             },
             (exit) =>
               exit.call((exit) =>
-                exit
-                  .transition()
-                  .style('opacity', 1e-5)
-                  .remove(),
+                exit.transition().style('opacity', 1e-5).remove(),
               ),
           );
 
@@ -515,10 +500,7 @@ export default {
             (update) => update.attr('d', this.path),
             (exit) =>
               exit.call((exit) =>
-                exit
-                  .transition()
-                  .style('opacity', 1e-5)
-                  .remove(),
+                exit.transition().style('opacity', 1e-5).remove(),
               ),
           );
 
@@ -561,7 +543,11 @@ export default {
     },
     mouseOn(d) {
       this.timeTrace = null; // reset to avoid seeing old data
-      this.timeConfirmed = this.timeConfirmedPC = this.timeDead = this.timeDeadPC = null; // reset to avoid seeing old data
+      this.timeConfirmed =
+        this.timeConfirmedPC =
+        this.timeDead =
+        this.timeDeadPC =
+          null; // reset to avoid seeing old data
       if (d.value) {
         this.getTimetrace(d.location_id);
 
@@ -579,7 +565,11 @@ export default {
     },
     mouseOff() {
       this.timeTrace = []; // reset to avoid seeing old data
-      this.timeConfirmed = this.timeConfirmedPC = this.timeDead = this.timeDeadPC = null;
+      this.timeConfirmed =
+        this.timeConfirmedPC =
+        this.timeDead =
+        this.timeDeadPC =
+          null;
       selectAll('.tooltip').style('opacity', 0);
       this.regions.selectAll('path.region').style('opacity', 1);
       this.regions.selectAll('path.outline').style('opacity', 1);

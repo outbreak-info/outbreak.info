@@ -140,7 +140,9 @@
 
 <script>
 import { mapState } from 'vuex';
-import { timeFormat, format, max, min } from 'd3';
+import { max, min } from 'd3-array';
+import { format } from 'd3-format';
+import { timeFormat } from 'd3-time-format';
 
 import { getComparisonData } from '@/api/epi-comparison.js';
 import { lazyLoad } from '@/js/lazy-load';

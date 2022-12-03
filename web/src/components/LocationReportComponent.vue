@@ -938,19 +938,12 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import { mapState } from 'vuex';
-import {
-  max,
-  timeFormat,
-  scaleOrdinal,
-  scaleThreshold,
-  scaleSequential,
-  scaleTime,
-  timeDay,
-  extent,
-  format,
-} from 'd3';
+import { max } from 'd3-array';
+import { format } from 'd3-format';
+import { scaleOrdinal, scaleThreshold, scaleSequential } from 'd3-scale';
+import { timeDay } from 'd3-time';
+import { timeFormat } from 'd3-time-format';
 import { schemeYlGnBu, interpolateRdPu } from 'd3-scale-chromatic';
 import debounce from 'lodash/debounce';
 import uniq from 'lodash/uniq';

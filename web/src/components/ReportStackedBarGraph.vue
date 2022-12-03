@@ -39,26 +39,12 @@
 
 <script>
 import Vue from 'vue';
-import {
-  select,
-  selectAll,
-  scaleTime,
-  scaleLinear,
-  axisLeft,
-  axisBottom,
-  area,
-  stack,
-  stackOrderAscending,
-  // stackOrderDescending,
-  forceCollide,
-  forceY,
-  forceSimulation,
-  event,
-  extent,
-  format,
-  scaleOrdinal,
-  max,
-} from 'd3';
+import { axisLeft } from 'd3-axis';
+import { format } from 'd3-format';
+import { forceY, forceCollide, forceSimulation } from 'd3-force';
+import { scaleLinear, scaleTime } from 'd3-scale';
+import { select, event } from 'd3-selection';
+import { stack, stackOrderAscending } from 'd3-shape';
 
 import { lazyLoad } from '@/js/lazy-load';
 
@@ -299,10 +285,7 @@ export default Vue.extend({
         },
         (exit) =>
           exit.call((exit) =>
-            exit
-              .transition()
-              .style('opacity', 1e-5)
-              .remove(),
+            exit.transition().style('opacity', 1e-5).remove(),
           ),
       );
     },

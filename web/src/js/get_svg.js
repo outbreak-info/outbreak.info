@@ -8,7 +8,9 @@ const canvas = document.createElement('canvas'),
   context = canvas.getContext('2d'),
   ratio = global.devicePixelRatio || 1;
 
-import { max, nest, select, selectAll } from 'd3';
+import { max } from 'd3-array';
+import { nest } from 'd3-collection';
+import { select, selectAll } from 'd3-selection';
 
 // code adapted from https://github.com/nytimes/svg-crowbar (thanks, Mike Bostock)
 export const getSvg = (figureRef, sources, date, darkBg) => {
@@ -196,16 +198,17 @@ const getFooter = (width, height, sources, date, footerHeight) => {
           </svg>
         </g>
         <g id="outbreak-info" transform="translate(0, ${margin.y})">
-          <text x="0" y="0" transform="translate(${logoWidth +
-            margin.x /
-              2},0)" style="font-size:${outbreakFontSize}px; dominant-baseline: middle;font-family:&quot;DM Sans&quot;, Avenir, Helvetica, Arial, sans-serif;">outbreak.info</text>
-          <text x="0" y="0" transform="translate(${width -
-            2 * margin.x},${height *
-    -0.5})" style="dominant-baseline: middle; font-size:${outbreakFontSize}px; text-anchor: end;font-family:&quot;DM Sans&quot;, Avenir, Helvetica, Arial, sans-serif;">${date}</text>
+          <text x="0" y="0" transform="translate(${
+            logoWidth + margin.x / 2
+          },0)" style="font-size:${outbreakFontSize}px; dominant-baseline: middle;font-family:&quot;DM Sans&quot;, Avenir, Helvetica, Arial, sans-serif;">outbreak.info</text>
+          <text x="0" y="0" transform="translate(${width - 2 * margin.x},${
+    height * -0.5
+  })" style="dominant-baseline: middle; font-size:${outbreakFontSize}px; text-anchor: end;font-family:&quot;DM Sans&quot;, Avenir, Helvetica, Arial, sans-serif;">${date}</text>
         </g>
 
-        <g id="sources" transform="translate(${logoWidth +
-          margin.x / 2},${outbreakFontSize + margin.y})">
+        <g id="sources" transform="translate(${logoWidth + margin.x / 2},${
+    outbreakFontSize + margin.y
+  })">
           ${sourceString}
 
         </g>
@@ -310,7 +313,7 @@ export const getPng = (
     let subheader;
     let footer;
 
-    forEach.call(svgs, function(svg, i) {
+    forEach.call(svgs, function (svg, i) {
       if (svg.namespaceURI !== 'http://www.w3.org/2000/svg') return; // Not really an SVG.
       if (svg.ownerSVGElement) return; // An SVG within another SVG.
 
@@ -321,7 +324,7 @@ export const getPng = (
 
           .nodes().length
       ) {
-        forEach.call(styles, function(style) {
+        forEach.call(styles, function (style) {
           svg.appendChild(style.cloneNode(true));
         });
       }
@@ -531,7 +534,7 @@ export const getPng = (
               subheaderUrl = URL.revokeObjectURL(subheaderUrl);
               footerUrl = URL.revokeObjectURL(footerUrl);
 
-              canvas.toBlob(function(blob) {
+              canvas.toBlob(function (blob) {
                 let a = document.createElement('a'),
                   aUrl = URL.createObjectURL(blob);
                 a.download = filename;

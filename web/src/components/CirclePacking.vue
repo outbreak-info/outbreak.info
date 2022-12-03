@@ -10,25 +10,18 @@
     </svg>
     <div
       ref="circle_tooltip"
-      class="circle-pack-tooltip box-shadow rounded hidden position-absolute  px-3 py-2"
+      class="circle-pack-tooltip box-shadow rounded hidden position-absolute px-3 py-2"
     ></div>
   </div>
 </template>
 
 <script>
 import Vue from 'vue';
+import { max } from 'd3-array';
+import { pack, hierarchy } from 'd3-hierarchy';
+import { scaleLinear, scaleTime } from 'd3-scale';
+import { select, selectAll, event } from 'd3-selection';
 
-import {
-  select,
-  selectAll,
-  scaleLinear,
-  scaleTime,
-  event,
-  pack,
-  hierarchy,
-  max,
-} from 'd3';
-// from https://observablehq.com/@d3/marimekko-chart
 export default Vue.extend({
   name: 'CirclePacking',
   props: {
@@ -144,7 +137,7 @@ export default Vue.extend({
       });
       let root = hierarchy(this.data)
         .sum((d) => d.count)
-        .sort(function(a, b) {
+        .sort(function (a, b) {
           return b.value - a.value;
         });
 
@@ -159,8 +152,9 @@ export default Vue.extend({
     circle2Path(cx, cy, r) {
       r = r - 10;
       return r > 0
-        ? `M${cx - r},${cy}a${r},${r} 0 1,1 ${2 * r},0a${r},${r} 0 1,1 -${2 *
-            r},0`
+        ? `M${cx - r},${cy}a${r},${r} 0 1,1 ${2 * r},0a${r},${r} 0 1,1 -${
+            2 * r
+          },0`
         : null;
     },
     drawPlot() {

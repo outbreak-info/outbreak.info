@@ -47,19 +47,12 @@
 <script>
 import Vue from 'vue';
 
-import {
-  select,
-  selectAll,
-  scaleLinear,
-  scaleBand,
-  scaleTime,
-  max,
-  extent,
-  axisRight,
-  transition,
-  area,
-} from 'd3';
-import cloneDeep from 'lodash/cloneDeep';
+import { axisRight } from 'd3-axis';
+import { max, extent } from 'd3-array';
+import { scaleLinear, scaleBand, scaleTime } from 'd3-scale';
+import { select, selectAll } from 'd3-selection';
+import { area } from 'd3-shape';
+import { transition } from 'd3-transition';
 
 import { getCountryData } from '@/api/region-summary.js';
 import store from '@/store';

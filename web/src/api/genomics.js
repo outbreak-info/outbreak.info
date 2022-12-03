@@ -1,21 +1,12 @@
 import axios from 'axios';
 import { forkJoin, from, of } from 'rxjs';
 import { catchError, finalize, map, mergeMap, pluck } from 'rxjs/operators';
-import {
-  format,
-  max,
-  median,
-  min,
-  nest,
-  quantile,
-  range,
-  scaleThreshold,
-  sum,
-  timeDay,
-  timeFormat,
-  timeMonday,
-  timeParse,
-} from 'd3';
+import { min, max, sum, range, median, quantile } from 'd3-array';
+import { format } from 'd3-format';
+import { nest } from 'd3-collection';
+import { scaleThreshold } from 'd3-scale';
+import { timeDay, timeMonday } from 'd3-time';
+import { timeFormat, timeParse } from 'd3-time-format';
 
 import { bin } from 'd3-array';
 
@@ -2456,10 +2447,7 @@ export const getMutationsOfInterestPrevalence = (
             d.type === 'substitution'
               ? `${d.ref_aa}${d.codon_num}${d.alt_aa}`
               : d.type === 'deletion'
-              ? d.mutation
-                  .toUpperCase()
-                  .split(':')
-                  .slice(-1)[0]
+              ? d.mutation.toUpperCase().split(':').slice(-1)[0]
               : d.mutation;
           d['isMOI'] = mutationsOfInterest.includes(d.mutation);
           d['isMOC'] = mutationsOfConcern.includes(d.mutation);
@@ -2473,10 +2461,7 @@ export const getMutationsOfInterestPrevalence = (
             d.type === 'substitution'
               ? `${d.ref_aa}${d.codon_num}${d.alt_aa}`
               : d.type === 'deletion'
-              ? d.mutation
-                  .toUpperCase()
-                  .split(':')
-                  .slice(-1)[0]
+              ? d.mutation.toUpperCase().split(':').slice(-1)[0]
               : d.mutation;
           d['isMOI'] = mutationsOfInterest.includes(d.mutation);
           d['isMOC'] = mutationsOfConcern.includes(d.mutation);
@@ -2654,10 +2639,7 @@ export const getLineagesComparison = (
           d.type === 'substitution'
             ? `${d.ref_aa}${d.codon_num}${d.alt_aa}`
             : d.type === 'deletion'
-            ? d.mutation
-                .toUpperCase()
-                .split(':')
-                .slice(-1)[0]
+            ? d.mutation.toUpperCase().split(':').slice(-1)[0]
             : d.mutation;
       });
 
@@ -3035,13 +3017,7 @@ export const getVOCTotals = (genomicsUrl, locations, totalThreshold) => {
 
       const whiteThreshold = 0.35;
       const colorScale = scaleThreshold(schemeYlGnBu[9]).domain([
-        0.01,
-        0.05,
-        0.1,
-        0.2,
-        0.35,
-        0.5,
-        0.75,
+        0.01, 0.05, 0.1, 0.2, 0.35, 0.5, 0.75,
       ]);
 
       return flattened.map((location) => {

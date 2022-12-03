@@ -3,7 +3,7 @@
     <svg :width="width" :height="width" class="donut">
       <g ref="pie" :transform="`translate(${width / 2},${width / 2})`" />
     </svg>
-    <div class="ml-2" style="max-width: 150px;">
+    <div class="ml-2" style="max-width: 150px">
       <div
         v-for="(d, idx) in nonZero"
         :key="idx"
@@ -29,16 +29,10 @@
 
 <script>
 import Vue from 'vue';
-
-import {
-  select,
-  selectAll,
-  pie,
-  arc,
-  scaleOrdinal,
-  scaleBand,
-  schemeSet2,
-} from 'd3';
+import { select } from 'd3-selection';
+import { scaleOrdinal } from 'd3-scale';
+import { pie, arc } from 'd3-shape';
+import { schemeSet2 } from 'd3-scale-chromatic';
 
 export default Vue.extend({
   name: 'Donut',

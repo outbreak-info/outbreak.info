@@ -32,10 +32,8 @@
     </span> -->
         <router-link
           id="changing-countries"
-          :data-tippy-info="
-            `
-      ${currentSummary$.aboveThreshold.names}`
-          "
+          :data-tippy-info="`
+      ${currentSummary$.aboveThreshold.names}`"
           :to="{
             name: 'Epidemiology',
             query: { location: currentSummary$.aboveThreshold.link },
@@ -67,9 +65,7 @@
     >
       <div class="d-flex justify-content-center align-items-center mb-2">
         <div>
-          <h5 class="at-a-glance-header m-0">
-            At a glance
-          </h5>
+          <h5 class="at-a-glance-header m-0">At a glance</h5>
           <p class="ml-3 mb-0">
             View the three locations with the largest increase in COVID-19 cases
             in the past day, or select your own locations
@@ -109,7 +105,6 @@
 <script>
 import Vue from 'vue';
 import { mapState } from 'vuex';
-import { timeFormat } from 'd3';
 import tippy from 'tippy.js';
 
 import { getSummary } from '@/api/epi-basics.js';

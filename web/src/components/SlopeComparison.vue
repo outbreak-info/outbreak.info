@@ -35,7 +35,9 @@
 
 <script>
 import Vue from 'vue';
-import { select, selectAll, scaleLinear, axisBottom } from 'd3';
+import { axisBottom } from 'd3-axis';
+import { select } from 'd3-selection';
+import { scaleLinear } from 'd3-scale';
 
 const width = 125;
 const height = 75;
@@ -102,9 +104,7 @@ export default Vue.extend({
         .range([this.height - this.margin.top - this.margin.bottom, 0])
         .domain([0, this.yMax]);
 
-      this.xAxis = axisBottom(this.x)
-        .ticks(0)
-        .tickSizeOuter(0);
+      this.xAxis = axisBottom(this.x).ticks(0).tickSizeOuter(0);
 
       select(this.$refs.xAxis).call(this.xAxis);
 
@@ -174,8 +174,9 @@ export default Vue.extend({
               .attr(
                 'd',
                 (d) =>
-                  `M${this.x(1)} ${this.y(d.slope1)} C ${this.x(1) +
-                    10} ${this.y(d.slope1)}, ${this.x(1) + 10} ${this.y(
+                  `M${this.x(1)} ${this.y(d.slope1)} C ${
+                    this.x(1) + 10
+                  } ${this.y(d.slope1)}, ${this.x(1) + 10} ${this.y(
                     d.slope2,
                   )}, ${this.x(1) - 4} ${this.y(d.slope2)}`,
               )
@@ -189,8 +190,9 @@ export default Vue.extend({
               .attr(
                 'd',
                 (d) =>
-                  `M${this.x(1)} ${this.y(d.slope1)} C ${this.x(1) +
-                    10} ${this.y(d.slope1)}, ${this.x(1) + 10} ${this.y(
+                  `M${this.x(1)} ${this.y(d.slope1)} C ${
+                    this.x(1) + 10
+                  } ${this.y(d.slope1)}, ${this.x(1) + 10} ${this.y(
                     d.slope2,
                   )}, ${this.x(1) - 4} ${this.y(d.slope2)}`,
               )

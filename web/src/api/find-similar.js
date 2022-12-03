@@ -1,6 +1,8 @@
 import { from } from 'rxjs';
 import { finalize, catchError, mergeMap, map } from 'rxjs/operators';
-import { timeParse, nest, extent, max } from 'd3';
+import { extent, max } from 'd3-array';
+import { nest } from 'd3-collection';
+import { timeParse } from 'd3-time-format';
 
 import store from '@/store';
 import { getAll } from '@/api/biothings.js';

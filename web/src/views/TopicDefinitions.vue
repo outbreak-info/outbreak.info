@@ -56,7 +56,8 @@
 
 <script>
 import Vue from 'vue';
-import { tsv, nest } from 'd3';
+import { nest } from 'd3-collection';
+import { tsv } from 'd3-fetch';
 
 export default Vue.extend({
   name: 'TopicDefinitions',

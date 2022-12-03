@@ -852,10 +852,10 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import { mapState } from 'vuex';
-import { scaleSequential, format, timeFormat } from 'd3';
+import { scaleSequential } from 'd3-scale';
 import { interpolateRdPu } from 'd3-scale-chromatic';
+import { timeFormat } from 'd3-time-format';
 import debounce from 'lodash/debounce';
 import uniq from 'lodash/uniq';
 import tippy from 'tippy.js';

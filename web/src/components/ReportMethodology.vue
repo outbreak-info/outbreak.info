@@ -213,9 +213,8 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import { mapState } from 'vuex';
-import { format } from 'd3';
+import { format } from 'd3-format';
 
 import { getDateUpdated } from '@/api/genomics.js';
 import { lazyLoad } from '@/js/lazy-load';

@@ -1,7 +1,8 @@
 import { from } from 'rxjs';
 import axios from 'axios';
 import { finalize, catchError, pluck, map } from 'rxjs/operators';
-import { nest, timeParse } from 'd3';
+import { nest } from 'd3-collection';
+import { timeParse } from 'd3-time-format';
 import { linearRegression } from 'datalib';
 import store from '@/store';
 
@@ -146,8 +147,9 @@ export const getAllDoubling = (apiUrl, variable, fitLength = 5) => {
         .key((d) => d.location_id)
         .rollup((values) => {
           const resultsLength = values.length;
-          const maxDate = values.sort((a, b) => a.date - b.date).slice(-1)[0]
-            .date;
+          const maxDate = values
+            .sort((a, b) => a.date - b.date)
+            .slice(-1)[0].date;
 
           return {
             data: values,

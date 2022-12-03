@@ -30,14 +30,9 @@
 </template>
 
 <script>
-import {
-  select,
-  selectAll,
-  scaleLinear,
-  scaleBand,
-  format,
-  transition,
-} from 'd3';
+import { select, selectAll } from 'd3-selection';
+import { scaleLinear, scaleBand } from 'd3-scale';
+import { format } from 'd3-format';
 import cloneDeep from 'lodash/cloneDeep';
 
 export default {
@@ -209,11 +204,7 @@ export default {
             }),
         (exit) =>
           exit.call((exit) =>
-            exit
-              .transition()
-              .duration(10)
-              .style('opacity', 1e-5)
-              .remove(),
+            exit.transition().duration(10).style('opacity', 1e-5).remove(),
           ),
       );
 
@@ -264,11 +255,7 @@ export default {
 
         (exit) =>
           exit.call((exit) =>
-            exit
-              .transition()
-              .duration(10)
-              .style('opacity', 1e-5)
-              .remove(),
+            exit.transition().duration(10).style('opacity', 1e-5).remove(),
           ),
       );
 
@@ -350,11 +337,7 @@ export default {
             }),
         (exit) =>
           exit.call((exit) =>
-            exit
-              .transition()
-              .duration(10)
-              .style('opacity', 1e-5)
-              .remove(),
+            exit.transition().duration(10).style('opacity', 1e-5).remove(),
           ),
       );
 
@@ -408,11 +391,7 @@ export default {
 
         (exit) =>
           exit.call((exit) =>
-            exit
-              .transition()
-              .duration(10)
-              .style('opacity', 1e-5)
-              .remove(),
+            exit.transition().duration(10).style('opacity', 1e-5).remove(),
           ),
       );
     },
