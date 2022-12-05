@@ -110,7 +110,6 @@ import { format } from 'd3-format';
 import { scaleLinear, scaleTime } from 'd3-scale';
 import { select, selectAll, event } from 'd3-selection';
 import { timeDay } from 'd3-time';
-import { transition } from 'd3-transition';
 
 export default Vue.extend({
   name: 'SequencingHistogram',
