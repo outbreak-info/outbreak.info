@@ -303,7 +303,9 @@ export default Vue.extend({
 
     this.setupPlot();
     this.updatePlot();
-    this.changeXScale(6);
+    if (!this.xmin && !this.xmax) {
+      this.changeXScale(6);
+    }
   },
   created() {
     this.debounceSetDims = this.debounce(this.setDims, 150);
