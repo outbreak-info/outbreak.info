@@ -397,7 +397,7 @@ export default Vue.extend({
           this.width = maxWidth;
         } else {
           this.height = maxHeight;
-          this.width = this.height / this.hwRatio;
+          this.width = this.height / hwRatio;
         }
       } else {
         this.width = this.setWidth;
@@ -471,6 +471,7 @@ export default Vue.extend({
 
       if (this.xMin && this.xMax && this.xMin < this.xMax) {
         xDomain = [this.xMin, this.xMax];
+        this.maxDate = max(this.data, (d) => d[this.xVariable]);
       } else {
         if (this.includeToday) {
           const today = new Date();
@@ -600,7 +601,7 @@ export default Vue.extend({
                     ? this.width -
                         this.margin.left -
                         this.margin.right -
-                        (this.maxDate ? this.x(this.maxDate) : 0)
+                        this.x(this.maxDate)
                     : 0,
                 )
                 .attr(
@@ -624,7 +625,7 @@ export default Vue.extend({
                     ? this.width -
                         this.margin.left -
                         this.margin.right -
-                        (this.maxDate ? this.x(this.maxDate) : 0)
+                        this.x(this.maxDate)
                     : 0,
                 );
             },
@@ -700,7 +701,7 @@ export default Vue.extend({
         .extent([
           [0, 0],
           [
-            this.width ? this.width - this.margin.left - this.margin.right : 0,
+            this.width - this.margin.left - this.margin.right,
             this.height - this.margin.top - this.margin.bottom,
           ],
         ])
