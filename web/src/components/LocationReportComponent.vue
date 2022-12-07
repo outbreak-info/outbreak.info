@@ -801,7 +801,7 @@
                     <router-link
                       :to="{
                         name: 'MutationReport',
-                        params: choro.params,
+                        params: choro.params ? choro.params : {},
                         query: { ...choro.route, loc: [loc], selected: loc },
                       }"
                     >
