@@ -1,10 +1,8 @@
 <template>
-  <div class="row" style="min-height: 75vh;">
+  <div style="min-height: 75vh">
     <div class="col-sm-12 my-5">
       <div class="container text-left mb-5">
-        <h1 class="text-highlight">
-          Terms of Use
-        </h1>
+        <h1 class="text-highlight">Terms of Use</h1>
         <h4>Disclaimer</h4>
         <p>
           Every effort has been made to ensure the accuracy and completeness of
