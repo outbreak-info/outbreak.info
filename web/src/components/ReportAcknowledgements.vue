@@ -42,7 +42,7 @@
           <span v-else>{{ grant.identifier }}</span>
           )
           <span v-if="idx < funding.length - 2">,</span>
-          <span v-if="idx === funding.length - 2">, and</span>
+          <span v-if="idx === funding.length - 2">{{ ', and ' }}</span>
         </span>
         .
       </div>
