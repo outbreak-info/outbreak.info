@@ -1,5 +1,5 @@
 <template>
-  <div class="row">
+  <div>
     <div class="col-sm-12 my-5 text-left">
       <div class="container half-page">
         <h1 class="text-highlight">Privacy Policy</h1>
@@ -72,12 +72,8 @@
           that such action is necessary to:
         </p>
         <ul>
-          <li>
-            To comply with a legal obligation
-          </li>
-          <li>
-            To protect and defend the rights or property of outbreak.info
-          </li>
+          <li>To comply with a legal obligation</li>
+          <li>To protect and defend the rights or property of outbreak.info</li>
           <li>
             To prevent or investigate possible wrongdoing in connection with the
             Service
@@ -85,9 +81,7 @@
           <li>
             To protect the personal safety of users of the Service or the public
           </li>
-          <li>
-            To protect against legal liability
-          </li>
+          <li>To protect against legal liability</li>
         </ul>
         <h3 class="my-3">Security</h3>
         <p>

@@ -1,6 +1,6 @@
 <!-- html code which renders the page -->
 <template>
-  <div class="row" style="min-height: 75vh;">
+  <div style="min-height: 75vh">
     <div class="col-sm-12 my-5">
       <div class="container text-left mb-5">
         <h1>Frequently Asked Questions</h1>
