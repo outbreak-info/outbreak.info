@@ -18,14 +18,16 @@
         v-for="(beforeTime, lIdx) in timeOptions"
         :key="lIdx"
         class="btn btn-accent-outline timeline-btn m-0 px-2 py-1 mr-2"
-        :class="{ 'time-btn-active': beforeTime.value === month && !isZooming }"
+        :class="{
+          'time-btn-active': beforeTime.value === countMonth && !isZooming,
+        }"
         @click="changeXScale(beforeTime.value)"
       >
         {{ beforeTime.label }}
       </button>
       <button
         class="btn btn-accent-outline timeline-btn text-highlight d-flex align-items-center m-0 px-2 py-1"
-        :class="{ 'time-btn-active': month === 0 && !isZooming }"
+        :class="{ 'time-btn-active': countMonth === 0 && !isZooming }"
         @click="resetZoom"
       >
         all time
@@ -333,6 +335,13 @@ export default Vue.extend({
     countTitle() {
       return `Total samples sequenced by collection date in ${this.location}`;
     },
+    countMonth() {
+      if (this.xmin && this.xmax) {
+        return timeMonth.count(new Date(this.xmin), new Date(this.xmax));
+      } else {
+        return 0;
+      }
+    },
   },
   watch: {
     width() {
@@ -373,7 +382,9 @@ export default Vue.extend({
     this.setDims();
     this.setupPlot();
     this.updatePlot();
-    this.changeXScale(6);
+    if (!this.xmin && !this.xmax) {
+      this.changeXScale(6);
+    }
   },
   created() {
     this.debounceSetDims = this.debounce(this.setDims, 150);
@@ -440,6 +451,7 @@ export default Vue.extend({
     changeXScale(month) {
       this.isZooming = false;
       this.month = month;
+      this.isZooming = false;
       const newMax = new Date();
       const newMin = timeMonth.offset(newMax, -month);
 
@@ -786,6 +798,7 @@ export default Vue.extend({
       this.xMax = null;
       this.isZooming = false;
       this.month = 0;
+      this.isZooming = false;
       this.setXScale();
 
       if (this.routeName === 'MutationReport') {
