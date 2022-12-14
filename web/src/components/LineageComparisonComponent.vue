@@ -785,6 +785,15 @@
             v-for="(geneData, gIdx) in filteredMutationHeatmap"
             :key="gIdx"
             class="mr-4 mb-2"
+            :class="{
+              'horiz-scroll':
+                largeScreen &&
+                geneData.key === 'S' &&
+                selectedPango &&
+                (selectedPango.includes('Omicron') ||
+                  selectedPango.includes('omicron') ||
+                  selectedPango.includes('B.1.1.529')),
+            }"
           >
             <template v-if="selectedGenes.includes(geneData.key)">
               <h4 class="m-0 text-dark">
@@ -972,6 +981,9 @@ export default {
         'N',
         'ORF10',
       ],
+      smallScreen: false,
+      mediumScreen: false,
+      largeScreen: false,
     };
   },
   computed: {
@@ -979,12 +991,6 @@ export default {
     ...mapState('genomics', ['locationLoading1', 'locationLoading2']),
     loading() {
       return this.locationLoading1 || this.locationLoading2;
-    },
-    smallScreen() {
-      return window.innerWidth < 500;
-    },
-    mediumScreen() {
-      return window.innerWidth < 1000;
     },
     locationValid() {
       return !!(
@@ -1042,6 +1048,8 @@ export default {
 
     this.$nextTick(() => {
       // set URL for sharing, etc.
+      window.addEventListener('resize', this.setDims);
+      this.setDims();
       const location = window.location;
       this.url =
         location.search !== ''
@@ -1094,6 +1102,11 @@ export default {
     }
   },
   methods: {
+    setDims() {
+      this.mediumScreen = window.innerWidth < 1000;
+      this.smallScreen = window.innerWidth < 500;
+      this.largeScreen = window.innerWidth < 1920;
+    },
     scrollToTop() {
       window.scrollTo(0, 0);
     },
@@ -1779,5 +1792,9 @@ input::-webkit-outer-spin-button {
 /* Firefox */
 input[type='number'] {
   -moz-appearance: textfield;
+}
+
+.horiz-scroll {
+  overflow-x: scroll;
 }
 </style>
