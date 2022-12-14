@@ -102,7 +102,14 @@ def getDescendants(row):
             unique_desc = list(dict.fromkeys(descendants))
             # add in any recombinant lineages where all the recombined lineages belong to that VOC/VOI.
             if((row.include_recombinants  == "True") | (row.include_recombinants  == "true")):
-                recombs = findRecombinants(unique_desc, recombinant_lineages)
+                recombs = list(findRecombinants(unique_desc, recombinant_lineages))
+                # now add any descendants of recombinants (e.g., XBB.1)
+                recomb_descendants = []
+                for r in recombs:
+                    if len(lineage_descendants[r])>1:
+                        recomb_descendants.extend([ld for ld in lineage_descendants[r] if ld!= r])
+                if len(recomb_descendants)>0:
+                    recombs.extend(recomb_descendants)
                 unique_desc.extend(recombs)
             return(unique_desc)
         else:
@@ -123,7 +130,6 @@ with open('lineages.yml') as f:
 lineage_descendants = {}
 for lineage in lineages:
     lineage_descendants[lineage["name"]] = lineage["children"]
-
 curated["pango_descendants"] = curated.apply(getDescendants, axis = 1)
 curated["pango_sublineages"] = curated.apply(lambda row: list(filter(lambda x: (x != row.pangolin_lineage) & (x not in row.pangolin_lineage), row.pango_descendants)), axis=1)
 
