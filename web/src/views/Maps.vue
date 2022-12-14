@@ -140,8 +140,6 @@
 
 <script>
 import { mapState } from 'vuex';
-import { max, min } from 'd3-array';
-import { format } from 'd3-format';
 import { timeFormat } from 'd3-time-format';
 
 import { getComparisonData } from '@/api/epi-comparison.js';
@@ -296,9 +294,6 @@ export default {
         }
         this.colorScale = results.colorScale;
       });
-    },
-    formatNumber(value, digits = 1) {
-      return format(`,.${digits}f`)(value);
     },
   },
 };
