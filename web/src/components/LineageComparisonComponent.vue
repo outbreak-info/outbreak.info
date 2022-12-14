@@ -798,7 +798,8 @@
                   selectedPango &&
                   (selectedPango.includes('Omicron') ||
                     selectedPango.includes('omicron') ||
-                    selectedPango.includes('B.1.1.529'))
+                    selectedPango.includes('B.1.1.529') ||
+                    checkPango)
                 "
                 text="<p>Most Omicron sequences also contain a <b>3 amino acid insertion (EPE) at position 214 in the Spike</b> protein.</p> outbreak.info currently only reports substitution and deletion changes, due to the computational challenges with identifying insertions in 5+ million sequences every day. We’re working towards incorporating insertions into our data processing pipeline, and we encourage you to refer back to the sequence data available on GISAID for more information about these insertions."
                 class="fa-sm mt-1 mb-2"
@@ -870,6 +871,7 @@ import {
   getBadMutations,
 } from '@/api/genomics.js';
 import { lazyLoad } from '@/js/lazy-load';
+import CURATED from '@/assets/genomics/curated_lineages.json';
 
 import 'tippy.js/themes/light.css';
 
@@ -1004,6 +1006,16 @@ export default {
       return this.darkMode
         ? 'Switch to <b>light mode</b> to focus on similarities between lineages'
         : 'Switch to <b>dark mode</b> to emphasize mutations with low prevalence';
+    },
+    checkPango() {
+      const pangos = CURATED.filter((d) => d.who_name === 'Omicron');
+      if (this.selectedPango && this.selectedPango.length > 0) {
+        return pangos[0].pango_descendants.some((item) =>
+          this.selectedPango.includes(item),
+        );
+      } else {
+        return false;
+      }
     },
   },
   watch: {
