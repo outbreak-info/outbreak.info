@@ -193,18 +193,6 @@
               :style="{ 'font-size': '0.85em', opacity: '0.6' }"
             />
           </button>
-          <div class="ml-3">
-            <label class="b-contain pr-4 m-0">
-              <input
-                id="checkbox"
-                v-model="includeSublineages"
-                type="checkbox"
-                @change="changeInclSublineages"
-              />
-              include sublineages
-              <div class="b-input" />
-            </label>
-          </div>
 
           <button
             role="button"
@@ -919,10 +907,6 @@ export default {
       type: [String, Boolean],
       default: false,
     },
-    sub: {
-      type: [String, Boolean],
-      default: false,
-    },
     gene: {
       type: [Array, String],
       default: () => ['ORF1a', 'ORF1b', 'S'],
@@ -933,7 +917,6 @@ export default {
       today: null,
       url: null,
       darkMode: null,
-      includeSublineages: null,
       disclaimer: `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the mutations but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`,
       title: 'Lineage Comparison',
       queryPangolin: null,
@@ -1043,8 +1026,6 @@ export default {
 
     this.darkMode =
       this.dark === 'true' || (!!this.dark && this.dark !== 'false');
-    this.includeSublineages =
-      this.sub === 'true' || (!!this.sub && this.sub !== 'false');
 
     this.prevalenceThreshold = +this.threshold;
     this.countThreshold = +this.nthresh;
@@ -1147,7 +1128,6 @@ export default {
             gene: this.selectedGenes,
             threshold: this.prevalenceThreshold,
             nthresh: this.countThreshold,
-            sub: this.includeSublineages,
             dark: this.darkMode,
           },
         });
@@ -1162,7 +1142,6 @@ export default {
             gene: this.selectedGenes,
             threshold: this.prevalenceThreshold,
             nthresh: this.countThreshold,
-            sub: this.includeSublineages,
             dark: this.darkMode,
           },
         });
@@ -1195,7 +1174,6 @@ export default {
             gene: this.selectedGenes,
             threshold: this.prevalenceThreshold,
             nthresh: this.countThreshold,
-            sub: this.includeSublineages,
             dark: this.darkMode,
           },
         });
@@ -1210,7 +1188,6 @@ export default {
             gene: this.selectedGenes,
             threshold: this.prevalenceThreshold,
             nthresh: this.countThreshold,
-            sub: this.includeSublineages,
             dark: this.darkMode,
           },
         });
@@ -1231,7 +1208,6 @@ export default {
             gene: this.selectedGenes,
             threshold: this.prevalenceThreshold,
             nthresh: this.countThreshold,
-            sub: this.includeSublineages,
             dark: this.darkMode,
           },
         });
@@ -1246,7 +1222,6 @@ export default {
             gene: this.selectedGenes,
             threshold: this.prevalenceThreshold,
             nthresh: this.countThreshold,
-            sub: this.includeSublineages,
             dark: this.darkMode,
           },
         });
@@ -1266,7 +1241,6 @@ export default {
               gene: this.selectedGenes,
               threshold: this.prevalenceThreshold,
               nthresh: this.countThreshold,
-              sub: this.includeSublineages,
               dark: this.darkMode,
             },
           });
@@ -1281,7 +1255,6 @@ export default {
               gene: this.selectedGenes,
               threshold: this.prevalenceThreshold,
               nthresh: this.countThreshold,
-              sub: this.includeSublineages,
               dark: this.darkMode,
             },
           });
@@ -1304,7 +1277,6 @@ export default {
               gene: this.selectedGenes,
               threshold: this.prevalenceThreshold,
               nthresh: this.countThreshold,
-              sub: this.includeSublineages,
               dark: this.darkMode,
             },
           });
@@ -1319,7 +1291,6 @@ export default {
               gene: this.selectedGenes,
               threshold: this.prevalenceThreshold,
               nthresh: this.countThreshold,
-              sub: this.includeSublineages,
               dark: this.darkMode,
             },
           });
@@ -1354,7 +1325,6 @@ export default {
             gene: this.selectedGenes,
             threshold: this.prevalenceThreshold,
             nthresh: this.countThreshold,
-            sub: this.includeSublineages,
             dark: this.darkMode,
           },
         });
@@ -1369,7 +1339,6 @@ export default {
             gene: this.selectedGenes,
             threshold: this.prevalenceThreshold,
             nthresh: this.countThreshold,
-            sub: this.includeSublineages,
             dark: this.darkMode,
           },
         });
@@ -1388,7 +1357,6 @@ export default {
         this.$genomicsurl,
         this.selectedPango,
         this.prevalenceThreshold / 100,
-        this.includeSublineages,
       ).subscribe((results) => {
         this.prepResults(results);
       });
@@ -1406,7 +1374,6 @@ export default {
             gene: this.selectedGenes,
             threshold: this.prevalenceThreshold,
             nthresh: this.countThreshold,
-            sub: this.includeSublineages,
             dark: this.darkMode,
           },
         });
@@ -1421,7 +1388,6 @@ export default {
             gene: this.selectedGenes,
             threshold: this.prevalenceThreshold,
             nthresh: this.countThreshold,
-            sub: this.includeSublineages,
             dark: this.darkMode,
           },
         });
@@ -1482,7 +1448,6 @@ export default {
               gene: this.selectedGenes,
               threshold: this.prevalenceThreshold,
               nthresh: this.countThreshold,
-              sub: this.includeSublineages,
               dark: this.darkMode,
             },
           });
@@ -1497,7 +1462,6 @@ export default {
               gene: this.selectedGenes,
               threshold: this.prevalenceThreshold,
               nthresh: this.countThreshold,
-              sub: this.includeSublineages,
               dark: this.darkMode,
             },
           });
@@ -1537,7 +1501,6 @@ export default {
               gene: this.selectedGenes,
               threshold: this.prevalenceThreshold,
               nthresh: this.countThreshold,
-              sub: this.includeSublineages,
               dark: this.darkMode,
             },
           });
@@ -1552,7 +1515,6 @@ export default {
               gene: this.selectedGenes,
               threshold: this.prevalenceThreshold,
               nthresh: this.countThreshold,
-              sub: this.includeSublineages,
               dark: this.darkMode,
             },
           });
@@ -1577,7 +1539,6 @@ export default {
       } else {
         this.selectedPango.push(this.selectedWHO);
       }
-      this.includeSublineages = true;
 
       this.showSnackbar = true;
       this.snackbarText = `${this.selectedWHO} lineages added`;
@@ -1596,7 +1557,6 @@ export default {
             pango: this.selectedPango,
             gene: this.selectedGenes,
             threshold: this.prevalenceThreshold,
-            sub: true,
             dark: this.darkMode,
           },
         });
@@ -1610,7 +1570,6 @@ export default {
             pango: this.selectedPango,
             gene: this.selectedGenes,
             threshold: this.prevalenceThreshold,
-            sub: true,
             dark: this.darkMode,
           },
         });
@@ -1641,7 +1600,6 @@ export default {
             gene: this.selectedGenes,
             threshold: this.prevalenceThreshold,
             nthresh: this.countThreshold,
-            sub: this.includeSublineages,
             dark: this.darkMode,
           },
         });
@@ -1656,7 +1614,6 @@ export default {
             gene: this.selectedGenes,
             threshold: this.prevalenceThreshold,
             nthresh: this.countThreshold,
-            sub: this.includeSublineages,
             dark: this.darkMode,
           },
         });
@@ -1675,7 +1632,6 @@ export default {
             gene: this.selectedGenes,
             threshold: this.prevalenceThreshold,
             nthresh: this.countThreshold,
-            sub: this.includeSublineages,
             dark: this.darkMode,
           },
         });
@@ -1687,7 +1643,6 @@ export default {
             gene: this.selectedGenes,
             threshold: this.prevalenceThreshold,
             nthresh: this.countThreshold,
-            sub: this.includeSublineages,
             dark: this.darkMode,
           },
         });
@@ -1710,7 +1665,6 @@ export default {
             gene: this.selectedGenes,
             threshold: this.prevalenceThreshold,
             nthresh: this.countThreshold,
-            sub: this.includeSublineages,
             dark: this.darkMode,
           },
         });
@@ -1725,7 +1679,6 @@ export default {
             gene: this.selectedGenes,
             threshold: this.prevalenceThreshold,
             nthresh: this.countThreshold,
-            sub: this.includeSublineages,
             dark: this.darkMode,
           },
         });

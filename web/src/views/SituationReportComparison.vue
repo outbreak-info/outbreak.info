@@ -4,7 +4,6 @@
       :pango="pango"
       :nthresh="nthresh"
       :dark="dark"
-      :sub="sub"
       :gene="gene"
     />
   </div>
@@ -29,10 +28,6 @@ export default {
       default: 1,
     },
     dark: {
-      type: [String, Boolean],
-      default: false,
-    },
-    sub: {
       type: [String, Boolean],
       default: false,
     },

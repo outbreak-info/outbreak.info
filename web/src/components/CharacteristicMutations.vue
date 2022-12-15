@@ -27,7 +27,7 @@
           class="mt-n1"
           :to="{
             name: 'SituationReportComparison',
-            query: { pango: lineageName, sub: true },
+            query: { pango: lineageName },
           }"
         >
           Compare {{ lineageName }} sublineages
