@@ -300,15 +300,6 @@
                   <b>{{ selectedWHO }}</b>
                   lineages
                 </button>
-                <button
-                  class="ml-2 px-2 py-1 btn btn-sec fa-sm"
-                  @click="addWHO(true)"
-                >
-                  <font-awesome-icon class="mr-2" :icon="['fas', 'sync']" />
-                  clear &amp; add
-                  <b>{{ selectedWHO }}</b>
-                  lineages
-                </button>
               </div>
             </div>
 
@@ -1311,40 +1302,6 @@ export default {
         );
       }
     },
-    changeInclSublineages() {
-      this.selectedPango = this.pango;
-      if (this.routeTo === 'GenomicsEmbed') {
-        this.$router.push({
-          name: this.routeTo,
-          params: {
-            disableScroll: true,
-          },
-          query: {
-            type: 'comp',
-            pango: this.pango,
-            gene: this.selectedGenes,
-            threshold: this.prevalenceThreshold,
-            nthresh: this.countThreshold,
-            dark: this.darkMode,
-          },
-        });
-      } else {
-        this.$router.push({
-          name: this.routeTo,
-          params: {
-            disableScroll: true,
-          },
-          query: {
-            pango: this.pango,
-            gene: this.selectedGenes,
-            threshold: this.prevalenceThreshold,
-            nthresh: this.countThreshold,
-            dark: this.darkMode,
-          },
-        });
-      }
-      this.getData();
-    },
     updateLocation(location) {
       this.selectedLocation = location;
     },
@@ -1488,37 +1445,6 @@ export default {
           this.showSnackbar = false;
         }, 5000);
         this.prepResults(results);
-
-        if (this.routeTo === 'GenomicsEmbed') {
-          this.$router.push({
-            name: this.routeTo,
-            params: {
-              disableScroll: true,
-            },
-            query: {
-              type: 'comp',
-              pango: results.yDomain,
-              gene: this.selectedGenes,
-              threshold: this.prevalenceThreshold,
-              nthresh: this.countThreshold,
-              dark: this.darkMode,
-            },
-          });
-        } else {
-          this.$router.push({
-            name: this.routeTo,
-            params: {
-              disableScroll: true,
-            },
-            query: {
-              pango: results.yDomain,
-              gene: this.selectedGenes,
-              threshold: this.prevalenceThreshold,
-              nthresh: this.countThreshold,
-              dark: this.darkMode,
-            },
-          });
-        }
 
         // reset / clear
         this.selectedLocation = null;
