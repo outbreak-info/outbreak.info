@@ -75,6 +75,9 @@
             How to interpret these reports
           </router-link>
         </div>
+        <div class="d-flex align-items-center justify-content-center my-1">
+          <button class="btn btn-main-outline m-4">View World Report</button>
+        </div>
 
         <!-- <ReportLogos class="my-4"/> -->
       </div>
