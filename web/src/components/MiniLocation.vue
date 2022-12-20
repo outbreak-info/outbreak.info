@@ -28,14 +28,9 @@
 </template>
 
 <script>
-import {
-  geoEqualEarth,
-  geoAlbersUsa,
-  geoPath,
-  select,
-  selectAll,
-  min,
-} from 'd3';
+import { min } from 'd3-array';
+import { geoPath, geoAlbersUsa, geoEqualEarth } from 'd3-geo';
+import { select } from 'd3-selection';
 
 import worldMap from '@/assets/geo/countries_fused_simplified.json';
 import usMap from '@/assets/geo/US_states.json';
@@ -126,10 +121,7 @@ export default {
           (update) => update.attr('d', this.path),
           (exit) =>
             exit.call((exit) =>
-              exit
-                .transition()
-                .style('opacity', 1e-5)
-                .remove(),
+              exit.transition().style('opacity', 1e-5).remove(),
             ),
         );
     },

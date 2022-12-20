@@ -87,9 +87,7 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import { mapState } from 'vuex';
-import { nest } from 'd3';
 
 import { getLocationBasics } from '@/api/genomics.js';
 import { lazyLoad } from '@/js/lazy-load';

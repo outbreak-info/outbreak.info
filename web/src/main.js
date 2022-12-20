@@ -4,6 +4,7 @@ import VueRx from 'vue-rx';
 import VueCookies from 'vue-cookies';
 import VueMeta from 'vue-meta';
 import { library } from '@fortawesome/fontawesome-svg-core';
+import 'd3-transition';
 
 // free regular svg icons
 import { faClock } from '@fortawesome/free-regular-svg-icons/faClock';

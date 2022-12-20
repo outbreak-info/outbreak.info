@@ -1,7 +1,7 @@
 import { forkJoin, from, of } from 'rxjs';
 import axios from 'axios';
 import { catchError, map, pluck } from 'rxjs/operators';
-import { timeFormat, timeParse } from 'd3';
+import { timeFormat, timeParse } from 'd3-time-format';
 
 axios.interceptors.request.use(
   (config) => {
@@ -64,26 +64,25 @@ const getDateUpdated = (apiurl, label = 'Records') => {
         'Content-Type': 'application/json',
       },
     }),
-  )
-    .pipe(
-      pluck('data'),
-      map((result) => {
-        const dateUpdated = cleanDate(
-          result.build_date,
-          '%Y-%m-%dT%H:%M:%S.%f%Z',
-        );
-        const count = `${result.stats.total.toLocaleString()} ${label}`;
-        return {
-          count: count,
-          dateUpdated: dateUpdated,
-        };
-      }),
-      catchError((e) => {
-        console.log('%c Error in getting date updated!', 'color: red');
-        console.log(e);
-        return of([]);
-      }),
-    );
+  ).pipe(
+    pluck('data'),
+    map((result) => {
+      const dateUpdated = cleanDate(
+        result.build_date,
+        '%Y-%m-%dT%H:%M:%S.%f%Z',
+      );
+      const count = `${result.stats.total.toLocaleString()} ${label}`;
+      return {
+        count: count,
+        dateUpdated: dateUpdated,
+      };
+    }),
+    catchError((e) => {
+      console.log('%c Error in getting date updated!', 'color: red');
+      console.log(e);
+      return of([]);
+    }),
+  );
 };
 
 const getLastUpdated = (apiurl) => {
@@ -94,18 +93,17 @@ const getLastUpdated = (apiurl) => {
         'Content-Type': 'application/json',
       },
     }),
-  )
-    .pipe(
-      pluck('data', 'build_date'),
-      map((result) => {
-        return cleanDateElapsed(result);
-      }),
-      catchError((e) => {
-        console.log('%c Error in getting date updated!', 'color: red');
-        console.log(e);
-        return of([]);
-      }),
-    );
+  ).pipe(
+    pluck('data', 'build_date'),
+    map((result) => {
+      return cleanDateElapsed(result);
+    }),
+    catchError((e) => {
+      console.log('%c Error in getting date updated!', 'color: red');
+      console.log(e);
+      return of([]);
+    }),
+  );
 };
 
 const getResourcesDateUpdated = (apiurl) => {
@@ -212,7 +210,6 @@ const cleanDateElapsed = (result) => {
       lastUpdated = `${Math.round(updatedDiff / 24)}d`;
     }
 
-      return lastUpdated;
+    return lastUpdated;
   }
-
 };

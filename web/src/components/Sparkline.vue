@@ -6,15 +6,10 @@
 
 <script>
 import Vue from 'vue';
-import {
-  select,
-  selectAll,
-  scaleLinear,
-  scaleTime,
-  extent,
-  max,
-  area,
-} from 'd3';
+import { max, extent } from 'd3-array';
+import { scaleLinear, scaleTime } from 'd3-scale';
+import { select } from 'd3-selection';
+import { area } from 'd3-shape';
 
 export default Vue.extend({
   name: 'Sparkline',

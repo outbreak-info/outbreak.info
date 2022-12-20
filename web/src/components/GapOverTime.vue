@@ -22,25 +22,12 @@
 
 <script>
 import Vue from 'vue';
-
-import {
-  select,
-  selectAll,
-  scaleLinear,
-  scaleTime,
-  axisBottom,
-  axisLeft,
-  axisRight,
-  extent,
-  event,
-  min,
-  max,
-  format,
-  line,
-  area,
-  transition,
-  timeDay,
-} from 'd3';
+import { max, extent } from 'd3-array';
+import { axisBottom, axisLeft } from 'd3-axis';
+import { select } from 'd3-selection';
+import { scaleLinear, scaleTime } from 'd3-scale';
+import { line, area } from 'd3-shape';
+import { transition } from 'd3-transition';
 
 export default Vue.extend({
   name: 'SequencingHistogram',
@@ -153,14 +140,10 @@ export default Vue.extend({
         .range([this.height - this.margin.top - this.margin.bottom, 0])
         .domain([0, maxCounts]);
 
-      this.xAxis = axisBottom(this.x)
-        .ticks(this.numXTicks)
-        .tickSizeOuter(0);
+      this.xAxis = axisBottom(this.x).ticks(this.numXTicks).tickSizeOuter(0);
       select(this.$refs.xAxis).call(this.xAxis);
 
-      this.yAxis = axisLeft(this.y)
-        .ticks(this.numYTicks)
-        .tickSizeOuter(0);
+      this.yAxis = axisLeft(this.y).ticks(this.numYTicks).tickSizeOuter(0);
       select(this.$refs.yAxisLeft).call(this.yAxis);
     },
     drawPlot() {
@@ -187,10 +170,7 @@ export default Vue.extend({
         },
         (exit) =>
           exit.call((exit) =>
-            exit
-              .transition(10)
-              .style('opacity', 1e-5)
-              .remove(),
+            exit.transition(10).style('opacity', 1e-5).remove(),
           ),
       );
 
@@ -213,10 +193,7 @@ export default Vue.extend({
         },
         (exit) =>
           exit.call((exit) =>
-            exit
-              .transition(10)
-              .style('opacity', 1e-5)
-              .remove(),
+            exit.transition(10).style('opacity', 1e-5).remove(),
           ),
       );
     },

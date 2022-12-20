@@ -1,8 +1,6 @@
 <template>
   <div class="timeline-group d-flex flex-column text-left">
-    <h6 class="m-0">
-      Results by publication date
-    </h6>
+    <h6 class="m-0">Results by publication date</h6>
     <small class="text-accent text-right">7 day rolling average</small>
     <svg ref="timeline" :width="width" :height="height" class="epi-sparkline">
       <g
@@ -21,23 +19,13 @@
 
 <script>
 import Vue from 'vue';
-import {
-  select,
-  selectAll,
-  scaleLinear,
-  scaleBand,
-  scaleTime,
-  axisBottom,
-  axisLeft,
-  timeFormat,
-  timeDay,
-  timeWeek,
-  extent,
-  sum,
-  min,
-  max,
-  line,
-} from 'd3';
+import { max, extent, min, sum } from 'd3-array';
+import { axisLeft, axisBottom } from 'd3-axis';
+import { scaleLinear, scaleTime, scaleBand } from 'd3-scale';
+import { select } from 'd3-selection';
+import { line } from 'd3-shape';
+import { timeDay, timeWeek } from 'd3-time';
+import { timeFormat } from 'd3-time-format';
 
 export default Vue.extend({
   name: 'ResourceTimeline',

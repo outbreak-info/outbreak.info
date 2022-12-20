@@ -339,32 +339,17 @@
 
 <script>
 import Vue from 'vue';
-import {
-  select,
-  selectAll,
-  scaleLinear,
-  scaleTime,
-  scaleOrdinal,
-  axisBottom,
-  axisLeft,
-  axisRight,
-  extent,
-  map,
-  brushX,
-  forceCollide,
-  forceY,
-  forceSimulation,
-  event,
-  max,
-  format,
-  timeFormat,
-  timeParse,
-  line,
-  area,
-  transition,
-  timeDay,
-  timeMonth,
-} from 'd3';
+import { max, extent, map } from 'd3-array';
+import { axisLeft, axisBottom } from 'd3-axis';
+import { brushX } from 'd3-brush';
+import { format } from 'd3-format';
+import { forceY, forceCollide, forceSimulation } from 'd3-force';
+import { scaleLinear, scaleTime, scaleOrdinal } from 'd3-scale';
+import { select, selectAll, event } from 'd3-selection';
+import { area, line } from 'd3-shape';
+import { timeMonth } from 'd3-time';
+import { timeParse, timeFormat } from 'd3-time-format';
+import { transition } from 'd3-transition';
 import cloneDeep from 'lodash/cloneDeep';
 
 import { lazyLoad } from '@/js/lazy-load';

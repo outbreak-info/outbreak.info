@@ -100,7 +100,7 @@
 <script>
 import Vue from 'vue';
 import { mapState } from 'vuex';
-import { timeFormat } from 'd3';
+import { timeFormat } from 'd3-time-format';
 
 import { getSourcesUpdated } from '@/api/metadata.js';
 

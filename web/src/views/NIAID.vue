@@ -63,7 +63,7 @@
 
 <script>
 import { mapState } from 'vuex';
-import { nest } from 'd3';
+import { nest } from 'd3-collection';
 import tippy from 'tippy.js';
 
 import { getQuerySummaries, getSourceSummary } from '@/api/resources.js';

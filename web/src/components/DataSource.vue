@@ -43,7 +43,7 @@
 <script>
 import Vue from 'vue';
 import { mapState } from 'vuex';
-import { timeFormat } from 'd3';
+import { timeFormat } from 'd3-time-format';
 
 import { getPng } from '@/js/get_svg.js';
 import { lazyLoad } from '@/js/lazy-load';

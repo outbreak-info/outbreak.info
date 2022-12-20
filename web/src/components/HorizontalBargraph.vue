@@ -20,7 +20,10 @@
 
 <script>
 import Vue from 'vue';
-import { select, selectAll, scaleLinear, scaleBand, axisRight, max } from 'd3';
+import { max } from 'd3-array';
+import { axisRight } from 'd3-axis';
+import { scaleLinear, scaleBand } from 'd3-scale';
+import { select } from 'd3-selection';
 
 export default Vue.extend({
   name: 'HorizontalBargraph',

@@ -139,25 +139,14 @@
 
 <script>
 import Vue from 'vue';
-import {
-  scaleBand,
-  scaleLinear,
-  scaleLog,
-  axisBottom,
-  axisLeft,
-  line,
-  extent,
-  timeDay,
-  max,
-  select,
-  selectAll,
-  format,
-  timeFormat,
-  timeParse,
-  transition,
-  easeLinear,
-  event,
-} from 'd3';
+import { extent, max } from 'd3-array';
+import { axisBottom, axisLeft } from 'd3-axis';
+import { format } from 'd3-format';
+import { line } from 'd3-shape';
+import { scaleBand, scaleLinear, scaleLog } from 'd3-scale';
+import { select, selectAll } from 'd3-selection';
+import { timeDay } from 'd3-time';
+import { timeFormat, timeParse } from 'd3-time-format';
 import cloneDeep from 'lodash/cloneDeep';
 import * as PIXI from 'pixi.js';
 import { SmoothGraphics } from '@pixi/graphics-smooth';

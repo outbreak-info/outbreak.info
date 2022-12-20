@@ -30,9 +30,9 @@
       />
       <g
         class="legend"
-        :transform="
-          `translate(${margin.left},${height + margin.bottom + margin.top})`
-        "
+        :transform="`translate(${margin.left},${
+          height + margin.bottom + margin.top
+        })`"
       >
         <!-- <g class="legend" :transform="`translate(${margin.left},${height + margin.bottom + margin.top})`" v-if="legendColors.length && legendColors[0].x0"> -->
         <template v-for="(item, idx) in legendColors">
@@ -81,12 +81,9 @@
       <g
         v-if="x"
         class="slider-handle pointer"
-        :transform="
-          `translate(${margin.left},${height +
-            margin.bottom +
-            margin.top +
-            17})`
-        "
+        :transform="`translate(${margin.left},${
+          height + margin.bottom + margin.top + 17
+        })`"
       >
         <g stroke="#686868" fill="#d6d6d6" stroke-width="0.5">
           <line
@@ -114,7 +111,7 @@
           transform="translate(0,13)"
           dominant-baseline="hanging"
           font-size="8"
-          style='font-family:"DM Sans", Avenir, Helvetica, Arial, sans-serif;'
+          style="font-family: 'DM Sans', Avenir, Helvetica, Arial, sans-serif"
           text-anchor="start"
         >
           <text :x="x(selectedMin)" :y="0">{{ formatLimit(selectedMin) }}</text>
@@ -128,18 +125,12 @@
 </template>
 
 <script>
-import {
-  select,
-  selectAll,
-  scaleLinear,
-  axisBottom,
-  extent,
-  max,
-  format,
-  histogram,
-  drag,
-  event,
-} from 'd3';
+import { max, extent, histogram } from 'd3-array';
+import { axisBottom } from 'd3-axis';
+import { drag } from 'd3-drag';
+import { format } from 'd3-format';
+import { select, selectAll, event } from 'd3-selection';
+import { scaleLinear } from 'd3-scale';
 
 export default {
   name: 'HistogramLegend',
@@ -276,9 +267,7 @@ export default {
         .domain(this.domain)
         .clamp(true);
 
-      this.xAxis = axisBottom(this.x)
-        .tickSizeOuter(0)
-        .ticks(5);
+      this.xAxis = axisBottom(this.x).tickSizeOuter(0).ticks(5);
       this.xAxisRef.call(this.xAxis);
 
       // legend gradient

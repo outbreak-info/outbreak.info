@@ -1,6 +1,5 @@
 import { from, forkJoin } from 'rxjs';
 import axios from 'axios';
-
 import {
   // finalize,
   catchError,
@@ -8,12 +7,11 @@ import {
   map,
   finalize,
 } from 'rxjs/operators';
+import { format } from 'd3-format';
+import { timeParse, timeFormat } from 'd3-time-format';
+import cloneDeep from 'lodash/cloneDeep';
 
 import store from '@/store';
-
-import { timeParse, timeFormat, format } from 'd3';
-
-import cloneDeep from 'lodash/cloneDeep';
 
 const filterString2Arr = (filterString) => {
   return filterString.split(';').map((d) => {
@@ -430,7 +428,6 @@ export const getQuerySummary = (
     }),
   );
 };
-
 
 export const getSourceSummary = (apiUrl, query) => {
   return forkJoin([

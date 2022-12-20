@@ -677,7 +677,7 @@
 
 <script>
 import { mapState } from 'vuex';
-import { timeFormat, timeParse } from 'd3';
+import { timeFormat, timeParse } from 'd3-time-format';
 import cloneDeep from 'lodash/cloneDeep';
 import debounce from 'lodash/debounce';
 import tippy from 'tippy.js';

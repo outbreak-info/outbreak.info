@@ -92,25 +92,14 @@
 
 <script>
 import Vue from 'vue';
-import {
-  select,
-  selectAll,
-  scaleTime,
-  scaleLinear,
-  axisLeft,
-  axisBottom,
-  area,
-  stack,
-  stackOrderInsideOut,
-  // stackOrderAscending,
-  // stackOrderDescending,
-  transition,
-  event,
-  brushX,
-  extent,
-  max,
-  format,
-} from 'd3';
+import { extent } from 'd3-array';
+import { axisLeft, axisBottom } from 'd3-axis';
+import { brushX } from 'd3-brush';
+import { format } from 'd3-format';
+import { scaleLinear, scaleTime } from 'd3-scale';
+import { select, selectAll, event } from 'd3-selection';
+import { area, stack, stackOrderInsideOut } from 'd3-shape';
+import { transition } from 'd3-transition';
 
 import { lazyLoad } from '@/js/lazy-load';
 

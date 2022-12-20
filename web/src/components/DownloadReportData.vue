@@ -16,7 +16,7 @@
 
 <script>
 import Vue from 'vue';
-import { timeFormat } from 'd3';
+import { timeFormat } from 'd3-time-format';
 
 import { getPng } from '@/js/get_svg.js';
 

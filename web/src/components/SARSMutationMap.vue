@@ -30,16 +30,12 @@
     <div id="tooltip-gene" ref="tooltip_gene" class="tooltip box-shadow">
       <h5 />
       <div id="gene-mutations" class="m-0 mb-2">
-        <h6 class="m-0">
-          Mutations
-        </h6>
+        <h6 class="m-0">Mutations</h6>
         <em id="no-substitutions">none</em>
         <ul id="mutation-list" class="m-0" />
       </div>
       <div id="gene-deletions">
-        <h6 class="m-0">
-          Deletions
-        </h6>
+        <h6 class="m-0">Deletions</h6>
         <em id="no-deletions">none</em>
         <ul id="deletion-list" class="m-0" />
       </div>
@@ -50,21 +46,12 @@
 <script>
 import Vue from 'vue';
 import chroma from 'chroma-js';
-import {
-  select,
-  selectAll,
-  scaleLinear,
-  scaleOrdinal,
-  min,
-  max,
-  map,
-  brushX,
-  event,
-  transition,
-  forceCollide,
-  forceSimulation,
-  forceX,
-} from 'd3';
+import { max } from 'd3-array';
+import { brushX } from 'd3-brush';
+import { forceCollide, forceSimulation, forceX } from 'd3-force';
+import { scaleLinear, scaleOrdinal } from 'd3-scale';
+import { select, selectAll, event } from 'd3-selection';
+import { transition } from 'd3-transition';
 import cloneDeep from 'lodash/cloneDeep';
 import uniqBy from 'lodash/uniqBy';
 
@@ -252,9 +239,7 @@ export default Vue.extend({
         ])
         .on('end', this.zoom);
 
-      select(this.$refs.brush)
-        .call(this.brush)
-        .on('dblclick', this.resetAxis);
+      select(this.$refs.brush).call(this.brush).on('dblclick', this.resetAxis);
     },
     tooltipOn() {
       const ttipXOffset = 35;
@@ -573,11 +558,7 @@ export default Vue.extend({
           },
           (exit) =>
             exit.call((exit) =>
-              exit
-                .transition()
-                .duration(10)
-                .style('opacity', 1e-5)
-                .remove(),
+              exit.transition().duration(10).style('opacity', 1e-5).remove(),
             ),
         );
 
@@ -604,8 +585,9 @@ export default Vue.extend({
               .attr(
                 'd',
                 (d) =>
-                  `M ${d.targetX} ${labelY} V ${(labelY + shiftedLabelY) *
-                    0.45} H ${d.x} V ${shiftedLabelY}`,
+                  `M ${d.targetX} ${labelY} V ${
+                    (labelY + shiftedLabelY) * 0.45
+                  } H ${d.x} V ${shiftedLabelY}`,
               )
               .classed('hidden', (d) => !d.adjustedX)
               .attr('transform', 'translate(0, 5)')
@@ -685,8 +667,9 @@ export default Vue.extend({
               .attr(
                 'd',
                 (d) =>
-                  `M ${d.targetX} ${labelY} V ${(labelY + shiftedLabelY) *
-                    0.45} H ${d.x} V ${shiftedLabelY}`,
+                  `M ${d.targetX} ${labelY} V ${
+                    (labelY + shiftedLabelY) * 0.45
+                  } H ${d.x} V ${shiftedLabelY}`,
               );
 
             update
@@ -735,11 +718,7 @@ export default Vue.extend({
           },
           (exit) =>
             exit.call((exit) =>
-              exit
-                .transition()
-                .duration(10)
-                .style('opacity', 1e-5)
-                .remove(),
+              exit.transition().duration(10).style('opacity', 1e-5).remove(),
             ),
         );
 
@@ -765,8 +744,9 @@ export default Vue.extend({
               .attr(
                 'd',
                 (d) =>
-                  `M ${d.targetX} ${labelY} V ${(labelY + shiftedLabelY) *
-                    0.45} H ${d.x} V ${shiftedLabelY}`,
+                  `M ${d.targetX} ${labelY} V ${
+                    (labelY + shiftedLabelY) * 0.45
+                  } H ${d.x} V ${shiftedLabelY}`,
               )
               .classed('hidden', (d) => !d.adjustedX)
               .attr('transform', 'translate(0, 5)')
@@ -858,8 +838,9 @@ export default Vue.extend({
               .attr(
                 'd',
                 (d) =>
-                  `M ${d.targetX} ${labelY} V ${(labelY + shiftedLabelY) *
-                    0.45} H ${d.x} V ${shiftedLabelY}`,
+                  `M ${d.targetX} ${labelY} V ${
+                    (labelY + shiftedLabelY) * 0.45
+                  } H ${d.x} V ${shiftedLabelY}`,
               );
 
             update
@@ -911,11 +892,7 @@ export default Vue.extend({
           },
           (exit) =>
             exit.call((exit) =>
-              exit
-                .transition()
-                .duration(10)
-                .style('opacity', 1e-5)
-                .remove(),
+              exit.transition().duration(10).style('opacity', 1e-5).remove(),
             ),
         );
       }

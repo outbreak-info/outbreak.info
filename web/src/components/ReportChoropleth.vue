@@ -12,7 +12,7 @@
       :subtitle="subtitle"
       :name="title"
       :class="{ hidden: noMap }"
-      style="background: aliceblue;"
+      style="background: aliceblue"
     >
       <defs>
         <pattern
@@ -62,22 +62,16 @@
 </template>
 
 <script>
+import { max, min } from 'd3-array';
+import { format } from 'd3-format';
 import {
+  geoPath,
+  geoBounds,
   geoEqualEarth,
   geoAlbersUsa,
   geoAzimuthalEqualArea,
-  geoPath,
-  geoBounds,
-  max,
-  min,
-  timeParse,
-  timeFormat,
-  format,
-  event,
-  transition,
-  select,
-  selectAll,
-} from 'd3';
+} from 'd3-geo';
+import { select, event } from 'd3-selection';
 import cloneDeep from 'lodash/cloneDeep';
 
 import ADMIN0_SIMPLE from '@/assets/geo/gadm_adm0_simplified.json';
@@ -202,7 +196,7 @@ export default {
     this.debounceSetDims = this.debounce(this.setDims, 150);
   },
   mounted() {
-    this.$nextTick(function() {
+    this.$nextTick(function () {
       window.addEventListener('resize', this.debounceSetDims);
 
       this.$root.$on('update:countThreshold', (newThreshold) => {
@@ -411,11 +405,7 @@ export default {
                 .attr('d', this.path.projection(this.projection)),
             (exit) =>
               exit.call((exit) =>
-                exit
-                  .transition()
-                  .duration(10)
-                  .style('opacity', 1e-5)
-                  .remove(),
+                exit.transition().duration(10).style('opacity', 1e-5).remove(),
               ),
           );
 
@@ -454,11 +444,7 @@ export default {
                 .style('fill', (d) => (d.fill ? d.fill : this.nullColor)),
             (exit) =>
               exit.call((exit) =>
-                exit
-                  .transition()
-                  .duration(10)
-                  .style('opacity', 1e-5)
-                  .remove(),
+                exit.transition().duration(10).style('opacity', 1e-5).remove(),
               ),
           );
 
@@ -496,11 +482,7 @@ export default {
                 .attr('d', this.path.projection(this.projection)),
             (exit) =>
               exit.call((exit) =>
-                exit
-                  .transition()
-                  .duration(10)
-                  .style('opacity', 1e-5)
-                  .remove(),
+                exit.transition().duration(10).style('opacity', 1e-5).remove(),
               ),
           );
 
@@ -533,11 +515,7 @@ export default {
                 .attr('d', this.path.projection(this.projection)),
             (exit) =>
               exit.call((exit) =>
-                exit
-                  .transition()
-                  .duration(10)
-                  .style('opacity', 1e-5)
-                  .remove(),
+                exit.transition().duration(10).style('opacity', 1e-5).remove(),
               ),
           );
 
@@ -698,13 +676,13 @@ export default {
     // modified to save the d3. event to vue::this
     debounce(fn, delay) {
       let timer = null;
-      return function() {
+      return function () {
         const context = this,
           args = arguments,
           evt = event;
         //we get the D3 event here
         clearTimeout(timer);
-        timer = setTimeout(function() {
+        timer = setTimeout(function () {
           context.event = evt;
           //and use the reference here
           fn.apply(context, args);

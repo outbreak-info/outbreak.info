@@ -1,9 +1,10 @@
 import { forkJoin, from } from 'rxjs';
-
 import axios from 'axios';
 import { catchError, map, pluck } from 'rxjs/operators';
-import { format, range, scaleQuantile, timeParse } from 'd3';
-
+import { range } from 'd3-array';
+import { format } from 'd3-format';
+import { scaleQuantile } from 'd3-scale';
+import { timeParse } from 'd3-time-format';
 import { interpolateRdYlBu } from 'd3-scale-chromatic';
 
 import { getAll } from '@/api/biothings.js';
@@ -145,9 +146,7 @@ export const getJenksBreaks = (apiUrl, queryString, variable) => {
           .reverse();
       }
 
-      const colorScale = scaleQuantile()
-        .range(colorRange)
-        .domain(domain);
+      const colorScale = scaleQuantile().range(colorRange).domain(domain);
 
       return {
         breaks: domain,

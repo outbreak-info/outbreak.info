@@ -1,7 +1,7 @@
-import { scaleOrdinal } from 'd3';
+import { scaleOrdinal } from 'd3-scale';
 import chroma from 'chroma-js';
 
-const blankFunc = function(location) {
+const blankFunc = function (location) {
   return null;
 };
 
@@ -37,43 +37,50 @@ const state = {
 
 // getters --> computed props
 const getters = {
-  getColor: (state) => (location, pct = 0) => {
-    if (!state.locationScale) {
-      return null;
-    }
-    return pct
-      ? chroma(state.locationScale(location)).luminance(pct)
-      : state.locationScale(location);
-  },
-  getLightColor: (state) => (location, pct = 0.65) => {
-    const color = state.locationScale(location);
-    return state.scale && color ? chroma(color).luminance(pct) : null;
-  },
-  getDarkColor: (state) => (location, pct = 1.25) => {
-    const color = state.locationScale(location);
-    return state.scale && color ? chroma(color).darken(pct) : null;
-  },
-  getRegionColor: (state, _, rootState) => (location, pct = null) => {
-    const regions = rootState['geo']['regionDict'].map((d) => d.region);
-    const scale = scaleOrdinal(['#BBB'].concat(categoricalPalette)).domain(
-      regions,
-    );
+  getColor:
+    (state) =>
+    (location, pct = 0) => {
+      if (!state.locationScale) {
+        return null;
+      }
+      return pct
+        ? chroma(state.locationScale(location)).luminance(pct)
+        : state.locationScale(location);
+    },
+  getLightColor:
+    (state) =>
+    (location, pct = 0.65) => {
+      const color = state.locationScale(location);
+      return state.scale && color ? chroma(color).luminance(pct) : null;
+    },
+  getDarkColor:
+    (state) =>
+    (location, pct = 1.25) => {
+      const color = state.locationScale(location);
+      return state.scale && color ? chroma(color).darken(pct) : null;
+    },
+  getRegionColor:
+    (state, _, rootState) =>
+    (location, pct = null) => {
+      const regions = rootState['geo']['regionDict'].map((d) => d.region);
+      const scale = scaleOrdinal(['#BBB'].concat(categoricalPalette)).domain(
+        regions,
+      );
 
-    if (pct) {
-      return chroma(scale(location)).luminance(pct);
-    }
-    return scale(location);
-  },
-  getRegionColorFromLocation: (state, getters, rootState, rootGetters) => (
-    location,
-  ) => {
-    const regions = rootState['geo']['regionDict'].map((d) => d.region);
-    const scale = scaleOrdinal(['#BBB'].concat(categoricalPalette)).domain(
-      regions,
-    );
-    // const regionFunc = rootGetters["epidata/getRegion"];
-    return scale(location);
-  },
+      if (pct) {
+        return chroma(scale(location)).luminance(pct);
+      }
+      return scale(location);
+    },
+  getRegionColorFromLocation:
+    (state, getters, rootState, rootGetters) => (location) => {
+      const regions = rootState['geo']['regionDict'].map((d) => d.region);
+      const scale = scaleOrdinal(['#BBB'].concat(categoricalPalette)).domain(
+        regions,
+      );
+      // const regionFunc = rootGetters["epidata/getRegion"];
+      return scale(location);
+    },
   getRegionColorPalette: (state, _, rootState) => (region, numEntries, idx) => {
     const regions = rootState['geo']['regionDict'].map((d) => d.region);
     const scale = scaleOrdinal(['#BBB'].concat(categoricalPalette)).domain(

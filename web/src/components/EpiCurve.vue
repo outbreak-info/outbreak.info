@@ -121,28 +121,16 @@
 
 <script>
 import Vue from 'vue';
-import {
-  select,
-  selectAll,
-  scaleLinear,
-  scaleLog,
-  scaleTime,
-  extent,
-  max,
-  axisBottom,
-  axisLeft,
-  format,
-  bisector,
-  brushX,
-  event,
-  timeFormat,
-  timeParse,
-  forceCollide,
-  forceY,
-  forceSimulation,
-  transition,
-  line,
-} from 'd3';
+import { max, extent, bisector } from 'd3-array';
+import { axisBottom, axisLeft } from 'd3-axis';
+import { brushX } from 'd3-brush';
+import { format } from 'd3-format';
+import { forceSimulation, forceCollide, forceY } from 'd3-force';
+import { select, selectAll, event } from 'd3-selection';
+import { scaleLinear, scaleLog, scaleTime } from 'd3-scale';
+import { line } from 'd3-shape';
+import { timeParse, timeFormat } from 'd3-time-format';
+import { transition } from 'd3-transition';
 import cloneDeep from 'lodash/cloneDeep';
 
 import store from '@/store';

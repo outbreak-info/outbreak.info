@@ -1058,7 +1058,10 @@
 
 <script>
 import { mapState } from 'vuex';
-import { max, nest, scaleOrdinal, scaleThreshold, timeFormat } from 'd3';
+import { max } from 'd3-array';
+import { nest } from 'd3-collection';
+import { scaleOrdinal, scaleThreshold } from 'd3-scale';
+import { timeFormat } from 'd3-time-format';
 import { schemeYlGnBu } from 'd3-scale-chromatic';
 import uniq from 'lodash/uniq';
 import isEqual from 'lodash/isEqual';

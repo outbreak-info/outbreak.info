@@ -248,7 +248,7 @@
 
 <script>
 import { mapState } from 'vuex';
-import { extent, max } from 'd3';
+import { extent, max } from 'd3-array';
 
 import {
   epiDataSubject,

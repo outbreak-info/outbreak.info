@@ -81,18 +81,12 @@
 
 <script>
 import Vue from 'vue';
-
-import {
-  timeParse,
-  timeFormat,
-  scaleTime,
-  select,
-  axisBottom,
-  timeDay,
-  offset,
-  drag,
-  event,
-} from 'd3';
+import { axisBottom } from 'd3-axis';
+import { drag } from 'd3-drag';
+import { timeParse, timeFormat } from 'd3-time-format';
+import { select, event } from 'd3-selection';
+import { timeDay } from 'd3-time';
+import { scaleTime } from 'd3-scale';
 
 export default Vue.extend({
   name: 'DateSlider',

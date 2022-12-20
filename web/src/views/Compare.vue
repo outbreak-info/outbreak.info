@@ -164,7 +164,8 @@
 <script>
 import Vue from 'vue';
 import { mapState } from 'vuex';
-import { format, scaleOrdinal } from 'd3';
+import { format } from 'd3-format';
+import { scaleOrdinal } from 'd3-scale';
 
 import { findSimilar } from '@/api/find-similar.js';
 import { lazyLoad } from '@/js/lazy-load';

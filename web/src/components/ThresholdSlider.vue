@@ -77,7 +77,10 @@
 </template>
 
 <script>
-import { select, format, drag, event, scaleLog } from 'd3';
+import { drag } from 'd3-drag';
+import { format } from 'd3-format';
+import { select, event } from 'd3-selection';
+import { scaleLog } from 'd3-scale';
 
 export default {
   name: 'ThresholdSlider',

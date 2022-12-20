@@ -22,7 +22,7 @@
               <span
                 v-if="
                   subnational.studyLocationCity ||
-                    subnational.studyLocationState
+                  subnational.studyLocationState
                 "
               >
                 &nbsp;(
@@ -33,7 +33,7 @@
               <span
                 v-if="
                   subnational.studyLocationCity &&
-                    subnational.studyLocationState
+                  subnational.studyLocationState
                 "
               >
                 ,&nbsp;
@@ -44,7 +44,7 @@
               <span
                 v-if="
                   subnational.studyLocationCity ||
-                    subnational.studyLocationState
+                  subnational.studyLocationState
                 "
               >
                 )
@@ -69,9 +69,7 @@
     </div>
 
     <div v-if="data.studyEvent">
-      <div class="mt-3 mb-2">
-        Study Timeline
-      </div>
+      <div class="mt-3 mb-2">Study Timeline</div>
       <div class="update-container">
         <div
           v-for="(update, idx) in data.studyEvent"
@@ -97,7 +95,8 @@
 </template>
 
 <script>
-import { nest, timeFormat, timeParse } from 'd3';
+import { nest } from 'd3-collection';
+import { timeFormat, timeParse } from 'd3-time-format';
 
 import { lazyLoad } from '@/js/lazy-load';
 

@@ -38,7 +38,6 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import uniq from 'lodash/uniq';
 import debounce from 'lodash/debounce';
 import tippy from 'tippy.js';
