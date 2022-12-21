@@ -166,42 +166,59 @@
 
       <div
         id="select-lineages"
-        class="my-3 p-2 bg-white border-top border-bottom collapse"
+        class="my-3 p-2 bg-white border-top border-bottom collapse show"
       >
-        <div class="d-flex justify-content-between mt-1 mb-2">
-          <h4>Selected lineages</h4>
-          <font-awesome-icon
-            class="mr-2"
-            :icon="['far', 'times-circle']"
-            :style="{ opacity: '0.6' }"
-            data-toggle="collapse"
-            data-target="#select-lineages"
-          />
-        </div>
-        <div class="d-flex flex-wrap align-items-center">
-          <button
-            v-for="(lineage, lIdx) in selectedPango"
-            :key="lIdx"
-            role="button"
-            class="btn chip btn-outline-secondary bg-white d-flex align-items-center py-1 px-2 line-height-1"
-            @click="deletePango(lIdx)"
-          >
-            <span>{{ lineage }}</span>
-            <font-awesome-icon
-              class="ml-1"
-              :icon="['far', 'times-circle']"
-              :style="{ 'font-size': '0.85em', opacity: '0.6' }"
-            />
-          </button>
+        <template v-if="selectedPango.length">
+          <div class="d-flex justify-content-between mt-1 mb-2">
+            <div class="d-flex">
+              <h4>Already selected lineages</h4>
+              <button
+                role="button"
+                class="btn btn-accent d-flex align-items-center py-2 px-2 mx-3 line-height-1"
+                @click="submitNewData()"
+              >
+                create report
+              </button>
+            </div>
+            <button
+              role="button"
+              class="btn btn-outline-secondary"
+              data-toggle="collapse"
+              data-target="#select-lineages"
+            >
+              hide options
+              <font-awesome-icon
+                class="ml-2"
+                :icon="['far', 'times-circle']"
+                :style="{ opacity: '0.6' }"
+              />
+            </button>
+          </div>
+          <div class="d-flex flex-wrap align-items-center">
+            <button
+              v-for="(lineage, lIdx) in selectedPango"
+              :key="lIdx"
+              role="button"
+              class="btn chip btn-outline-secondary bg-white d-flex align-items-center py-1 px-2 line-height-1"
+              @click="deletePango(lIdx)"
+            >
+              <span>{{ lineage }}</span>
+              <font-awesome-icon
+                class="ml-1"
+                :icon="['far', 'times-circle']"
+                :style="{ 'font-size': '0.85em', opacity: '0.6' }"
+              />
+            </button>
 
-          <button
-            role="button"
-            class="btn chip btn-main d-flex align-items-center py-1 px-2 mx-3 line-height-1"
-            @click="clearPango()"
-          >
-            clear lineages
-          </button>
-        </div>
+            <button
+              role="button"
+              class="btn chip btn-main d-flex align-items-center py-1 px-2 mx-3 line-height-1"
+              @click="clearPango()"
+            >
+              clear lineages
+            </button>
+          </div>
+        </template>
 
         <div class="border-top pt-3 my-3 mb-1">
           <h4 class="mb-3">Add lineages</h4>
@@ -211,43 +228,37 @@
             >
               <h6 class="d-flex align-items-center">
                 <div class="mr-2 circle">1</div>
-                <span class="mr-1">By Variants of Concern &amp; Interest</span>
+                <span class="mr-1">Variants of Concern</span>
               </h6>
-              <div class="d-flex flex-column align-items-center">
-                <div class="d-flex mt-2 mb-2">
+              <div class="line-height-1" style="width: 200px">
+                <div class="fa-sm mb-2 ml-2">
+                  &gt;&gt; Click to add specific VOCs
+                </div>
+              </div>
+              <div class="d-flex flex-column">
+                Current Variants of Concern
+                <div class="d-flex flex-wrap align-items-center">
                   <button
-                    class="ml-2 px-2 py-1 btn btn-sec fa-sm"
-                    @click="addVOCs(false)"
+                    class="ml-2 mt-2 px-2 py-2 btn btn-outline-secondary fa-sm"
+                    v-for="(lineage, vIdx) in curated"
+                    :key="vIdx"
+                    @click="addVOC(lineage)"
                   >
-                    <font-awesome-icon class="mr-2" :icon="['fas', 'plus']" />
-                    Add
-                    <b>VOCs</b>
-                  </button>
-                  <button
-                    class="ml-2 px-2 py-1 btn btn-sec fa-sm"
-                    @click="addVOCs(true)"
-                  >
-                    <font-awesome-icon class="mr-2" :icon="['fas', 'sync']" />
-                    clear &amp; add
-                    <b>VOCs</b>
+                    {{ lineage }}
                   </button>
                 </div>
-                <div class="d-flex pt-2 border-top">
+              </div>
+
+              <div class="d-flex flex-column mt-3">
+                Previously Circulating Variants of Concern
+                <div class="d-flex flex-wrap align-items-center">
                   <button
-                    class="ml-2 px-2 py-1 btn btn-sec fa-sm"
-                    @click="addVOIs(false)"
+                    class="ml-2 mt-2 px-2 py-2 btn btn-outline-secondary fa-sm"
+                    v-for="(lineage, pIdx) in previous_voc"
+                    :key="pIdx"
+                    @click="addVOC(lineage)"
                   >
-                    <font-awesome-icon class="mr-2" :icon="['fas', 'plus']" />
-                    Add
-                    <b>VOIs</b>
-                  </button>
-                  <button
-                    class="ml-2 px-2 py-1 btn btn-sec fa-sm"
-                    @click="addVOIs(true)"
-                  >
-                    <font-awesome-icon class="mr-2" :icon="['fas', 'sync']" />
-                    clear &amp; add
-                    <b>VOIs</b>
+                    {{ lineage }}
                   </button>
                 </div>
               </div>
@@ -556,7 +567,7 @@
       </div>
 
       <!-- LOOP OVER MUTATION HEATMAPS -->
-      <div id="mutation-heatmaps" class="mt-4">
+      <div id="mutation-heatmaps" class="mt-4" v-if="filteredMutationHeatmap">
         <!-- ADJUST PARAMS -->
         <div
           class="d-flex w-100 flex-column bg-white border-top border-bottom py-1 mb-3"
@@ -649,6 +660,20 @@
                   />
                 </div>
               </div>
+
+              <!-- CHANGE LINEAGES -->
+              <button
+                class="btn py-1 px-2 ml-5 my-2 btn-sec flex-shrink-0"
+                data-toggle="collapse"
+                data-target="#select-lineages"
+                @click="scrollToTop"
+              >
+                <font-awesome-icon
+                  class="m-0 mr-2 fa-xs"
+                  :icon="['fas', 'sync']"
+                />
+                <span class="fa-xs">change lineages</span>
+              </button>
             </div>
           </div>
         </div>
@@ -662,18 +687,6 @@
             <div class="d-flex flex-column">
               <div class="d-flex align-items-center">
                 <h2 class="m-0">Mutation prevalence across lineages</h2>
-                <button
-                  class="btn py-1 px-2 mx-4 my-2 btn-grey flex-shrink-0"
-                  data-toggle="collapse"
-                  data-target="#select-lineages"
-                  @click="scrollToTop"
-                >
-                  <font-awesome-icon
-                    class="m-0 mr-2 fa-xs"
-                    :icon="['fas', 'sync']"
-                  />
-                  <span class="fa-xs">change lineages</span>
-                </button>
               </div>
               <div class="d-flex flex-wrap">
                 <p class="text-muted line-height-1 m-0 my-1">
@@ -915,7 +928,7 @@ export default {
       filteredMutationHeatmap: null,
       downloadableHeatmap: null,
       selectedGenes: [],
-      selectedPango: null,
+      selectedPango: [],
       selectedMutationQuery: null,
       selectedMutationThreshold: 50,
       colorScale: null,
@@ -934,10 +947,10 @@ export default {
       // selectedNdays: 60,
       selectedWindow: 60,
       queryLocation: null,
-      voi: null, // array of all the VOIs, including sublineages
-      voi_parent: null, // just the main lineages -- one lineage per VOI/VOC, such as Alpha, Beta, Gamma, Delta...
-      voc: null,
-      voc_parent: null,
+      previous_voc: null, // list of previously designated VOCs
+      curated: null, // list of currently designated VOCs -- curated lineages listed on our reports
+      voc: [], // full list of all VOCs, former and current, including sublineages also designated as VOCss
+      voi: [], // VOIs. as of 2022, not really used...
       moi: null,
       moc: null,
       countThreshold: null,
@@ -1054,8 +1067,6 @@ export default {
       });
     });
 
-    // load the initial data
-    this.getData();
     this.queryPangolin = findPangolin;
     this.queryLocation = findLocation;
 
@@ -1065,7 +1076,15 @@ export default {
       this.totalSequences = results.total;
       this.lastUpdated = results.dateUpdated.lastUpdated;
       this.whoLineages = results.who;
+      this.voc = results.voc;
+      this.curated = results.current_voc;
+      this.previous_voc = results.previous_voc;
     });
+
+    // only load data if lineages have been selected
+    if (this.selectedPango.length) {
+      this.getData();
+    }
   },
   created() {
     this.debounceThreshold = debounce(this.changeThreshold, 250);
@@ -1093,98 +1112,6 @@ export default {
     },
     scrollToTop() {
       window.scrollTo(0, 0);
-    },
-    addVOCs(clear = true) {
-      // remove lineages w/ additional mutations
-      this.selectedPango = clear
-        ? this.voc_parent
-        : this.voc_parent.concat(this.selectedPango);
-      this.selectedPango = uniq(this.selectedPango);
-
-      this.showSnackbar = true;
-      this.snackbarText = 'Variants of Concern added';
-      setTimeout(() => {
-        this.showSnackbar = false;
-      }, 3000);
-
-      if (this.routeTo === 'GenomicsEmbed') {
-        this.$router.push({
-          name: this.routeTo,
-          params: {
-            disableScroll: true,
-          },
-          query: {
-            type: 'comp',
-            pango: this.selectedPango,
-            gene: this.selectedGenes,
-            threshold: this.prevalenceThreshold,
-            nthresh: this.countThreshold,
-            dark: this.darkMode,
-          },
-        });
-      } else {
-        this.$router.push({
-          name: this.routeTo,
-          params: {
-            disableScroll: true,
-          },
-          query: {
-            pango: this.selectedPango,
-            gene: this.selectedGenes,
-            threshold: this.prevalenceThreshold,
-            nthresh: this.countThreshold,
-            dark: this.darkMode,
-          },
-        });
-      }
-
-      this.getData();
-    },
-    addVOIs(clear = true) {
-      // remove lineages w/ additional mutations
-      this.selectedPango = clear
-        ? this.voi_parent
-        : this.voi_parent.concat(this.selectedPango);
-      this.selectedPango = uniq(this.selectedPango);
-
-      this.showSnackbar = true;
-      this.snackbarText = 'Variants of Interest added';
-      setTimeout(() => {
-        this.showSnackbar = false;
-      }, 3000);
-
-      if (this.routeTo === 'GenomicsEmbed') {
-        this.$router.push({
-          name: this.routeTo,
-          params: {
-            disableScroll: true,
-          },
-          query: {
-            type: 'comp',
-            pango: this.selectedPango,
-            gene: this.selectedGenes,
-            threshold: this.prevalenceThreshold,
-            nthresh: this.countThreshold,
-            dark: this.darkMode,
-          },
-        });
-      } else {
-        this.$router.push({
-          name: this.routeTo,
-          params: {
-            disableScroll: true,
-          },
-          query: {
-            pango: this.selectedPango,
-            gene: this.selectedGenes,
-            threshold: this.prevalenceThreshold,
-            nthresh: this.countThreshold,
-            dark: this.darkMode,
-          },
-        });
-      }
-
-      this.getData();
     },
     updateGenes() {
       if (this.routeTo === 'GenomicsEmbed') {
@@ -1253,6 +1180,9 @@ export default {
 
         this.getData();
       }
+    },
+    addVOC(lineage) {
+      this.selectedPango.push(lineage);
     },
     changeCountThreshold() {
       if (this.countThreshold) {
@@ -1368,11 +1298,6 @@ export default {
           .flatMap((d) => d.values)
           .map((d) => d.pangolin_lineage),
       );
-
-      this.voc = results.voc;
-      this.voc_parent = results.voc_parent;
-      this.voi = results.voi;
-      this.voi_parent = results.voi_parent;
     },
     addMutations() {
       const selMutation = this.selectedMutationQuery
@@ -1472,6 +1397,39 @@ export default {
         this.showSnackbar = false;
       }, 5000);
 
+      if (this.routeTo === 'GenomicsEmbed') {
+        this.$router.push({
+          name: this.routeTo,
+          params: {
+            disableScroll: true,
+          },
+          query: {
+            type: 'comp',
+            pango: this.selectedPango,
+            gene: this.selectedGenes,
+            threshold: this.prevalenceThreshold,
+            dark: this.darkMode,
+          },
+        });
+      } else {
+        this.$router.push({
+          name: this.routeTo,
+          params: {
+            disableScroll: true,
+          },
+          query: {
+            pango: this.selectedPango,
+            gene: this.selectedGenes,
+            threshold: this.prevalenceThreshold,
+            dark: this.darkMode,
+          },
+        });
+      }
+      // reset / clear
+      this.selectedWHO = null;
+      this.getData();
+    },
+    submitNewData() {
       if (this.routeTo === 'GenomicsEmbed') {
         this.$router.push({
           name: this.routeTo,
