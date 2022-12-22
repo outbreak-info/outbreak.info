@@ -113,21 +113,37 @@ export default {
     },
     //When the user changes input
     change() {
+      console.log('########this.selected', this.selected);
       if (this.selected.length > 0) {
-        this.querySubscription = this.queryFunction(
-          this.apiUrl,
-          this.selected,
-        ).subscribe((results) => {
-          if (results.length > 10) {
-            this.matches = results.slice(0, 10);
-          } else {
-            this.matches = results;
-          }
+        if (this.selected.toLowerCase() === 'world') {
+          this.matches = [
+            {
+              admin_level: 1,
+              id: 'Worldwide',
+              label: 'World',
+              division: 'World',
+            },
+          ];
           if (this.isOpen === false) {
             this.isOpen = true;
             this.current = 0;
           }
-        });
+        } else {
+          this.querySubscription = this.queryFunction(
+            this.apiUrl,
+            this.selected,
+          ).subscribe((results) => {
+            if (results.length > 10) {
+              this.matches = results.slice(0, 10);
+            } else {
+              this.matches = results;
+            }
+            if (this.isOpen === false) {
+              this.isOpen = true;
+              this.current = 0;
+            }
+          });
+        }
       } else {
         this.matches = [];
         this.isOpen = false;

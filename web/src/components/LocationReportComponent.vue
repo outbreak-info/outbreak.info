@@ -961,6 +961,7 @@ import {
   findWHOLineage,
 } from '@/api/genomics.js';
 import { lazyLoad } from '@/js/lazy-load';
+import { worldLocation } from '@/js/get-location';
 
 import 'tippy.js/themes/material.css';
 
@@ -1435,12 +1436,14 @@ export default {
         this.curatedLineages = results.curated;
         this.voc = results.voc;
         this.voi = results.voi;
-        this.selectedLocation = results.location;
+        this.selectedLocation = results.location
+          ? results.location
+          : worldLocation;
       });
 
       this.reportSubscription = getLocationReportData(
         this.$genomicsurl,
-        this.loc,
+        this.loc && this.loc !== 'Worldwide' ? this.loc : null,
         this.muts,
         this.pango,
         this.otherThresh,

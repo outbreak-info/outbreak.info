@@ -84,7 +84,6 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import uniq from 'lodash/uniq';
 
 import { findLocation } from '@/api/genomics.js';
@@ -129,9 +128,6 @@ export default {
     this.queryLocation = findLocation;
   },
   methods: {
-    clearSelection() {
-      this.submitCount += 1;
-    },
     addVariant() {
       if (this.selectedLineage && this.selectedMutations.length) {
         this.variant.push({
@@ -166,9 +162,6 @@ export default {
       }
 
       this.submitCount += 1;
-    },
-    deleteVariant(idx, variantArr) {
-      variantArr.splice(idx, 1);
     },
     submitQuery() {
       this.addVariant();

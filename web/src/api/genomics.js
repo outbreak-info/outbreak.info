@@ -1929,10 +1929,12 @@ export const getBasicLocationReportData = (apiurl, location) => {
 
   const curatedLineages = filtered.map((d) => {
     let reportQuery = d.reportQuery;
-    reportQuery.loc = reportQuery.loc
-      ? uniq(reportQuery.loc.push(location))
-      : [location];
-    reportQuery.selected = location;
+    if (location !== 'Worldwide') {
+      reportQuery.loc = reportQuery.loc
+        ? uniq(reportQuery.loc.push(location))
+        : [location];
+      reportQuery.selected = location;
+    }
 
     return {
       label: d.label,
@@ -1954,9 +1956,16 @@ export const getBasicLocationReportData = (apiurl, location) => {
   const ofInterest = getVOCs();
 
   return forkJoin([
-    findLocationMetadata(apiurl, location),
+    findLocationMetadata(
+      apiurl,
+      location && location !== 'Worldwide' ? location : null,
+    ),
     getDateUpdated(apiurl),
-    getSequenceCount(apiurl, location, true),
+    getSequenceCount(
+      apiurl,
+      location && location !== 'Worldwide' ? location : null,
+      true,
+    ),
   ]).pipe(
     map(([location, dateUpdated, total]) => {
       return {
