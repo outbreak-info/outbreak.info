@@ -1428,7 +1428,7 @@ export default {
     setupReport() {
       this.basicSubscription = getBasicLocationReportData(
         this.$genomicsurl,
-        this.loc,
+        this.loc && this.loc !== 'Worldwide' ? this.loc : null,
       ).subscribe((results) => {
         this.dateUpdated = results.dateUpdated.dateUpdated;
         this.lastUpdated = results.dateUpdated.lastUpdated;
@@ -1452,9 +1452,10 @@ export default {
         this.recentWindow,
       ).subscribe((results) => {
         this.lineagesByDay = results.lineagesByDay;
-        this.noRecentData = !(
-          results.mostRecentLineages && results.mostRecentLineages.length
-        );
+        this.noRecentData =
+          this.loc !== 'Worldwide'
+            ? !(results.mostRecentLineages && results.mostRecentLineages.length)
+            : false;
 
         this.mostRecentLineages = results.mostRecentLineages;
         this.lineageDomain = results.lineageDomain;
@@ -1695,7 +1696,7 @@ export default {
     updateSequenceCount() {
       this.countSubscription = getSequenceCount(
         this.$genomicsurl,
-        this.loc,
+        this.loc && this.loc !== 'Worldwide' ? this.loc : null,
         false,
       ).subscribe((results) => {
         this.seqCounts = results;

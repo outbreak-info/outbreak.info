@@ -84,7 +84,7 @@ const failedLocation = (location) => {
 const worldLocation = {
   admin_level: 0,
   id: 'Worldwide',
-  label: 'World',
+  label: 'Worldwide',
   query_id: 'Worldwide',
   who_region: 'World',
 };
