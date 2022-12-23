@@ -1,12 +1,16 @@
 module.exports = {
   root: true,
+
   env: {
     node: true,
   },
+
   extends: ['plugin:vue/recommended', 'eslint:recommended', 'prettier'],
+
   parserOptions: {
     parser: '@babel/eslint-parser',
   },
+
   rules: {
     'no-unused-vars': 'off',
     'no-undef': 'off',
@@ -22,4 +26,16 @@ module.exports = {
     'vue/no-template-shadow': 'off',
     'vue/component-definition-name-casing': 'off',
   },
+
+  overrides: [
+    {
+      files: [
+        '**/__tests__/*.{j,t}s?(x)',
+        '**/tests/unit/**/*.spec.{j,t}s?(x)'
+      ],
+      env: {
+        jest: true
+      }
+    }
+  ]
 };
