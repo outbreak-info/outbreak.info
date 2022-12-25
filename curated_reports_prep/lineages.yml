@@ -2362,6 +2362,7 @@
       - DL.1
       - DM.1
       - DN.1
+      - DN.1.1
       - DP.1
       - G.1
       - K.1
@@ -4524,6 +4525,7 @@
       - DL.1
       - DM.1
       - DN.1
+      - DN.1.1
       - DP.1
       - G.1
       - K.1
@@ -5748,6 +5750,7 @@
       - DL.1
       - DM.1
       - DN.1
+      - DN.1.1
       - DP.1
       - K.1
       - K.2
@@ -9438,6 +9441,7 @@
       - DL.1
       - DM.1
       - DN.1
+      - DN.1.1
       - DP.1
   parent: B.1.1
 - name: BA.1
@@ -12208,6 +12212,7 @@
       - DL.1
       - DM.1
       - DN.1
+      - DN.1.1
       - DP.1
   parent: B.1.1.529
 - name: BA.5.1
@@ -13602,6 +13607,7 @@
       - DK.1
       - DM.1
       - DN.1
+      - DN.1.1
       - DP.1
   parent: BA.5
 - name: BA.5.3.1
@@ -13706,6 +13712,7 @@
       - DK.1
       - DM.1
       - DN.1
+      - DN.1.1
       - DP.1
   parent: BA.5.3
 - name: BE.1
@@ -13794,6 +13801,7 @@
       - DK.1
       - DM.1
       - DN.1
+      - DN.1.1
       - DP.1
   parent: BA.5.3.1
 - name: BE.1.1
@@ -13873,6 +13881,7 @@
       - DK.1
       - DM.1
       - DN.1
+      - DN.1.1
       - DP.1
   parent: BE.1
 - name: BE.1.1.1
@@ -13949,6 +13958,7 @@
       - DK.1
       - DM.1
       - DN.1
+      - DN.1.1
       - DP.1
   parent: BE.1.1
 - name: BQ.1
@@ -14023,6 +14033,7 @@
       - DK.1
       - DM.1
       - DN.1
+      - DN.1.1
       - DP.1
   parent: BE.1.1.1
 - name: BQ.1.1
@@ -14065,6 +14076,7 @@
       - DK.1
       - DM.1
       - DN.1
+      - DN.1.1
       - DP.1
   parent: BQ.1
 - name: BQ.1.1.1
@@ -14098,12 +14110,19 @@
   children:
       - BQ.1.1.5
       - DN.1
+      - DN.1.1
   parent: BQ.1.1
 - name: DN.1
   alias: B.1.1.529.5.3.1.1.1.1.1.1.5.1
   children:
       - DN.1
+      - DN.1.1
   parent: BQ.1.1.5
+- name: DN.1.1
+  alias: B.1.1.529.5.3.1.1.1.1.1.1.5.1.1
+  children:
+      - DN.1.1
+  parent: DN.1
 - name: BQ.1.1.6
   alias: B.1.1.529.5.3.1.1.1.1.1.1.6
   children:
