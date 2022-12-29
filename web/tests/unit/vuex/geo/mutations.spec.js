@@ -6,59 +6,6 @@ const localVue = createLocalVue();
 localVue.use(Vuex);
 
 describe('geo mutations', () => {
-  const state = {
-    allPlaces: [],
-    regionDict: [
-      {
-        display: false,
-        displayMore: false,
-        region: 'East Asia & Pacific: China',
-      },
-      {
-        display: false,
-        displayMore: false,
-        region: 'East Asia & Pacific',
-      },
-      {
-        display: false,
-        displayMore: false,
-        region: 'North America',
-      },
-      {
-        display: false,
-        displayMore: false,
-        region: 'Sub-Saharan Africa',
-      },
-      {
-        display: false,
-        displayMore: false,
-        region: 'Europe & Central Asia',
-      },
-
-      {
-        display: false,
-        displayMore: false,
-        region: 'Middle East & North Africa',
-      },
-
-      {
-        display: false,
-        displayMore: false,
-        region: 'Latin America & Caribbean',
-      },
-      {
-        display: false,
-        displayMore: false,
-        region: 'South Asia',
-      },
-      {
-        display: false,
-        displayMore: false,
-        region: 'Cruises',
-      },
-    ],
-  };
-
   it('setRegionToolTip', () => {
     const payload = {
       region: 'North America',
