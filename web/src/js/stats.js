@@ -1,4 +1,4 @@
-import { sum } from 'd3-array';
+import { quantile, sum } from 'd3-array';
 import { timeDay } from 'd3-time';
 import { timeParse } from 'd3-time-format';
 
@@ -62,8 +62,8 @@ export const calcPrevalence = (
 };
 
 export const calcCI = (x, n) => {
-  const upper = quantile(0.975, x + 0.5, n - x + 0.5);
-  const lower = quantile(0.025, x + 0.5, n - x + 0.5);
+  const upper = quantile([0.975], x + 0.5);
+  const lower = quantile([0.025], x + 0.5);
   const est = x / n;
 
   return {
