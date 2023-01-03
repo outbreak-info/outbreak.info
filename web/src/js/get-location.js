@@ -2,7 +2,7 @@ import { from, Observable, of } from 'rxjs';
 import axios from 'axios';
 import { catchError, pluck, map, mergeMap } from 'rxjs/operators';
 
-export const getLocation = (apiUrl) => {
+const getLocation = (apiUrl) => {
   return lookupLocation().pipe(
     mergeMap((loc) => processLocation(apiUrl, loc)),
     catchError((e) => {
@@ -45,11 +45,13 @@ const lookupLocation = () => {
 
 const processLocation = (apiUrl, location) => {
   const scalar = 0.05;
-  const url = `${apiUrl}query?q=mostRecent:true AND lat:[${(1 - scalar) *
-    location.coords.latitude} TO ${(1 + scalar) *
-    location.coords.latitude}] AND long:[${(1 + scalar) *
-    location.coords.longitude} TO ${(1 - scalar) *
-    location.coords.longitude}] &fields=location_id,lat,long&size=25`;
+  const url = `${apiUrl}query?q=mostRecent:true AND lat:[${
+    (1 - scalar) * location.coords.latitude
+  } TO ${(1 + scalar) * location.coords.latitude}] AND long:[${
+    (1 + scalar) * location.coords.longitude
+  } TO ${
+    (1 - scalar) * location.coords.longitude
+  }] &fields=location_id,lat,long&size=25`;
   return from(axios.get(url)).pipe(
     pluck('data', 'hits'),
     map((results) => {
@@ -78,3 +80,13 @@ const failedLocation = (location) => {
   console.log(`failed location: ${location}`);
   return of(null);
 };
+
+const worldLocation = {
+  admin_level: 0,
+  id: 'Worldwide',
+  label: 'Worldwide',
+  query_id: 'Worldwide',
+  who_region: 'World',
+};
+
+export { getLocation, worldLocation };

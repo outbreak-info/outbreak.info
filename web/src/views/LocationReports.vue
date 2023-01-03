@@ -75,6 +75,11 @@
             How to interpret these reports
           </router-link>
         </div>
+        <div class="d-flex align-items-center justify-content-center my-1">
+          <button class="btn btn-main-outline m-4" @click="toWorldReport">
+            View World Report
+          </button>
+        </div>
 
         <!-- <ReportLogos class="my-4"/> -->
       </div>
@@ -124,6 +129,20 @@ export default {
     if (this.curatedSubscription) {
       this.curatedSubscription.unsubscribe();
     }
+  },
+  methods: {
+    toWorldReport() {
+      this.$router.push({
+        name: 'LocationReport',
+        query: {
+          loc: 'Worldwide',
+          pango: [],
+          variant: [],
+          muts: [],
+          selected: [],
+        },
+      });
+    },
   },
 };
 </script>

@@ -961,6 +961,7 @@ import {
   findWHOLineage,
 } from '@/api/genomics.js';
 import { lazyLoad } from '@/js/lazy-load';
+import { worldLocation } from '@/js/get-location';
 
 import 'tippy.js/themes/material.css';
 
@@ -1427,7 +1428,7 @@ export default {
     setupReport() {
       this.basicSubscription = getBasicLocationReportData(
         this.$genomicsurl,
-        this.loc,
+        this.loc && this.loc !== 'Worldwide' ? this.loc : null,
       ).subscribe((results) => {
         this.dateUpdated = results.dateUpdated.dateUpdated;
         this.lastUpdated = results.dateUpdated.lastUpdated;
@@ -1435,12 +1436,14 @@ export default {
         this.curatedLineages = results.curated;
         this.voc = results.voc;
         this.voi = results.voi;
-        this.selectedLocation = results.location;
+        this.selectedLocation = results.location
+          ? results.location
+          : worldLocation;
       });
 
       this.reportSubscription = getLocationReportData(
         this.$genomicsurl,
-        this.loc,
+        this.loc && this.loc !== 'Worldwide' ? this.loc : null,
         this.muts,
         this.pango,
         this.otherThresh,
@@ -1449,9 +1452,10 @@ export default {
         this.recentWindow,
       ).subscribe((results) => {
         this.lineagesByDay = results.lineagesByDay;
-        this.noRecentData = !(
-          results.mostRecentLineages && results.mostRecentLineages.length
-        );
+        this.noRecentData =
+          this.loc !== 'Worldwide'
+            ? !(results.mostRecentLineages && results.mostRecentLineages.length)
+            : false;
 
         this.mostRecentLineages = results.mostRecentLineages;
         this.lineageDomain = results.lineageDomain;
@@ -1692,7 +1696,7 @@ export default {
     updateSequenceCount() {
       this.countSubscription = getSequenceCount(
         this.$genomicsurl,
-        this.loc,
+        this.loc && this.loc !== 'Worldwide' ? this.loc : null,
         false,
       ).subscribe((results) => {
         this.seqCounts = results;

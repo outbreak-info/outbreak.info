@@ -39,6 +39,7 @@
 <script>
 // cribbed from https://medium.com/@fareez_ahamed/make-your-own-autocomplete-component-quickly-using-vue-js-21a642e8b140
 import debounce from 'lodash/debounce';
+import { worldLocation } from '@/js/get-location';
 export default {
   name: 'TypeaheadSelect',
   props: {
@@ -114,20 +115,33 @@ export default {
     //When the user changes input
     change() {
       if (this.selected.length > 0) {
-        this.querySubscription = this.queryFunction(
-          this.apiUrl,
-          this.selected,
-        ).subscribe((results) => {
-          if (results.length > 10) {
-            this.matches = results.slice(0, 10);
-          } else {
-            this.matches = results;
-          }
+        if (this.selected.toLowerCase() === 'world') {
+          this.matches = [
+            {
+              ...worldLocation,
+              label: 'World',
+            },
+          ];
           if (this.isOpen === false) {
             this.isOpen = true;
             this.current = 0;
           }
-        });
+        } else {
+          this.querySubscription = this.queryFunction(
+            this.apiUrl,
+            this.selected,
+          ).subscribe((results) => {
+            if (results.length > 10) {
+              this.matches = results.slice(0, 10);
+            } else {
+              this.matches = results;
+            }
+            if (this.isOpen === false) {
+              this.isOpen = true;
+              this.current = 0;
+            }
+          });
+        }
       } else {
         this.matches = [];
         this.isOpen = false;

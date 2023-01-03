@@ -1929,10 +1929,12 @@ export const getBasicLocationReportData = (apiurl, location) => {
 
   const curatedLineages = filtered.map((d) => {
     let reportQuery = d.reportQuery;
-    reportQuery.loc = reportQuery.loc
-      ? uniq(reportQuery.loc.push(location))
-      : [location];
-    reportQuery.selected = location;
+    if (location) {
+      reportQuery.loc = reportQuery.loc
+        ? uniq(reportQuery.loc.push(location))
+        : [location];
+      reportQuery.selected = location;
+    }
 
     return {
       label: d.label,
