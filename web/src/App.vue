@@ -327,7 +327,7 @@
       class="bg-highlight py-2 px-3 text-light text-center fa-sm"
     >
     <div class="border-bottom pb-2 mb-2">
-      outbreak.info will be undergoing maintenance on <b>11 January 2023 from ~ 5:15 - 6:15 pm PT</b>. Data may be inaccessible during this time.
+      outbreak.info will be undergoing maintenance on <b>11 January 2023 from ~ 6 - 10 pm PT</b>. Data may be inaccessible during this time.
     </div>
       <b class="mr-1">
         The outbreak.info
