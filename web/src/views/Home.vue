@@ -11,8 +11,9 @@
               src="@/assets/logo-full-white-01.svg"
               alt="Outbreak.info"
               class="w-20"
+              data-cy="home-page-logo"
             />
-            <p class="text-light my-1 mx-3">
+            <p class="text-light my-1 mx-3" data-cy="home-page-title">
               an open-source database of SARS-CoV-2 variant data, COVID-19
               epidemiology data, and published research
             </p>

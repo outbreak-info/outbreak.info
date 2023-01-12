@@ -6,6 +6,7 @@
       <nav
         v-if="!$route.meta.includeGISAIDLogo"
         class="navbar navbar-expand-lg navbar-dark w-100 bg-grey__lighter nav-hero"
+        data-cy="navigation"
       >
         <router-link
           v-if="!$route.meta.hideNavigation"
@@ -47,6 +48,7 @@
           aria-controls="navbarNav"
           aria-expanded="false"
           aria-label="Toggle navigation"
+          data-cy="navigation-toggle-button"
         >
           <span class="navbar-toggler-icon" />
         </button>
@@ -55,9 +57,9 @@
           id="navbarNav"
           class="collapse navbar-collapse"
         >
-          <ul class="navbar-nav nav-link">
+          <ul class="navbar-nav nav-link" data-cy="nav-link">
             <!-- EPIDEMIOLOGY -->
-            <li class="dropdown px-3 nav-link">
+            <li class="dropdown px-3 nav-link" data-cy="nav-epidemiology">
               <div
                 id="dropdownMenuButtonCasesDeaths"
                 class="dropdown-toggle"
@@ -66,12 +68,14 @@
                 data-toggle="dropdown"
                 aria-haspopup="true"
                 aria-expanded="false"
+                data-cy="case-deaths"
               >
                 Cases &amp; Deaths
               </div>
               <div
                 class="dropdown-menu dropdown-menu-dark"
                 aria-labelledby="dropdownMenuButtonCasesDeaths"
+                data-cy="epidemiology-dropdown"
               >
                 <router-link
                   data-toggle="collapse"
@@ -81,6 +85,7 @@
                   :to="{
                     name: 'Epidemiology',
                   }"
+                  data-cy="item-epidemiology"
                 >
                   Compare locations over time
                 </router-link>
@@ -92,6 +97,7 @@
                   :to="{
                     name: 'Maps',
                   }"
+                  data-cy="item-maps"
                 >
                   Explore interactive maps
                 </router-link>
@@ -104,6 +110,7 @@
                   :to="{
                     name: 'Compare',
                   }"
+                  data-cy="item-compare"
                 >
                   Find similar locations
                 </router-link>
@@ -116,6 +123,7 @@
                   :to="{
                     name: 'Regions',
                   }"
+                  data-cy="item-regions"
                 >
                   Explore regions
                 </router-link>
@@ -126,6 +134,7 @@
                   class="nav-link"
                   to="/data"
                   :class="{ active: $route.name === 'Data' }"
+                  data-cy="item-access-datatable"
                 >
                   Access data tables
                 </router-link>
@@ -133,7 +142,7 @@
             </li>
 
             <!-- Genomics -->
-            <li class="dropdown px-3 nav-link">
+            <li class="dropdown px-3 nav-link" data-cy="nav-genomics">
               <div
                 id="dropdownMenuButtonVariants"
                 class="dropdown-toggle"
@@ -142,12 +151,14 @@
                 data-toggle="dropdown"
                 aria-haspopup="true"
                 aria-expanded="false"
+                data-cy="variants"
               >
                 Variants
               </div>
               <div
                 class="dropdown-menu dropdown-menu-dark p-1"
                 aria-labelledby="dropdownMenuButtonVariants"
+                data-cy="genomics-dropdown"
               >
                 <router-link
                   data-toggle="collapse"
@@ -155,6 +166,7 @@
                   class="nav-link"
                   :to="{ name: 'SituationReports' }"
                   :class="{ active: $route.name === 'SituationReports' }"
+                  data-cy="item-situation-reports"
                 >
                   Lineage | Mutation Tracker
                 </router-link>
@@ -164,6 +176,7 @@
                   class="nav-link"
                   :to="{ name: 'LocationReports' }"
                   :class="{ active: $route.name === 'LocationReports' }"
+                  data-cy="item-location-reports"
                 >
                   Location Tracker
                 </router-link>
@@ -175,6 +188,7 @@
                   :class="{
                     active: $route.name === 'SituationReportComparison',
                   }"
+                  data-cy="item-situation-report-comparison"
                 >
                   Lineage Comparison
                 </router-link>
@@ -184,6 +198,7 @@
                   class="nav-link"
                   :to="{ name: 'SituationReportCaveats' }"
                   :class="{ active: $route.name === 'SituationReportCaveats' }"
+                  data-cy="item-interpreting-reports"
                 >
                   Interpreting Reports
                 </router-link>
@@ -191,7 +206,7 @@
             </li>
 
             <!-- RESOURCES -->
-            <li class="dropdown px-3 nav-link">
+            <li class="dropdown px-3 nav-link" data-cy="nav-resources">
               <div
                 id="dropdownMenuButtonResearchLibrary"
                 class="dropdown-toggle"
@@ -200,12 +215,14 @@
                 data-toggle="dropdown"
                 aria-haspopup="true"
                 aria-expanded="false"
+                data-cy="research-library"
               >
                 Research Library
               </div>
               <div
                 class="dropdown-menu dropdown-menu-dark p-1"
                 aria-labelledby="dropdownMenuButtonResearchLibrary"
+                data-cy="resources-dropdown"
               >
                 <router-link
                   data-toggle="collapse"
@@ -213,6 +230,7 @@
                   class="nav-link"
                   to="/resources"
                   :class="{ active: $route.name === 'Resources' }"
+                  data-cy="item-find-research"
                 >
                   Find research
                 </router-link>
@@ -222,6 +240,7 @@
                   class="nav-link"
                   :to="{ name: 'Sources', hash: '#resources' }"
                   :class="{ active: $route.name === 'Sources' }"
+                  data-cy="item-download-metadata"
                 >
                   Download metadata
                 </router-link>
@@ -231,6 +250,7 @@
                   class="nav-link"
                   to="/schema"
                   :class="{ active: $route.name === 'Schema' }"
+                  data-cy="item-schema"
                 >
                   View &amp; adapt schema
                 </router-link>
@@ -238,12 +258,18 @@
             </li>
 
             <!-- API -->
-            <li class="nav-item">
-              <a class="nav-link" href="https://api.outbreak.info/">API</a>
+            <li class="nav-item" data-cy="nav-api">
+              <a
+                class="nav-link"
+                href="https://api.outbreak.info/"
+                data-cy="item-outbreak-api"
+              >
+                API
+              </a>
             </li>
 
             <!-- ABOUT -->
-            <li class="dropdown px-3 nav-link">
+            <li class="dropdown px-3 nav-link" data-cy="nav-about">
               <div
                 id="dropdownMenuButtonAbout"
                 class="dropdown-toggle"
@@ -252,12 +278,14 @@
                 data-toggle="dropdown"
                 aria-haspopup="true"
                 aria-expanded="false"
+                data-cy="outbreak-about"
               >
                 About
               </div>
               <div
                 class="dropdown-menu dropdown-menu-dark p-1"
                 aria-labelledby="dropdownMenuButtonAbout"
+                data-cy="about-dropdown"
               >
                 <router-link
                   data-toggle="collapse"
@@ -265,6 +293,7 @@
                   class="nav-link"
                   to="/about"
                   :class="{ active: $route.name === 'About' }"
+                  data-cy="item-about"
                 >
                   About
                 </router-link>
@@ -274,16 +303,24 @@
                   class="nav-link"
                   to="/sources"
                   :class="{ active: $route.name === 'Sources' }"
+                  data-cy="item-data-sources"
                 >
                   Data sources
                 </router-link>
-                <a class="nav-link" href="https://blog.outbreak.info">Blog</a>
+                <a
+                  class="nav-link"
+                  href="https://blog.outbreak.info"
+                  data-cy="item-blog"
+                >
+                  Blog
+                </a>
                 <router-link
                   data-toggle="collapse"
                   data-target=".navbar-collapse"
                   class="nav-link"
                   to="/faq"
                   :class="{ active: $route.name === 'Faq' }"
+                  data-cy="item-faq"
                 >
                   FAQ
                 </router-link>
@@ -293,6 +330,7 @@
                   class="nav-link"
                   to="/latest"
                   :class="{ active: $route.name === 'Latest' }"
+                  data-cy="item-latest-changes"
                 >
                   Latest changes
                 </router-link>
@@ -302,6 +340,7 @@
                   class="nav-link"
                   :class="{ active: $route.name === 'Citation' }"
                   :to="{ name: 'Citation' }"
+                  data-cy="item-cite"
                 >
                   How to cite
                 </router-link>
@@ -312,6 +351,7 @@
                   class="nav-link"
                   :class="{ active: $route.name === 'Press' }"
                   :to="{ name: 'Press' }"
+                  data-cy="item-media"
                 >
                   In the media
                 </router-link>
@@ -325,10 +365,16 @@
     <section
       id="notices"
       class="bg-highlight py-2 px-3 text-light text-center fa-sm"
+      data-cy="notice-section"
     >
-      <b class="mr-1">
+      <b class="mr-1" data-cy="notice-text">
         The outbreak.info
-        <a href="https://api.outbreak.info/" class="text-light" target="_blank">
+        <a
+          href="https://api.outbreak.info/"
+          class="text-light"
+          target="_blank"
+          data-cy="outbreak-api"
+        >
           API
         </a>
 
@@ -338,6 +384,7 @@
           class="text-light"
           target="_blank"
           aria-label="outbreak-info-github"
+          data-cy="r-package"
         >
           R package
         </a>
