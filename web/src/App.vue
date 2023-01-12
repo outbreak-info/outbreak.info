@@ -413,12 +413,18 @@
       <div
         id="footer-sitemap"
         class="bg-main__darker w-100 d-flex justify-content-between text-left text-muted row border-bottom navbar-dark m-0 px-3 pb-3 pt-4"
+        data-cy="footer"
       >
         <!-- epi group -->
-        <div class="text-light px-4 footer-section">
-          <div class="navbar-footer-title">COVID-19 Cases &amp; Deaths</div>
-          <ul class="navbar-nav navbar-footer">
-            <li class="nav-item px-0 py-1">
+        <div
+          class="text-light px-4 footer-section"
+          data-cy="footer-section-epi"
+        >
+          <div class="navbar-footer-title" data-cy="epi-title">
+            COVID-19 Cases &amp; Deaths
+          </div>
+          <ul class="navbar-nav navbar-footer" data-cy="footer-nav-epi">
+            <li class="nav-item px-0 py-1" data-cy="epi-group-epidemiology">
               <router-link
                 data-toggle="collapse"
                 data-target=".navbar-collapse"
@@ -427,11 +433,12 @@
                 :to="{
                   name: 'Epidemiology',
                 }"
+                data-cy="footer-item-epidemiology"
               >
                 Compare locations over time
               </router-link>
             </li>
-            <li class="nav-item px-0 py-1">
+            <li class="nav-item px-0 py-1" data-cy="epi-group-maps">
               <router-link
                 data-toggle="collapse"
                 data-target=".navbar-collapse"
@@ -440,11 +447,12 @@
                 :to="{
                   name: 'Maps',
                 }"
+                data-cy="footer-item-maps"
               >
                 Explore interactive maps
               </router-link>
             </li>
-            <li class="nav-item px-0 py-1">
+            <li class="nav-item px-0 py-1" data-cy="epi-group-compare">
               <router-link
                 data-toggle="collapse"
                 data-target=".navbar-collapse"
@@ -453,11 +461,12 @@
                 :to="{
                   name: 'Compare',
                 }"
+                data-cy="footer-item-compare"
               >
                 Find similar locations
               </router-link>
             </li>
-            <li class="nav-item px-0 py-1">
+            <li class="nav-item px-0 py-1" data-cy="epi-group-regions">
               <router-link
                 data-toggle="collapse"
                 data-target=".navbar-collapse"
@@ -466,17 +475,19 @@
                 :to="{
                   name: 'Regions',
                 }"
+                data-cy="footer-item-regions"
               >
                 Explore regions
               </router-link>
             </li>
-            <li class="nav-item px-0 py-1">
+            <li class="nav-item px-0 py-1" data-cy="epi-group-datatable">
               <router-link
                 data-toggle="collapse"
                 data-target=".navbar-collapse"
                 class="nav-link p-0"
                 to="/data"
                 :class="{ active: $route.name === 'Data' }"
+                data-cy="footer-item-datatable"
               >
                 Access data tables
               </router-link>
@@ -485,49 +496,70 @@
         </div>
 
         <!-- genomics group -->
-        <div class="text-light px-4 footer-section">
-          <div class="navbar-footer-title">Variants</div>
-          <ul class="navbar-nav navbar-footer">
-            <li class="nav-item px-0 py-1">
+        <div
+          class="text-light px-4 footer-section"
+          data-cy="footer-section-genomics"
+        >
+          <div class="navbar-footer-title" data-cy="genomics-title">
+            Variants
+          </div>
+          <ul class="navbar-nav navbar-footer" data-cy="footer-nav-genomics">
+            <li
+              class="nav-item px-0 py-1"
+              data-cy="genomics-group-situation-reports"
+            >
               <router-link
                 data-toggle="collapse"
                 data-target=".navbar-collapse"
                 class="nav-link p-0"
                 :to="{ name: 'SituationReports' }"
                 :class="{ active: $route.name === 'SituationReports' }"
+                data-cy="footer-item-situation-reports"
               >
                 Lineage | Mutation Tracker
               </router-link>
             </li>
-            <li class="nav-item px-0 py-1">
+            <li
+              class="nav-item px-0 py-1"
+              data-cy="genomics-group-location-reports"
+            >
               <router-link
                 data-toggle="collapse"
                 data-target=".navbar-collapse"
                 class="nav-link p-0"
                 :to="{ name: 'LocationReports' }"
                 :class="{ active: $route.name === 'LocationReports' }"
+                data-cy="footer-item-location-reports"
               >
                 Location Tracker
               </router-link>
             </li>
-            <li class="nav-item px-0 py-1">
+            <li
+              class="nav-item px-0 py-1"
+              data-cy="genomics-group-lineage-compare"
+            >
               <router-link
                 data-toggle="collapse"
                 data-target=".navbar-collapse"
                 class="nav-link p-0"
                 :to="{ name: 'SituationReportComparison' }"
                 :class="{ active: $route.name === 'SituationReportComparison' }"
+                data-cy="footer-item-lineage-comparison"
               >
                 Lineage Comparison
               </router-link>
             </li>
-            <li class="nav-item px-0 py-1">
+            <li
+              class="nav-item px-0 py-1"
+              data-cy="genomics-group-interpreting-reports"
+            >
               <router-link
                 data-toggle="collapse"
                 data-target=".navbar-collapse"
                 class="nav-link p-0"
                 :to="{ name: 'SituationReportCaveats' }"
                 :class="{ active: $route.name === 'SituationReportCaveats' }"
+                data-cy="foot-item-interpreting-reports"
               >
                 Interpreting Reports
               </router-link>
@@ -536,38 +568,52 @@
         </div>
 
         <!-- resources group -->
-        <div class="text-light px-4 footer-section">
-          <div class="navbar-footer-title">Research Library</div>
-          <ul class="navbar-nav navbar-footer">
-            <li class="nav-item px-0 py-1">
+        <div
+          class="text-light px-4 footer-section"
+          data-cy="footer-section-resources"
+        >
+          <div class="navbar-footer-title" data-cy="resources-title">
+            Research Library
+          </div>
+          <ul class="navbar-nav navbar-footer" data-cy="footer-nav-resources">
+            <li
+              class="nav-item px-0 py-1"
+              data-cy="resources-group-find-research"
+            >
               <router-link
                 data-toggle="collapse"
                 data-target=".navbar-collapse"
                 class="nav-link p-0"
                 to="/resources"
                 :class="{ active: $route.name === 'Resources' }"
+                data-cy="footer-item-find-research"
               >
                 Find research
               </router-link>
             </li>
-            <li class="nav-item px-0 py-1">
+            <li
+              class="nav-item px-0 py-1"
+              data-cy="resources-group-download-metadata"
+            >
               <router-link
                 data-toggle="collapse"
                 data-target=".navbar-collapse"
                 class="nav-link p-0"
                 :to="{ name: 'Sources', hash: '#resources' }"
                 :class="{ active: $route.name === 'Sources' }"
+                data-cy="footer-item-download-metadata"
               >
                 Download metadata
               </router-link>
             </li>
-            <li class="nav-item px-0 py-1">
+            <li class="nav-item px-0 py-1" data-cy="resources-group-schema">
               <router-link
                 data-toggle="collapse"
                 data-target=".navbar-collapse"
                 class="nav-link p-0"
                 to="/schema"
                 :class="{ active: $route.name === 'Schema' }"
+                data-cy="footer-item-schema"
               >
                 View &amp; adapt schema
               </router-link>
@@ -576,63 +622,80 @@
         </div>
 
         <!-- about group -->
-        <div class="text-light px-4 footer-section">
-          <div class="navbar-footer-title">About</div>
-          <ul class="navbar-nav navbar-footer">
-            <li class="nav-item px-0 py-1">
+        <div
+          class="text-light px-4 footer-section"
+          data-cy="footer-section-about"
+        >
+          <div class="navbar-footer-title" data-cy="about-title">About</div>
+          <ul class="navbar-nav navbar-footer" data-cy="footer-nav-about">
+            <li class="nav-item px-0 py-1" data-cy="about-group-about-us">
               <router-link
                 data-toggle="collapse"
                 data-target=".navbar-collapse"
                 class="nav-link p-0"
                 to="/about"
                 :class="{ active: $route.name === 'About' }"
+                data-cy="footer-item-about-us"
               >
                 About us
               </router-link>
             </li>
 
-            <li class="nav-item px-0 py-1">
+            <li class="nav-item px-0 py-1" data-cy="about-group-data-sources">
               <router-link
                 data-toggle="collapse"
                 data-target=".navbar-collapse"
                 class="nav-link p-0"
                 to="/sources"
                 :class="{ active: $route.name === 'Sources' }"
+                data-cy="footer-item-data-sources"
               >
                 Data sources
               </router-link>
             </li>
 
-            <li class="nav-item px-0 py-1">
-              <a class="nav-link p-0" href="https://blog.outbreak.info">Blog</a>
+            <li class="nav-item px-0 py-1" data-cy="about-group-blog">
+              <a
+                class="nav-link p-0"
+                href="https://blog.outbreak.info"
+                data-cy="footer-item-blog"
+              >
+                Blog
+              </a>
             </li>
 
-            <li class="nav-item px-0 py-1">
+            <li class="nav-item px-0 py-1" data-cy="about-group-faq">
               <router-link
                 data-toggle="collapse"
                 data-target=".navbar-collapse"
                 class="nav-link p-0"
                 to="/faq"
                 :class="{ active: $route.name === 'FAQ' }"
+                data-cy="footer-item-faq"
               >
                 FAQ
               </router-link>
             </li>
 
-            <li class="nav-item px-0 py-1">
+            <li class="nav-item px-0 py-1" data-cy="about-group-latest-changes">
               <router-link
                 data-toggle="collapse"
                 data-target=".navbar-collapse"
                 class="nav-link p-0"
                 to="/latest"
                 :class="{ active: $route.name === 'Latest' }"
+                data-cy="footer-item-latest-changes"
               >
                 Latest changes
               </router-link>
             </li>
 
-            <li class="nav-item px-0 py-1">
-              <router-link class="nav-link p-0" :to="{ name: 'Citation' }">
+            <li class="nav-item px-0 py-1" data-cy="about-group-cite">
+              <router-link
+                class="nav-link p-0"
+                :to="{ name: 'Citation' }"
+                data-cy="footer-item-cite"
+              >
                 How to cite
               </router-link>
             </li>
@@ -641,8 +704,12 @@
             <router-link class="nav-link p-0" :to="{ name: 'Videos' }">Video demos</router-link>
           </li> -->
 
-            <li class="nav-item px-0 py-1">
-              <router-link class="nav-link p-0" :to="{ name: 'Press' }">
+            <li class="nav-item px-0 py-1" data-cy="about-group-media">
+              <router-link
+                class="nav-link p-0"
+                :to="{ name: 'Press' }"
+                data-cy="footer-item-media"
+              >
                 In the media
               </router-link>
             </li>
@@ -650,25 +717,32 @@
         </div>
 
         <!-- contact us group -->
-        <div class="text-light px-4 footer-section">
-          <div class="navbar-footer-title">Contact us</div>
-          <ul class="navbar-nav navbar-footer">
-            <li class="nav-item px-0 py-1">
+        <div
+          class="text-light px-4 footer-section"
+          data-cy="footer-section-contact-us"
+        >
+          <div class="navbar-footer-title" data-cy="contact-us-title">
+            Contact us
+          </div>
+          <ul class="navbar-nav navbar-footer" data-cy="footer-nav-contact-us">
+            <li class="nav-item px-0 py-1" data-cy="contact-us-help">
               <a
                 href="mailto:help@outbreak.info"
                 target="_blank"
                 class="nav-link p-0"
+                data-cy="item-help-link"
               >
                 help@outbreak.info
               </a>
             </li>
 
-            <li class="nav-item px-0 py-1">
+            <li class="nav-item px-0 py-1" data-cy="contact-us-submit-issue">
               <a
                 class="nav-link p-0"
                 href="https://github.com/outbreak-info/outbreak.info/issues"
                 rel="noreferrer"
                 target="_blank"
+                data-cy="item-submit-issue-github"
               >
                 Submit an issue on Github
               </a>
@@ -684,47 +758,66 @@
       <div
         id="terms"
         class="row m-0 d-flex justify-content-center align-items-center py-1"
+        data-cy="footer-section-bottom"
       >
-        <div class="d-flex text-light x-small">
-          <ul class="m-0">
-            <li class="d-inline m-3">
-              <router-link class="text-light" :to="{ name: 'Citation' }">
+        <div class="d-flex text-light x-small" data-cy="bottom-wrapper">
+          <ul class="m-0" data-cy="footer-nav-terms">
+            <li class="d-inline m-3" data-cy="bottom-cite">
+              <router-link
+                class="text-light"
+                :to="{ name: 'Citation' }"
+                data-cy="bottom-item-cite"
+              >
                 How to Cite
               </router-link>
             </li>
-            <li class="d-inline m-3">
+            <li class="d-inline m-3" data-cy="bottom-github">
               <a
                 href="https://github.com/outbreak-info"
                 target="_blank"
                 class="text-light"
+                data-cy="bottom-item-github"
               >
                 GitHub
 
                 <font-awesome-icon :icon="['fab', 'github']" class="mx-1" />
               </a>
             </li>
-            <li class="d-inline m-3">
-              <router-link class="text-light" to="/privacy">
+            <li class="d-inline m-3" data-cy="bottom-privacy">
+              <router-link
+                class="text-light"
+                to="/privacy"
+                data-cy="bottom-item-privacy"
+              >
                 Privacy Policy
               </router-link>
             </li>
-            <li class="d-inline m-3">
-              <router-link class="text-light" to="/terms">Terms</router-link>
+            <li class="d-inline m-3" data-cy="bottom-terms">
+              <router-link
+                class="text-light"
+                to="/terms"
+                data-cy="bottom-item-terms"
+              >
+                Terms
+              </router-link>
             </li>
-            <li class="d-inline m-3">
+            <li class="d-inline m-3" data-cy="bottom-copyright">
               All content copyright
               <a
                 href="https://scripps.edu/faculty/hughes"
                 target="_blank"
                 rel="noreferrer"
                 class="mx-1 white-underline"
+                data-cy="bottom-item-hughes"
               >
                 Hughes lab
               </a>
               &copy;
               <span v-text="year" />
             </li>
-            <li class="d-inline m-3">All rights reserved</li>
+            <li class="d-inline m-3" data-cy="bottom-reserved">
+              All rights reserved
+            </li>
           </ul>
         </div>
       </div>
