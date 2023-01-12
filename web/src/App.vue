@@ -326,9 +326,9 @@
       id="notices"
       class="bg-highlight py-2 px-3 text-light text-center fa-sm"
     >
-    <div class="border-bottom pb-2 mb-2">
+    <!-- <div class="border-bottom pb-2 mb-2">
       outbreak.info will be undergoing maintenance on <b>12 January 2023</b>. Data may be inaccessible during this time.
-    </div>
+    </div> -->
       <b class="mr-1">
         The outbreak.info
         <a href="https://api.outbreak.info/" class="text-light" target="_blank">
