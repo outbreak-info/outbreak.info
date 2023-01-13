@@ -1,6 +1,9 @@
 describe('test footer flow', () => {
-  it('there should be footer navigation items', () => {
+  beforeEach(() => {
     cy.visit('/');
+  });
+
+  it('there should be footer navigation items', () => {
     cy.get('[data-cy=footer]')
       .should('be.visible')
       .and('have.class', 'bg-main__darker')
@@ -243,7 +246,9 @@ describe('test footer flow', () => {
       .and('have.text', ' In the media ')
       .and('have.attr', 'href')
       .and('include', '/press');
+  });
 
+  it('footer contact us test', () => {
     // section contact us
     cy.get('[data-cy=footer-section-contact-us]')
       .should('be.visible')
@@ -278,7 +283,9 @@ describe('test footer flow', () => {
 
     //TODO: email subscription test
     cy.get('[data-cy=email-subscription]').should('be.visible');
+  });
 
+  it('footer logos test', () => {
     // footer logos
     cy.get('[data-cy=footer-logos]').should('be.visible');
     cy.get('[data-cy=footer-logo-sulab]')
@@ -342,7 +349,9 @@ describe('test footer flow', () => {
       .and('have.attr', 'href')
       .and('include', 'https://ctsa.ncats.nih.gov/cd2h/');
     cy.get('[data-cy=cd2h-image]').should('be.visible').and('have.attr', 'src');
+  });
 
+  it('footer terms test', () => {
     // bottom of footer; terms
     cy.get('[data-cy=bottom-item-cite]')
       .should('be.visible')
