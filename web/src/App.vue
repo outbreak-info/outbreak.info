@@ -559,7 +559,7 @@
                 class="nav-link p-0"
                 :to="{ name: 'SituationReportCaveats' }"
                 :class="{ active: $route.name === 'SituationReportCaveats' }"
-                data-cy="foot-item-interpreting-reports"
+                data-cy="footer-item-interpreting-reports"
               >
                 Interpreting Reports
               </router-link>
@@ -747,7 +747,7 @@
                 Submit an issue on Github
               </a>
             </li>
-            <EmailSubscription :isFooter="true" />
+            <EmailSubscription :isFooter="true" data-cy="email-subscription" />
           </ul>
         </div>
       </div>
