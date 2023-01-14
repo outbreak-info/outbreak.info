@@ -2210,9 +2210,7 @@ export const getLocationTable = (
     .filter((d) => d)
     .join(',')}`;
 
-  const variantQueries = mutations
-    .filter((d) => (d.type && d.type === 'variant') || d.type === 'mutation')
-    .map((d) => d.query);
+  const variantQueries = mutations.map((d) => d.query);
 
   return forkJoin([
     getCumPrevalence(apiurl, pangoQuery, location, totalThreshold),
