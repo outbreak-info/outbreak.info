@@ -286,7 +286,7 @@
               <div
                 class="d-flex flex-wrap align-items-center mt-3 justify-content-center"
               >
-                <select v-model="selectedWHO">
+                <select v-model="selectedWHO" @change="addVOC(selectedWHO)">
                   <option
                     v-for="(who, wIdx) in whoLineages"
                     :key="wIdx"
@@ -295,22 +295,6 @@
                     {{ who }}
                   </option>
                 </select>
-              </div>
-
-              <div
-                v-if="selectedWHO"
-                class="d-flex align-items-center justify-content-between my-3"
-                style="width: 250px"
-              >
-                <button
-                  class="ml-2 px-2 py-1 btn btn-sec fa-sm"
-                  @click="addWHO(false)"
-                >
-                  <font-awesome-icon class="mr-2" :icon="['fas', 'plus']" />
-                  Add
-                  <b>{{ selectedWHO }}</b>
-                  lineages
-                </button>
               </div>
             </div>
 
@@ -434,16 +418,7 @@
                       @click="addMutations()"
                     >
                       <font-awesome-icon class="mr-2" :icon="['fas', 'plus']" />
-                      Add {{ selectedMutationQuery }}-containing lineages
-                    </button>
-                    <button
-                      class="ml-2 px-2 py-1 btn btn-sec fa-sm"
-                      :disabled="!mutationValid"
-                      @click="clearAddMutations()"
-                    >
-                      <font-awesome-icon class="mr-2" :icon="['fas', 'sync']" />
-                      clear &amp; add {{ selectedMutationQuery }}-containing
-                      lineages
+                      Lookup {{ selectedMutationQuery }}-containing lineages
                     </button>
                   </div>
                 </small>
@@ -528,14 +503,7 @@
                     @click="addLocationLineages()"
                   >
                     <font-awesome-icon class="mr-2" :icon="['fas', 'plus']" />
-                    Add lineages in {{ selectedLocation.label }}
-                  </button>
-                  <button
-                    class="ml-2 px-2 py-1 btn btn-sec fa-sm"
-                    @click="clearAddLocationLineages()"
-                  >
-                    <font-awesome-icon class="mr-2" :icon="['fas', 'sync']" />
-                    clear &amp; add lineages in {{ selectedLocation.label }}
+                    Lookup lineages in {{ selectedLocation.label }}
                   </button>
                 </div>
 
@@ -795,11 +763,10 @@
               <!-- OMICRON INSERTION WARNING -->
               <Warning
                 v-if="
-                  geneData.key === 'S' &&
                   selectedPango &&
                   (selectedPango.includes('Omicron') ||
                     selectedPango.includes('omicron') ||
-                    selectedPango.includes('B.1.1.529') ||
+                    selectedPango.includes('BA.1') ||
                     checkPango)
                 "
                 text="<p>Most Omicron sequences also contain a <b>3 amino acid insertion (EPE) at position 214 in the Spike</b> protein.</p> outbreak.info currently only reports substitution and deletion changes, due to the computational challenges with identifying insertions in 5+ million sequences every day. We’re working towards incorporating insertions into our data processing pipeline, and we encourage you to refer back to the sequence data available on GISAID for more information about these insertions."
@@ -1316,38 +1283,20 @@ export default {
           this.showSnackbar = false;
         }, 5000);
 
-        this.prepResults(results);
+        const filteredMutation = results.data.map((gene) => {
+          return {
+            key: gene.key,
+            values: gene.values.filter(
+              (d) => d.lineage_count >= this.countThreshold,
+            ),
+          };
+        });
 
-        if (this.routeTo === 'GenomicsEmbed') {
-          this.$router.push({
-            name: this.routeTo,
-            params: {
-              disableScroll: true,
-            },
-            query: {
-              type: 'comp',
-              pango: results.yDomain,
-              gene: this.selectedGenes,
-              threshold: this.prevalenceThreshold,
-              nthresh: this.countThreshold,
-              dark: this.darkMode,
-            },
-          });
-        } else {
-          this.$router.push({
-            name: this.routeTo,
-            params: {
-              disableScroll: true,
-            },
-            query: {
-              pango: results.yDomain,
-              gene: this.selectedGenes,
-              threshold: this.prevalenceThreshold,
-              nthresh: this.countThreshold,
-              dark: this.darkMode,
-            },
-          });
-        }
+        this.selectedPango = uniq(
+          filteredMutation
+            .flatMap((d) => d.values)
+            .map((d) => d.pangolin_lineage),
+        );
 
         // reset / clear
         this.selectedMutationQuery = null;
@@ -1369,7 +1318,20 @@ export default {
         setTimeout(() => {
           this.showSnackbar = false;
         }, 5000);
-        this.prepResults(results);
+        const filteredMutation = results.data.map((gene) => {
+          return {
+            key: gene.key,
+            values: gene.values.filter(
+              (d) => d.lineage_count >= this.countThreshold,
+            ),
+          };
+        });
+        // update lineages to be the "fixed" names, to account for WHO / grouped names.
+        this.selectedPango = uniq(
+          filteredMutation
+            .flatMap((d) => d.values)
+            .map((d) => d.pangolin_lineage),
+        );
 
         // reset / clear
         this.selectedLocation = null;
@@ -1464,49 +1426,11 @@ export default {
     },
     addPango(selected) {
       this.selectedPango.push(selected.name);
-      this.selectedPango = uniq(this.selectedPango);
-
-      this.showSnackbar = true;
-      this.snackbarText = `${selected.name} added`;
-      setTimeout(() => {
-        this.showSnackbar = false;
-      }, 3000);
-
-      if (this.routeTo === 'GenomicsEmbed') {
-        this.$router.push({
-          name: this.routeTo,
-          params: {
-            disableScroll: true,
-          },
-          query: {
-            type: 'comp',
-            pango: this.selectedPango,
-            gene: this.selectedGenes,
-            threshold: this.prevalenceThreshold,
-            nthresh: this.countThreshold,
-            dark: this.darkMode,
-          },
-        });
-      } else {
-        this.$router.push({
-          name: this.routeTo,
-          params: {
-            disableScroll: true,
-          },
-          query: {
-            pango: this.selectedPango,
-            gene: this.selectedGenes,
-            threshold: this.prevalenceThreshold,
-            nthresh: this.countThreshold,
-            dark: this.darkMode,
-          },
-        });
-      }
-
-      this.getData();
     },
     clearPango() {
       this.selectedPango = [];
+      this.filteredMutationHeatmap = null;
+      this.downloadableHeatmap = null;
       if (this.routeTo === 'GenomicsEmbed') {
         this.$router.push({
           name: this.routeTo,
