@@ -762,13 +762,7 @@
 
               <!-- OMICRON INSERTION WARNING -->
               <Warning
-                v-if="
-                  selectedPango &&
-                  (selectedPango.includes('Omicron') ||
-                    selectedPango.includes('omicron') ||
-                    selectedPango.includes('BA.1') ||
-                    checkPango)
-                "
+                v-if="checkPango"
                 text="<p>Most Omicron sequences also contain a <b>3 amino acid insertion (EPE) at position 214 in the Spike</b> protein.</p> outbreak.info currently only reports substitution and deletion changes, due to the computational challenges with identifying insertions in 5+ million sequences every day. We’re working towards incorporating insertions into our data processing pipeline, and we encourage you to refer back to the sequence data available on GISAID for more information about these insertions."
                 class="fa-sm mt-1 mb-2"
                 :align_left="true"
