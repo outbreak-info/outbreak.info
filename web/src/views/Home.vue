@@ -32,13 +32,20 @@
           class="col-sm-12 col-md-4 px-5 py-3 d-flex flex-column justify-content-between epi-intro"
         >
           <div class="mb-3">
-            <router-link :to="{ name: 'Epidemiology' }" class="text-light">
-              <h3 class="my-3">COVID-19 Cases &amp; Deaths</h3>
+            <router-link
+              :to="{ name: 'Epidemiology' }"
+              class="text-light"
+              data-cy="search-epidemiology"
+            >
+              <h3 class="my-3" data-cy="search-epi-title">
+                COVID-19 Cases &amp; Deaths
+              </h3>
             </router-link>
 
             <div
               id="sBar-text"
               class="form-text d-block mb-3 text-light-highlight line-height-1"
+              data-cy="search-epi-description"
             >
               View COVID-19 trends by region, country, state/province, U.S.
               metropolitan area, or U.S. county
