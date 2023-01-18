@@ -79,6 +79,7 @@
                     query: { location: 'USA_US-CA' },
                   }"
                   class="text-light"
+                  data-cy="epi-california"
                 >
                   California
 
@@ -112,8 +113,9 @@
               <router-link
                 :to="{ name: 'SituationReports' }"
                 class="text-light"
+                data-cy="search-variant"
               >
-                <h3 class="my-3">Variants</h3>
+                <h3 class="my-3" data-cy="search-variant-title">Variants</h3>
               </router-link>
               <small class="ml-2">
                 enabled by data from
@@ -134,6 +136,7 @@
             <div
               id="resourceBar-text"
               class="form-text d-block text-light-highlight line-height-1"
+              data-cy="search-variant-description"
             >
               Explore SARS-CoV-2 lineage, variant, and mutation situation
               reports
@@ -285,13 +288,20 @@
           class="col-sm-12 col-md-4 px-5 py-3 d-flex flex-column justify-content-between resources-intro"
         >
           <div class="mb-3">
-            <router-link :to="{ name: 'Resource Summary' }" class="text-light">
-              <h3 class="my-3">Research Library</h3>
+            <router-link
+              :to="{ name: 'Resource Summary' }"
+              class="text-light"
+              data-cy="search-resources"
+            >
+              <h3 class="my-3" data-cy="search-resources-title">
+                Research Library
+              </h3>
             </router-link>
 
             <div
               id="resourceBar-text"
               class="form-text d-block mb-3 text-light-highlight line-height-1"
+              data-cy="search-resources-description"
             >
               Find COVID-19 and SARS-CoV-2 publications, clinical trials,
               datasets, protocols, and more
@@ -399,15 +409,26 @@
         class="btn btn-main-outline m-4"
         data-toggle="collapse"
         href="#collapsedFeatures"
+        data-cy="toggle-summary-btn"
       >
         What can I do with outbreak.info?
       </button>
-      <router-link :to="{ name: 'Sources' }" class="no-underline m-4">
-        <button class="btn btn-main-outline">Where do we get our data?</button>
+      <router-link
+        :to="{ name: 'Sources' }"
+        class="no-underline m-4"
+        data-cy="btn-sources"
+      >
+        <button class="btn btn-main-outline" data-cy="btn-sources-text">
+          Where do we get our data?
+        </button>
       </router-link>
 
-      <router-link :to="{ name: 'Latest' }" class="no-underline m-4">
-        <button class="btn btn-main-outline">
+      <router-link
+        :to="{ name: 'Latest' }"
+        class="no-underline m-4"
+        data-cy="btn-latest"
+      >
+        <button class="btn btn-main-outline" data-cy="btn-latest-text">
           What's new at outbreak.info?
         </button>
       </router-link>
@@ -415,8 +436,11 @@
       <router-link
         :to="{ name: 'About', hash: '#jobs' }"
         class="no-underline m-4"
+        data-cy="btn-about-job"
       >
-        <button class="btn btn-main">We're hiring!</button>
+        <button class="btn btn-main" data-cy="btn-about-job">
+          We're hiring!
+        </button>
       </router-link>
     </div>
 

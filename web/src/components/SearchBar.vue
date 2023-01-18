@@ -22,11 +22,13 @@
         @keydown.delete="onBackspace"
         @keydown.ctrl.65="onSelectAll"
         @keydown.meta.65="onSelectAll"
+        data-cy="search-bar"
       />
       <ul
         v-show="isOpen"
         id="autocomplete-results"
         class="autocomplete-results bg-dark text-light"
+        data-cy="search-bar-dropdown"
       >
         <li v-if="isLoading" class="loading">Loading results...</li>
         <li
@@ -36,6 +38,7 @@
           @click="setResult(result)"
           class="autocomplete-result"
           :class="{ 'is-active': i === arrowCounter }"
+          data-cy="search-options"
         >
           {{ result.label }}
         </li>
