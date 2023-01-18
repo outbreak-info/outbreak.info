@@ -65,6 +65,7 @@
                 <router-link
                   :to="{ name: 'Epidemiology', query: { location: 'BRA' } }"
                   class="text-light"
+                  data-cy="epi-brazil"
                 >
                   Brazil
 
@@ -93,6 +94,7 @@
                   query: { location: 'USA_US-KS-28140' },
                 }"
                 class="text-light"
+                data-cy="epi-kansas"
               >
                 Kansas City metro area
 
@@ -240,6 +242,7 @@
                 <router-link
                   :to="{ name: 'LocationReport', query: { loc: 'USA' } }"
                   class="text-light"
+                  data-cy="genomics-us"
                 >
                   USA
 
@@ -445,7 +448,9 @@
     </div>
 
     <div id="collapsedFeatures" class="collapse">
-      <h1 class="text-center">What can I do with outbreak.info?</h1>
+      <h1 class="text-center" data-cy="summary-title">
+        What can I do with outbreak.info?
+      </h1>
 
       <!-- EPI EXAMPLES -->
       <section id="epi-examples" class="container my-3">

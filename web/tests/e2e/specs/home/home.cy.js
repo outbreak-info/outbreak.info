@@ -72,11 +72,45 @@ describe('Home page test', () => {
       });
   });
 
-  it('it should open covid chart page by clicking hint location', () => {
+  it('it should open covid chart page by clicking hint california', () => {
     cy.get('[data-cy=epi-california]')
       .should('be.visible')
       .and('have.text', ' California ')
       .click();
     cy.url().should('include', '/epidemiology?location=USA_US-CA');
+  });
+
+  it('it should open covid chart page by clicking hint brazil', () => {
+    cy.get('[data-cy=epi-brazil]')
+      .should('be.visible')
+      .and('have.text', ' Brazil ')
+      .click();
+    cy.url().should('include', '/epidemiology?location=BRA');
+  });
+
+  it('it should open covid chart page by clicking konsas city', () => {
+    cy.get('[data-cy=epi-kansas]')
+      .should('be.visible')
+      .and('have.text', ' Kansas City metro area ')
+      .click();
+    cy.url().should('include', '/epidemiology?location=USA_US-KS-28140');
+  });
+
+  it('it should open location report page by clicking USA', () => {
+    cy.get('[data-cy=genomics-us]')
+      .should('be.visible')
+      .and('have.text', ' USA ')
+      .click();
+    cy.url().should('include', '/location-reports?loc=USA');
+  });
+
+  it('toggle button: What can I do with outbreak.info', () => {
+    cy.get('[data-cy=toggle-summary-btn]')
+      .should('be.visible')
+      .and('have.text', ' What can I do with outbreak.info? ')
+      .click();
+    cy.get('[data-cy=summary-title]')
+      .should('be.visible')
+      .and('have.text', ' What can I do with outbreak.info? ');
   });
 });
