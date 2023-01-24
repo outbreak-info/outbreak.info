@@ -7,6 +7,7 @@
       <div
         class="floating-label align-left"
         :class="[selected.length === 0 ? 'empty' : 'filled']"
+        data-cy="autocomplete-input-label"
       >
         select locations
       </div>
@@ -18,6 +19,7 @@
           :class="{ 'to-add': item.addable, 'all-selected': isSelectAll }"
           :style="{ background: item.lightColor }"
           @click="updateChip(item)"
+          data-cy="location-item-chip"
         >
           {{ item.label }}
           <font-awesome-icon
@@ -25,6 +27,7 @@
             class="remove-btn"
             :icon="['far', 'times-circle']"
             :style="{ color: item.darkColor }"
+            data-cy="location-item-chip-icon"
           />
         </button>
         <input
@@ -38,6 +41,7 @@
           @keydown.delete="onBackspace"
           @keydown.ctrl.65="onSelectAll"
           @keydown.meta.65="onSelectAll"
+          data-cy="autocomplete-input"
         />
       </div>
     </div>

@@ -51,7 +51,11 @@
     >
       <label v-if="variableObj.percapita !== false" class="b-contain m-auto">
         <span>normalize to population</span>
-        <input v-model="isPerCapita" type="checkbox" />
+        <input
+          v-model="isPerCapita"
+          type="checkbox"
+          data-cy="normalize-population-checkbox"
+        />
         <div class="b-input" />
       </label>
       <label
@@ -73,12 +77,17 @@
     </div>
 
     <!-- title / drop down variable selector -->
-    <h4 v-if="location" class="plot-title pt-5 pb-3">
+    <h4
+      v-if="location"
+      class="plot-title pt-5 pb-3"
+      data-cy="epi-title-dropdown-variable-selector"
+    >
       Number of COVID-19
       <select
         v-model="variableObj"
         class="select-dropdown select-width"
         @change="changeVariable"
+        data-cy="epi-select-cases"
       >
         <option
           v-for="option in variableOptions"
@@ -88,18 +97,30 @@
           {{ option.label }}
         </option>
       </select>
-      <span v-if="locationName">in {{ locationName }}</span>
-      <span v-if="isPerCapita && variableObj.percapita !== false">
+      <span v-if="locationName" data-cy="epi-location-label">
+        in {{ locationName }}
+      </span>
+      <span
+        v-if="isPerCapita && variableObj.percapita !== false"
+        data-cy="epi-normalized-population-text"
+      >
         per 100,000 residents
       </span>
     </h4>
 
     <template v-else>
       <template v-if="!nolocation">
-        <h4 class="plot-title pt-5 pb-3 text-highlight">
+        <h4
+          class="plot-title pt-5 pb-3 text-highlight"
+          data-cy="epi-no-location-title"
+        >
           Please select a location
         </h4>
-        <button class="btn btn-main-outline" @click="lookupLocation">
+        <button
+          class="btn btn-main-outline"
+          @click="lookupLocation"
+          data-cy="epi-nearest-location-btn"
+        >
           Find nearest location
         </button>
       </template>
@@ -120,6 +141,7 @@
       <div
         v-if="data$ && data$[0] && variable.includes('Increase')"
         class="d-flex flex-column align-items-center"
+        data-cy="bar-graph-group"
       >
         <div
           id="bar-group"
