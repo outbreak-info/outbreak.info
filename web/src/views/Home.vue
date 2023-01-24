@@ -441,7 +441,7 @@
         class="no-underline m-4"
         data-cy="btn-about-job"
       >
-        <button class="btn btn-main" data-cy="btn-about-job">
+        <button class="btn btn-main" data-cy="btn-job-text">
           We're hiring!
         </button>
       </router-link>

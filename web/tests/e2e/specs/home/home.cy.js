@@ -72,31 +72,28 @@ describe('Home page test', () => {
       });
   });
 
-  it('it should open covid chart page by clicking hint california', () => {
+  it('it should open covid chart by clicking hint locations', () => {
     cy.get('[data-cy=epi-california]')
       .should('be.visible')
       .and('have.text', ' California ')
       .click();
     cy.url().should('include', '/epidemiology?location=USA_US-CA');
-  });
-
-  it('it should open covid chart page by clicking hint brazil', () => {
+    cy.wait(5000);
+    cy.go(-1);
     cy.get('[data-cy=epi-brazil]')
       .should('be.visible')
       .and('have.text', ' Brazil ')
       .click();
     cy.url().should('include', '/epidemiology?location=BRA');
-  });
-
-  it('it should open covid chart page by clicking konsas city', () => {
+    cy.wait(5000);
+    cy.go(-1);
     cy.get('[data-cy=epi-kansas]')
       .should('be.visible')
       .and('have.text', ' Kansas City metro area ')
       .click();
     cy.url().should('include', '/epidemiology?location=USA_US-KS-28140');
-  });
-
-  it('it should open location report page by clicking USA', () => {
+    cy.wait(5000);
+    cy.go(-1);
     cy.get('[data-cy=genomics-us]')
       .should('be.visible')
       .and('have.text', ' USA ')
@@ -104,7 +101,7 @@ describe('Home page test', () => {
     cy.url().should('include', '/location-reports?loc=USA');
   });
 
-  it('toggle button: What can I do with outbreak.info', () => {
+  it('toggle button: What can I do with outbreak.info and next buttons', () => {
     cy.get('[data-cy=toggle-summary-btn]')
       .should('be.visible')
       .and('have.text', ' What can I do with outbreak.info? ')
@@ -112,5 +109,38 @@ describe('Home page test', () => {
     cy.get('[data-cy=summary-title]')
       .should('be.visible')
       .and('have.text', ' What can I do with outbreak.info? ');
+    cy.get('[data-cy=btn-sources]')
+      .should('be.visible')
+      .and('have.attr', 'href')
+      .and('include', '/sources');
+    cy.get('[data-cy=btn-sources-text]')
+      .should('be.visible')
+      .and('have.text', ' Where do we get our data? ')
+      .click();
+    cy.url().should('include', '/sources');
+    cy.wait(3000);
+    cy.go(-1);
+    cy.get('[data-cy=btn-latest]')
+      .should('be.visible')
+      .and('have.attr', 'href')
+      .and('include', '/latest');
+    cy.get('[data-cy=btn-latest-text]')
+      .should('be.visible')
+      .and('have.text', " What's new at outbreak.info? ")
+      .click();
+    cy.url().should('include', '/latest');
+    cy.wait(3000);
+    cy.go(-1);
+    cy.get('[data-cy=btn-about-job]')
+      .should('be.visible')
+      .and('have.attr', 'href')
+      .and('include', '/about#jobs');
+    cy.get('[data-cy=btn-job-text]')
+      .should('be.visible')
+      .and('have.text', " We're hiring! ")
+      .click();
+    cy.url().should('include', '/about#jobs');
+    cy.wait(3000);
+    cy.go(-1);
   });
 });
