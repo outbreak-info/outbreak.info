@@ -23,6 +23,7 @@
               date: selectedDate,
             },
           }"
+          data-cy="map-all-country-btn"
         >
           All countries
         </router-link>
@@ -40,6 +41,7 @@
                 date: selectedDate,
               },
             }"
+            data-cy="map-us-states-btn"
           >
             U.S. States
           </router-link>
@@ -57,6 +59,7 @@
                   date: selectedDate,
                 },
               }"
+              data-cy="map-us-metro-btn"
             >
               U.S. Metro Areas
             </router-link>
@@ -73,6 +76,7 @@
                   date: selectedDate,
                 },
               }"
+              data-cy="map-us-counties-btn"
             >
               U.S. Counties
             </router-link>
@@ -92,7 +96,11 @@
       >
         <!-- variable options -->
         <div class="row d-flex align-items-center">
-          <select v-model="selectedVariable" class="select-dropdown">
+          <select
+            v-model="selectedVariable"
+            class="select-dropdown"
+            data-cy="select-variable-dropdown"
+          >
             <option
               v-for="option in variableOptions"
               :key="option.value"
