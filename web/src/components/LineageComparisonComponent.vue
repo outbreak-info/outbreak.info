@@ -1143,7 +1143,8 @@ export default {
       }
     },
     addVOC(lineage) {
-      this.selectedPango.push(lineage);
+      if (!this.selectedPango.includes(lineage))
+        this.selectedPango.push(lineage);
     },
     changeCountThreshold() {
       if (this.countThreshold) {
