@@ -176,6 +176,8 @@
                 role="button"
                 class="btn btn-accent d-flex align-items-center py-2 px-2 mx-3 line-height-1"
                 @click="submitNewData()"
+                data-toggle="collapse"
+                data-target="#select-lineages"
               >
                 create report
               </button>
@@ -746,13 +748,7 @@
             :key="gIdx"
             class="mr-4 mb-2"
             :class="{
-              'horiz-scroll':
-                largeScreen &&
-                geneData.key === 'S' &&
-                selectedPango &&
-                (selectedPango.includes('Omicron') ||
-                  selectedPango.includes('omicron') ||
-                  selectedPango.includes('B.1.1.529')),
+              'horiz-scroll': largeScreen && checkPango,
             }"
           >
             <template v-if="selectedGenes.includes(geneData.key)">
@@ -1273,24 +1269,16 @@ export default {
         this.selectedMutationThreshold / 100,
       ).subscribe((results) => {
         this.showSnackbar = true;
-        this.snackbarText = `${results.addedLength} lineages added`;
+        this.snackbarText = `${results.data.length} lineages added`;
         setTimeout(() => {
           this.showSnackbar = false;
         }, 5000);
-
-        const filteredMutation = results.data.map((gene) => {
-          return {
-            key: gene.key,
-            values: gene.values.filter(
-              (d) => d.lineage_count >= this.countThreshold,
-            ),
-          };
-        });
+        const filteredMutation = results.data.filter(
+          (gene) => gene.lineage_count >= this.countThreshold,
+        );
 
         this.selectedPango = uniq(
-          filteredMutation
-            .flatMap((d) => d.values)
-            .map((d) => d.pangolin_lineage),
+          filteredMutation.map((d) => d.pangolin_lineage),
         );
 
         // reset / clear
@@ -1309,24 +1297,12 @@ export default {
         this.selectedWindow,
       ).subscribe((results) => {
         this.showSnackbar = true;
-        this.snackbarText = `${results.addedLength} lineages added`;
+        this.snackbarText = `${results.data.length} lineages added`;
         setTimeout(() => {
           this.showSnackbar = false;
         }, 5000);
-        const filteredMutation = results.data.map((gene) => {
-          return {
-            key: gene.key,
-            values: gene.values.filter(
-              (d) => d.lineage_count >= this.countThreshold,
-            ),
-          };
-        });
         // update lineages to be the "fixed" names, to account for WHO / grouped names.
-        this.selectedPango = uniq(
-          filteredMutation
-            .flatMap((d) => d.values)
-            .map((d) => d.pangolin_lineage),
-        );
+        this.selectedPango = uniq(results.data);
 
         // reset / clear
         this.selectedLocation = null;

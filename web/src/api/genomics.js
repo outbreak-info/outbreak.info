@@ -2540,19 +2540,9 @@ export const getComparisonByMutations = (
   mutationThreshold,
 ) => {
   return getMutationsByLineage(apiurl, mutationArr, mutationThreshold).pipe(
-    mergeMap((newLineages) => {
+    map((newLineages) => {
       newLineages.sort((a, b) => b.proportion - a.proportion);
-      const newPango = uniq(
-        lineages.concat(newLineages.map((d) => d.pangolin_lineage)),
-      );
-      return getLineagesComparison(apiurl, newPango, prevalenceThreshold).pipe(
-        map((results) => {
-          return {
-            ...results,
-            addedLength: newLineages.length,
-          };
-        }),
-      );
+      return { data: newLineages };
     }),
   );
 };
@@ -2575,20 +2565,12 @@ export const getComparisonByLocation = (
     ndays,
     window,
   ).pipe(
-    mergeMap((newLineages) => {
+    map((newLineages) => {
       newLineages = Object.keys(newLineages[0]).filter(
         (d) => d.toLowerCase() !== 'other',
       );
       // newLineages.sort((a, b) => b.proportion - a.proportion);
-      const newPango = uniq(lineages.concat(newLineages));
-      return getLineagesComparison(apiurl, newPango, prevalenceThreshold).pipe(
-        map((results) => {
-          return {
-            ...results,
-            addedLength: newLineages.length,
-          };
-        }),
-      );
+      return { data: newLineages };
     }),
   );
 };
