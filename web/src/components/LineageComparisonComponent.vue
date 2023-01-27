@@ -165,13 +165,12 @@
     </div> -->
 
       <div
-        id="select-lineages"
-        class="my-3 p-2 bg-white border-top border-bottom collapse show"
+        class="my-3 p-2 bg-white border-top border-bottom"
       >
-        <template v-if="selectedPango.length">
+        <template>
           <div class="d-flex justify-content-between mt-1 mb-2">
             <div class="d-flex">
-              <h4>Already selected lineages</h4>
+              <h4>Selected lineages</h4>
               <button
                 role="button"
                 class="btn btn-accent d-flex align-items-center py-2 px-2 mx-3 line-height-1"
@@ -216,13 +215,17 @@
               role="button"
               class="btn chip btn-main d-flex align-items-center py-1 px-2 mx-3 line-height-1"
               @click="clearPango()"
+              v-if="selectedPango.length"
             >
               clear lineages
             </button>
+            <p v-else class="text-muted">
+              <i>none selected</i>
+            </p>
           </div>
         </template>
 
-        <div class="border-top pt-3 my-3 mb-1">
+        <div class="border-top pt-3 my-3 mb-1 collapse show" id="select-lineages">
           <h4 class="mb-3">Add lineages</h4>
           <div class="d-flex flex-wrap justify-content-between">
             <div
