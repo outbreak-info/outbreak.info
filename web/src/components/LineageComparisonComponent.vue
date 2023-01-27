@@ -181,13 +181,18 @@
                 create report
               </button>
             </div>
+            <!-- CHANGE LINEAGES -->
             <button
-              role="button"
-              class="btn btn-outline-secondary"
+              class="btn py-1 px-2 ml-5 my-2 btn-sec flex-shrink-0"
               data-toggle="collapse"
               data-target="#select-lineages"
+              @click="scrollToTop"
             >
-              select lineages
+              <font-awesome-icon
+                class="m-0 mr-2 fa-xs"
+                :icon="['fas', 'sync']"
+              />
+              <span class="fa-xs">change lineages</span>
             </button>
           </div>
           <div class="d-flex flex-wrap align-items-center">
@@ -535,7 +540,7 @@
       </div>
 
       <!-- LOOP OVER MUTATION HEATMAPS -->
-      <div id="mutation-heatmaps" class="mt-4" v-if="filteredMutationHeatmap">
+      <div id="mutation-heatmaps" class="mt-1" v-if="filteredMutationHeatmap">
         <!-- ADJUST PARAMS -->
         <div
           class="d-flex w-100 flex-column bg-white border-top border-bottom py-1 mb-3"
