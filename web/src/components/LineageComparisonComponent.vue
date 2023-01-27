@@ -187,12 +187,7 @@
               data-toggle="collapse"
               data-target="#select-lineages"
             >
-              hide options
-              <font-awesome-icon
-                class="ml-2"
-                :icon="['far', 'times-circle']"
-                :style="{ opacity: '0.6' }"
-              />
+              select lineages
             </button>
           </div>
           <div class="d-flex flex-wrap align-items-center">
@@ -1465,8 +1460,6 @@ export default {
           },
         });
       }
-
-      this.getData();
     },
   },
 };
