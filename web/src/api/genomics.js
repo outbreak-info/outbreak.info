@@ -2593,16 +2593,23 @@ export const getLineagesComparison = (
     lineages = lineages.map((d) => d.label);
   }
 
-    return getCharacteristicMutations(apiurl, lineages, 0, true, includeSublineages).pipe(
-      map((results, idx) => {
-        // Filter out the mutations in common between all selected lineages which are prevalent at > prevalenceThreshold
-        const prevalentMutations = uniq(
-          results
-            .filter((d) => d.prevalence > prevalenceThreshold)
-            .map((d) => d.mutation),
-        );
+  return forkJoin([
+    ...lineages.map((lineage) =>
+      getCharacteristicMutations(apiurl, lineage, 0, true, includeSublineages),
+    ),
+  ]).pipe(
+    map((results, idx) => {
+      const prevalentMutations = uniq(
+        results
+          .flatMap((d) => d)
+          .filter((d) => d.prevalence > prevalenceThreshold)
+          .map((d) => d.mutation),
+      );
 
-        let filtered = results.filter((x) => prevalentMutations.includes(x.mutation));
+      let filtered = results.flatMap((d) =>
+        d.filter((x) => prevalentMutations.includes(x.mutation)),
+      );
+
 
       filtered.forEach((d) => {
         d['id'] = `${cleanSelectors(d.pangolin_lineage)}-${cleanSelectors(
