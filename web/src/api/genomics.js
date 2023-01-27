@@ -2593,42 +2593,18 @@ export const getLineagesComparison = (
     lineages = lineages.map((d) => d.label);
   }
 
-  return forkJoin([
-    ...lineages.map((lineage) =>
-      getCharacteristicMutations(apiurl, lineage, 0, true, includeSublineages),
-    ),
-  ]).pipe(
-    map((results, idx) => {
-      const prevalentMutations = uniq(
-        results
-          .flatMap((d) => d)
-          .filter((d) => d.prevalence > prevalenceThreshold)
-          .map((d) => d.mutation),
-      );
+    const query = lineages.join(',');
 
-      let filtered = results.flatMap((d) =>
-        d.filter((x) => prevalentMutations.includes(x.mutation)),
-      );
+    return getCharacteristicMutations(apiurl, query, 0, true, includeSublineages).pipe(
+      map((results, idx) => {
+        // Filter out the mutations in common between all selected lineages which are prevalent at > prevalenceThreshold
+        const prevalentMutations = uniq(
+          results
+            .filter((d) => d.prevalence > prevalenceThreshold)
+            .map((d) => d.mutation),
+        );
 
-      // const avgByMutation = nest()
-      //   .key(d => d.mutation)
-      //   .rollup(values => {
-      //     const mutation = values[0].mutation;
-      //     const mutation_count = sum(values, d => d.mutation_count);
-      //     const lineage_count = sum(values, d => d.lineage_count);
-      //     return ({
-      //       mutation_count: mutation_count,
-      //       lineage_count: lineage_count,
-      //       // prevalence: mutation_count / lineage_count,
-      //       prevalence: sum(values, d => d.prevalence) / (lineages.length - 1),
-      //       pangolin_lineage: "average",
-      //       mutation: mutation,
-      //       gene: values[0].gene
-      //     })
-      //   })
-      //   .entries(filtered).map(d => d.value);
-
-      // filtered = filtered.concat(avgByMutation);
+        let filtered = results.filter((x) => prevalentMutations.includes(x.mutation));
 
       filtered.forEach((d) => {
         d['id'] = `${cleanSelectors(d.pangolin_lineage)}-${cleanSelectors(
