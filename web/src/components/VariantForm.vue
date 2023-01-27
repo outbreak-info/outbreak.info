@@ -2,7 +2,10 @@
   <div>
     <div class="row d-flex align-items-center">
       <div class="col-sm-12 col-md-9 mt-1 mb-4">
-        <div class="d-flex align-items-center mb-1 circle-header">
+        <div
+          class="d-flex align-items-center mb-1 circle-header"
+          data-cy="variant-form-1"
+        >
           <div class="mr-3" :class="[minimalistic ? 'circle-sm' : 'circle']">
             1
           </div>
@@ -26,6 +29,7 @@
               type="radio"
               :value="opt"
               class="mr-2"
+              data-cy="{`variant-type-${oIdx}`}"
             />
             <label :for="opt.id">{{ opt.label }}</label>
           </div>
@@ -39,6 +43,7 @@
           <div
             v-if="selectedType"
             class="d-flex align-items-center circle-header"
+            data-cy="selected-type"
           >
             <div class="mr-3" :class="[minimalistic ? 'circle-sm' : 'circle']">
               2
@@ -147,6 +152,7 @@
     <div
       v-if="formValid && selectedType"
       class="d-flex align-items-center circle-header"
+      data-cy="selected-lineage"
     >
       <div class="mr-3" :class="[minimalistic ? 'circle-sm' : 'circle']">
         {{ selectedType.id === 'variant' ? 4 : 3 }}

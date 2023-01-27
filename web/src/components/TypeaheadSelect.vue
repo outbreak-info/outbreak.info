@@ -11,11 +11,13 @@
         @keydown.down="down"
         @keydown.up="up"
         @input="debounceSearch"
+        data-cy="type-head-select-input"
       />
       <div
         class="dropdown-menu overflow-auto"
         :class="{ show: isOpen }"
         style="width: 100%"
+        data-cy="type-head-select-dropdown"
       >
         <a
           v-for="(suggestion, idx) in matches"
@@ -23,6 +25,7 @@
           class="dropdown-item"
           :class="{ active: isActive(idx) }"
           @click="suggestionClick(idx)"
+          data-cy="type-head-select-dropdown-item"
         >
           {{ suggestion[labelVariable] }}
           <span v-if="suggestion.total_count">

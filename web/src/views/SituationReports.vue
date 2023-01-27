@@ -1,10 +1,13 @@
 <template>
   <div>
     <div class="bg-main__darker mutation-banner border-top py-4">
-      <h1 class="m-0 text-grey" data-cy="situation-reports-title">
+      <h1 class="m-0 text-grey" data-cy="situation-reports-text">
         SARS-CoV-2 (hCoV-19) Mutation Reports
       </h1>
-      <h2 class="m-0 mutation-header font-weight-bold">
+      <h2
+        class="m-0 mutation-header font-weight-bold"
+        data-cy="situation-reports-page-title"
+      >
         Lineage
         <span class="mx-2">|</span>
         Mutation Tracker
@@ -80,12 +83,20 @@
             <div class="d-flex flex-wrap">
               View:
               <div class="d-flex flex-wrap flex-column">
-                <router-link class="mx-3 mb-1" :to="{ hash: '#voc' }">
+                <router-link
+                  class="mx-3 mb-1"
+                  :to="{ hash: '#voc' }"
+                  data-cy="custom-report-voc"
+                >
                   Variants of Concern
                 </router-link>
 
                 <div class="d-flex flex-column mx-3 mb-1">
-                  <router-link :to="{ hash: '#voi' }" class="">
+                  <router-link
+                    :to="{ hash: '#voi' }"
+                    class=""
+                    data-cy="custom-report-voi"
+                  >
                     Variants of Interest
                   </router-link>
                   <div class="text-muted text-size-xs mt-n1">
@@ -96,7 +107,11 @@
 
               <div class="d-flex flex-wrap flex-column mx-3">
                 <div class="d-flex flex-column mx-3 mb-1">
-                  <router-link :to="{ hash: '#previous-voc' }" class="">
+                  <router-link
+                    :to="{ hash: '#previous-voc' }"
+                    class=""
+                    data-cy="custom-report-previous-voc"
+                  >
                     Previous Variants of Concern
                   </router-link>
                   <div class="text-muted text-size-xs mt-n1">
@@ -105,7 +120,11 @@
                 </div>
 
                 <div class="d-flex flex-column mx-3 mb-1">
-                  <router-link :to="{ hash: '#de-escalated' }" class="">
+                  <router-link
+                    :to="{ hash: '#de-escalated' }"
+                    class=""
+                    data-cy="custom-report-de-escalated"
+                  >
                     De-escalated Variants
                   </router-link>
                   <div class="text-muted text-size-xs mt-n1">
@@ -115,11 +134,19 @@
               </div>
 
               <div class="d-flex flex-wrap flex-column mx-3">
-                <router-link class="mx-3 mb-1" :to="{ hash: '#moc' }">
+                <router-link
+                  class="mx-3 mb-1"
+                  :to="{ hash: '#moc' }"
+                  data-cy="custom-report-moc"
+                >
                   Mutations of Concern
                 </router-link>
 
-                <router-link class="mx-3 mb-1" :to="{ hash: '#moi' }">
+                <router-link
+                  class="mx-3 mb-1"
+                  :to="{ hash: '#moi' }"
+                  data-cy="custom-report-moi"
+                >
                   Mutations of Interest
                 </router-link>
               </div>
@@ -222,12 +249,17 @@
                   data-toggle="collapse"
                   href="#custom-report"
                   aria-expanded="false"
+                  data-cy="custom-report-collapse"
                 >
                   Select my own lineage and/or mutation(s)
                 </div>
               </div>
 
-              <section id="custom-report" class="collapse text-left">
+              <section
+                id="custom-report"
+                class="collapse text-left"
+                data-cy="custom-report-collapse-panel"
+              >
                 <CustomReportForm />
               </section>
             </div>
