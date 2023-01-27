@@ -2373,12 +2373,33 @@ export const getBasicComparisonReportData = (apiurl) => {
     .map((d) => d.who_name)
     .sort();
 
+  const current_voc = CURATED.filter(
+    (d) => d.variantType === 'Variant of Concern',
+  ).map((d) => d.label);
+
+  const previous_voc = CURATED.filter(
+    (d) => d.variantType === 'Previously Circulating Variant of Concern',
+  ).map((d) => d.label);
+
+  let voc = CURATED.filter(
+    (d) =>
+      d.variantType === 'Variant of Concern' ||
+      d.variantType === 'Previously Circulating Variant of Concern',
+  )
+    .map((d) => d.pango_descendants)
+    .flatMap((d) => d);
+
+  voc = voc.concat(current_voc);
+
   return forkJoin([getDateUpdated(apiurl), getSequenceCount(apiurl)]).pipe(
     map(([dateUpdated, total]) => {
       return {
         dateUpdated: dateUpdated,
         who: who,
         total: total,
+        voc: voc,
+        current_voc: current_voc,
+        previous_voc: previous_voc,
       };
     }),
     catchError((e) => {
@@ -2519,19 +2540,9 @@ export const getComparisonByMutations = (
   mutationThreshold,
 ) => {
   return getMutationsByLineage(apiurl, mutationArr, mutationThreshold).pipe(
-    mergeMap((newLineages) => {
+    map((newLineages) => {
       newLineages.sort((a, b) => b.proportion - a.proportion);
-      const newPango = uniq(
-        lineages.concat(newLineages.map((d) => d.pangolin_lineage)),
-      );
-      return getLineagesComparison(apiurl, newPango, prevalenceThreshold).pipe(
-        map((results) => {
-          return {
-            ...results,
-            addedLength: newLineages.length,
-          };
-        }),
-      );
+      return { data: newLineages };
     }),
   );
 };
@@ -2554,20 +2565,12 @@ export const getComparisonByLocation = (
     ndays,
     window,
   ).pipe(
-    mergeMap((newLineages) => {
+    map((newLineages) => {
       newLineages = Object.keys(newLineages[0]).filter(
         (d) => d.toLowerCase() !== 'other',
       );
       // newLineages.sort((a, b) => b.proportion - a.proportion);
-      const newPango = uniq(lineages.concat(newLineages));
-      return getLineagesComparison(apiurl, newPango, prevalenceThreshold).pipe(
-        map((results) => {
-          return {
-            ...results,
-            addedLength: newLineages.length,
-          };
-        }),
-      );
+      return { data: newLineages };
     }),
   );
 };
@@ -2590,8 +2593,6 @@ export const getLineagesComparison = (
     lineages = lineages.map((d) => d.label);
   }
 
-  const ofInterest = getVOCs();
-
   return forkJoin([
     ...lineages.map((lineage) =>
       getCharacteristicMutations(apiurl, lineage, 0, true, includeSublineages),
@@ -2609,25 +2610,6 @@ export const getLineagesComparison = (
         d.filter((x) => prevalentMutations.includes(x.mutation)),
       );
 
-      // const avgByMutation = nest()
-      //   .key(d => d.mutation)
-      //   .rollup(values => {
-      //     const mutation = values[0].mutation;
-      //     const mutation_count = sum(values, d => d.mutation_count);
-      //     const lineage_count = sum(values, d => d.lineage_count);
-      //     return ({
-      //       mutation_count: mutation_count,
-      //       lineage_count: lineage_count,
-      //       // prevalence: mutation_count / lineage_count,
-      //       prevalence: sum(values, d => d.prevalence) / (lineages.length - 1),
-      //       pangolin_lineage: "average",
-      //       mutation: mutation,
-      //       gene: values[0].gene
-      //     })
-      //   })
-      //   .entries(filtered).map(d => d.value);
-
-      // filtered = filtered.concat(avgByMutation);
 
       filtered.forEach((d) => {
         d['id'] = `${cleanSelectors(d.pangolin_lineage)}-${cleanSelectors(
@@ -2650,10 +2632,6 @@ export const getLineagesComparison = (
       return {
         data: nestedByGenes,
         dataFlat: filtered,
-        voc: ofInterest.voc,
-        voc_parent: ofInterest.voc_parent,
-        voi: ofInterest.voi,
-        voi_parent: ofInterest.voi_parent,
       };
     }),
     catchError((e) => {
