@@ -1248,12 +1248,6 @@ export default {
       });
 
       this.downloadableHeatmap = results.dataFlat;
-      // update lineages to be the "fixed" names, to account for WHO / grouped names.
-      this.selectedPango = uniq(
-        this.filteredMutationHeatmap
-          .flatMap((d) => d.values)
-          .map((d) => d.pangolin_lineage),
-      );
     },
     addMutations() {
       const selMutation = this.selectedMutationQuery
