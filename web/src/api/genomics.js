@@ -2593,9 +2593,7 @@ export const getLineagesComparison = (
     lineages = lineages.map((d) => d.label);
   }
 
-    const query = lineages.join(',');
-
-    return getCharacteristicMutations(apiurl, query, 0, true, includeSublineages).pipe(
+    return getCharacteristicMutations(apiurl, lineages, 0, true, includeSublineages).pipe(
       map((results, idx) => {
         // Filter out the mutations in common between all selected lineages which are prevalent at > prevalenceThreshold
         const prevalentMutations = uniq(
