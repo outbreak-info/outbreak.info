@@ -60,7 +60,7 @@
           </div>
         </div>
 
-        <div class="d-flex">
+        <div class="d-flex mt-2">
           <svg width="15" height="15" class="mr-2">
             <line x1="0" x2="15" y1="8" y2="8" class="trace-legend" />
           </svg>
@@ -70,7 +70,7 @@
         </div>
 
         <!-- legend: confidence interval -->
-        <div class="d-flex">
+        <div class="d-flex mb-2">
           <div class="ci-legend mr-2" :style="{ background: '#999' }" />
           <small class="text-muted">95% confidence interval</small>
           <svg width="15" height="15" class="ml-4 mr-2">
@@ -170,7 +170,7 @@
           >
             <text
               :x="width - margin.right"
-              :y="0"
+              :y="-1"
               fill="#929292"
               font-size="14px"
               dominant-baseline="hanging"
@@ -253,7 +253,7 @@
               {{ locationName }}
             </router-link>
           </h5>
-          <div class="d-flex">
+          <div class="d-flex mb-2">
             <svg width="15" height="15" class="mr-2">
               <line x1="0" x2="15" y1="8" y2="8" class="trace-legend" />
             </svg>
