@@ -5,7 +5,7 @@
   >
     <!-- zoom btns -->
     <div
-      class="d-flex justify-content-end px-3"
+      class="d-flex justify-content-end px-3 mt-3 mb-3"
       :style="{ width: width + 'px' }"
     >
       <button
@@ -206,7 +206,7 @@
 
         <!-- zoom btns -->
         <div
-          class="d-flex justify-content-end px-3"
+          class="d-flex justify-content-end px-3 mt-4 mb-3"
           :style="{ width: width + 'px' }"
           :class="{ hidden: !epi.length }"
         >
