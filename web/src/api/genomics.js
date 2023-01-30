@@ -2599,6 +2599,7 @@ export const getLineagesComparison = (
     ),
   ]).pipe(
     map((results, idx) => {
+      console.log(results)
       const prevalentMutations = uniq(
         results
           .flatMap((d) => d)
