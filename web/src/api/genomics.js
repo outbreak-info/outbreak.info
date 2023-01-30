@@ -1001,6 +1001,38 @@ const cleanSelectors = (id) => {
     .replace(/\s/g, '_');
 };
 
+
+const cleanCharacteristicMutations = function(results) {
+  console.log(CURATED)
+    results.forEach((result) => {
+      // Convert to the VOC/VOI synoyms.
+      const filtered_curated = CURATED.filter(
+        (d) => d.char_muts_parent_query === result.pangolin_lineage,
+      );
+
+      result['pangolin_lineage'] =
+        filtered_curated.length === 1
+          ? filtered_curated[0].label
+          : result.pangolin_lineage.replace(/AND/g, '+');
+      result['is_alias'] =
+        filtered_curated.length === 1 &&
+        filtered_curated[0].pango_descendants.length > 1;
+      result['id'] = `${result.pangolin_lineage.replace(
+        /\./g,
+        '-',
+      )}_${cleanSelectors(result.mutation)}`;
+      result['mutation_simplified'] =
+        result.type === 'substitution'
+          ? `${result.ref_aa}${result.codon_num}${result.alt_aa}`
+          : result.mutation.split(':')[1].toUpperCase();
+    });
+    // sort by location
+    results.sort(compareMutationLocation);
+
+  return(results);
+}
+
+
 export const getCharacteristicMutations = (
   apiurl,
   lineage,
@@ -1057,53 +1089,19 @@ export const getCharacteristicMutations = (
   ).pipe(
     pluck('data', 'results'),
     map((results) => {
+      console.log(results)
+      let res = Object.keys(results).map((lineage_key) =>
+        results[lineage_key].map((d) => {
+          // pull out the Pango lineage to save it.
+          d['pangolin_lineage'] = lineage_key;
+          return d;
+        }),
+      );
+
       if (returnFlat) {
-        let res = Object.keys(results).map((lineage_key) =>
-          results[lineage_key].map((d) => {
-            // Convert to the VOC/VOI synoyms.
-            const filtered_curated = CURATED.filter(
-              (d) => d.char_muts_parent_query === lineage_key,
-            );
-            d['is_alias'] =
-              filtered_curated.length === 1 &&
-              filtered_curated[0].pango_descendants.length > 1;
-            d['pangolin_lineage'] =
-              filtered_curated.length === 1
-                ? filtered_curated[0].label
-                : lineage_key.replace(/AND/g, '+');
-            d['id'] = `${d.pangolin_lineage}_${cleanSelectors(d.mutation)}`;
-            return d;
-          }),
-        );
         return [].concat(...res);
       } else {
-        Object.keys(results).forEach((lineage_key) => {
-          results[lineage_key].forEach((d) => {
-            // Convert to the VOC/VOI synoyms.
-            const filtered_curated = CURATED.filter(
-              (d) => d.char_muts_parent_query === lineage_key,
-            );
-
-            d['pangolin_lineage'] =
-              filtered_curated.length === 1
-                ? filtered_curated[0].label
-                : lineage_key.replace(/AND/g, '+');
-            d['is_alias'] =
-              filtered_curated.length === 1 &&
-              filtered_curated[0].pango_descendants.length > 1;
-            d['id'] = `${d.pangolin_lineage.replace(
-              /\./g,
-              '-',
-            )}_${cleanSelectors(d.mutation)}`;
-            d['mutation_simplified'] =
-              d.type === 'substitution'
-                ? `${d.ref_aa}${d.codon_num}${d.alt_aa}`
-                : d.mutation.split(':')[1].toUpperCase();
-          });
-          // sort by location
-          results[lineage_key].sort(compareMutationLocation);
-        });
-        return results;
+        return res;
       }
     }),
 
@@ -2609,6 +2607,10 @@ export const getLineagesComparison = (
       let filtered = results.flatMap((d) =>
         d.filter((x) => prevalentMutations.includes(x.mutation)),
       );
+
+      // Rename `pangolin_lineage` to alias; generate `id` and `is_alias`
+      cleanCharacteristicMutations(filtered);
+      console.log(filtered)
 
 
       filtered.forEach((d) => {
