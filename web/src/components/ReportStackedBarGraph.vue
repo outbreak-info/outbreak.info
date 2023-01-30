@@ -339,7 +339,8 @@ export default Vue.extend({
 
 .report-stacked-bar {
   .axis--y text {
-    font-size: 14pt;
+    // font-size: 14pt;
+    font-size: 16px;
   }
 }
 </style>

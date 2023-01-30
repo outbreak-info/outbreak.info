@@ -398,3 +398,9 @@ export default Vue.extend({
   },
 });
 </script>
+
+<style>
+.axis--y {
+  font-size: 12px;
+}
+</style>

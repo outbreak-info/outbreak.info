@@ -918,28 +918,30 @@ export default Vue.extend({
     }
   }
   .axis--y text {
-    font-size: 9pt;
+    // font-size: 9pt;
+    font-size: 12px;
   }
   .stream-axis.axis--y text {
-    font-size: 14pt;
-    @media (max-width: 812px) {
-      font-size: 12pt;
-    }
-    @media (min-width: 812px) {
-      font-size: 10pt;
-    }
-    @media (min-width: 900px) {
-      font-size: 12pt;
-    }
-    @media (min-width: 1000px) {
-      font-size: 12pt;
-    }
-    @media (min-width: 1200px) {
-      font-size: 14pt;
-    }
-    @media (min-width: 1310px) {
-      font-size: 14pt;
-    }
+    // font-size: 14pt;
+    font-size: 16px;
+    // @media (max-width: 812px) {
+    //   font-size: 12pt;
+    // }
+    // @media (min-width: 812px) {
+    //   font-size: 10pt;
+    // }
+    // @media (min-width: 900px) {
+    //   font-size: 12pt;
+    // }
+    // @media (min-width: 1000px) {
+    //   font-size: 12pt;
+    // }
+    // @media (min-width: 1200px) {
+    //   font-size: 14pt;
+    // }
+    // @media (min-width: 1310px) {
+    //   font-size: 14pt;
+    // }
   }
 }
 .suggest-note {
