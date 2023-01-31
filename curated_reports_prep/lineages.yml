@@ -2410,6 +2410,7 @@
       - DH.1
       - DJ.1
       - DJ.1.1
+      - DJ.1.1.1
       - DJ.1.2
       - DJ.1.3
       - DK.1
@@ -2431,6 +2432,7 @@
       - DV.3
       - DW.1
       - DY.1
+      - DY.1.1
       - DZ.1
       - DZ.2
       - G.1
@@ -4642,6 +4644,7 @@
       - DH.1
       - DJ.1
       - DJ.1.1
+      - DJ.1.1.1
       - DJ.1.2
       - DJ.1.3
       - DK.1
@@ -4663,6 +4666,7 @@
       - DV.3
       - DW.1
       - DY.1
+      - DY.1.1
       - DZ.1
       - DZ.2
       - G.1
@@ -5937,6 +5941,7 @@
       - DH.1
       - DJ.1
       - DJ.1.1
+      - DJ.1.1.1
       - DJ.1.2
       - DJ.1.3
       - DK.1
@@ -5958,6 +5963,7 @@
       - DV.3
       - DW.1
       - DY.1
+      - DY.1.1
       - DZ.1
       - DZ.2
       - K.1
@@ -9698,6 +9704,7 @@
       - DH.1
       - DJ.1
       - DJ.1.1
+      - DJ.1.1.1
       - DJ.1.2
       - DJ.1.3
       - DK.1
@@ -9719,6 +9726,7 @@
       - DV.3
       - DW.1
       - DY.1
+      - DY.1.1
       - DZ.1
       - DZ.2
   parent: B.1.1
@@ -12780,6 +12788,7 @@
       - DH.1
       - DJ.1
       - DJ.1.1
+      - DJ.1.1.1
       - DJ.1.2
       - DJ.1.3
       - DK.1
@@ -12796,6 +12805,7 @@
       - DU.1
       - DW.1
       - DY.1
+      - DY.1.1
       - DZ.1
       - DZ.2
   parent: B.1.1.529
@@ -12844,6 +12854,7 @@
       - DH.1
       - DJ.1
       - DJ.1.1
+      - DJ.1.1.1
       - DJ.1.2
       - DJ.1.3
       - DL.1
@@ -13011,6 +13022,7 @@
       - BA.5.1.25
       - DJ.1
       - DJ.1.1
+      - DJ.1.1.1
       - DJ.1.2
       - DJ.1.3
   parent: BA.5.1
@@ -13019,6 +13031,7 @@
   children:
       - DJ.1
       - DJ.1.1
+      - DJ.1.1.1
       - DJ.1.2
       - DJ.1.3
   parent: BA.5.1.25
@@ -13026,7 +13039,13 @@
   alias: B.1.1.529.5.1.25.1.1
   children:
       - DJ.1.1
+      - DJ.1.1.1
   parent: DJ.1
+- name: DJ.1.1.1
+  alias: B.1.1.529.5.1.25.1.1.1
+  children:
+      - DJ.1.1.1
+  parent: DJ.1.1
 - name: DJ.1.2
   alias: B.1.1.529.5.1.25.1.2
   children:
@@ -13246,6 +13265,7 @@
       - DG.1
       - DQ.1
       - DY.1
+      - DY.1.1
       - DZ.1
       - DZ.2
   parent: BA.5
@@ -14189,12 +14209,19 @@
   children:
       - BA.5.2.48
       - DY.1
+      - DY.1.1
   parent: BA.5.2
 - name: DY.1
   alias: B.1.1.529.5.2.48.1
   children:
       - DY.1
+      - DY.1.1
   parent: BA.5.2.48
+- name: DY.1.1
+  alias: B.1.1.529.5.2.48.1.1
+  children:
+      - DY.1.1
+  parent: DY.1
 - name: BA.5.2.49
   alias: B.1.1.529.5.2.49
   children:
@@ -22015,9 +22042,12 @@
       - XBB.1.9
       - XBB.1.9.1
       - XBB.1.10
+      - XBB.1.11
+      - XBB.1.11.1
       - XBB.2
       - XBB.2.1
       - XBB.2.2
+      - XBB.2.3
       - XBB.3
       - XBB.3.1
       - XBB.3.2
@@ -22048,6 +22078,8 @@
       - XBB.1.9
       - XBB.1.9.1
       - XBB.1.10
+      - XBB.1.11
+      - XBB.1.11.1
   parent: XBB
 - name: XBB.1.1
   alias: XBB.1.1
@@ -22129,12 +22161,24 @@
   children:
       - XBB.1.10
   parent: XBB.1
+- name: XBB.1.11
+  alias: XBB.1.11
+  children:
+      - XBB.1.11
+      - XBB.1.11.1
+  parent: XBB.1
+- name: XBB.1.11.1
+  alias: XBB.1.11.1
+  children:
+      - XBB.1.11.1
+  parent: XBB.1.11
 - name: XBB.2
   alias: XBB.2
   children:
       - XBB.2
       - XBB.2.1
       - XBB.2.2
+      - XBB.2.3
   parent: XBB
 - name: XBB.2.1
   alias: XBB.2.1
@@ -22145,6 +22189,11 @@
   alias: XBB.2.2
   children:
       - XBB.2.2
+  parent: XBB.2
+- name: XBB.2.3
+  alias: XBB.2.3
+  children:
+      - XBB.2.3
   parent: XBB.2
 - name: XBB.3
   alias: XBB.3
