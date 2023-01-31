@@ -347,7 +347,7 @@ import { forceY, forceCollide, forceSimulation } from 'd3-force';
 import { scaleLinear, scaleTime, scaleOrdinal } from 'd3-scale';
 import { select, selectAll, event } from 'd3-selection';
 import { area, line } from 'd3-shape';
-import { timeMonth } from 'd3-time';
+import { timeSecond, timeMinute, timeHour, timeDay, timeWeek, timeMonth, timeYear } from 'd3-time';
 import { timeParse, timeFormat } from 'd3-time-format';
 import { transition } from 'd3-transition';
 import cloneDeep from 'lodash/cloneDeep';
@@ -902,7 +902,16 @@ export default Vue.extend({
       this.xAxis = axisBottom(this.x)
         .ticks(this.numXTicks)
         .tickSize(-this.height)
-        .tickSizeOuter(0);
+        .tickSizeOuter(0)
+        .tickFormat(function(date){
+          return (timeSecond(date) < date ? timeFormat('.%L')
+            : timeMinute(date) < date ? timeFormat(':%S')
+            : timeHour(date) < date ? timeFormat('%I:%M')
+            : timeDay(date) < date ? timeFormat('%I %p')
+            : timeMonth(date) < date ? timeWeek(date) < date ? timeFormat('%a %d') : timeFormat('%b %d')
+            : timeYear(date) < date ? timeFormat('%b')
+            : timeFormat('%Y'))(date)
+        });     
 
       select(this.$refs.xAxis).call(this.xAxis);
       select(this.$refs.xEpiAxis).call(this.xAxis);
@@ -1293,30 +1302,34 @@ export default Vue.extend({
 #location-report-prevalence {
   & .count-axis,
   & .mutation-axis {
-    font-size: 16pt;
+    font-size: 16px;
     @media (max-width: 812px) {
-      font-size: 12pt;
+      font-size: 12px;
     }
     @media (min-width: 812px) {
-      font-size: 12pt;
+      font-size: 12px;
     }
     @media (min-width: 900px) {
-      font-size: 14pt;
+      font-size: 14px;
     }
     @media (min-width: 1000px) {
-      font-size: 14pt;
+      font-size: 14px;
     }
     @media (min-width: 1200px) {
-      font-size: 16pt;
+      font-size: 16px;
     }
     @media (min-width: 1310px) {
-      font-size: 16pt;
+      font-size: 16px;
     }
 
     text {
       fill: $grey-90;
     }
   }
+
+  // & .mutation-axis.axis--x text {
+  //   font-size: 16px;
+  // }
 
   & .mutation-axis.axis--y text {
     font-size: 16px;
@@ -1346,24 +1359,24 @@ export default Vue.extend({
   }
 
   & .epi-x {
-    font-size: 16pt;
+    font-size: 16px;
     @media (max-width: 812px) {
-      font-size: 12pt;
+      font-size: 12px;
     }
     @media (min-width: 812px) {
-      font-size: 12pt;
+      font-size: 12px;
     }
     @media (min-width: 900px) {
-      font-size: 14pt;
+      font-size: 14px;
     }
     @media (min-width: 1000px) {
-      font-size: 14pt;
+      font-size: 14px;
     }
     @media (min-width: 1200px) {
-      font-size: 16pt;
+      font-size: 16px;
     }
     @media (min-width: 1310px) {
-      font-size: 16pt;
+      font-size: 16px;
     }
   }
 

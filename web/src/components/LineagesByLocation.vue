@@ -145,7 +145,7 @@ import { format } from 'd3-format';
 import { scaleLinear, scaleTime } from 'd3-scale';
 import { select, selectAll, event } from 'd3-selection';
 import { stack, area, stackOrderInsideOut } from 'd3-shape';
-import { timeMonth } from 'd3-time';
+import { timeSecond, timeMinute, timeHour, timeDay, timeWeek, timeMonth, timeYear  } from 'd3-time';
 import { timeParse, timeFormat } from 'd3-time-format';
 import { transition } from 'd3-transition';
 import cloneDeep from 'lodash/cloneDeep';
@@ -364,7 +364,17 @@ export default Vue.extend({
       );
 
       // reset the axis
-      this.xAxis = axisBottom(this.x).ticks(this.numXTicks);
+      this.xAxis = axisBottom(this.x)
+        .ticks(this.numXTicks)
+        .tickFormat(function(date){
+          return (timeSecond(date) < date ? timeFormat('.%L')
+            : timeMinute(date) < date ? timeFormat(':%S')
+            : timeHour(date) < date ? timeFormat('%I:%M')
+            : timeDay(date) < date ? timeFormat('%I %p')
+            : timeMonth(date) < date ? timeWeek(date) < date ? timeFormat('%a %d') : timeFormat('%b %d')
+            : timeYear(date) < date ? timeFormat('%b')
+            : timeFormat('%Y'))(date)
+        });
 
       select(this.$refs.xAxis).call(this.xAxis);
 
@@ -402,7 +412,18 @@ export default Vue.extend({
         .range([0, this.width - this.margin.left - this.margin.right])
         .domain(xDomain);
 
-      this.xAxis = axisBottom(this.x).tickSizeOuter(0).ticks(this.numXTicks);
+      this.xAxis = axisBottom(this.x)
+        .tickSizeOuter(0)
+        .ticks(this.numXTicks)
+        .tickFormat(function(date){
+          return (timeSecond(date) < date ? timeFormat('.%L')
+            : timeMinute(date) < date ? timeFormat(':%S')
+            : timeHour(date) < date ? timeFormat('%I:%M')
+            : timeDay(date) < date ? timeFormat('%I %p')
+            : timeMonth(date) < date ? timeWeek(date) < date ? timeFormat('%a %d') : timeFormat('%b %d')
+            : timeYear(date) < date ? timeFormat('%b')
+            : timeFormat('%Y'))(date)
+        });
 
       select(this.$refs.xAxis).call(this.xAxis);
 
@@ -897,24 +918,24 @@ export default Vue.extend({
 <style lang="scss">
 .lineages-by-location {
   .axis--x text {
-    font-size: 16pt;
+    font-size: 16px;
     @media (max-width: 812px) {
-      font-size: 8pt;
+      font-size: 12px;
     }
     @media (min-width: 812px) {
-      font-size: 8pt;
+      font-size: 12px;
     }
     @media (min-width: 900px) {
-      font-size: 10pt;
+      font-size: 14px;
     }
     @media (min-width: 1000px) {
-      font-size: 12pt;
+      font-size: 14px;
     }
     @media (min-width: 1200px) {
-      font-size: 14pt;
+      font-size: 16px;
     }
     @media (min-width: 1310px) {
-      font-size: 16pt;
+      font-size: 16px;
     }
   }
   .axis--y text {
