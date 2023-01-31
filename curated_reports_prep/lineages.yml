@@ -2432,6 +2432,7 @@
       - DW.1
       - DY.1
       - DZ.1
+      - DZ.2
       - G.1
       - K.1
       - K.2
@@ -4663,6 +4664,7 @@
       - DW.1
       - DY.1
       - DZ.1
+      - DZ.2
       - G.1
       - K.1
       - K.2
@@ -5957,6 +5959,7 @@
       - DW.1
       - DY.1
       - DZ.1
+      - DZ.2
       - K.1
       - K.2
       - K.3
@@ -9717,6 +9720,7 @@
       - DW.1
       - DY.1
       - DZ.1
+      - DZ.2
   parent: B.1.1
 - name: BA.1
   alias: B.1.1.529.1
@@ -12793,6 +12797,7 @@
       - DW.1
       - DY.1
       - DZ.1
+      - DZ.2
   parent: B.1.1.529
 - name: BA.5.1
   alias: B.1.1.529.5.1
@@ -13242,6 +13247,7 @@
       - DQ.1
       - DY.1
       - DZ.1
+      - DZ.2
   parent: BA.5
 - name: BA.5.2.1
   alias: B.1.1.529.5.2.1
@@ -14194,11 +14200,17 @@
   children:
       - BA.5.2.49
       - DZ.1
+      - DZ.2
   parent: BA.5.2
 - name: DZ.1
   alias: B.1.1.529.5.2.49.1
   children:
       - DZ.1
+  parent: BA.5.2.49
+- name: DZ.2
+  alias: B.1.1.529.5.2.49.2
+  children:
+      - DZ.2
   parent: BA.5.2.49
 - name: BA.5.2.50
   alias: B.1.1.529.5.2.50
@@ -22015,6 +22027,7 @@
       - XBB.5
       - XBB.6
       - XBB.6.1
+      - XBB.7
   recombinant_parents: BJ.1,BM.1.1.1
 - name: XBB.1
   alias: XBB.1
@@ -22183,6 +22196,11 @@
   children:
       - XBB.6.1
   parent: XBB.6
+- name: XBB.7
+  alias: XBB.7
+  children:
+      - XBB.7
+  parent: XBB
 - name: XBC
   alias: XBC
   children:
