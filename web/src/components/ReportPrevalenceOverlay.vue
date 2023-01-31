@@ -42,22 +42,11 @@
       <!-- SVGs -->
       <div class="d-flex flex-column align-items-start">
         <!-- TIME TRACE -->
-        <div class="d-flex w-100 justify-content-between">
+        <div class="d-flex w-100 justify-content-between mb-2">
           <h5 class="p-0 m-0">
             {{ title }}
           </h5>
-          <div>
-            <label class="b-contain m-auto pr-3">
-              <small>show confidence intervals</small>
-              <input
-                v-model="showCI"
-                type="checkbox"
-                :value="showCI"
-                @change="hideCIs"
-              />
-              <div class="b-input" />
-            </label>
-          </div>
+          
         </div>
 
         <div class="d-flex mt-2">
@@ -85,6 +74,19 @@
           <small class="text-muted">missing recent data</small>
         </div>
 
+        <div class="d-flex mb-4">
+          <label class="b-contain m-auto pr-3">
+            <small>show confidence intervals</small>
+              <input
+                v-model="showCI"
+                type="checkbox"
+                :value="showCI"
+                @change="hideCIs"
+              />
+            <div class="b-input" />
+          </label>
+        </div>
+        
         <svg
           ref="svg"
           :width="width"
@@ -168,11 +170,11 @@
             id="weird-last values"
             :hidden="data && data.length < lengthThreshold"
           >
-            <text
+          <text
               :x="width - margin.right"
               :y="-1"
               fill="#929292"
-              font-size="14px"
+              font-size="13px"
               dominant-baseline="hanging"
               text-anchor="end"
               :style="`font-family: ${fontFamily};`"
@@ -180,6 +182,7 @@
               Latest dates are noisy due to fewer samples, or missing from
               sequencing delays
             </text>
+            
             <path
               stroke="#BBBBBB"
               fill="none"
@@ -244,7 +247,7 @@
         </div>
 
         <!-- EPI TRACE -->
-        <div :class="{ hidden: !epi.length }">
+        <div :class="{ hidden: !epi.length }" >
           <h5 class="">
             Daily COVID-19 cases in
             <router-link
@@ -253,7 +256,7 @@
               {{ locationName }}
             </router-link>
           </h5>
-          <div class="d-flex mb-2">
+          <div class="d-flex mt-3 mb-4">
             <svg width="15" height="15" class="mr-2">
               <line x1="0" x2="15" y1="8" y2="8" class="trace-legend" />
             </svg>
@@ -1163,7 +1166,7 @@ export default Vue.extend({
               .attr('x', this.width - this.margin.left - this.margin.right)
               .attr('dx', 5)
               .attr('y', (d) => d.y)
-              .style('font-size', 22)
+              .style('font-size', '16px')
               .style(
                 'font-family',
                 "'DM Sans', Avenir, Helvetica, Arial, sans-serif",

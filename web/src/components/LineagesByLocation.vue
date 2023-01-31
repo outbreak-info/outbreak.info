@@ -827,7 +827,7 @@ export default Vue.extend({
                 "'DM Sans', Avenir, Helvetica, Arial, sans-serif",
               )
               .style('dominant-baseline', 'text-top')
-              .style('font-size', '9pt');
+              .style('font-size', '14px');
           },
           (update) => {
             update
