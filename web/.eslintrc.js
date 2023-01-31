@@ -1,12 +1,10 @@
 module.exports = {
   root: true,
   env: {
-    node: true,
+    es2021: true,
   },
   extends: ['plugin:vue/recommended', 'eslint:recommended', 'prettier'],
-  parserOptions: {
-    parser: '@babel/eslint-parser',
-  },
+  parserOptions: {},
   rules: {
     'no-unused-vars': 'off',
     'no-undef': 'off',
