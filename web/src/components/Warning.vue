@@ -21,9 +21,7 @@
 </template>
 
 <script>
-import Vue from 'vue';
-
-export default Vue.extend({
+export default {
   name: 'Warning',
   components: {},
   props: {
@@ -31,5 +29,5 @@ export default Vue.extend({
     align_left: Boolean,
     animate: Boolean,
   },
-});
+};
 </script>

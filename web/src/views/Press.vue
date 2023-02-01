@@ -45,10 +45,10 @@
 </template>
 
 <script>
-import Vue from 'vue';
-import { mapState } from 'vuex';
+import { mapState } from 'pinia';
+import { pressStore } from '@/stores/pressStore';
 
-export default Vue.extend({
+export default {
   name: 'Press',
   data() {
     return {
@@ -59,7 +59,7 @@ export default Vue.extend({
     };
   },
   computed: {
-    ...mapState('press', ['press']),
+    ...mapState(pressStore, ['press']),
   },
   mounted() {
     this.year = this.currentYear;
@@ -80,7 +80,7 @@ export default Vue.extend({
       this.pressList.sort((a, b) => a.order - b.order);
     },
   },
-});
+};
 </script>
 
 <style lang="scss" scoped>

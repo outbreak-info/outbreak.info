@@ -188,7 +188,7 @@ import cloneDeep from 'lodash/cloneDeep';
 
 import { getSparklineTraces } from '@/api/epi-traces.js';
 import { lazyLoad } from '@/js/lazy-load';
-import store from '@/store';
+import store from '@/stores';
 
 export default {
   name: 'Choropleth',

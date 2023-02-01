@@ -162,15 +162,16 @@
 </template>
 
 <script>
-import Vue from 'vue';
-import { mapState } from 'vuex';
+import { mapState } from 'pinia';
 import { format } from 'd3-format';
 import { scaleOrdinal } from 'd3-scale';
 
 import { findSimilar } from '@/api/find-similar.js';
 import { lazyLoad } from '@/js/lazy-load';
+import { colorsStore } from '@/stores/colorsStore';
+import { adminStore } from '@/stores/adminStore';
 
-export default Vue.extend({
+export default {
   name: 'Compare',
   components: {
     MiniLocation: lazyLoad('MiniLocation'),
@@ -251,8 +252,8 @@ export default Vue.extend({
     };
   },
   computed: {
-    ...mapState('admin', ['dataloading']),
-    ...mapState('colors', ['colors']),
+    ...mapState(adminStore, ['dataloading']),
+    ...mapState(colorsStore, ['colors']),
   },
   watch: {
     $route: {
@@ -334,7 +335,7 @@ export default Vue.extend({
         : format(',.0f')(val);
     },
   },
-});
+};
 </script>
 
 <style lang="scss">

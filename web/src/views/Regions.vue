@@ -220,12 +220,13 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState } from 'pinia';
 
 import { getStackedRegions } from '@/api/region-summary.js';
 import { getWorldDailyCases } from '@/api/epi-traces.js';
 import { lazyLoad } from '@/js/lazy-load';
-import store from '@/store';
+import { adminStore } from '@/stores/adminStore';
+import { genomicsStore } from '@/stores/genomicsStore';
 
 export default {
   name: 'Regions',
@@ -281,8 +282,8 @@ export default {
     };
   },
   computed: {
-    ...mapState('admin', ['loading']),
-    ...mapState('geo', ['regionDict']),
+    ...mapState(adminStore, ['loading']),
+    ...mapState(genomicsStore, ['regionDict']),
     selectedVariableLabel() {
       return this.variableOptions.filter(
         (d) => d.value === this.selectedVariable,

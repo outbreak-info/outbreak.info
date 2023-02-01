@@ -184,7 +184,9 @@
       </div>
 
       <!-- FORMER TEAM -->
-      <div class="bg-light d-flex justify-content-center align-items-center w-100">
+      <div
+        class="bg-light d-flex justify-content-center align-items-center w-100"
+      >
         <div
           class="bg-light d-flex flex-column justify-content-center align-items-center w-75 border-top py-5"
         >
@@ -241,14 +243,14 @@
 </template>
 
 <script>
-import Vue from 'vue';
-import { mapState } from 'vuex';
+import { mapState } from 'pinia';
 
 import { getResourceTotal } from '@/api/resources.js';
 import { getSequenceCount } from '@/api/genomics.js';
 import { lazyLoad } from '@/js/lazy-load';
+import { adminStore } from '@/stores/adminStore';
 
-export default Vue.extend({
+export default {
   name: 'About',
   components: {
     Jobs: lazyLoad('Jobs'),
@@ -263,7 +265,7 @@ export default Vue.extend({
     };
   },
   computed: {
-    ...mapState('admin', ['funding', 'team', 'formerTeam']),
+    ...mapState(adminStore, ['funding', 'team', 'formerTeam']),
   },
   mounted() {
     let twitterScript = document.createElement('script');
@@ -296,7 +298,7 @@ export default Vue.extend({
       this.genomicsSubscription.unsubscribe();
     }
   },
-});
+};
 </script>
 
 <style lang="scss">

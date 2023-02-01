@@ -133,7 +133,7 @@ import { timeParse, timeFormat } from 'd3-time-format';
 import { transition } from 'd3-transition';
 import cloneDeep from 'lodash/cloneDeep';
 
-import store from '@/store';
+import store from '@/stores';
 
 const width = 500;
 const height = 300;

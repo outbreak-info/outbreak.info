@@ -45,7 +45,7 @@ import { select, selectAll, event } from 'd3-selection';
 import { scaleLinear, scaleTime } from 'd3-scale';
 import { area, stack, stackOrderReverse } from 'd3-shape';
 
-import store from '@/store';
+import store from '@/stores';
 
 const margin = {
   top: 10,

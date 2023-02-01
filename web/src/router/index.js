@@ -1,8 +1,6 @@
-import Vue from 'vue';
 import { createRouter, createWebHistory } from 'vue-router';
 import routes from './routes';
-
-import store from '@/store';
+import { adminStore } from '@/stores/adminStore';
 
 const router = createRouter({
   history: createWebHistory(),
@@ -26,11 +24,13 @@ const router = createRouter({
 
 // add loading icon between routes
 router.beforeEach((to, from, next) => {
-  store.commit('admin/setLoading', true);
+  const store = adminStore();
+  store.setLoading(true);
   next();
 });
 router.afterEach((to, from) => {
-  store.commit('admin/setLoading', false);
+  const store = adminStore();
+  store.setLoading(false);
 });
 
 router.onError((error) => {

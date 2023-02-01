@@ -247,7 +247,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState } from 'pinia';
 import { extent, max } from 'd3-array';
 
 import {
@@ -257,7 +257,9 @@ import {
 } from '@/api/epi-traces.js';
 import { getLocation, processLocation } from '@/js/get-location.js';
 import { lazyLoad } from '@/js/lazy-load';
-import store from '@/store';
+import { adminStore } from '@/stores/adminStore';
+import { geoStore } from '@/stores/geoStore';
+import { colorsStore } from '@/stores/colorsStore';
 
 export default {
   name: 'Epidemiology',
@@ -359,10 +361,11 @@ export default {
     };
   },
   computed: {
-    ...mapState('admin', ['loading']),
-    ...mapState('geo', ['allPlaces']),
+    ...mapState(adminStore, ['loading']),
+    ...mapState(geoStore, ['allPlaces']),
+    ...mapState(colorsStore, ['getColor']),
     colorScale() {
-      return store.getters['colors/getColor'];
+      return this.getColor;
     },
     noData() {
       if (this.data$) {

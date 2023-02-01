@@ -1300,8 +1300,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
-import { format } from 'd3-format';
+import { mapState } from 'pinia';
 import cloneDeep from 'lodash/cloneDeep';
 import debounce from 'lodash/debounce';
 import tippy from 'tippy.js';
@@ -1313,7 +1312,7 @@ import {
   getBadMutations,
 } from '@/api/genomics.js';
 import { lazyLoad } from '@/js/lazy-load';
-import store from '@/store';
+import { adminStore } from '@/stores/adminStore';
 
 import 'tippy.js/themes/light.css';
 
@@ -1415,7 +1414,7 @@ export default {
     };
   },
   computed: {
-    ...mapState('admin', ['reportloading']),
+    ...mapState(adminStore, ['reportloading']),
     // ...mapState('genomics', ['characteristicThreshold']),
     // charMutThreshold() {
     //   return format('.0%')(this.characteristicThreshold);

@@ -1,3 +1,3 @@
-export const lazyLoad = (view) =>{
-    return () => import(/* webpackPrefetch: true */ `@/components/${view}.vue`)
-}
+export const lazyLoad = (view) => {
+  return () => import(`@/components/${view}.vue`);
+};

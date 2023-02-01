@@ -271,8 +271,7 @@
 </template>
 
 <script>
-import Vue from 'vue';
-import { mapState } from 'vuex';
+import { mapState } from 'pinia';
 import debounce from 'lodash/debounce';
 
 import {
@@ -285,8 +284,9 @@ import {
   checkGisaidID,
 } from '@/api/genomics.js';
 import { lazyLoad } from '@/js/lazy-load';
+import { genomicsStore } from '@/stores/genomicsStore';
 
-export default Vue.extend({
+export default {
   name: 'SituationReportStatus',
   components: {
     TypeaheadSelect: lazyLoad('TypeaheadSelect'),
@@ -334,7 +334,7 @@ export default Vue.extend({
     };
   },
   computed: {
-    ...mapState('genomics', [
+    ...mapState(genomicsStore, [
       'locationLoading1',
       'locationLoading2',
       'locationLoading3',
@@ -463,7 +463,7 @@ export default Vue.extend({
       this.mapSubscription.unsubscribe();
     }
   },
-});
+};
 </script>
 
 <style lang="scss" scoped>

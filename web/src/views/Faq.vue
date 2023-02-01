@@ -66,11 +66,9 @@
 
 <!-- Javascript code to import variables, manipulate them, etc. -->
 <script>
-import Vue from 'vue';
-
 import FAQ from '@/assets/faq.json';
 
-export default Vue.extend({
+export default {
   name: 'Faq',
   data() {
     return {
@@ -82,7 +80,7 @@ export default Vue.extend({
     this.faq = FAQ;
     this.faqGroups = Object.keys(this.faq);
   },
-});
+};
 </script>
 
 <style lang="scss">

@@ -8,7 +8,9 @@ import { timeParse } from 'd3-time-format';
 import { interpolateRdYlBu } from 'd3-scale-chromatic';
 
 import { getAll } from '@/api/biothings.js';
-import store from '@/store';
+import { adminStore } from '@/stores/adminStore';
+
+const store = adminStore();
 
 export const getComparisonData = (
   apiUrl,
@@ -18,7 +20,7 @@ export const getComparisonData = (
   variableLabel,
   date,
 ) => {
-  store.state.admin.dataloading = true;
+  store.$patch({ dataloading: true });
 
   const queryString = location
     ? `${location} AND admin_level:("${adminLevel}")`

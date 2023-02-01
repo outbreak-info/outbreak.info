@@ -55,11 +55,10 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import { nest } from 'd3-collection';
 import { tsv } from 'd3-fetch';
 
-export default Vue.extend({
+export default {
   name: 'TopicDefinitions',
   data() {
     return {
@@ -89,5 +88,5 @@ export default Vue.extend({
       });
     },
   },
-});
+};
 </script>

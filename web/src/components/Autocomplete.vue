@@ -63,7 +63,7 @@ import Vue from 'vue';
 import debounce from 'lodash/debounce';
 
 import { findEpiLocation, lookupEpiLocations } from '@/api/epi-basics.js';
-import store from '@/store';
+import store from '@/stores';
 
 export default Vue.extend({
   name: 'Autocomplete',

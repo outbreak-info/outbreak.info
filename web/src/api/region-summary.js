@@ -7,7 +7,7 @@ import { timeParse } from 'd3-time-format';
 
 import { getAll } from '@/api/biothings.js';
 
-import store from '@/store';
+import store from '@/stores';
 
 export const getStackedRegions = (apiUrl) => {
   store.state.admin.loading = true;

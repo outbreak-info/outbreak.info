@@ -4,6 +4,7 @@ import VueRx from 'vue-rx';
 import VueCookies from 'vue-cookies';
 import VueMeta from 'vue-meta';
 import { library } from '@fortawesome/fontawesome-svg-core';
+import { createPinia } from 'pinia';
 import 'd3-transition';
 
 // free regular svg icons
@@ -75,7 +76,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 import App from './App.vue';
 import router from './router';
-import store from './store';
+import store from './stores';
 
 import 'tippy.js/dist/tippy.css';
 
@@ -140,13 +141,15 @@ library.add(
   faRedditAlien,
 );
 
+const pinia = createPinia();
+
 const app = createApp({
   render() {
     return h(App);
   },
 })
   .use(router)
-  .use(store)
+  .use(pinia)
   .use(VueRx)
   .use(VueCookies)
   .use(VueMeta)

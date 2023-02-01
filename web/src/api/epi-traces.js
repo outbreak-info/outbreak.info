@@ -7,8 +7,11 @@ import { format } from 'd3-format';
 import { timeParse } from 'd3-time-format';
 
 import { getAll } from '@/api/biothings.js';
-import store from '@/store';
+import { adminStore } from '@/stores/adminStore';
+import { colorsStore } from '@/stores/colorsStore';
 
+const store = adminStore();
+const colorStore = colorsStore();
 export const epiDataSubject = new BehaviorSubject([]);
 export const epiDataState$ = epiDataSubject.asObservable();
 
@@ -26,7 +29,7 @@ export const getEpiData = (
   page,
   size,
 ) => {
-  store.state.admin.loading = true;
+  store.$patch({ loading: true });
 
   return forkJoin([
     getEpiTraces(apiUrl, locations),
@@ -37,7 +40,7 @@ export const getEpiData = (
       console.log(e);
       return from([]);
     }),
-    finalize(() => (store.state.admin.loading = false)),
+    finalize(() => store.$patch({ loading: false })),
   );
 };
 
@@ -114,7 +117,7 @@ export const getEpiTraces = (
   locations,
   fields = 'location_id,admin_level,name,country_name,date,confirmed,confirmed,dead,recovered,confirmed_numIncrease, dead_numIncrease,dead_doublingRate,confirmed_doublingRate,mostRecent,_id,confirmed_rolling,dead_rolling,recovered_rolling,confirmed_per_100k,confirmed_numIncrease_per_100k,confirmed_rolling_per_100k,dead_per_100k,dead_numIncrease_per_100k,dead_rolling_per_100k,recovered_per_100k,recovered_numIncrease_per_100k,recovered_rolling_per_100k,sub_parts',
 ) => {
-  store.state.admin.loading = true;
+  store.$patch({ loading: true });
   const parseDate = timeParse('%Y-%m-%d');
   const locationString = `("${locations.join('" OR "')}")`;
 
@@ -147,8 +150,7 @@ export const getEpiTraces = (
         .filter((d) => d.mostRecent)
         .sort((a, b) => b.confirmed - a.confirmed)
         .map((d) => d.location_id);
-
-      store.commit('colors/setLocations', order);
+      colorStore.setLocations(order);
       epiDataSubject.next(nested);
       return nested;
     }),
@@ -157,7 +159,6 @@ export const getEpiTraces = (
       console.log(e);
       return from([]);
     }),
-    // finalize(() => (store.state.admin.loading = false))
   );
 };
 
@@ -169,7 +170,7 @@ export const getEpiTable = (
   size,
   page,
 ) => {
-  store.state.admin.loading = true;
+  store.$patch({ loading: true });
   return getTableData(apiUrl, locations, adminLevels, sort, size, page).pipe(
     mergeMap((tableData) =>
       getSparklineTraces(
@@ -204,7 +205,7 @@ export const getEpiTable = (
       console.log(e);
       return from([]);
     }),
-    finalize(() => (store.state.admin.loading = false)),
+    finalize(() => store.$patch({ loading: false })),
   );
 };
 
@@ -287,7 +288,7 @@ export const getTableData = (
       console.log(e);
       return from([]);
     }),
-    // finalize(() => (store.state.admin.loading = false))
+    // finalize(() => (stores.state.admin.loading = false))
   );
 };
 
@@ -324,7 +325,7 @@ export const getSparklineTraces = (
         console.log(e);
         return from([]);
       }),
-      // finalize(() => (store.state.admin.loading = false))
+      // finalize(() => (stores.state.admin.loading = false))
     );
   } else {
     return from([]);

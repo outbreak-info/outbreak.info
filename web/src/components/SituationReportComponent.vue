@@ -1146,7 +1146,7 @@ export default {
       queryPangolin: null,
       newPangolin: null,
       currentLocs: null, // placeholder for current locations
-      loc2Add: [], // array to store new locations to add
+      loc2Add: [], // array to stores new locations to add
       newSelectedLocation: null, // stores location data when change the selected value
 
       // subscriptions

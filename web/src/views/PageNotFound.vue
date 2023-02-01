@@ -1,8 +1,6 @@
 <template>
   <div class="half-page my-5">
-    <h1 class="mb-4">
-      Uh oh. Page not found
-    </h1>
+    <h1 class="mb-4">Uh oh. Page not found</h1>
     <img
       v-if="randomNum <= 0.33"
       src="@/assets/monkey.svg"
@@ -19,14 +17,10 @@
 
     <div class="d-flex w-100 justify-content-center">
       <div class="text-left text-muted my-5">
-        <div class="mb-1">
-          Return to:
-        </div>
+        <div class="mb-1">Return to:</div>
         <ul class="list-unstyled px-3 py-2 border-top border-bottom m-0">
           <li class="mb-2">
-            <router-link :to="{ name: 'Home' }">
-              Home
-            </router-link>
+            <router-link :to="{ name: 'Home' }">Home</router-link>
           </li>
           <li class="mb-2">
             <router-link :to="{ name: 'Epidemiology' }">
@@ -50,8 +44,6 @@
 </template>
 
 <script>
-import Vue from 'vue';
-
 export default {
   name: 'PageNotFound',
   computed: {

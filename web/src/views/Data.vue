@@ -17,11 +17,12 @@
   </div>
 </template>
 <script>
-import { mapState } from 'vuex';
+import { mapState } from 'pinia';
 
 import { getEpiTable } from '@/api/epi-traces.js';
 import { lazyLoad } from '@/js/lazy-load';
-import store from '@/store';
+import { adminStore } from '@/stores/adminStore';
+import { colorsStore } from '@/stores/colorsStore';
 
 export default {
   name: 'Home',
@@ -56,7 +57,8 @@ export default {
     };
   },
   computed: {
-    ...mapState('admin', ['loading']),
+    ...mapState(adminStore, ['loading']),
+    ...mapState(colorsStore, ['getRegionColorFromLocation']),
   },
   watch: {},
   mounted() {
@@ -74,7 +76,7 @@ export default {
   },
   methods: {
     regionColorScale(location) {
-      const scale = store.getters['colors/getRegionColorFromLocation'];
+      const scale = this.getRegionColorFromLocation;
       return scale(location);
     },
   },

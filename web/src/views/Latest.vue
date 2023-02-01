@@ -98,13 +98,13 @@
 </template>
 
 <script>
-import Vue from 'vue';
-import { mapState } from 'vuex';
+import { mapState } from 'pinia';
 import { timeFormat } from 'd3-time-format';
 
 import { getSourcesUpdated } from '@/api/metadata.js';
+import { adminStore } from '@/stores/adminStore';
 
-export default Vue.extend({
+export default {
   name: 'Latest',
   components: {},
   data() {
@@ -114,7 +114,7 @@ export default Vue.extend({
     };
   },
   computed: {
-    ...mapState('admin', ['updates']),
+    ...mapState(adminStore, ['updates']),
   },
   mounted() {
     this.updateSubscription = getSourcesUpdated(
@@ -138,7 +138,7 @@ export default Vue.extend({
       return dateFormatter(date);
     },
   },
-});
+};
 </script>
 
 <style lang="scss" scoped>

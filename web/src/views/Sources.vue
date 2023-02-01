@@ -31,9 +31,7 @@
           </div>
 
           <div class="text-left mt-5">
-            <h3 id="geographic" class="pt-4 border-top">
-              Genomic Data
-            </h3>
+            <h3 id="geographic" class="pt-4 border-top">Genomic Data</h3>
             <SourceDescription
               v-if="sourceMetadata"
               :sources="genomicSources"
@@ -53,9 +51,7 @@
           </div>
 
           <div class="text-left mt-5">
-            <h3 id="geographic" class="pt-4 border-top">
-              Geographic Data
-            </h3>
+            <h3 id="geographic" class="pt-4 border-top">Geographic Data</h3>
             <SourceDescription :sources="geoSources" />
           </div>
 
@@ -63,9 +59,7 @@
             <div
               class="mb-3 pt-4 border-top d-flex justify-content-between align-items-center"
             >
-              <h3 id="resources" class="">
-                Resources
-              </h3>
+              <h3 id="resources" class="">Resources</h3>
               <DownloadData
                 downloadLabel="all resources"
                 type="resources"
@@ -107,13 +101,13 @@
 </template>
 
 <script>
-import Vue from 'vue';
-import { mapState } from 'vuex';
+import { mapState } from 'pinia';
 
 import { getIndivSourcesUpdated } from '@/api/metadata.js';
 import { lazyLoad } from '@/js/lazy-load';
+import { adminStore } from '@/stores/adminStore';
 
-export default Vue.extend({
+export default {
   name: 'Sources',
   components: {
     SourceDescription: lazyLoad('SourceDescription'),
@@ -126,7 +120,7 @@ export default Vue.extend({
     };
   },
   computed: {
-    ...mapState('admin', [
+    ...mapState(adminStore, [
       'sources',
       'geoSources',
       'genomicSources',
@@ -147,7 +141,7 @@ export default Vue.extend({
       this.metadataSubscription.unsubscribe();
     }
   },
-});
+};
 </script>
 
 <style lang="scss" scoped>

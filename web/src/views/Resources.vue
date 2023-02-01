@@ -676,8 +676,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
-import { timeFormat, timeParse } from 'd3-time-format';
+import { mapState } from 'pinia';
 import cloneDeep from 'lodash/cloneDeep';
 import debounce from 'lodash/debounce';
 import tippy from 'tippy.js';
@@ -685,6 +684,7 @@ import tippy from 'tippy.js';
 import { getResources } from '@/api/resources.js';
 import { lazyLoad } from '@/js/lazy-load';
 import 'tippy.js/themes/light.css';
+import { adminStore } from '@/stores/adminStore';
 
 export default {
   name: 'Resources',
@@ -788,7 +788,7 @@ export default {
     };
   },
   computed: {
-    ...mapState('admin', ['loading', 'resources']),
+    ...mapState(adminStore, ['loading', 'resources']),
     lowerLim() {
       return this.selectedPage * this.numPerPage;
     },

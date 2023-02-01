@@ -825,13 +825,13 @@
   </div>
 </template>
 <script>
-import Vue from 'vue';
-import { mapState } from 'vuex';
+import { mapState } from 'pinia';
 
 import { findPangolin, findLocation } from '@/api/genomics.js';
 import RESOURCEEXAMPLES from '@/assets/examples/resources_examples.json';
 import GENOMICSEXAMPLES from '@/assets/examples/genomics_examples.json';
 import { lazyLoad } from '@/js/lazy-load';
+import { adminStore } from '@/stores/adminStore';
 
 export default {
   name: 'Home',
@@ -850,13 +850,11 @@ export default {
     };
   },
   computed: {
-    ...mapState('admin', ['loading']),
+    ...mapState(adminStore, ['loading']),
   },
   mounted() {
     this.resourceExamples = RESOURCEEXAMPLES;
     this.genomicsExamples = GENOMICSEXAMPLES;
-
-    const locations = Vue.$cookies.get('custom_locations');
 
     this.queryPangolin = findPangolin;
     this.queryLocation = findLocation;

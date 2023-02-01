@@ -20,7 +20,11 @@ import NT_MAP from '@/assets/genomics/sarscov2_NC045512_genes_nt.json';
 import WHO_REGIONS from '@/assets/genomics/who_regions.json';
 import orderBy from 'lodash/orderBy';
 import uniq from 'lodash/uniq';
-import store from '@/store';
+import { adminStore } from '@/stores/adminStore';
+import { genomicsStore } from '@/stores/genomicsStore';
+
+const storeAdmin = adminStore();
+const storeGenomics = genomicsStore();
 
 const parseDate = timeParse('%Y-%m-%d');
 const formatDate = timeFormat('%e %B %Y');
@@ -392,7 +396,7 @@ export const getCuratedList = (
   //     getCharacteristicMutations(
   //       apiurl,
   //       d,
-  //       store.state.genomics.characteristicThreshold,
+  //       storeGenomics.characteristicThreshold,
   //       false,
   //     ),
   //   ),
@@ -456,9 +460,9 @@ export const getCuratedList = (
 
 export const getReportList = (
   apiurl,
-  prevalenceThreshold = store.state.genomics.characteristicThreshold,
+  prevalenceThreshold = storeGenomics.characteristicThreshold,
 ) => {
-  store.state.admin.reportloading = true;
+  storeAdmin.$patch({ reportloading: true });
 
   return forkJoin([
     getDateUpdated(apiurl),
@@ -476,7 +480,7 @@ export const getReportList = (
       return of([]);
     }),
 
-    finalize(() => (store.state.admin.reportloading = false)),
+    finalize(() => storeAdmin.$patch({ reportloading: false })),
   );
 };
 
@@ -490,7 +494,7 @@ const filterCuratedTypes = (d) => {
 };
 
 export const getLocationBasics = (apiurl) => {
-  store.state.admin.reportloading = true;
+  storeAdmin.$patch({ reportloading: true });
   let ofInterest = CURATED.filter(
     (d) => d.variantType === 'Variant of Concern',
   ).filter((d) => filterCuratedTypes(d));
@@ -518,7 +522,7 @@ export const getLocationBasics = (apiurl) => {
       return of([]);
     }),
 
-    finalize(() => (store.state.admin.reportloading = false)),
+    finalize(() => storeAdmin.$patch({ reportloading: false })),
   );
 };
 
@@ -591,7 +595,7 @@ export const getReportData = (
   ndays,
   defaultLocations = ['USA', 'USA_US-CA'],
 ) => {
-  store.state.admin.reportloading = true;
+  storeAdmin.$patch({ reportloading: true });
 
   // clean up the locations data
   // ensure it's an array
@@ -690,7 +694,7 @@ export const getReportData = (
       console.log(e);
       return of([]);
     }),
-    finalize(() => (store.state.admin.reportloading = false)),
+    finalize(() => storeAdmin.$patch({ reportloading: false })),
   );
 };
 
@@ -703,7 +707,7 @@ export const updateChoroData = (
   location,
   ndays,
 ) => {
-  store.state.admin.reportloading = true;
+  storeAdmin.$patch({ reportloading: true });
   location = location ? location : 'Worldwide';
 
   // lookup WHO name in curated dictionary
@@ -732,7 +736,7 @@ export const updateChoroData = (
       return of([]);
     }),
 
-    finalize(() => (store.state.admin.reportloading = false)),
+    finalize(() => storeAdmin.$patch({ reportloading: false })),
   );
 };
 
@@ -853,7 +857,7 @@ export const updateLocationData = (
     queryStr = buildQueryStr(lineageString, mutationArr);
   }
 
-  store.state.admin.reportloading = true;
+  storeAdmin.$patch({ reportloading: true });
 
   if (!locations || !locations.length) {
     locations = [location];
@@ -910,7 +914,7 @@ export const updateLocationData = (
       console.log(e);
       return of([]);
     }),
-    finalize(() => (store.state.admin.reportloading = false)),
+    finalize(() => storeAdmin.$patch({ reportloading: false })),
   );
 };
 
@@ -1532,7 +1536,7 @@ export const getTemporalPrevalence = (
   indivCall = false,
   returnFlat = true,
 ) => {
-  store.state.admin.reportloading = true;
+  storeAdmin.$patch({ reportloading: true });
   let url;
   if (location === 'Worldwide') {
     url = `${apiurl}prevalence-by-location?${queryStr}`;
@@ -1597,7 +1601,7 @@ export const getTemporalPrevalence = (
       return of([]);
     }),
     finalize(() =>
-      indivCall ? (store.state.admin.reportloading = false) : null,
+      indivCall ? storeAdmin.$patch({ reportloading: false }) : null,
     ),
   );
 };
@@ -1926,7 +1930,7 @@ export const getPrevalenceAllLineages = (
 
 // LOCATION REPORTS
 export const getBasicLocationReportData = (apiurl, location) => {
-  store.state.genomics.locationLoading1 = true;
+  storeGenomics.$patch({ locationLoading1: true });
 
   // pull out just the Variants of Concern
   let filtered = CURATED.filter(
@@ -1984,7 +1988,7 @@ export const getBasicLocationReportData = (apiurl, location) => {
       return of([]);
     }),
 
-    finalize(() => (store.state.genomics.locationLoading1 = false)),
+    finalize(() => storeGenomics.$patch({ locationLoading1: false })),
   );
 };
 
@@ -1998,7 +2002,7 @@ export const getLocationReportData = (
   ndays,
   window,
 ) => {
-  store.state.genomics.locationLoading2 = true;
+  storeGenomics.$patch({ locationLoading2: true });
 
   return getLocationLineagePrevalences(
     apiurl,
@@ -2023,7 +2027,7 @@ export const getLocationReportData = (
       console.log(e);
       return of([]);
     }),
-    finalize(() => (store.state.genomics.locationLoading2 = false)),
+    finalize(() => storeGenomics.$patch({ locationLoading2: false })),
   );
 };
 
@@ -2103,7 +2107,7 @@ export const getLocationLineagePrevalences = (
 };
 
 export const getLocationMaps = (apiurl, location, mutations, ndays) => {
-  store.state.genomics.locationLoading5 = true;
+  storeGenomics.$patch({ locationLoading5: true });
 
   return forkJoin(
     ...mutations.map((mutation) =>
@@ -2124,7 +2128,7 @@ export const getLocationMaps = (apiurl, location, mutations, ndays) => {
       return of([]);
     }),
 
-    finalize(() => (store.state.genomics.locationLoading5 = false)),
+    finalize(() => storeGenomics.$patch({ locationLoading5: false })),
   );
 };
 
@@ -2207,7 +2211,7 @@ export const getLocationTable = (
   mutations,
   totalThreshold,
 ) => {
-  store.state.genomics.locationLoading3 = true;
+  storeGenomics.$patch({ locationLoading3: true });
   const pangos = mutations
     .filter((d) => d.type && d.type === 'pango')
     .map((d) => d.qParam);
@@ -2262,7 +2266,7 @@ export const getLocationTable = (
       console.log(e);
       return of([]);
     }),
-    finalize(() => (store.state.genomics.locationLoading3 = false)),
+    finalize(() => storeGenomics.$patch({ locationLoading3: false })),
   );
 };
 
@@ -2273,7 +2277,7 @@ export const getEpiMutationPrevalence = (
   mutations,
   epiFields = 'location_id,date,confirmed,mostRecent,confirmed_numIncrease,confirmed_rolling,dead_numIncrease,dead_rolling',
 ) => {
-  store.state.genomics.locationLoading4 = true;
+  storeGenomics.$patch({ locationLoading4: true });
 
   return forkJoin([
     getEpiTraces(epiurl, [locationID], epiFields),
@@ -2296,7 +2300,7 @@ export const getEpiMutationPrevalence = (
       console.log(e);
       return of([]);
     }),
-    finalize(() => (store.state.genomics.locationLoading4 = false)),
+    finalize(() => storeGenomics.$patch({ locationLoading4: false })),
   );
 };
 
@@ -2318,7 +2322,7 @@ export const getAllTemporalPrevalences = (apiurl, locationID, mutations) => {
         console.log(e);
         return of([]);
       }),
-      finalize(() => (store.state.genomics.locationLoading4 = false)),
+      finalize(() => storeGenomics.$patch({ locationLoading4: false })),
     );
   } else {
     return of([]);
@@ -2374,7 +2378,7 @@ export const getSequenceCount = (
 
 // COMPARISON REPORTS
 export const getBasicComparisonReportData = (apiurl) => {
-  store.state.genomics.locationLoading1 = true;
+  storeGenomics.$patch({ locationLoading2: true });
 
   const who = CURATED.filter((d) => d.who_name)
     .map((d) => d.who_name)
@@ -2417,7 +2421,7 @@ export const getBasicComparisonReportData = (apiurl) => {
       console.log(e);
       return of([]);
     }),
-    finalize(() => (store.state.genomics.locationLoading1 = false)),
+    finalize(() => storeGenomics.$patch({ locationLoading1: false })),
   );
 };
 
@@ -2589,7 +2593,7 @@ export const getLineagesComparison = (
   includeSublineages = false,
   genes,
 ) => {
-  store.state.genomics.locationLoading2 = true;
+  storeGenomics.$patch({ locationLoading2: true });
 
   // if nothing selected, pull out the VOCs/VOIs
   if (!lineages) {
@@ -2655,7 +2659,7 @@ export const getLineagesComparison = (
       return of([]);
     }),
 
-    finalize(() => (store.state.genomics.locationLoading2 = false)),
+    finalize(() => storeGenomics.$patch({ locationLoading2: false })),
   );
 };
 
@@ -2732,7 +2736,7 @@ export const getBadMutations = (returnSimplified = false) => {
 
 // Lag functions
 export const getStatusBasics = (apiurl, location) => {
-  store.state.admin.reportloading = true;
+  storeAdmin.$patch({ reportloading: true });
 
   return forkJoin([
     getSequenceCount(apiurl, null, true),
@@ -2755,12 +2759,12 @@ export const getStatusBasics = (apiurl, location) => {
       return of([]);
     }),
 
-    finalize(() => (store.state.admin.reportloading = false)),
+    finalize(() => storeAdmin.$patch({ reportloading: false })),
   );
 };
 
 export const getStatusLocation = (apiurl, location) => {
-  store.state.admin.reportloading = true;
+  storeAdmin.$patch({ reportloading: true });
 
   return forkJoin([
     getSequenceCount(apiurl, location, true),
@@ -2781,12 +2785,12 @@ export const getStatusLocation = (apiurl, location) => {
       return of([]);
     }),
 
-    finalize(() => (store.state.admin.reportloading = false)),
+    finalize(() => storeAdmin.$patch({ reportloading: false })),
   );
 };
 
 export const getSeqGaps = (apiurl, location) => {
-  store.state.genomics.locationLoading1 = true;
+  storeGenomics.$patch({ locationLoading1: true });
   let url = `${apiurl}collection-submission`;
 
   if (location) {
@@ -2868,12 +2872,12 @@ export const getSeqGaps = (apiurl, location) => {
       return of([]);
     }),
 
-    finalize(() => (store.state.genomics.locationLoading1 = false)),
+    finalize(() => storeGenomics.$patch({ locationLoading1: false })),
   );
 };
 
 export const checkGisaidID = (apiurl, id) => {
-  store.state.genomics.locationLoading2 = true;
+  storeGenomics.$patch({ locationLoading2: true });
   const url = `${apiurl}gisaid-id-lookup?id=${id}`;
 
   return from(
@@ -2893,12 +2897,12 @@ export const checkGisaidID = (apiurl, id) => {
       return of([]);
     }),
 
-    finalize(() => (store.state.genomics.locationLoading2 = false)),
+    finalize(() => storeGenomics.$patch({ locationLoading2: false })),
   );
 };
 
 export const getSeqMap = (apiurl, epiurl, location) => {
-  store.state.genomics.locationLoading3 = true;
+  storeGenomics.$patch({ locationLoading3: true });
 
   return forkJoin([getSequenceCount(apiurl, location, true, true)]).pipe(
     map(([results]) => {
@@ -2910,12 +2914,12 @@ export const getSeqMap = (apiurl, epiurl, location) => {
       return of([]);
     }),
 
-    finalize(() => (store.state.genomics.locationLoading3 = false)),
+    finalize(() => storeGenomics.$patch({ locationLoading3: false })),
   );
 };
 
 export const getGlanceSummary = (apiUrl, genomicsUrl, locations) => {
-  store.state.admin.loading = true;
+  storeAdmin.$patch({ loading: true });
   const formatDate = timeFormat('%e %B %Y');
   const parseDate = timeParse('%Y-%m-%d');
   const location_string =
@@ -2978,7 +2982,7 @@ export const getGlanceSummary = (apiUrl, genomicsUrl, locations) => {
       console.log(e);
       return from([]);
     }),
-    finalize(() => (store.state.admin.loading = false)),
+    finalize(() => storeAdmin.$patch({ loading: false })),
   );
 };
 

@@ -55,7 +55,7 @@ import { area } from 'd3-shape';
 import { transition } from 'd3-transition';
 
 import { getCountryData } from '@/api/region-summary.js';
-import store from '@/store';
+import store from '@/stores';
 
 const width = 250;
 const sparkWidth = 75;

@@ -1172,7 +1172,7 @@ export default {
         ? 'Switch to <b>light mode</b> to focus on similarities between lineages'
         : 'Switch to <b>dark mode</b> to emphasize mutations with low prevalence';
     },
-    // object to store the temporary additions to the custom mutations form BEFORE submission
+    // object to stores the temporary additions to the custom mutations form BEFORE submission
     // should consist of label + route param (qParam) + type (alias, pango, variant, mutation)
     newVariant() {
       let newVariantObj = null;

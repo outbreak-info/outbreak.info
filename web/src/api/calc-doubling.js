@@ -4,9 +4,11 @@ import { finalize, catchError, pluck, map } from 'rxjs/operators';
 import { nest } from 'd3-collection';
 import { timeParse } from 'd3-time-format';
 import { linearRegression } from 'datalib';
-import store from '@/store';
+import { adminStore } from '@/stores/adminStore';
 
 import { getAll } from '@/api/biothings.js';
+
+const store = adminStore();
 
 export const getDoubling = (
   apiUrl,
@@ -14,7 +16,7 @@ export const getDoubling = (
   variable = 'confirmed',
   fitLength = 5,
 ) => {
-  store.state.admin.loading = true;
+  store.$patch({ loading: true });
   const parseDate = timeParse('%Y-%m-%d');
 
   return from(
@@ -60,7 +62,7 @@ export const getDoubling = (
       console.log(e);
       return from([]);
     }),
-    // finalize(() => (store.state.admin.loading = false))
+    // finalize(() => (stores.state.admin.loading = false))
   );
   // axios.get(apiUrl, { query: {admin0: location  } }).then(d => {console.log(d )})
 };
@@ -129,7 +131,7 @@ export const fitExponential = (data, minIdx, maxIdx, maxDate) => {
 };
 
 export const getAllDoubling = (apiUrl, variable, fitLength = 5) => {
-  store.state.admin.loading = true;
+  store.$patch({ loading: true });
   const parseDate = timeParse('%Y-%m-%d');
   const url = `${apiUrl}query?q=__all__&size=1000&fields=location_id,name,admin0,admin1,date,${variable}`;
 
@@ -178,6 +180,6 @@ export const getAllDoubling = (apiUrl, variable, fitLength = 5) => {
       console.log(e);
       return from([]);
     }),
-    finalize(() => (store.state.admin.loading = false)),
+    finalize(() => store.$patch({ loading: false })),
   );
 };

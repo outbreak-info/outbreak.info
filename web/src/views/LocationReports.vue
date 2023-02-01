@@ -87,10 +87,11 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState } from 'pinia';
 
 import { getLocationBasics } from '@/api/genomics.js';
 import { lazyLoad } from '@/js/lazy-load';
+import { adminStore } from '@/stores/adminStore';
 
 export default {
   name: 'LocationReports',
@@ -109,7 +110,7 @@ export default {
     };
   },
   computed: {
-    ...mapState('admin', ['reportloading']),
+    ...mapState(adminStore, ['reportloading']),
   },
   mounted() {
     this.curatedSubscription = getLocationBasics(this.$genomicsurl).subscribe(

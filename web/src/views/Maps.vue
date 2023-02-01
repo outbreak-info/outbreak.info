@@ -139,11 +139,12 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState } from 'pinia';
 import { timeFormat } from 'd3-time-format';
 
 import { getComparisonData } from '@/api/epi-comparison.js';
 import { lazyLoad } from '@/js/lazy-load';
+import { adminStore } from '@/stores/adminStore';
 
 export default {
   name: 'Maps',
@@ -235,7 +236,7 @@ export default {
     };
   },
   computed: {
-    ...mapState('admin', ['dataloading']),
+    ...mapState(adminStore, ['dataloading']),
   },
   watch: {
     '$route.params': {

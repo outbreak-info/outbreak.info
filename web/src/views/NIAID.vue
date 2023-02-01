@@ -62,7 +62,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState } from 'pinia';
 import { nest } from 'd3-collection';
 import tippy from 'tippy.js';
 
@@ -70,6 +70,7 @@ import { getQuerySummaries, getSourceSummary } from '@/api/resources.js';
 import { lazyLoad } from '@/js/lazy-load';
 
 import 'tippy.js/themes/light.css';
+import { adminStore } from '@/stores/adminStore';
 
 export default {
   name: 'NIAID',
@@ -102,7 +103,7 @@ export default {
     };
   },
   computed: {
-    ...mapState('admin', ['loading']),
+    ...mapState(adminStore, ['loading']),
     types() {
       return this.results ? this.results.flatMap((d) => d.types) : null;
     },

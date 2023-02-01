@@ -1,5 +1,5 @@
 <template>
-  <div style="min-height: 75vh;">
+  <div style="min-height: 75vh">
     <div class="row m-0">
       <div
         class="col-sm-12 bg-light d-flex justify-content-center align-items-center my-5"
@@ -53,9 +53,7 @@
     </div>
 
     <div class="container">
-      <h4 class="text-left">
-        How to contribute data
-      </h4>
+      <h4 class="text-left">How to contribute data</h4>
       <p class="text-left">
         The easiest way to contribute data is to deposit your analysis, clinical
         trial, dataset, protocol, or publication in one of the
@@ -94,9 +92,7 @@
     </div>
 
     <div class="container mt-5">
-      <h4 class="text-left">
-        How to help curate data
-      </h4>
+      <h4 class="text-left">How to help curate data</h4>
       <p class="text-left">
         Keeping track of the growing list of COVID-19 and SARS-CoV-2 resources
         is a challenge, as is curating the information to make it more findable
@@ -184,10 +180,10 @@
 </template>
 
 <script>
-import Vue from 'vue';
-import { mapState } from 'vuex';
+import { mapState } from 'pinia';
+import { adminStore } from '@/stores/adminStore';
 
-export default Vue.extend({
+export default {
   name: 'Contributing',
   components: {},
   data() {
@@ -225,11 +221,10 @@ export default Vue.extend({
       ],
     };
   },
-
   computed: {
-    ...mapState('admin', ['resources']),
+    ...mapState(adminStore, ['resources']),
   },
-});
+};
 </script>
 
 <style lang="scss">

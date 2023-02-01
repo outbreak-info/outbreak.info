@@ -11,7 +11,7 @@ import { format } from 'd3-format';
 import { timeParse, timeFormat } from 'd3-time-format';
 import cloneDeep from 'lodash/cloneDeep';
 
-import store from '@/store';
+import store from '@/stores';
 
 const filterString2Arr = (filterString) => {
   return filterString.split(';').map((d) => {
@@ -172,7 +172,7 @@ export const getMetadataArray = (apiUrl, queryString, sort, size, page) => {
       console.log(e);
       return from([]);
     }),
-    // finalize(() => (store.state.admin.loading = false))
+    // finalize(() => (stores.state.admin.loading = false))
   );
 };
 
