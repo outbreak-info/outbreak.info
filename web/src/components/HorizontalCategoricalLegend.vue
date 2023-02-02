@@ -3,7 +3,7 @@
     <svg
       v-for="(value, vIdx) in legendValues"
       :key="vIdx"
-      :width="80"
+      :width="82"
       :height="legendRectWidth + 2"
       class="categorical-legend mr-2 mb-2"
     >

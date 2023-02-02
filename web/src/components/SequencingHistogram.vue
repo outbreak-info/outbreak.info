@@ -400,6 +400,10 @@ export default Vue.extend({
 </script>
 
 <style>
+.axis--x {
+  font-size: 12px;
+}
+
 .axis--y {
   font-size: 12px;
 }
