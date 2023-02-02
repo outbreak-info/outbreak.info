@@ -51,13 +51,13 @@
 </template>
 
 <script>
-import Vue from 'vue';
-import { mapState } from 'vuex';
+import { mapState } from 'pinia';
+import { adminStore } from '@/stores/adminStore';
 
-export default Vue.extend({
+export default {
   name: 'ReportAcknowledgements',
   computed: {
-    ...mapState('admin', ['funding']),
+    ...mapState(adminStore, ['funding']),
   },
-});
+};
 </script>

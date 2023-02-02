@@ -122,7 +122,6 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import { sum } from 'd3-array';
 import { axisLeft } from 'd3-axis';
 import { scaleLinear, scaleBand } from 'd3-scale';
@@ -131,7 +130,7 @@ import cloneDeep from 'lodash/cloneDeep';
 
 import { lazyLoad } from '@/js/lazy-load';
 
-export default Vue.extend({
+export default {
   name: 'SublineageTotals',
   components: {
     DownloadReportData: lazyLoad('DownloadReportData'),
@@ -412,7 +411,7 @@ export default Vue.extend({
         .on('click', (d) => this.handleLineageClick(d[this.yVar]));
     },
   },
-});
+};
 </script>
 
 <style lang="scss">

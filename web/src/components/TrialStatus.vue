@@ -43,12 +43,11 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import uniq from 'lodash/uniq';
 
 import { lazyLoad } from '@/js/lazy-load';
 
-export default Vue.extend({
+export default {
   name: 'TrialStatus',
   components: {
     CountryMap: lazyLoad('CountryMap'),
@@ -86,7 +85,7 @@ export default Vue.extend({
     }
   },
   methods: {},
-});
+};
 </script>
 
 <style lang="scss" scoped>

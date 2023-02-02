@@ -461,16 +461,16 @@
 </template>
 
 <script>
-import Vue from 'vue';
-import { mapState } from 'vuex';
+import { mapState } from 'pinia';
 import { timeFormat, timeParse } from 'd3-time-format';
 import tippy from 'tippy.js';
 
 import { lazyLoad } from '@/js/lazy-load';
 
 import 'tippy.js/themes/light.css';
+import {adminStore} from "@/stores/adminStore";
 
-export default Vue.extend({
+export default {
   name: 'ResourceDescription',
   components: {
     ClinicalTrialSummary: lazyLoad('ClinicalTrialSummary'),
@@ -486,7 +486,7 @@ export default Vue.extend({
     };
   },
   computed: {
-    ...mapState('admin', ['loading', 'resources']),
+    ...mapState(adminStore, ['loading', 'resources']),
     datePublished() {
       return this.formatDate(this.data.dateModified);
     },

@@ -1,17 +1,13 @@
 import { from, forkJoin } from 'rxjs';
 import axios from 'axios';
-import {
-  // finalize,
-  catchError,
-  pluck,
-  map,
-  finalize,
-} from 'rxjs/operators';
+import { catchError, pluck, map, finalize } from 'rxjs/operators';
 import { format } from 'd3-format';
 import { timeParse, timeFormat } from 'd3-time-format';
 import cloneDeep from 'lodash/cloneDeep';
 
-import store from '@/stores';
+import { adminStore } from '@/stores/adminStore';
+
+const store = adminStore();
 
 const filterString2Arr = (filterString) => {
   return filterString.split(';').map((d) => {
@@ -78,7 +74,7 @@ export const getResources = (
       : `(${queryString}) AND (${filterArr2String(filterArr)})`;
   }
 
-  store.state.admin.loading = true;
+  store.$patch({ loading: true });
   return forkJoin([
     getMostRecent(apiUrl, comboString, null),
     getMetadataArray(apiUrl, comboString, sort, size, page),
@@ -126,7 +122,7 @@ export const getResources = (
       console.log(e);
       return from([]);
     }),
-    finalize(() => (store.state.admin.loading = false)),
+    finalize(() => store.$patch({ loading: false })),
   );
 };
 
@@ -177,7 +173,7 @@ export const getMetadataArray = (apiUrl, queryString, sort, size, page) => {
 };
 
 export const getResourceMetadata = (apiUrl, id) => {
-  store.state.admin.loading = true;
+  store.$patch({ loading: true });
   const query = `_id:"${id}"`;
 
   return from(
@@ -202,7 +198,7 @@ export const getResourceMetadata = (apiUrl, id) => {
       console.log(e);
       return from([]);
     }),
-    finalize(() => (store.state.admin.loading = false)),
+    finalize(() => store.$patch({ loading: false })),
   );
 };
 

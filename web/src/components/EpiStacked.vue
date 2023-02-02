@@ -38,14 +38,14 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import { max, extent } from 'd3-array';
 import { axisLeft, axisBottom } from 'd3-axis';
 import { select, selectAll, event } from 'd3-selection';
 import { scaleLinear, scaleTime } from 'd3-scale';
 import { area, stack, stackOrderReverse } from 'd3-shape';
 
-import store from '@/stores';
+import { mapState } from 'pinia';
+import { colorsStore } from '@/stores/colorsStore';
 
 const margin = {
   top: 10,
@@ -54,7 +54,7 @@ const margin = {
   left: 90,
 };
 
-export default Vue.extend({
+export default {
   name: 'EpiStacked',
   components: {},
   props: {
@@ -81,6 +81,9 @@ export default Vue.extend({
       // methods
       area: null,
     };
+  },
+  computed: {
+    ...mapState(colorsStore, ['getRegionColor']),
   },
   watch: {
     data() {
@@ -138,7 +141,7 @@ export default Vue.extend({
       });
     },
     colorScale(location) {
-      const scale = store.getters['colors/getRegionColor'];
+      const scale = this.getRegionColor;
       return scale(location);
     },
     updatePlot() {
@@ -287,7 +290,7 @@ export default Vue.extend({
         .on('click', (d) => this.handleClick(d.key));
     },
   },
-});
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

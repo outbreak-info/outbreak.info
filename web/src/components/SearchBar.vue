@@ -46,12 +46,12 @@
 
 <script>
 // adapted from https://alligator.io/vuejs/vue-autocomplete-component/
-import Vue from 'vue';
-import { mapState } from 'vuex';
+import { mapState } from 'pinia';
 
 import { getLocations } from '@/api/epi-basics.js';
+import { geoStore } from '@/stores/geoStore';
 
-export default Vue.extend({
+export default {
   name: 'SearchBar',
   components: {},
   props: {
@@ -92,7 +92,7 @@ export default Vue.extend({
     };
   },
   computed: {
-    ...mapState('geo', ['allPlaces']),
+    ...mapState(geoStore, ['allPlaces']),
   },
   watch: {
     items(val, oldValue) {
@@ -198,7 +198,7 @@ export default Vue.extend({
       }
     },
   },
-});
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

@@ -28,13 +28,12 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import { select } from 'd3-selection';
 import { scaleOrdinal } from 'd3-scale';
 import { pie, arc } from 'd3-shape';
 import { schemeSet2 } from 'd3-scale-chromatic';
 
-export default Vue.extend({
+export default {
   name: 'Donut',
   props: {
     data: Array,
@@ -136,7 +135,7 @@ export default Vue.extend({
       );
     },
   },
-});
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

@@ -387,15 +387,15 @@
 </template>
 
 <script>
-import Vue from 'vue';
-import { mapState } from 'vuex';
+import { mapState } from 'pinia';
 import { timeFormat, timeParse } from 'd3-time-format';
 import cloneDeep from 'lodash/cloneDeep';
 
 import { getResourceMetadata } from '@/api/resources.js';
 import { lazyLoad } from '@/js/lazy-load';
+import { adminStore } from '@/stores/adminStore';
 
-export default Vue.extend({
+export default {
   name: 'ResourcePage',
   components: {
     ResourceDescription: lazyLoad('ResourceDescription'),
@@ -450,7 +450,7 @@ export default Vue.extend({
     };
   },
   computed: {
-    ...mapState('admin', ['loading']),
+    ...mapState(adminStore, ['loading']),
     anchorsArr() {
       if (Object.keys(this.anchors).includes(this.type)) {
         return this.anchors[this.type];
@@ -638,7 +638,7 @@ export default Vue.extend({
       };
     }
   },
-});
+};
 </script>
 
 <style lang="scss" scoped>

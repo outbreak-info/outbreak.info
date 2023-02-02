@@ -36,13 +36,12 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import { scaleLinear } from 'd3-scale';
 
 const width = 50;
 const height = 15;
 
-export default Vue.extend({
+export default {
   name: 'RecoveredBar',
   components: {},
   props: {
@@ -85,7 +84,7 @@ export default Vue.extend({
         .domain([0, this.data.confirmed]);
     },
   },
-});
+};
 </script>
 
 <style lang="scss">

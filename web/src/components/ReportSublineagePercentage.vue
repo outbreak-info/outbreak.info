@@ -91,7 +91,6 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import { extent } from 'd3-array';
 import { axisLeft, axisBottom } from 'd3-axis';
 import { brushX } from 'd3-brush';
@@ -103,7 +102,7 @@ import { transition } from 'd3-transition';
 
 import { lazyLoad } from '@/js/lazy-load';
 
-export default Vue.extend({
+export default {
   name: 'LineagesByLocation',
   components: {
     SequencingHistogram: lazyLoad('SequencingHistogram'),
@@ -468,7 +467,7 @@ export default Vue.extend({
       };
     },
   },
-});
+};
 </script>
 
 <style lang="scss">

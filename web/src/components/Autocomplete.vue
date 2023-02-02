@@ -59,13 +59,13 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import debounce from 'lodash/debounce';
 
 import { findEpiLocation, lookupEpiLocations } from '@/api/epi-basics.js';
-import store from '@/stores';
+import { mapState } from 'pinia';
+import { colorsStore } from '@/stores/colorsStore';
 
-export default Vue.extend({
+export default {
   name: 'Autocomplete',
   components: {},
   props: {
@@ -97,6 +97,9 @@ export default Vue.extend({
       lookupSubscription: null,
       querySubscription: null,
     };
+  },
+  computed: {
+    ...mapState(colorsStore, ['getLightColor', 'getDarkColor']),
   },
   watch: {
     selected(val, oldValue) {
@@ -143,11 +146,11 @@ export default Vue.extend({
       });
     },
     lightColorScale(location) {
-      const scale = store.getters['colors/getLightColor'];
+      const scale = this.getLightColor;
       return scale(location);
     },
     colorScale(location) {
-      const scale = store.getters['colors/getDarkColor'];
+      const scale = this.getDarkColor;
       return scale(location);
     },
     updateChip(item) {
@@ -220,7 +223,7 @@ export default Vue.extend({
       }
     },
   },
-});
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

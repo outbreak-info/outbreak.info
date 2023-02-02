@@ -16,13 +16,12 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import { max } from 'd3-array';
 import { pack, hierarchy } from 'd3-hierarchy';
 import { scaleLinear, scaleTime } from 'd3-scale';
 import { select, selectAll, event } from 'd3-selection';
 
-export default Vue.extend({
+export default {
   name: 'CirclePacking',
   props: {
     data: Object,
@@ -247,7 +246,7 @@ export default Vue.extend({
       });
     },
   },
-});
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

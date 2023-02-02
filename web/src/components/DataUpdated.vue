@@ -6,11 +6,9 @@
 </template>
 
 <script>
-import Vue from 'vue';
-
 import { getDateUpdated } from '@/api/biothings.js';
 
-export default Vue.extend({
+export default {
   name: 'DataUpdated',
   components: {},
   props: {},
@@ -24,7 +22,7 @@ export default Vue.extend({
       lastUpdated$: getDateUpdated(this.$apiurl),
     };
   },
-});
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

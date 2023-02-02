@@ -84,7 +84,6 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import uniq from 'lodash/uniq';
 
 import { findLocation } from '@/api/genomics.js';

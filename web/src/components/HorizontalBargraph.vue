@@ -19,13 +19,12 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import { max } from 'd3-array';
 import { axisRight } from 'd3-axis';
 import { scaleLinear, scaleBand } from 'd3-scale';
 import { select } from 'd3-selection';
 
-export default Vue.extend({
+export default {
   name: 'HorizontalBargraph',
   props: {
     data: Array,
@@ -117,7 +116,7 @@ export default Vue.extend({
       });
     },
   },
-});
+};
 </script>
 
 <style lang="scss">

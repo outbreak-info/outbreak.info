@@ -33,11 +33,9 @@
 </template>
 
 <script>
-import Vue from 'vue';
-
 import { lazyLoad } from '@/js/lazy-load';
 
-export default Vue.extend({
+export default {
   name: 'CustomReportForm',
   components: {
     VariantForm: lazyLoad('VariantForm'),
@@ -101,5 +99,5 @@ export default Vue.extend({
       }
     },
   },
-});
+};
 </script>

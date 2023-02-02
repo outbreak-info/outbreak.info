@@ -815,7 +815,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState } from 'pinia';
 import { scaleSequential } from 'd3-scale';
 import { interpolateRdPu } from 'd3-scale-chromatic';
 import { timeFormat } from 'd3-time-format';
@@ -836,6 +836,8 @@ import { lazyLoad } from '@/js/lazy-load';
 import CURATED from '@/assets/genomics/curated_lineages.json';
 
 import 'tippy.js/themes/light.css';
+import { adminStore } from '@/stores/adminStore';
+import { genomicsStore } from '@/stores/genomicsStore';
 
 export default {
   name: 'LineageComparisonComponent',
@@ -937,8 +939,8 @@ export default {
     };
   },
   computed: {
-    ...mapState('admin', ['mutationAuthors', 'genomicsCitation']),
-    ...mapState('genomics', ['locationLoading1', 'locationLoading2']),
+    ...mapState(adminStore, ['mutationAuthors', 'genomicsCitation']),
+    ...mapState(genomicsStore, ['locationLoading1', 'locationLoading2']),
     loading() {
       return this.locationLoading1 || this.locationLoading2;
     },

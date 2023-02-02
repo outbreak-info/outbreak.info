@@ -16,7 +16,7 @@
         x="0"
         :y="legendRectWidth / 2"
         :dx="legendRectWidth + 5"
-        style="dominant-baseline: central;"
+        style="dominant-baseline: central"
       >
         {{ value.label }}
       </text>
@@ -57,7 +57,7 @@
         x="0"
         :y="legendRectWidth / 2"
         :dx="legendRectWidth + 5"
-        style="dominant-baseline: central;"
+        style="dominant-baseline: central"
       >
         No data
       </text>
@@ -66,9 +66,7 @@
 </template>
 
 <script>
-import Vue from 'vue';
-
-export default Vue.extend({
+export default {
   name: 'HorizontalCategoricalLegend',
   props: {
     values: Array,
@@ -92,5 +90,5 @@ export default Vue.extend({
       }
     },
   },
-});
+};
 </script>

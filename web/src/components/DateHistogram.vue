@@ -64,8 +64,6 @@
 </template>
 
 <script>
-import Vue from 'vue';
-
 import { nest } from 'd3-collection';
 import { axisBottom } from 'd3-axis';
 import { min, max, sum, extent } from 'd3-array';
@@ -75,7 +73,7 @@ import { scaleLinear, scaleTime } from 'd3-scale';
 import { timeWeek } from 'd3-time';
 import { timeFormat, timeParse, isoParse } from 'd3-time-format';
 
-export default Vue.extend({
+export default {
   name: 'DateHistogram',
   props: {
     data: Array,
@@ -303,7 +301,7 @@ export default Vue.extend({
       );
     },
   },
-});
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

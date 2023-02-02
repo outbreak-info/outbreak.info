@@ -43,10 +43,9 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import { range } from 'd3-array';
 
-export default Vue.extend({
+export default {
   name: 'GradientLegend',
   props: {
     label: String,
@@ -90,5 +89,5 @@ export default Vue.extend({
       },
     },
   },
-});
+};
 </script>

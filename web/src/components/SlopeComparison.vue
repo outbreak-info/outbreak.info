@@ -34,7 +34,6 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import { axisBottom } from 'd3-axis';
 import { select } from 'd3-selection';
 import { scaleLinear } from 'd3-scale';
@@ -48,7 +47,7 @@ const margin = {
   left: 5,
 };
 
-export default Vue.extend({
+export default {
   name: 'SlopeComparison',
   components: {},
   props: {
@@ -279,7 +278,7 @@ export default Vue.extend({
         );
     },
   },
-});
+};
 </script>
 
 <style lang="scss">

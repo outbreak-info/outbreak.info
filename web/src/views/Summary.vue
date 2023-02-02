@@ -27,10 +27,11 @@
   </div>
 </template>
 <script>
-import { mapState } from 'vuex';
+import { mapState } from 'pinia';
 
 import { getGlanceSummary } from '@/api/genomics.js';
 import { lazyLoad } from '@/js/lazy-load';
+import { adminStore } from '@/stores/adminStore';
 
 export default {
   name: 'Summary',
@@ -50,7 +51,7 @@ export default {
     };
   },
   computed: {
-    ...mapState('admin', ['loading']),
+    ...mapState(adminStore, ['loading']),
   },
   watch: {
     location: {

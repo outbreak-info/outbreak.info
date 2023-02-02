@@ -100,7 +100,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState } from 'pinia';
 import { format } from 'd3-format';
 import { timeFormat } from 'd3-time-format';
 import cloneDeep from 'lodash/cloneDeep';
@@ -109,6 +109,7 @@ import uniq from 'lodash/uniq';
 import { getAll, progressState$ } from '@/api/biothings.js';
 import { getPng, getSvg } from '@/js/get_svg.js';
 import { lazyLoad } from '@/js/lazy-load';
+import { adminStore } from '@/stores/adminStore';
 
 export default {
   name: 'DownloadData',
@@ -151,7 +152,7 @@ export default {
     };
   },
   computed: {
-    ...mapState('admin', [
+    ...mapState(adminStore, [
       'loading',
       'genomicsCitation',
       'resourcesCitation',

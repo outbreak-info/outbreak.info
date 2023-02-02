@@ -89,11 +89,9 @@
 </template>
 
 <script>
-import Vue from 'vue';
-
 import { getLineageResources } from '@/api/genomics.js';
 
-export default Vue.extend({
+export default {
   name: 'ReportResources',
   components: {},
   props: {
@@ -164,6 +162,6 @@ export default Vue.extend({
       }
     },
   },
-});
+};
 </script>
 <style lang="scss"></style>

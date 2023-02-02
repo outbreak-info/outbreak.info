@@ -213,11 +213,12 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState } from 'pinia';
 import { format } from 'd3-format';
 
 import { getDateUpdated } from '@/api/genomics.js';
 import { lazyLoad } from '@/js/lazy-load';
+import { genomicsStore } from '@/stores/genomicsStore';
 
 export default {
   name: 'ReportMethodology',
@@ -241,7 +242,7 @@ export default {
     };
   },
   computed: {
-    ...mapState('genomics', ['refSeq', 'characteristicThreshold']),
+    ...mapState(genomicsStore, ['refSeq', 'characteristicThreshold']),
     charMutThreshold() {
       return format('.0%')(this.characteristicThreshold);
     },

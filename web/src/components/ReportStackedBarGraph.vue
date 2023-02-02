@@ -38,7 +38,6 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import { axisLeft } from 'd3-axis';
 import { format } from 'd3-format';
 import { forceY, forceCollide, forceSimulation } from 'd3-force';
@@ -48,7 +47,7 @@ import { stack, stackOrderAscending } from 'd3-shape';
 
 import { lazyLoad } from '@/js/lazy-load';
 
-export default Vue.extend({
+export default {
   name: 'LineagesByLocation',
   components: {
     SequencingHistogram: lazyLoad('SequencingHistogram'),
@@ -329,7 +328,7 @@ export default Vue.extend({
       };
     },
   },
-});
+};
 </script>
 
 <style lang="scss">

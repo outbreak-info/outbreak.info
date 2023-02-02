@@ -938,7 +938,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState } from 'pinia';
 import { max } from 'd3-array';
 import { format } from 'd3-format';
 import { scaleOrdinal, scaleThreshold, scaleSequential } from 'd3-scale';
@@ -963,6 +963,8 @@ import {
 import { lazyLoad } from '@/js/lazy-load';
 
 import 'tippy.js/themes/material.css';
+import { adminStore } from '@/stores/adminStore';
+import { genomicsStore } from '@/stores/genomicsStore';
 
 export default {
   name: 'LocationReportComponent',
@@ -1130,8 +1132,8 @@ export default {
     };
   },
   computed: {
-    ...mapState('admin', ['mutationAuthors', 'genomicsCitation']),
-    ...mapState('genomics', [
+    ...mapState(adminStore, ['mutationAuthors', 'genomicsCitation']),
+    ...mapState(genomicsStore, [
       'locationLoading1',
       'locationLoading2',
       'locationLoading3',

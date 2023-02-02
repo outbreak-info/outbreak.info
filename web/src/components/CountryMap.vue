@@ -17,15 +17,13 @@
 </template>
 
 <script>
-import Vue from 'vue';
-import { min } from 'd3-array';
 import { geoPath, geoEqualEarth } from 'd3-geo';
 import { select } from 'd3-selection';
 
 import GEODATA from '@/assets/geo/countries_ne.json';
 import GADM from '@/assets/geo/gadm_adm0_simplified.json';
 
-export default Vue.extend({
+export default {
   name: 'CountryMap',
   props: {
     countries: Array,
@@ -125,7 +123,7 @@ export default Vue.extend({
         );
     },
   },
-});
+};
 </script>
 
 <style lang="scss">

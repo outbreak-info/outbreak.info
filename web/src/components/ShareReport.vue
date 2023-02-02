@@ -59,9 +59,7 @@
 </template>
 
 <script>
-import Vue from 'vue';
-
-export default Vue.extend({
+export default {
   name: 'ShareReport',
   components: {},
   props: {
@@ -113,7 +111,7 @@ export default Vue.extend({
       }
     },
   },
-});
+};
 </script>
 
 <style lang="scss">

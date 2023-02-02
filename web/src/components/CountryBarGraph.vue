@@ -45,8 +45,6 @@
 </template>
 
 <script>
-import Vue from 'vue';
-
 import { axisRight } from 'd3-axis';
 import { max, extent } from 'd3-array';
 import { scaleLinear, scaleBand, scaleTime } from 'd3-scale';
@@ -55,7 +53,8 @@ import { area } from 'd3-shape';
 import { transition } from 'd3-transition';
 
 import { getCountryData } from '@/api/region-summary.js';
-import store from '@/stores';
+import { mapState } from 'pinia';
+import { colorsStore } from '@/stores/colorsStore';
 
 const width = 250;
 const sparkWidth = 75;
@@ -70,7 +69,7 @@ const margin = {
 };
 const transitionDuration = 3500;
 
-export default Vue.extend({
+export default {
   name: 'CountryBarGraph',
   components: {},
   props: {
@@ -105,8 +104,9 @@ export default Vue.extend({
     };
   },
   computed: {
+    ...mapState(colorsStore, ['getRegionColor', 'getRegionColorPalette']),
     lightColor() {
-      const scale = store.getters['colors/getRegionColor'];
+      const scale = this.getRegionColor;
       return scale(this.region, 0.85);
     },
   },
@@ -155,7 +155,7 @@ export default Vue.extend({
   },
   methods: {
     colorScale(idx) {
-      const scale = store.getters['colors/getRegionColorPalette'];
+      const scale = this.getRegionColorPalette;
       return scale(this.region, this.data.length, idx);
     },
     handleClick() {
@@ -433,7 +433,7 @@ export default Vue.extend({
         );
     },
   },
-});
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

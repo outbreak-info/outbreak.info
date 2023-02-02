@@ -21,7 +21,6 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import { max, extent } from 'd3-array';
 import { axisBottom, axisLeft } from 'd3-axis';
 import { select } from 'd3-selection';
@@ -29,7 +28,7 @@ import { scaleLinear, scaleTime } from 'd3-scale';
 import { line, area } from 'd3-shape';
 import { transition } from 'd3-transition';
 
-export default Vue.extend({
+export default {
   name: 'SequencingHistogram',
   props: {
     data: Array,
@@ -198,7 +197,7 @@ export default Vue.extend({
       );
     },
   },
-});
+};
 </script>
 
 <style lang="scss">

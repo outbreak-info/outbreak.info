@@ -5,8 +5,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "serve": "vite preview",
-    "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src"
+    "serve": "vite preview"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.2.0",
@@ -39,6 +38,7 @@
     "d3-transition": "^3.0.1",
     "datalib": "^1.9.3",
     "error-stack-parser": "2.1.4",
+    "eslint": "8.22.0",
     "lodash": "^4.17.21",
     "pinia": "^2.0.29",
     "pixi.js": "6.5.8",
@@ -55,7 +55,7 @@
     "@vitejs/plugin-vue": "^4.0.0",
     "@vue/eslint-config-prettier": "^7.0.0",
     "babel-loader": "^9.1.0",
-    "eslint": "^8.33.0",
+    "eslint": "^8.22.0",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-vue": "^8.7.1",
     "husky": "^8.0.1",
@@ -64,20 +64,12 @@
     "raw-loader": "^4.0.2",
     "sass": "^1.56.1",
     "vite": "^4.0.4",
-    "webpack-chain": "^6.5.1"
+    "vite-plugin-eslint": "^1.8.1"
   },
   "resolutions": {
     "error-stack-parser": "2.1.4",
     "@pixi/graphics-smooth": "0.0.30",
     "pixi.js": "7.0.3"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "**/*.{vue,js,jsx,ts,tsx}": "npm run prettier:write"
   },
   "browserslist": [
     "> 1%",

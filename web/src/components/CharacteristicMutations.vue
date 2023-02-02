@@ -156,13 +156,14 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState } from 'pinia';
 import { format } from 'd3-format';
 import { scaleOrdinal } from 'd3-scale';
 
 import { getBadMutations } from '@/api/genomics.js';
 import NT_MAP from '@/assets/genomics/sarscov2_NC045512_genes_nt.json';
 import { lazyLoad } from '@/js/lazy-load';
+import { genomicsStore } from '@/stores/genomicsStore';
 
 export default {
   name: 'CharacteristicMutations',
@@ -206,7 +207,7 @@ export default {
     };
   },
   computed: {
-    ...mapState('genomics', ['characteristicThreshold']),
+    ...mapState(genomicsStore, ['characteristicThreshold']),
     charMutThreshold() {
       return format('.0%')(this.characteristicThreshold);
     },

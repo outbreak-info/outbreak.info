@@ -138,7 +138,6 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import { extent, max } from 'd3-array';
 import { axisBottom, axisLeft } from 'd3-axis';
 import { format } from 'd3-format';
@@ -151,7 +150,7 @@ import cloneDeep from 'lodash/cloneDeep';
 import * as PIXI from 'pixi.js';
 import { SmoothGraphics } from '@pixi/graphics-smooth';
 
-export default Vue.extend({
+export default {
   name: 'Bargraph',
   props: {
     data: Array,
@@ -752,7 +751,7 @@ export default Vue.extend({
       this.drawBarchart();
     },
   },
-});
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

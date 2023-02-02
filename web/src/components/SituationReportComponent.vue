@@ -1057,7 +1057,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState } from 'pinia';
 import { max } from 'd3-array';
 import { nest } from 'd3-collection';
 import { scaleOrdinal, scaleThreshold } from 'd3-scale';
@@ -1075,6 +1075,7 @@ import {
   updateLocationData,
 } from '@/api/genomics.js';
 import { lazyLoad } from '@/js/lazy-load';
+import { adminStore } from '@/stores/adminStore';
 
 export default {
   name: 'SituationReportComponent',
@@ -1218,7 +1219,7 @@ export default {
     };
   },
   computed: {
-    ...mapState('admin', [
+    ...mapState(adminStore, [
       'mutationAuthors',
       'genomicsCitation',
       'reportloading',

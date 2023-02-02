@@ -5,13 +5,12 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import { max, extent } from 'd3-array';
 import { scaleLinear, scaleTime } from 'd3-scale';
 import { select } from 'd3-selection';
 import { area } from 'd3-shape';
 
-export default Vue.extend({
+export default {
   name: 'Sparkline',
   props: {
     data: Array,
@@ -104,7 +103,7 @@ export default Vue.extend({
         .attr('d', this.area);
     },
   },
-});
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

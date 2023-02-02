@@ -41,14 +41,14 @@
 </template>
 
 <script>
-import Vue from 'vue';
-import { mapState } from 'vuex';
+import { mapState } from 'pinia';
 import { timeFormat } from 'd3-time-format';
 
 import { getPng } from '@/js/get_svg.js';
 import { lazyLoad } from '@/js/lazy-load';
+import { adminStore } from '@/stores/adminStore';
 
-export default Vue.extend({
+export default {
   name: 'DataSource',
   components: {
     DownloadData: lazyLoad('DownloadData'),
@@ -72,7 +72,7 @@ export default Vue.extend({
     };
   },
   computed: {
-    ...mapState('admin', ['sources']),
+    ...mapState(adminStore, ['sources']),
     filteredSources() {
       if (this.ids && this.ids.length) {
         return this.sources.filter((d) => this.ids.includes(d.id));
@@ -128,7 +128,7 @@ export default Vue.extend({
         });
     },
   },
-});
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

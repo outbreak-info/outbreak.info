@@ -15,12 +15,11 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import { timeFormat } from 'd3-time-format';
 
 import { getPng } from '@/js/get_svg.js';
 
-export default Vue.extend({
+export default {
   name: 'DownloadReportData',
   components: {},
   props: {
@@ -109,5 +108,5 @@ export default Vue.extend({
         });
     },
   },
-});
+};
 </script>

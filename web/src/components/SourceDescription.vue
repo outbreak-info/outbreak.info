@@ -115,13 +115,11 @@
 </template>
 
 <script>
-import Vue from 'vue';
-
-export default Vue.extend({
+export default {
   name: 'SourceDescription',
   props: {
     sources: Array,
     metadata: Object,
   },
-});
+};
 </script>

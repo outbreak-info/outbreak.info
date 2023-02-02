@@ -18,7 +18,6 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import { max, extent, min, sum } from 'd3-array';
 import { axisLeft, axisBottom } from 'd3-axis';
 import { scaleLinear, scaleTime, scaleBand } from 'd3-scale';
@@ -27,7 +26,7 @@ import { line } from 'd3-shape';
 import { timeDay, timeWeek } from 'd3-time';
 import { timeFormat } from 'd3-time-format';
 
-export default Vue.extend({
+export default {
   name: 'ResourceTimeline',
   components: {},
   props: {
@@ -198,7 +197,7 @@ export default Vue.extend({
         .attr('d', this.area);
     },
   },
-});
+};
 </script>
 <style lang="scss">
 .timeline-group .text-accent {

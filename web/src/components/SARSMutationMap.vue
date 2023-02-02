@@ -44,7 +44,6 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import chroma from 'chroma-js';
 import { max } from 'd3-array';
 import { brushX } from 'd3-brush';
@@ -57,7 +56,7 @@ import uniqBy from 'lodash/uniqBy';
 
 import NT_MAP from '@/assets/genomics/sarscov2_NC045512_genes_nt.json';
 
-export default Vue.extend({
+export default {
   name: 'SARSMutationMap',
   props: {
     mutationKey: String,
@@ -898,7 +897,7 @@ export default Vue.extend({
       }
     },
   },
-});
+};
 </script>
 
 <style lang="scss">

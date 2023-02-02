@@ -43,13 +43,15 @@ const lookupLocation = () => {
 //   // }
 // }
 
-const processLocation = (apiUrl, location) => {
+export const processLocation = (apiUrl, location) => {
   const scalar = 0.05;
-  const url = `${apiUrl}query?q=mostRecent:true AND lat:[${(1 - scalar) *
-    location.coords.latitude} TO ${(1 + scalar) *
-    location.coords.latitude}] AND long:[${(1 + scalar) *
-    location.coords.longitude} TO ${(1 - scalar) *
-    location.coords.longitude}] &fields=location_id,lat,long&size=25`;
+  const url = `${apiUrl}query?q=mostRecent:true AND lat:[${
+    (1 - scalar) * location.coords.latitude
+  } TO ${(1 + scalar) * location.coords.latitude}] AND long:[${
+    (1 + scalar) * location.coords.longitude
+  } TO ${
+    (1 - scalar) * location.coords.longitude
+  }] &fields=location_id,lat,long&size=25`;
   return from(axios.get(url)).pipe(
     pluck('data', 'hits'),
     map((results) => {

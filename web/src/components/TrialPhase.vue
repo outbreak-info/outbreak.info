@@ -5,11 +5,11 @@
       <g>
         <polygon
           class="polygon-phase"
-          :points="
-            `0,0 ${phaseWidth - 2 * triangleWidth},0 ${phaseWidth -
-              triangleWidth},${height / 2} ${phaseWidth -
-              2 * triangleWidth},${height} 0,${height}`
-          "
+          :points="`0,0 ${phaseWidth - 2 * triangleWidth},0 ${
+            phaseWidth - triangleWidth
+          },${height / 2} ${
+            phaseWidth - 2 * triangleWidth
+          },${height} 0,${height}`"
         />
         <text
           class="text-phase"
@@ -23,19 +23,17 @@
         v-for="(phase, idx) in allPhases"
         :key="idx"
         :class="{ 'current-phase': phases.includes(phase) }"
-        :transform="
-          `translate(${(phaseWidth - triangleWidth + spacer) * (idx + 1) -
-            triangleWidth},0)`
-        "
+        :transform="`translate(${
+          (phaseWidth - triangleWidth + spacer) * (idx + 1) - triangleWidth
+        },0)`"
       >
         <polygon
           class="polygon-phase"
-          :points="
-            `0,0 ${phaseWidth - triangleWidth},0 ${phaseWidth},${height /
-              2} ${phaseWidth -
-              triangleWidth},${height} 0,${height} ${triangleWidth},${height /
-              2}`
-          "
+          :points="`0,0 ${phaseWidth - triangleWidth},0 ${phaseWidth},${
+            height / 2
+          } ${
+            phaseWidth - triangleWidth
+          },${height} 0,${height} ${triangleWidth},${height / 2}`"
         />
         <text class="text-phase" :x="phaseWidth / 2" :y="height / 2">
           {{ phase }}
@@ -46,9 +44,7 @@
 </template>
 
 <script>
-import Vue from 'vue';
-
-export default Vue.extend({
+export default {
   name: 'TrialPhase',
   props: {
     phases: Array,
@@ -73,7 +69,7 @@ export default Vue.extend({
   },
   watch: {},
   methods: {},
-});
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

@@ -105,12 +105,11 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import { timeFormat, timeParse } from 'd3-time-format';
 
 import { lazyLoad } from '@/js/lazy-load';
 
-export default Vue.extend({
+export default {
   name: 'Citation',
   components: {
     StripeAccent: lazyLoad('StripeAccent'),
@@ -129,5 +128,5 @@ export default Vue.extend({
       return null;
     },
   },
-});
+};
 </script>

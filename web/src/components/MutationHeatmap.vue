@@ -92,7 +92,6 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import { axisBottom, axisTop } from 'd3-axis';
 import { nest } from 'd3-collection';
 import { format } from 'd3-format';
@@ -103,7 +102,7 @@ import cloneDeep from 'lodash/cloneDeep';
 import tippy from 'tippy.js';
 import 'tippy.js/themes/light.css';
 
-export default Vue.extend({
+export default {
   name: 'MutationHeatmap',
   props: {
     data: Array,
@@ -882,7 +881,7 @@ export default Vue.extend({
         .on('mouseout', this.highlightOff);
     },
   },
-});
+};
 </script>
 
 <style lang="scss">

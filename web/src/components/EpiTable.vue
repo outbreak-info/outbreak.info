@@ -248,9 +248,7 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import { timeFormat } from 'd3-time-format';
-import tippy from 'tippy.js';
 
 import {
   epiTableState$,
@@ -263,7 +261,7 @@ import 'tippy.js/themes/light.css';
 
 const formatDate = timeFormat('%a %d %b %Y');
 
-export default Vue.extend({
+export default {
   name: 'EpiTable',
   components: {
     Sparkline: lazyLoad('Sparkline'),
@@ -532,7 +530,7 @@ export default Vue.extend({
       }
     },
   },
-});
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

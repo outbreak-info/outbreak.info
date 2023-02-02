@@ -6,11 +6,12 @@ import { nest } from 'd3-collection';
 import { timeParse } from 'd3-time-format';
 
 import { getAll } from '@/api/biothings.js';
+import { adminStore } from '@/stores/adminStore';
 
-import store from '@/stores';
+const store = adminStore();
 
 export const getStackedRegions = (apiUrl) => {
-  store.state.admin.loading = true;
+  store.$patch({ loading: true });
   const parseDate = timeParse('%Y-%m-%d');
 
   return from(
@@ -78,12 +79,12 @@ export const getStackedRegions = (apiUrl) => {
       console.log(e);
       return from([]);
     }),
-    finalize(() => (store.state.admin.loading = false)),
+    finalize(() => store.$patch({ loading: false })),
   );
 };
 
 export const getCountryData = (apiUrl, region, variable) => {
-  store.state.admin.loading = true;
+  store.$patch({ loading: true });
   const parseDate = timeParse('%Y-%m-%d');
 
   return forkJoin([
@@ -136,6 +137,6 @@ export const getCountryData = (apiUrl, region, variable) => {
       console.log(e);
       return from([]);
     }),
-    finalize(() => (store.state.admin.loading = false)),
+    finalize(() => store.$patch({ loading: false })),
   );
 };

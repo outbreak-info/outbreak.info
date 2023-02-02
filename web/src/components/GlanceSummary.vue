@@ -275,12 +275,11 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import { format } from 'd3-format';
 
 import { lazyLoad } from '@/js/lazy-load';
 
-export default Vue.extend({
+export default {
   name: 'GlanceSummary',
   components: {
     Sparkline: lazyLoad('Sparkline'),
@@ -350,7 +349,7 @@ export default Vue.extend({
       this.$emit('removed', this.idx);
     },
   },
-});
+};
 </script>
 
 <style lang="scss" scoped>

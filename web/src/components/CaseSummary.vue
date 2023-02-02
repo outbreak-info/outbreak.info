@@ -103,8 +103,6 @@
 </template>
 
 <script>
-import Vue from 'vue';
-import { mapState } from 'vuex';
 import tippy from 'tippy.js';
 
 import { getSummary } from '@/api/epi-basics.js';
@@ -114,7 +112,7 @@ import { lazyLoad } from '@/js/lazy-load';
 
 import 'tippy.js/themes/light.css';
 
-export default Vue.extend({
+export default {
   name: 'CaseSummary',
   components: {
     GlanceSummary: lazyLoad('GlanceSummary'),
@@ -133,7 +131,6 @@ export default Vue.extend({
     };
   },
   computed: {
-    ...mapState('epidata', ['mostCases']),
     mostCasesNames() {
       return this.mostCases.map((d) => d.location_id).join(';');
     },

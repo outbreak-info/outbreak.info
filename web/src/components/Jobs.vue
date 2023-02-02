@@ -11,7 +11,7 @@
           <span class="vc_sep_line"></span>
         </span>
       </div>
-      <div class="wpb_text_column wpb_content_element ">
+      <div class="wpb_text_column wpb_content_element">
         <div class="wpb_wrapper">
           <p
             v-for="(paragraph, pIdx) in job.content"
@@ -45,9 +45,7 @@
 </template>
 
 <script>
-import Vue from 'vue';
-
-export default Vue.extend({
+export default {
   name: 'About',
   data() {
     return {
@@ -86,5 +84,5 @@ export default Vue.extend({
       ],
     };
   },
-});
+};
 </script>

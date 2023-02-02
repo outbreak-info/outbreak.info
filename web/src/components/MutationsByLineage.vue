@@ -91,8 +91,7 @@
 </template>
 
 <script>
-import Vue from 'vue';
-import { mapState } from 'vuex';
+import { mapState } from 'pinia';
 import { max, min } from 'd3-array';
 import { axisBottom, axisLeft } from 'd3-axis';
 import { format } from 'd3-format';
@@ -101,8 +100,9 @@ import { selectAll, select, event } from 'd3-selection';
 import cloneDeep from 'lodash/cloneDeep';
 
 import { lazyLoad } from '@/js/lazy-load';
+import { genomicsStore } from '@/stores/genomicsStore';
 
-export default Vue.extend({
+export default {
   name: 'MutationsByLineage',
   components: {
     DownloadReportData: lazyLoad('DownloadReportData'),
@@ -143,7 +143,6 @@ export default Vue.extend({
       numXTicks: 4,
       bandwidth: 25,
       height: null,
-
       // refs
       svg: null,
       // axes
@@ -156,7 +155,7 @@ export default Vue.extend({
     };
   },
   computed: {
-    ...mapState('genomics', ['characteristicThreshold']),
+    ...mapState(genomicsStore, ['characteristicThreshold']),
   },
   watch: {
     data() {
@@ -469,7 +468,7 @@ export default Vue.extend({
       return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     },
   },
-});
+};
 </script>
 
 <style lang="scss">

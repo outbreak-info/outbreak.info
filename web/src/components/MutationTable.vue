@@ -6,12 +6,8 @@
     <table>
       <thead>
         <tr class="border-bottom">
-          <th>
-            gene
-          </th>
-          <th>
-            amino acid
-          </th>
+          <th>gene</th>
+          <th>amino acid</th>
         </tr>
       </thead>
       <tbody class="checkbook border-bottom">
@@ -35,12 +31,11 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import cloneDeep from 'lodash/cloneDeep';
 
 import NT_MAP from '@/assets/genomics/sarscov2_NC045512_genes_nt.json';
 
-export default Vue.extend({
+export default {
   name: 'MutationTable',
   props: {
     mutations: Array,
@@ -62,7 +57,7 @@ export default Vue.extend({
       return sortedMutations;
     },
   },
-});
+};
 </script>
 
 <style lang="scss" scoped>

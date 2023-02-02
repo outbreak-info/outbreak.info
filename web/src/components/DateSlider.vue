@@ -80,7 +80,6 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import { axisBottom } from 'd3-axis';
 import { drag } from 'd3-drag';
 import { timeParse, timeFormat } from 'd3-time-format';
@@ -88,7 +87,7 @@ import { select, event } from 'd3-selection';
 import { timeDay } from 'd3-time';
 import { scaleTime } from 'd3-scale';
 
-export default Vue.extend({
+export default {
   name: 'DateSlider',
   components: {},
   props: {
@@ -261,7 +260,7 @@ export default Vue.extend({
       this.xDate = this.x(this.selectedDate);
     },
   },
-});
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

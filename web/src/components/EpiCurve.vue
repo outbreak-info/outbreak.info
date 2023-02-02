@@ -120,7 +120,6 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import { max, extent, bisector } from 'd3-array';
 import { axisBottom, axisLeft } from 'd3-axis';
 import { brushX } from 'd3-brush';
@@ -132,8 +131,8 @@ import { line } from 'd3-shape';
 import { timeParse, timeFormat } from 'd3-time-format';
 import { transition } from 'd3-transition';
 import cloneDeep from 'lodash/cloneDeep';
-
-import store from '@/stores';
+import { mapState } from 'pinia';
+import { colorsStore } from '@/stores/colorsStore';
 
 const width = 500;
 const height = 300;
@@ -146,7 +145,7 @@ const margin = {
 };
 const transitionDuration = 1500;
 
-export default Vue.extend({
+export default {
   name: 'EpiCurve',
   components: {},
   props: {
@@ -194,6 +193,7 @@ export default Vue.extend({
     };
   },
   computed: {
+    ...mapState(colorsStore, ['getColor']),
     dataUpdated() {
       // Combo property to check if the data has changed, or the normalization has.
       // TODO: in Vue 3, this can be streamlined as a dual watcher
@@ -292,11 +292,11 @@ export default Vue.extend({
       this.numYTicks = this.height < 250 ? 2 : 6;
     },
     colorScale(location) {
-      const scale = store.getters['colors/getColor'];
+      const scale = this.getColor;
       return scale(location);
     },
     lightColorScale(location) {
-      const scale = store.getters['colors/getColor'];
+      const scale = this.getColor;
       return scale(location, 0.7);
     },
 
@@ -848,7 +848,7 @@ export default Vue.extend({
       }
     },
   },
-});
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

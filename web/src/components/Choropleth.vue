@@ -188,7 +188,8 @@ import cloneDeep from 'lodash/cloneDeep';
 
 import { getSparklineTraces } from '@/api/epi-traces.js';
 import { lazyLoad } from '@/js/lazy-load';
-import store from '@/stores';
+import { adminStore } from '@/stores/adminStore';
+import { mapStores } from 'pinia';
 
 export default {
   name: 'Choropleth',
@@ -243,6 +244,7 @@ export default {
     };
   },
   computed: {
+    ...mapStores(adminStore),
     maxVal() {
       return this.filteredData
         ? max(this.filteredData, (d) => d[this.variable])
@@ -511,9 +513,9 @@ export default {
           .on('mouseenter', (d) => this.debounceMouseon(d))
           .on('mouseleave', this.mouseOff);
 
-        store.state.admin.dataloading = false;
+        this.adminStore.$patch({ dataloading: false });
       } else {
-        store.state.admin.dataloading = false;
+        this.adminStore.$patch({ dataloading: false });
       }
     },
     handleClick(d) {

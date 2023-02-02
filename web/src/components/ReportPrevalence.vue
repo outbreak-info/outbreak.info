@@ -233,7 +233,6 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import { min, max, extent } from 'd3-array';
 import { axisLeft, axisBottom } from 'd3-axis';
 import { brushX } from 'd3-brush';
@@ -248,7 +247,7 @@ import cloneDeep from 'lodash/cloneDeep';
 
 import { lazyLoad } from '@/js/lazy-load';
 
-export default Vue.extend({
+export default {
   name: 'ReportPrevalence',
   components: {
     SequencingHistogram: lazyLoad('SequencingHistogram'),
@@ -862,7 +861,7 @@ export default Vue.extend({
       };
     },
   },
-});
+};
 </script>
 
 <style lang="scss">

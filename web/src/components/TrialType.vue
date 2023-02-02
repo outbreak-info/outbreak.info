@@ -62,9 +62,7 @@
 </template>
 
 <script>
-import Vue from 'vue';
-
-export default Vue.extend({
+export default {
   name: 'TrialType',
   components: {},
   props: {
@@ -87,7 +85,7 @@ export default Vue.extend({
   },
   watch: {},
   methods: {},
-});
+};
 </script>
 
 <style lang="scss" scoped>

@@ -222,7 +222,6 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import { max } from 'd3-array';
 import { axisTop, axisBottom, axisLeft } from 'd3-axis';
 import { format } from 'd3-format';
@@ -233,7 +232,7 @@ import cloneDeep from 'lodash/cloneDeep';
 
 import { lazyLoad } from '@/js/lazy-load';
 
-export default Vue.extend({
+export default {
   name: 'ReportPrevalenceByLocation',
   components: {
     ClassedLegend: lazyLoad('ClassedLegend'),
@@ -827,7 +826,7 @@ export default Vue.extend({
       };
     },
   },
-});
+};
 </script>
 
 <style lang="scss">

@@ -103,7 +103,6 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import { max, extent } from 'd3-array';
 import { axisLeft, axisBottom, axisRight } from 'd3-axis';
 import { format } from 'd3-format';
@@ -111,7 +110,7 @@ import { scaleLinear, scaleTime } from 'd3-scale';
 import { select, selectAll, event } from 'd3-selection';
 import { timeDay } from 'd3-time';
 
-export default Vue.extend({
+export default {
   name: 'SequencingHistogram',
   props: {
     data: Array,
@@ -396,7 +395,7 @@ export default Vue.extend({
       }
     },
   },
-});
+};
 </script>
 
 <style>

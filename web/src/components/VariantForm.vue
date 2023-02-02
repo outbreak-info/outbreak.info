@@ -206,13 +206,12 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import debounce from 'lodash/debounce';
 
 import { findPangolin } from '@/api/genomics.js';
 import { lazyLoad } from '@/js/lazy-load';
 
-export default Vue.extend({
+export default {
   name: 'CustomReportForm',
   components: {
     TypeaheadSelect: lazyLoad('TypeaheadSelect'),
@@ -386,7 +385,7 @@ export default Vue.extend({
       this.$emit('update:selectedMutations', []);
     },
   },
-});
+};
 </script>
 
 <style lang="scss">
