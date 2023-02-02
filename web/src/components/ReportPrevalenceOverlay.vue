@@ -1335,37 +1335,14 @@ export default Vue.extend({
     }
   }
 
-  // & .mutation-axis.axis--x text {
-  //   font-size: 16px;
-  // }
-
   & .mutation-axis.axis--y text {
     font-size: 16px;
-    // font-size: 16pt;
-    // @media (max-width: 812px) {
-    //   font-size: 12pt;
-    // }
-    // @media (min-width: 812px) {
-    //   font-size: 12pt;
-    // }
-    // @media (min-width: 900px) {
-    //   font-size: 14pt;
-    // }
-    // @media (min-width: 1000px) {
-    //   font-size: 14pt;
-    // }
-    // @media (min-width: 1200px) {
-    //   font-size: 16pt;
-    // }
-    // @media (min-width: 1310px) {
-    //   font-size: 16pt;
-    // }
-  }
-  & .epi-y.axis--y text {
-    // font-size: 14pt;
-    font-size: 16px;
   }
 
+  & .epi-y.axis--y text {
+    font-size: 16px;
+  }
+  
   & .epi-x {
     font-size: 16px;
     @media (max-width: 812px) {
@@ -1390,25 +1367,6 @@ export default Vue.extend({
 
   & .axis--y text {
     font-size: 12px;
-    // font-size: 12pt;
-    // @media (max-width: 812px) {
-    //   font-size: 12pt;
-    // }
-    // @media (min-width: 812px) {
-    //   font-size: 12pt;
-    // }
-    // @media (min-width: 900px) {
-    //   font-size: 14pt;
-    // }
-    // @media (min-width: 1000px) {
-    //   font-size: 14pt;
-    // }
-    // @media (min-width: 1200px) {
-    //   font-size: 14pt;
-    // }
-    // @media (min-width: 1310px) {
-    //   font-size: 16pt;
-    // }
   }
 
   & .axis--x line {
