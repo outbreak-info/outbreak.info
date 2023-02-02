@@ -3,9 +3,22 @@
     id="location-report-prevalence"
     class="d-flex flex-column align-items-center w-100"
   >
-    <!-- zoom btns -->
+    
+
+    <div class="d-flex flex-column">
+      <!-- SVGs -->
+      <div class="d-flex flex-column align-items-start">
+        <!-- TIME TRACE -->
+        <div class="d-flex w-100 justify-content-between mt-3 mb-2">
+          <h5 class="p-0 m-0">
+            {{ title }}
+          </h5>
+          
+        </div>
+
+        <!-- zoom btns -->
     <div
-      class="d-flex justify-content-end px-3"
+      class="d-flex justify-content-start ml-0 mt-2 mb-2"
       :style="{ width: width + 'px' }"
     >
       <button
@@ -38,29 +51,7 @@
       </button>
     </div>
 
-    <div class="d-flex flex-column">
-      <!-- SVGs -->
-      <div class="d-flex flex-column align-items-start">
-        <!-- TIME TRACE -->
-        <div class="d-flex w-100 justify-content-between">
-          <h5 class="p-0 m-0">
-            {{ title }}
-          </h5>
-          <div>
-            <label class="b-contain m-auto pr-3">
-              <small>show confidence intervals</small>
-              <input
-                v-model="showCI"
-                type="checkbox"
-                :value="showCI"
-                @change="hideCIs"
-              />
-              <div class="b-input" />
-            </label>
-          </div>
-        </div>
-
-        <div class="d-flex">
+        <div class="d-flex mt-2">
           <svg width="15" height="15" class="mr-2">
             <line x1="0" x2="15" y1="8" y2="8" class="trace-legend" />
           </svg>
@@ -70,7 +61,7 @@
         </div>
 
         <!-- legend: confidence interval -->
-        <div class="d-flex">
+        <div class="d-flex mb-2">
           <div class="ci-legend mr-2" :style="{ background: '#999' }" />
           <small class="text-muted">95% confidence interval</small>
           <svg width="15" height="15" class="ml-4 mr-2">
@@ -85,6 +76,19 @@
           <small class="text-muted">missing recent data</small>
         </div>
 
+        <div class="d-flex mb-4">
+          <label class="b-contain m-auto pr-3">
+            <small>show confidence intervals</small>
+              <input
+                v-model="showCI"
+                type="checkbox"
+                :value="showCI"
+                @change="hideCIs"
+              />
+            <div class="b-input" />
+          </label>
+        </div>
+        
         <svg
           ref="svg"
           :width="width"
@@ -168,11 +172,11 @@
             id="weird-last values"
             :hidden="data && data.length < lengthThreshold"
           >
-            <text
+          <text
               :x="width - margin.right"
-              :y="0"
+              :y="-1"
               fill="#929292"
-              font-size="14px"
+              font-size="13px"
               dominant-baseline="hanging"
               text-anchor="end"
               :style="`font-family: ${fontFamily};`"
@@ -180,6 +184,7 @@
               Latest dates are noisy due to fewer samples, or missing from
               sequencing delays
             </text>
+            
             <path
               stroke="#BBBBBB"
               fill="none"
@@ -204,14 +209,27 @@
           className="mutation-epi-prevalence"
         />
 
-        <!-- zoom btns -->
+        
+
+        <!-- EPI TRACE -->
+        <div class="mt-5" :class="{ hidden: !epi.length }" >
+          <h5 class="">
+            Daily COVID-19 cases in
+            <router-link
+              :to="{ name: 'Epidemiology', query: { location: locationID } }"
+            >
+              {{ locationName }}
+            </router-link>
+          </h5>
+
+          <!-- zoom btns -->
         <div
-          class="d-flex justify-content-end px-3"
+          class="d-flex justify-content-start mt-3 mb-3"
           :style="{ width: width + 'px' }"
           :class="{ hidden: !epi.length }"
         >
           <button
-            class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2"
+            class="btn btn-accent-flat text-highlight d-flex align-items-start m-0 p-2"
             @click="enableZoom"
           >
             <font-awesome-icon
@@ -243,17 +261,7 @@
           </button>
         </div>
 
-        <!-- EPI TRACE -->
-        <div :class="{ hidden: !epi.length }">
-          <h5 class="">
-            Daily COVID-19 cases in
-            <router-link
-              :to="{ name: 'Epidemiology', query: { location: locationID } }"
-            >
-              {{ locationName }}
-            </router-link>
-          </h5>
-          <div class="d-flex">
+          <div class="d-flex mt-3 mb-4">
             <svg width="15" height="15" class="mr-2">
               <line x1="0" x2="15" y1="8" y2="8" class="trace-legend" />
             </svg>
@@ -347,7 +355,7 @@ import { forceY, forceCollide, forceSimulation } from 'd3-force';
 import { scaleLinear, scaleTime, scaleOrdinal } from 'd3-scale';
 import { select, selectAll, event } from 'd3-selection';
 import { area, line } from 'd3-shape';
-import { timeMonth } from 'd3-time';
+import { timeSecond, timeMinute, timeHour, timeDay, timeWeek, timeMonth, timeYear } from 'd3-time';
 import { timeParse, timeFormat } from 'd3-time-format';
 import { transition } from 'd3-transition';
 import cloneDeep from 'lodash/cloneDeep';
@@ -902,7 +910,16 @@ export default Vue.extend({
       this.xAxis = axisBottom(this.x)
         .ticks(this.numXTicks)
         .tickSize(-this.height)
-        .tickSizeOuter(0);
+        .tickSizeOuter(0)
+        .tickFormat(function(date){
+          return (timeSecond(date) < date ? timeFormat('.%L')
+            : timeMinute(date) < date ? timeFormat(':%S')
+            : timeHour(date) < date ? timeFormat('%I:%M')
+            : timeDay(date) < date ? timeFormat('%I %p')
+            : timeMonth(date) < date ? timeWeek(date) < date ? timeFormat('%a %d') : timeFormat('%b %d')
+            : timeYear(date) < date ? timeFormat('%b')
+            : timeFormat('%Y'))(date)
+        });     
 
       select(this.$refs.xAxis).call(this.xAxis);
       select(this.$refs.xEpiAxis).call(this.xAxis);
@@ -1154,7 +1171,7 @@ export default Vue.extend({
               .attr('x', this.width - this.margin.left - this.margin.right)
               .attr('dx', 5)
               .attr('y', (d) => d.y)
-              .style('font-size', 22)
+              .style('font-size', '16px')
               .style(
                 'font-family',
                 "'DM Sans', Avenir, Helvetica, Arial, sans-serif",
@@ -1293,24 +1310,24 @@ export default Vue.extend({
 #location-report-prevalence {
   & .count-axis,
   & .mutation-axis {
-    font-size: 16pt;
+    font-size: 16px;
     @media (max-width: 812px) {
-      font-size: 12pt;
+      font-size: 12px;
     }
     @media (min-width: 812px) {
-      font-size: 12pt;
+      font-size: 12px;
     }
     @media (min-width: 900px) {
-      font-size: 14pt;
+      font-size: 14px;
     }
     @media (min-width: 1000px) {
-      font-size: 14pt;
+      font-size: 14px;
     }
     @media (min-width: 1200px) {
-      font-size: 16pt;
+      font-size: 16px;
     }
     @media (min-width: 1310px) {
-      font-size: 16pt;
+      font-size: 16px;
     }
 
     text {
@@ -1319,72 +1336,37 @@ export default Vue.extend({
   }
 
   & .mutation-axis.axis--y text {
-    font-size: 16pt;
-    @media (max-width: 812px) {
-      font-size: 12pt;
-    }
-    @media (min-width: 812px) {
-      font-size: 12pt;
-    }
-    @media (min-width: 900px) {
-      font-size: 14pt;
-    }
-    @media (min-width: 1000px) {
-      font-size: 14pt;
-    }
-    @media (min-width: 1200px) {
-      font-size: 16pt;
-    }
-    @media (min-width: 1310px) {
-      font-size: 16pt;
-    }
-  }
-  & .epi-y {
-    font-size: 14pt;
+    font-size: 16px;
   }
 
+  & .epi-y.axis--y text {
+    font-size: 16px;
+  }
+  
   & .epi-x {
-    font-size: 16pt;
+    font-size: 16px;
     @media (max-width: 812px) {
-      font-size: 12pt;
+      font-size: 12px;
     }
     @media (min-width: 812px) {
-      font-size: 12pt;
+      font-size: 12px;
     }
     @media (min-width: 900px) {
-      font-size: 14pt;
+      font-size: 14px;
     }
     @media (min-width: 1000px) {
-      font-size: 14pt;
+      font-size: 14px;
     }
     @media (min-width: 1200px) {
-      font-size: 16pt;
+      font-size: 16px;
     }
     @media (min-width: 1310px) {
-      font-size: 16pt;
+      font-size: 16px;
     }
   }
 
   & .axis--y text {
-    font-size: 12pt;
-    @media (max-width: 812px) {
-      font-size: 12pt;
-    }
-    @media (min-width: 812px) {
-      font-size: 12pt;
-    }
-    @media (min-width: 900px) {
-      font-size: 14pt;
-    }
-    @media (min-width: 1000px) {
-      font-size: 14pt;
-    }
-    @media (min-width: 1200px) {
-      font-size: 14pt;
-    }
-    @media (min-width: 1310px) {
-      font-size: 16pt;
-    }
+    font-size: 12px;
   }
 
   & .axis--x line {

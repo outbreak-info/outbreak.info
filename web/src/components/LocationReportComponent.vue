@@ -882,7 +882,7 @@
           class="my-5 py-3 border-top"
         >
           <div
-            class="d-flex flex-wrap align-items-center justify-content-center"
+            class="d-flex flex-wrap align-items-center justify-content-center mb-3"
           >
             <h3 class="mr-5">
               Tracked lineages
