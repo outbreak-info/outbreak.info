@@ -76,7 +76,6 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 import App from './App.vue';
 import router from './router';
-import store from './stores';
 
 import 'tippy.js/dist/tippy.css';
 
@@ -150,9 +149,9 @@ const app = createApp({
 })
   .use(router)
   .use(pinia)
-  .use(VueRx)
   .use(VueCookies)
   .use(VueMeta)
+  .use(VueRx)
   .use(
     VueGtag,
     {

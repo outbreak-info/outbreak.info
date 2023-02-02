@@ -5,7 +5,6 @@ import { adminStore } from '@/stores/adminStore';
 const router = createRouter({
   history: createWebHistory(),
   routes,
-  base: process.env.BASE_URL,
   linkExactActiveClass: 'active',
   scrollBehavior(to, from, savedPosition) {
     if (to.hash) {
