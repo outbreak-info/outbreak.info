@@ -3,9 +3,22 @@
     id="location-report-prevalence"
     class="d-flex flex-column align-items-center w-100"
   >
-    <!-- zoom btns -->
+    
+
+    <div class="d-flex flex-column">
+      <!-- SVGs -->
+      <div class="d-flex flex-column align-items-start">
+        <!-- TIME TRACE -->
+        <div class="d-flex w-100 justify-content-between mt-3 mb-2">
+          <h5 class="p-0 m-0">
+            {{ title }}
+          </h5>
+          
+        </div>
+
+        <!-- zoom btns -->
     <div
-      class="d-flex justify-content-end px-3 mt-3 mb-3"
+      class="d-flex justify-content-start ml-0 mt-2 mb-2"
       :style="{ width: width + 'px' }"
     >
       <button
@@ -37,17 +50,6 @@
         />
       </button>
     </div>
-
-    <div class="d-flex flex-column">
-      <!-- SVGs -->
-      <div class="d-flex flex-column align-items-start">
-        <!-- TIME TRACE -->
-        <div class="d-flex w-100 justify-content-between mb-2">
-          <h5 class="p-0 m-0">
-            {{ title }}
-          </h5>
-          
-        </div>
 
         <div class="d-flex mt-2">
           <svg width="15" height="15" class="mr-2">
@@ -207,14 +209,27 @@
           className="mutation-epi-prevalence"
         />
 
-        <!-- zoom btns -->
+        
+
+        <!-- EPI TRACE -->
+        <div class="mt-5" :class="{ hidden: !epi.length }" >
+          <h5 class="">
+            Daily COVID-19 cases in
+            <router-link
+              :to="{ name: 'Epidemiology', query: { location: locationID } }"
+            >
+              {{ locationName }}
+            </router-link>
+          </h5>
+
+          <!-- zoom btns -->
         <div
-          class="d-flex justify-content-end px-3 mt-4 mb-3"
+          class="d-flex justify-content-start mt-3 mb-3"
           :style="{ width: width + 'px' }"
           :class="{ hidden: !epi.length }"
         >
           <button
-            class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2"
+            class="btn btn-accent-flat text-highlight d-flex align-items-start m-0 p-2"
             @click="enableZoom"
           >
             <font-awesome-icon
@@ -246,16 +261,6 @@
           </button>
         </div>
 
-        <!-- EPI TRACE -->
-        <div :class="{ hidden: !epi.length }" >
-          <h5 class="">
-            Daily COVID-19 cases in
-            <router-link
-              :to="{ name: 'Epidemiology', query: { location: locationID } }"
-            >
-              {{ locationName }}
-            </router-link>
-          </h5>
           <div class="d-flex mt-3 mb-4">
             <svg width="15" height="15" class="mr-2">
               <line x1="0" x2="15" y1="8" y2="8" class="trace-legend" />

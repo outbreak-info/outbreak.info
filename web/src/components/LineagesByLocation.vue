@@ -13,7 +13,7 @@
       <h5 class="m-0">
         {{ plotTitle }}
       </h5>
-      <div class="d-flex justify-content-end align-items-center mt-3 mb-3">
+      <div class="d-flex justify-content-start align-items-start mt-3 mb-3">
         <button
           class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2 mr-2"
           @click="enableZoom"
