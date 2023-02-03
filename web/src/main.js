@@ -1,6 +1,5 @@
 import { createApp, h } from 'vue';
 import VueGtag from 'vue-gtag';
-import VueRx from 'vue-rx';
 import VueCookies from 'vue-cookies';
 import VueMeta from 'vue-meta';
 import { library } from '@fortawesome/fontawesome-svg-core';
@@ -150,8 +149,6 @@ const app = createApp({
   .use(router)
   .use(pinia)
   .use(VueCookies)
-  .use(VueMeta)
-  .use(VueRx)
   .use(
     VueGtag,
     {

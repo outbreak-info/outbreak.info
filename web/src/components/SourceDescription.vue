@@ -68,7 +68,7 @@
           <img
             v-if="source.img_lg"
             class="ml-3"
-            :src="require(`@/assets/resources/${source.img_lg}`)"
+            :src="`src/assets/resources/${source.img_lg}`"
             :alt="source.name"
             width="auto"
             height="32"
@@ -76,7 +76,7 @@
           <img
             v-else-if="source.img"
             class="ml-3"
-            :src="require(`@/assets/resources/${source.img}`)"
+            :src="`src/assets/resources/${source.img}`"
             :alt="source.name"
             width="auto"
             height="32"

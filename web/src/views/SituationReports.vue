@@ -369,10 +369,9 @@
 
                 <!-- table body -->
                 <tbody>
-                  <template v-for="(report, rIdx) in group.values">
+                  <template v-for="(report, rIdx) in group.values" :key="rIdx">
                     <tr
                       :id="report.identifier"
-                      :key="rIdx"
                       class="border-bottom"
                       :class="{ checkbook: (rIdx % 2) - 1 }"
                     >

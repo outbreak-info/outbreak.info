@@ -1,3 +1,5 @@
+import { defineAsyncComponent } from 'vue';
+
 export const lazyLoad = (view) => {
-  return () => import(`@/components/${view}.vue`);
+  return defineAsyncComponent(() => import(`@/components/${view}.vue`));
 };

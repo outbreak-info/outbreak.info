@@ -30,7 +30,7 @@
         >
           <div class="d-flex align-items-center">
             <img
-              :src="require(`@/assets/press/${article.img}`)"
+              :src="`src/assets/press/${article.img}`"
               class="article-logo mr-3"
             />
             <div class="d-flex flex-column">
@@ -66,7 +66,7 @@ export default {
 
     // create an array of yearOptions from 2021 till now.
     const numYears = this.year - 2021 + 1;
-    this.yearOptions = Array.from({length: numYears},(v,k) => k + 2021);
+    this.yearOptions = Array.from({ length: numYears }, (v, k) => k + 2021);
 
     this.updatePress();
   },

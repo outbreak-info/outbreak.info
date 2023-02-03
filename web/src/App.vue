@@ -326,7 +326,7 @@
       id="notices"
       class="bg-highlight py-2 px-3 text-light text-center fa-sm"
     >
-    <!-- <div class="border-bottom pb-2 mb-2">
+      <!-- <div class="border-bottom pb-2 mb-2">
       outbreak.info will be undergoing maintenance on <b>12 January 2023</b>. Data may be inaccessible during this time.
     </div> -->
       <b class="mr-1">
@@ -359,9 +359,13 @@
       </a>
     </section>
 
-    <transition name="fade">
-      <router-view class="main" />
-    </transition>
+    <router-view class="main" v-slot="{ Component }">
+      <transition name="fade">
+        <keep-alive>
+          <component :is="Component" />
+        </keep-alive>
+      </transition>
+    </router-view>
 
     <!-- FOOTER -->
     <footer v-if="!$route.meta.hideNavigation" id="outbreak-footer">

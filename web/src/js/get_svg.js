@@ -6,7 +6,7 @@ const prefix = {
 
 const canvas = document.createElement('canvas'),
   context = canvas.getContext('2d'),
-  ratio = global.devicePixelRatio || 1;
+  ratio = 1;
 
 import { max } from 'd3-array';
 import { nest } from 'd3-collection';

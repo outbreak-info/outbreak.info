@@ -148,7 +148,7 @@
               class="team-member d-flex flex-column align-items-center mx-5 my-3"
             >
               <img
-                :src="require(`@/assets/team/${person.img}`)"
+                :src="`src/assets/team/${person.img}`"
                 class="profile-pic text-"
               />
               <span class="mt-1">{{ person.name }}</span>

@@ -5,6 +5,7 @@ import { adminStore } from '@/stores/adminStore';
 const router = createRouter({
   history: createWebHistory(),
   routes,
+  base: import.meta.env.BASE_URL,
   linkExactActiveClass: 'active',
   scrollBehavior(to, from, savedPosition) {
     if (to.hash) {
@@ -30,20 +31,6 @@ router.beforeEach((to, from, next) => {
 router.afterEach((to, from) => {
   const store = adminStore();
   store.setLoading(false);
-});
-
-router.onError((error) => {
-  const pattern = /Loading chunk (\d) failed/g;
-  const isChunkLoadFailed = error.message.match(pattern);
-  const targetPath = router.history.pending.fullPath;
-
-  if (isChunkLoadFailed) {
-    console.log('Router detected error!');
-    console.error(error);
-    // history.replaceState("", "", targetPath);
-  } else {
-    throw error;
-  }
 });
 
 export default router;
