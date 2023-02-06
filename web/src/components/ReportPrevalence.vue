@@ -848,24 +848,43 @@ export default Vue.extend({
 #report-prevalence-svg {
   & .mutation-axis,
   & .prevalence-axis {
-    font-size: 16pt;
+    // font-size: 16pt;
+    // @media (max-width: 664px) {
+    //   font-size: 12pt;
+    // }
+    // @media (min-width: 664px) {
+    //   font-size: 12pt;
+    // }
+    // @media (min-width: 900px) {
+    //   font-size: 14pt;
+    // }
+    // @media (min-width: 1000px) {
+    //   font-size: 14pt;
+    // }
+    // @media (min-width: 1200px) {
+    //   font-size: 16pt;
+    // }
+    // @media (min-width: 1310px) {
+    //   font-size: 16pt;
+    // }
+    font-size: 16px;
     @media (max-width: 664px) {
-      font-size: 12pt;
+      font-size: 12px;
     }
     @media (min-width: 664px) {
-      font-size: 12pt;
+      font-size: 12px;
     }
     @media (min-width: 900px) {
-      font-size: 14pt;
+      font-size: 14px;
     }
     @media (min-width: 1000px) {
-      font-size: 14pt;
+      font-size: 14px;
     }
     @media (min-width: 1200px) {
-      font-size: 16pt;
+      font-size: 16px;
     }
     @media (min-width: 1310px) {
-      font-size: 16pt;
+      font-size: 16px;
     }
     text {
       fill: $grey-90;
@@ -884,6 +903,7 @@ export default Vue.extend({
   height: 15px;
   opacity: 0.3;
 }
+
 .trace-legend {
   stroke: $base-grey;
   stroke-width: 2.5;
