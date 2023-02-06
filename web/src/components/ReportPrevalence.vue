@@ -241,7 +241,7 @@ import { format } from 'd3-format';
 import { select, selectAll, event } from 'd3-selection';
 import { scaleLinear, scaleTime } from 'd3-scale';
 import { line, area } from 'd3-shape';
-import { timeDay, timeMonth } from 'd3-time';
+import { timeSecond, timeMinute, timeHour, timeDay, timeWeek, timeMonth, timeYear  } from 'd3-time';
 import { timeFormat, timeParse } from 'd3-time-format';
 import { transition } from 'd3-transition';
 import cloneDeep from 'lodash/cloneDeep';
@@ -454,7 +454,17 @@ export default Vue.extend({
       );
 
       // reset the axis
-      this.xAxis = axisBottom(this.x).ticks(this.numXTicks);
+      this.xAxis = axisBottom(this.x)
+        .ticks(this.numXTicks)
+        .tickFormat(function(date){
+          return (timeSecond(date) < date ? timeFormat('.%L')
+            : timeMinute(date) < date ? timeFormat(':%S')
+            : timeHour(date) < date ? timeFormat('%I:%M')
+            : timeDay(date) < date ? timeFormat('%I %p')
+            : timeMonth(date) < date ? timeWeek(date) < date ? timeFormat('%a %d') : timeFormat('%b %d')
+            : timeYear(date) < date ? timeFormat('%b')
+            : timeFormat('%Y'))(date)
+        });
 
       select(this.$refs.xAxis).call(this.xAxis);
 
@@ -511,7 +521,18 @@ export default Vue.extend({
         .domain([0, (avgMax + CIMax) * 0.5]);
       // .domain([0, max(this.data, d => d[this.yVariable])])
 
-      this.xAxis = axisBottom(this.x).ticks(this.numXTicks);
+      this.xAxis = axisBottom(this.x)
+        .ticks(this.numXTicks)
+        .tickFormat(function(date){
+          return (timeSecond(date) < date ? timeFormat('.%L')
+            : timeMinute(date) < date ? timeFormat(':%S')
+            : timeHour(date) < date ? timeFormat('%I:%M')
+            : timeDay(date) < date ? timeFormat('%I %p')
+            : timeMonth(date) < date ? timeWeek(date) < date ? timeFormat('%a %d') : timeFormat('%b %d')
+            : timeYear(date) < date ? timeFormat('%b')
+            : timeFormat('%Y'))(date)
+        });
+
       select(this.$refs.xAxis).call(this.xAxis);
 
       const yTickFormat = this.y.domain()[1] < 0.02 ? '.1%' : '.0%';
