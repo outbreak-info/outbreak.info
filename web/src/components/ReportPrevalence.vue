@@ -53,7 +53,7 @@
         </div>
 
         <!-- legend: confidence interval -->
-        <div class="d-flex align-items-center">
+        <div class="d-flex align-items-center mb-3">
           <div class="ci-legend mr-2" :style="{ background: CIColor }" />
           <small class="text-muted">95% confidence interval</small>
           <svg width="15" height="15" class="ml-4 mr-2">
@@ -168,7 +168,7 @@
           <g id="weird-last values" :hidden="data.length < lengthThreshold">
             <text
               :x="width - margin.right"
-              :y="0"
+              :y="-1"
               fill="#929292"
               font-size="14px"
               dominant-baseline="hanging"

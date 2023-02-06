@@ -649,7 +649,7 @@
           <small class="text-muted mb-2">
             Based on reported sample collection date
           </small>
-          <div id="location-buttons" class="d-flex flex-wrap">
+          <div id="location-buttons" class="d-flex flex-wrap mb-3">
             <button
               v-for="(location, lIdx) in selectedLocations"
               :key="lIdx"
