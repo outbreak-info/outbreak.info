@@ -170,7 +170,7 @@
               :x="width - margin.right"
               :y="-1"
               fill="#929292"
-              font-size="14px"
+              font-size="13px"
               dominant-baseline="hanging"
               text-anchor="end"
               :style="`font-family: ${fontFamily};`"
