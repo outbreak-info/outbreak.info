@@ -137,7 +137,7 @@
                   class="b-contain d-flex align-items-center pr-4 m-0"
                 >
                   <img
-                    :src="require(`@/assets/${curator.src}`)"
+                    :src="`src/assets/${curator.src}`"
                     class="variant-logo mr-1"
                   />
                   <span>{{ curator.label }}</span>
@@ -160,7 +160,7 @@
                   class="b-contain d-flex align-items-center pr-4 m-0"
                 >
                   <img
-                    :src="require(`@/assets/${curator.src}`)"
+                    :src="`src/assets/${curator.src}`"
                     class="variant-logo mr-1"
                   />
                   <span>{{ curator.label }}</span>
@@ -179,7 +179,7 @@
                 <small class="text-muted mr-2">MOC classified by:</small>
                 <label class="b-contain d-flex align-items-center pr-4 m-0">
                   <img
-                    :src="require(`@/assets/icon-01.svg`)"
+                    :src="`src/assets/icon-01.svg`"
                     class="variant-logo mr-1"
                   />
                   <span>outbreak.info</span>
@@ -198,7 +198,7 @@
                 <small class="text-muted mr-2">MOI classified by:</small>
                 <label class="b-contain d-flex align-items-center pr-4 m-0">
                   <img
-                    :src="require(`@/assets/icon-01.svg`)"
+                    :src="`src/assets/icon-01.svg`"
                     class="variant-logo mr-1"
                   />
                   <span>outbreak.info</span>
@@ -290,7 +290,7 @@
                   class="b-contain d-flex align-items-center pr-4 m-0"
                 >
                   <img
-                    :src="require(`@/assets/${curator.src}`)"
+                    :src="`src/assets/${curator.src}`"
                     class="variant-logo mr-1"
                   />
                   <span>{{ curator.label }}</span>
@@ -669,7 +669,7 @@
                                 :key="cIdx + 'table'"
                               >
                                 <img
-                                  :src="require(`@/assets/${curator.src}`)"
+                                  :src="`src/assets/${curator.src}`"
                                   class="variant-logo"
                                 />
                               </th>
@@ -1083,7 +1083,7 @@
                 </small>
                 <label class="b-contain d-flex align-items-center pr-4 m-0">
                   <img
-                    :src="require(`@/assets/icon-01.svg`)"
+                    :src="`src/assets/icon-01.svg`"
                     class="variant-logo mr-1"
                   />
                   <span>outbreak.info</span>
@@ -1158,10 +1158,9 @@
                 </thead>
 
                 <tbody>
-                  <template v-for="(report, rIdx) in group.values">
+                  <template v-for="(report, rIdx) in group.values" :key="rIdx">
                     <tr
                       :id="report.identifier"
-                      :key="rIdx"
                       :class="{ checkbook: (rIdx % 2) - 1 }"
                     >
                       <!-- name + synonyms -->
@@ -1826,6 +1825,11 @@ export default {
         store.commit('admin/setReportLoading', false);
         this.filterReports();
       });
+    },
+    capitalize(value) {
+      if (!value) return '';
+      value = value.toString();
+      return value.charAt(0).toUpperCase() + value.slice(1);
     },
   },
 };

@@ -36,7 +36,9 @@ axios.interceptors.request.use(
   (config) => {
     // Pass GISAID param to API via headers
     // * BEFORE COMPLIATION, YOU NEED to run `export VUE_APP_API_ACCESS={key}`*
-    config.headers.Authorization = `Bearer ${process.env.VUE_APP_API_ACCESS}`;
+    config.headers.Authorization = `Bearer ${
+      import.meta.env.VITE_APP_API_ACCESS
+    }`;
     return config;
   },
   (error) => {
@@ -2428,7 +2430,7 @@ export const getBasicComparisonReportData = (apiurl) => {
 export const getMutationsOfInterestPrevalence = (
   apiurl,
   lineages,
-  prevalenceThreshold = store.state.genomics.characteristicThreshold,
+  prevalenceThreshold = storeGenomics.characteristicThreshold,
 ) => {
   const mutationsOfInterest = [
     's:s477n',

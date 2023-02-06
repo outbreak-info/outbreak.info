@@ -347,7 +347,7 @@
           {{ data.curatedBy.name }}
           <img
             v-if="getLogo(data.curatedBy.name)"
-            :src="require(`@/assets/resources/${getLogo(data.curatedBy.name)}`)"
+            :src="`src/assets/resources/${getLogo(data.curatedBy.name)}`"
             alt="data.curatedBy.name"
             width="auto"
             height="25"
