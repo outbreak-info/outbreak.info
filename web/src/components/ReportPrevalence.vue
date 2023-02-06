@@ -5,7 +5,7 @@
   >
     <!-- zoom btns -->
     <div
-      class="d-flex justify-content-end align-items-center px-3"
+      class="d-flex justify-content-start"
       :style="{ width: width + 'px' }"
     >
       <button
@@ -40,7 +40,7 @@
 
     <div class="d-flex flex-column">
       <!-- LEGEND -->
-      <div id="legend" class="d-flex flex-column ml-5 mt-3">
+      <div id="legend" class="d-flex flex-column mt-3">
         <!-- legend: rolling average -->
         <div class="d-flex">
           <svg width="15" height="15" class="mr-2">
