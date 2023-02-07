@@ -1010,7 +1010,7 @@ const cleanSelectors = (id) => {
 export const getCharacteristicMutations = (
   apiurl,
   lineage,
-  prevalenceThreshold = store.state.genomics.characteristicThreshold,
+  prevalenceThreshold = storeGenomics.characteristicThreshold,
   returnFlat = true,
   includeSublineages = false,
   genes = ["5UTR", "ORF1a", "ORF1b", "S", "ORF3a", "E", "M", "ORF6", "ORF7a", "ORF7b", "ORF8", "N", "ORF10", "3UTR"],

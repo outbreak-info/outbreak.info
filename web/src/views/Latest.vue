@@ -127,7 +127,7 @@ export default {
 
     this.updates.sort((a, b) => b.date - a.date);
   },
-  destroyed() {
+  unmounted() {
     if (this.updateSubscription) {
       this.updateSubscription.unsubscribe();
     }

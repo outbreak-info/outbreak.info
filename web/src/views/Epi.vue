@@ -627,9 +627,10 @@ export default {
       return selectedData;
     },
     lookupLocation() {
-      store.state.admin.loading = true;
+      const store = adminStore();
+      store.$patch({ loading: true });
       getLocation(this.$apiurl).subscribe((nearestPlace) => {
-        store.state.admin.loading = false;
+        store.$patch({ loading: false });
         if (nearestPlace !== 'none') {
           this.$router.push({
             name: 'Epidemiology',

@@ -2,6 +2,8 @@ import { scaleOrdinal } from 'd3-scale';
 import chroma from 'chroma-js';
 import { defineStore } from 'pinia';
 
+import { geoStore } from '@/stores/geoStore';
+
 const blankFunc = function (location) {
   return null;
 };
@@ -59,9 +61,10 @@ export const colorsStore = defineStore('colors', {
         return state.scale && color ? chroma(color).darken(pct) : null;
       },
     getRegionColor:
-      (state, _, rootState) =>
+      (state, _) =>
       (location, pct = null) => {
-        const regions = rootState['geo']['regionDict'].map((d) => d.region);
+        const storeGeo = geoStore();
+        const regions = storeGeo.regionDict.map((d) => d.region);
         const scale = scaleOrdinal(['#BBB'].concat(categoricalPalette)).domain(
           regions,
         );
@@ -71,32 +74,32 @@ export const colorsStore = defineStore('colors', {
         }
         return scale(location);
       },
-    getRegionColorFromLocation:
-      (state, getters, rootState, rootGetters) => (location) => {
-        const regions = rootState['geo']['regionDict'].map((d) => d.region);
-        const scale = scaleOrdinal(['#BBB'].concat(categoricalPalette)).domain(
-          regions,
-        );
-        // const regionFunc = rootGetters["epidata/getRegion"];
-        return scale(location);
-      },
-    getRegionColorPalette:
-      (state, _, rootState) => (region, numEntries, idx) => {
-        const regions = rootState['geo']['regionDict'].map((d) => d.region);
-        const scale = scaleOrdinal(['#BBB'].concat(categoricalPalette)).domain(
-          regions,
-        );
-        const color = scale(region);
+    getRegionColorFromLocation: (state) => (location) => {
+      const storeGeo = geoStore();
+      const regions = storeGeo.regionDict.map((d) => d.region);
+      const scale = scaleOrdinal(['#BBB'].concat(categoricalPalette)).domain(
+        regions,
+      );
+      // const regionFunc = rootGetters["epidata/getRegion"];
+      return scale(location);
+    },
+    getRegionColorPalette: (state, _) => (region, numEntries, idx) => {
+      const storeGeo = geoStore();
+      const regions = storeGeo.regionDict.map((d) => d.region);
+      const scale = scaleOrdinal(['#BBB'].concat(categoricalPalette)).domain(
+        regions,
+      );
+      const color = scale(region);
 
-        const colorScale = chroma
-          .scale([
-            chroma(color).luminance(0.5),
-            color,
-            chroma(color).darken(1.25),
-          ])
-          .domain([0, numEntries - 1]);
-        return colorScale(idx);
-      },
+      const colorScale = chroma
+        .scale([
+          chroma(color).luminance(0.5),
+          color,
+          chroma(color).darken(1.25),
+        ])
+        .domain([0, numEntries - 1]);
+      return colorScale(idx);
+    },
   },
   actions: {
     setLocations(payload) {

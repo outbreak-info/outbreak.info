@@ -13,7 +13,9 @@ export default {
   components: {},
   props: {},
   data() {
-    return {};
+    return {
+      lastUpdated$: null,
+    };
   },
   watch: {},
   methods: {},

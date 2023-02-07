@@ -70,7 +70,6 @@
             class="ml-3"
             :src="`src/assets/resources/${source.img_lg}`"
             :alt="source.name"
-            width="auto"
             height="32"
           />
           <img
@@ -78,7 +77,6 @@
             class="ml-3"
             :src="`src/assets/resources/${source.img}`"
             :alt="source.name"
-            width="auto"
             height="32"
           />
         </a>

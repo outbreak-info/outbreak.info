@@ -7,8 +7,10 @@ import { timeParse } from 'd3-time-format';
 
 import { getAll } from '@/api/biothings.js';
 import { adminStore } from '@/stores/adminStore';
+import { geoStore } from '@/stores/geoStore';
 
 const store = adminStore();
+const storeGeo = geoStore();
 
 export const getStackedRegions = (apiUrl) => {
   store.$patch({ loading: true });
@@ -51,7 +53,7 @@ export const getStackedRegions = (apiUrl) => {
 
         // loop over each region for those values
         // looping over dict rather than values themselves to make sure I get 0s for everywhere.
-        store.state.geo.regionDict.forEach((region) => {
+        storeGeo.regionDict.forEach((region) => {
           const filtered = d.values.filter((d) => d.key === region.region);
           if (filtered.length === 1) {
             objC[filtered[0].key] = filtered[0].value.confirmed;

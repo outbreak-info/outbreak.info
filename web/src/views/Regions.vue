@@ -227,6 +227,8 @@ import { getWorldDailyCases } from '@/api/epi-traces.js';
 import { lazyLoad } from '@/js/lazy-load';
 import { adminStore } from '@/stores/adminStore';
 import { genomicsStore } from '@/stores/genomicsStore';
+import { colorsStore } from '@/stores/colorsStore';
+import { geoStore } from '@/stores/geoStore';
 
 export default {
   name: 'Regions',
@@ -284,6 +286,7 @@ export default {
   computed: {
     ...mapState(adminStore, ['loading']),
     ...mapState(genomicsStore, ['regionDict']),
+    ...mapState(colorsStore, ['getRegionColorFromLocation', 'getRegionColor']),
     selectedVariableLabel() {
       return this.variableOptions.filter(
         (d) => d.value === this.selectedVariable,
@@ -317,20 +320,21 @@ export default {
       this.nestedData = this.data[this.selectedVariable];
     },
     changeVariableObject() {
-      store.state.admin.loading = true;
+      this.loading = true;
       setTimeout(() => {
-        store.state.admin.loading = false;
+        this.loading = false;
       }, 3000);
     },
     handleTooltip(selected) {
-      store.commit('geo/setRegionTooltip', selected);
+      const store = geoStore();
+      store.setRegionTooltip(selected);
     },
     regionColorScale(location) {
-      const scale = store.getters['colors/getRegionColorFromLocation'];
+      const scale = this.getRegionColorFromLocation;
       return scale(location);
     },
     lightColor(region) {
-      const scale = store.getters['colors/getRegionColor'];
+      const scale = this.getRegionColor;
       return scale(region, 0.85);
     },
     setDims() {
