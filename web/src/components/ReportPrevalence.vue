@@ -5,7 +5,7 @@
   >
     <!-- zoom btns -->
     <div
-      class="d-flex justify-content-end align-items-center px-3"
+      class="d-flex justify-content-start"
       :style="{ width: width + 'px' }"
     >
       <button
@@ -40,7 +40,7 @@
 
     <div class="d-flex flex-column">
       <!-- LEGEND -->
-      <div id="legend" class="d-flex flex-column ml-5 mt-3">
+      <div id="legend" class="d-flex flex-column mt-3">
         <!-- legend: rolling average -->
         <div class="d-flex">
           <svg width="15" height="15" class="mr-2">
@@ -53,7 +53,7 @@
         </div>
 
         <!-- legend: confidence interval -->
-        <div class="d-flex align-items-center">
+        <div class="d-flex align-items-center mb-3">
           <div class="ci-legend mr-2" :style="{ background: CIColor }" />
           <small class="text-muted">95% confidence interval</small>
           <svg width="15" height="15" class="ml-4 mr-2">
@@ -168,9 +168,9 @@
           <g id="weird-last values" :hidden="data.length < lengthThreshold">
             <text
               :x="width - margin.right"
-              :y="0"
+              :y="-1"
               fill="#929292"
-              font-size="14px"
+              font-size="13px"
               dominant-baseline="hanging"
               text-anchor="end"
               :style="`font-family: ${fontFamily};`"
@@ -241,7 +241,7 @@ import { format } from 'd3-format';
 import { select, selectAll, event } from 'd3-selection';
 import { scaleLinear, scaleTime } from 'd3-scale';
 import { line, area } from 'd3-shape';
-import { timeDay, timeMonth } from 'd3-time';
+import { timeSecond, timeMinute, timeHour, timeDay, timeWeek, timeMonth, timeYear  } from 'd3-time';
 import { timeFormat, timeParse } from 'd3-time-format';
 import { transition } from 'd3-transition';
 import cloneDeep from 'lodash/cloneDeep';
@@ -454,7 +454,17 @@ export default Vue.extend({
       );
 
       // reset the axis
-      this.xAxis = axisBottom(this.x).ticks(this.numXTicks);
+      this.xAxis = axisBottom(this.x)
+        .ticks(this.numXTicks)
+        .tickFormat(function(date){
+          return (timeSecond(date) < date ? timeFormat('.%L')
+            : timeMinute(date) < date ? timeFormat(':%S')
+            : timeHour(date) < date ? timeFormat('%I:%M')
+            : timeDay(date) < date ? timeFormat('%I %p')
+            : timeMonth(date) < date ? timeWeek(date) < date ? timeFormat('%a %d') : timeFormat('%b %d')
+            : timeYear(date) < date ? timeFormat('%b')
+            : timeFormat('%Y'))(date)
+        });
 
       select(this.$refs.xAxis).call(this.xAxis);
 
@@ -511,7 +521,18 @@ export default Vue.extend({
         .domain([0, (avgMax + CIMax) * 0.5]);
       // .domain([0, max(this.data, d => d[this.yVariable])])
 
-      this.xAxis = axisBottom(this.x).ticks(this.numXTicks);
+      this.xAxis = axisBottom(this.x)
+        .ticks(this.numXTicks)
+        .tickFormat(function(date){
+          return (timeSecond(date) < date ? timeFormat('.%L')
+            : timeMinute(date) < date ? timeFormat(':%S')
+            : timeHour(date) < date ? timeFormat('%I:%M')
+            : timeDay(date) < date ? timeFormat('%I %p')
+            : timeMonth(date) < date ? timeWeek(date) < date ? timeFormat('%a %d') : timeFormat('%b %d')
+            : timeYear(date) < date ? timeFormat('%b')
+            : timeFormat('%Y'))(date)
+        });
+
       select(this.$refs.xAxis).call(this.xAxis);
 
       const yTickFormat = this.y.domain()[1] < 0.02 ? '.1%' : '.0%';
@@ -848,24 +869,24 @@ export default Vue.extend({
 #report-prevalence-svg {
   & .mutation-axis,
   & .prevalence-axis {
-    font-size: 16pt;
+    font-size: 16px;
     @media (max-width: 664px) {
-      font-size: 12pt;
+      font-size: 12px;
     }
     @media (min-width: 664px) {
-      font-size: 12pt;
+      font-size: 12px;
     }
     @media (min-width: 900px) {
-      font-size: 14pt;
+      font-size: 14px;
     }
     @media (min-width: 1000px) {
-      font-size: 14pt;
+      font-size: 14px;
     }
     @media (min-width: 1200px) {
-      font-size: 16pt;
+      font-size: 16px;
     }
     @media (min-width: 1310px) {
-      font-size: 16pt;
+      font-size: 16px;
     }
     text {
       fill: $grey-90;
@@ -884,6 +905,7 @@ export default Vue.extend({
   height: 15px;
   opacity: 0.3;
 }
+
 .trace-legend {
   stroke: $base-grey;
   stroke-width: 2.5;
