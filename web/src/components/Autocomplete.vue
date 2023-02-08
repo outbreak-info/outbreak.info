@@ -116,7 +116,7 @@ export default {
     this.updateSelected();
     document.addEventListener('click', this.handleClickOutside);
   },
-  destroyed() {
+  unmounted() {
     document.removeEventListener('click', this.handleClickOutside);
 
     if (this.querySubscription) {

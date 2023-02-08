@@ -158,7 +158,7 @@ export default {
     this.setupMutationArr();
     this.setupPlot();
   },
-  destroyed() {
+  unmounted() {
     window.removeEventListener('resize', this.setDims);
   },
   methods: {

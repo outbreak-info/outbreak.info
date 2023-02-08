@@ -5,9 +5,7 @@
       id="design"
       class="text-left border-top border-bottom text-muted py-3 my-3"
     >
-      <h6 class="m-0">
-        Study Design
-      </h6>
+      <h6 class="m-0">Study Design</h6>
       <div v-if="data.studyDesign">
         <TrialDesign :data="data" />
       </div>
@@ -21,9 +19,7 @@
       id="interventions"
       class="text-left border-bottom text-muted pb-3 mb-3"
     >
-      <h6 class="m-0">
-        Interventions
-      </h6>
+      <h6 class="m-0">Interventions</h6>
       <div v-if="data.armGroup || data.interventions">
         <TrialInterventions :data="data" />
       </div>
@@ -37,9 +33,7 @@
 
     <!-- eligibility -->
     <div id="eligibility" class="text-left border-bottom text-muted pb-3 mb-3">
-      <h6 class="m-0">
-        Eligibility
-      </h6>
+      <h6 class="m-0">Eligibility</h6>
       <div v-if="data.eligibilityCriteria">
         <TrialEligibility :data="data.eligibilityCriteria" />
       </div>
@@ -50,9 +44,7 @@
 
     <!-- outcome -->
     <div id="outcome" class="text-left border-bottom text-muted pb-3 mb-3">
-      <h6 class="m-0">
-        Outcome
-      </h6>
+      <h6 class="m-0">Outcome</h6>
       <div v-if="data.outcome">
         <TrialOutcome :data="data.outcome" />
       </div>
@@ -63,9 +55,7 @@
 
     <!-- status -->
     <div id="status" class="text-left border-bottom text-muted pb-3 mb-3">
-      <h6 class="m-0">
-        Status
-      </h6>
+      <h6 class="m-0">Status</h6>
       <div v-if="data.studyStatus || data.studyEvent">
         <TrialEvents :data="data" />
       </div>
@@ -76,9 +66,7 @@
 
     <!-- publications -->
     <div id="publications" class="text-left border-bottom text-muted pb-3 mb-3">
-      <h6 class="m-0 mb-2">
-        Publications
-      </h6>
+      <h6 class="m-0 mb-2">Publications</h6>
       <div v-if="(data.citedBy && data.citedBy.length) || citations">
         <template v-if="data.citedBy">
           <div
@@ -141,7 +129,7 @@ export default {
       this.citations = citations.length ? citations : null;
     });
   },
-  beforeDestroy() {
+  beforeUnmount() {
     this.citationSubscription.unsubscribe();
   },
 };

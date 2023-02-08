@@ -258,7 +258,7 @@ export default {
       );
     }
   },
-  destroyed() {
+  unmounted() {
     if (this.updatedSubscription) {
       this.updatedSubscription.unsubscribe();
     }

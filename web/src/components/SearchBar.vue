@@ -109,7 +109,7 @@ export default {
       passive: true,
     });
   },
-  destroyed() {
+  unmounted() {
     document.removeEventListener('click', this.handleClickOutside);
   },
   methods: {

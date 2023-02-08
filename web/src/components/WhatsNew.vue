@@ -8,7 +8,7 @@
 
     <div
       v-if="newPubs"
-      class="col-sm-6 col-md-3 col-sm-6 pr-4  d-flex flex-column"
+      class="col-sm-6 col-md-3 col-sm-6 pr-4 d-flex flex-column"
     >
       <router-link
         :to="{
@@ -141,7 +141,7 @@ export default {
       this.newProtocols = results['Protocol'];
     });
   },
-  beforeDestroy() {
+  beforeUnmount() {
     this.recentSubscription.unsubscribe();
   },
 };

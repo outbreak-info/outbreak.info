@@ -290,7 +290,7 @@ export default {
       this.gisaidCount = total;
     });
   },
-  destroyed() {
+  unmounted() {
     if (this.resourceSubscription) {
       this.resourceSubscription.unsubscribe();
     }

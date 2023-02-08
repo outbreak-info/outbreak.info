@@ -133,7 +133,7 @@ export default {
       this.counts = results;
     });
   },
-  beforeDestroy() {
+  beforeUnmount() {
     this.countSubscription.unsubscribe();
   },
   methods: {

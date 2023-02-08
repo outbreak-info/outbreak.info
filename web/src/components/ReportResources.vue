@@ -133,7 +133,7 @@ export default {
       },
     },
   },
-  beforeDestroy() {
+  beforeUnmount() {
     if (this.resultSubscription) {
       this.resultSubscription.unsubscribe();
     }

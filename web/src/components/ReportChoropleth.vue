@@ -199,10 +199,10 @@ export default {
     this.$nextTick(function () {
       window.addEventListener('resize', this.debounceSetDims);
 
-      this.$root.$on('update:countThreshold', (newThreshold) => {
-        // this.countThreshold = newThreshold;
-        // this.drawMap();
-      });
+      // this.$root.$on('update:countThreshold', (newThreshold) => {
+      //   // this.countThreshold = newThreshold;
+      //   // this.drawMap();
+      // });
 
       // event listener to hide tooltips
       document.addEventListener(

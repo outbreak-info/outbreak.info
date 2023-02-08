@@ -121,7 +121,7 @@ export default {
       },
     );
   },
-  beforeDestroyed() {
+  beforeUnmount() {
     if (this.curatedSubscription) {
       this.curatedSubscription.unsubscribe();
     }

@@ -163,7 +163,7 @@ export default {
       this.counts = results;
     });
   },
-  beforeDestroy() {
+  beforeUnmount() {
     this.resultSubscription.unsubscribe();
     this.countSubscription.unsubscribe();
   },

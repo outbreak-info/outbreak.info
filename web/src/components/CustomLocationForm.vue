@@ -18,7 +18,7 @@
           placeholder="Select location"
           totalLabel="total sequences"
           :removeOnSelect="false"
-          @click.prevent="submitQuery"
+          @click.prevent.self="submitQuery"
         />
       </div>
       <button
@@ -175,16 +175,18 @@ export default {
       const variant = uniq(this.variant.map((d) => d.qParam));
       const muts = uniq(this.muts.map((d) => d.qParam));
 
-      this.$router.push({
-        name: 'LocationReport',
-        query: {
-          loc: this.location.id,
-          pango: pango,
-          variant: variant,
-          muts: muts,
-          selected: pango.concat(variant, muts).filter((d) => d.length),
-        },
-      });
+      if (this.location) {
+        this.$router.push({
+          name: 'LocationReport',
+          query: {
+            loc: this.location.id,
+            pango: pango,
+            variant: variant,
+            muts: muts,
+            selected: pango.concat(variant, muts).filter((d) => d.length),
+          },
+        });
+      }
     },
     updateLocation(location) {
       if (location && location.id) {

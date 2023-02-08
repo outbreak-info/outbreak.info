@@ -502,7 +502,7 @@ export default {
       }
     },
   },
-  destroyed() {
+  unmounted() {
     window.removeEventListener('resize', this.setDims);
   },
   mounted() {

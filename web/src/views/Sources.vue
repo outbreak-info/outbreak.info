@@ -136,7 +136,7 @@ export default {
       this.sourceMetadata = results;
     });
   },
-  destroyed() {
+  unmounted() {
     if (this.metadataSubscription) {
       this.metadataSubscription.unsubscribe();
     }

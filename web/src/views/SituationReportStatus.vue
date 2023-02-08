@@ -449,7 +449,7 @@ export default {
       });
     },
   },
-  beforeDestroyed() {
+  beforeUnmount() {
     if (this.totalSubscription) {
       this.totalSubscription.unsubscribe();
     }

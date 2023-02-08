@@ -127,7 +127,7 @@ export default {
       this.data = data;
     });
   },
-  beforeDestroy() {
+  beforeUnmount() {
     this.dataSubscription.unsubscribe();
     if (this.changeDataSubscription) {
       this.changeDataSubscription.unsubscribe();
@@ -149,7 +149,7 @@ export default {
       );
     });
   },
-  destroyed() {
+  unmounted() {
     window.removeEventListener('click', this.clickClose);
     document.removeEventListener('keyup', this.closeWindow);
   },

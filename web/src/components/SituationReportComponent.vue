@@ -1339,7 +1339,7 @@ export default {
     });
     this.setupReport();
   },
-  destroyed() {
+  unmounted() {
     if (this.dataSubscription) {
       this.dataSubscription.unsubscribe();
     }

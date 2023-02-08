@@ -1400,7 +1400,7 @@ export default {
       },
     });
   },
-  destroyed() {
+  unmounted() {
     if (this.basicSubscription) {
       this.basicSubscription.unsubscribe();
     }

@@ -1054,7 +1054,7 @@ export default {
     this.debounceCountThreshold = debounce(this.changeCountThreshold, 250);
     this.debounceGenes = debounce(this.updateGenes, 250);
   },
-  destroyed() {
+  unmounted() {
     if (this.basicSubscription) {
       this.basicSubscription.unsubscribe();
     }

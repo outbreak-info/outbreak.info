@@ -259,7 +259,7 @@ export default {
   created() {
     this.debounceZoom = this.debounce(this.zoom, 150);
   },
-  destroyed() {
+  unmounted() {
     window.removeEventListener('resize', this.setPlotDims);
   },
   methods: {

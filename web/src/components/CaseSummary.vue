@@ -136,7 +136,7 @@ export default {
     },
   },
   watch: {},
-  destroyed() {
+  unmounted() {
     this.dataSubscription.unsubscribe();
     if (this.updatedSubscription) {
       this.updatedSubscription.unsubscribe();

@@ -332,7 +332,7 @@ export default {
     this.setupPlot();
     this.updatePlot();
   },
-  destroyed() {
+  unmounted() {
     window.removeEventListener('resize', this.setDims);
   },
   methods: {

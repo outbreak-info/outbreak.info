@@ -468,7 +468,7 @@ export default {
       this.total = data['total'];
     });
   },
-  beforeDestroy() {
+  beforeUnmount() {
     this.dataSubscription.unsubscribe();
     if (this.changeDataSubscription) {
       this.changeDataSubscription.unsubscribe();

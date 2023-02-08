@@ -336,7 +336,7 @@ export default {
 
     this.setupChoro();
   },
-  beforeDestroy() {
+  beforeUnmount() {
     if (this.dataSubscritpion) {
       this.dataSubscription.unsubscribe();
     }
@@ -403,6 +403,7 @@ export default {
       this.projection = this.projection.scale(scale);
     },
     drawMap() {
+      const store = adminStore();
       this.setupMap();
 
       this.filteredData = cloneDeep(this.data);
@@ -513,9 +514,9 @@ export default {
           .on('mouseenter', (d) => this.debounceMouseon(d))
           .on('mouseleave', this.mouseOff);
 
-        this.adminStore.$patch({ dataloading: false });
+        store.$patch({ dataloading: false });
       } else {
-        this.adminStore.$patch({ dataloading: false });
+        store.$patch({ dataloading: false });
       }
     },
     handleClick(d) {

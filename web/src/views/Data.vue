@@ -71,7 +71,7 @@ export default {
       0,
     ).subscribe((_) => null);
   },
-  destroyed() {
+  unmounted() {
     this.tableSubscription.unsubscribe();
   },
   methods: {

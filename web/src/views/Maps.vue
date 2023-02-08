@@ -269,7 +269,7 @@ export default {
       });
     },
   },
-  beforeDestroy() {
+  beforeUnmount() {
     this.dataSubscription.unsubscribe();
   },
   methods: {

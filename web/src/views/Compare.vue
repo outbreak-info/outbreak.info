@@ -268,7 +268,7 @@ export default {
       },
     },
   },
-  beforeDestroy() {
+  beforeUnmount() {
     if (this.dataSubscription) {
       this.dataSubscription.unsubscribe();
     }

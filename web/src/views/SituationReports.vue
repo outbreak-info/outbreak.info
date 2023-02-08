@@ -1491,7 +1491,7 @@ export default {
       this.total = total;
     });
   },
-  beforeDestroyed() {
+  beforeUnmount() {
     if (this.curatedSubscription) {
       this.curatedSubscription.unsubscribe();
     }
@@ -1808,7 +1808,8 @@ export default {
       return link.replace(/\./g, '_');
     },
     getCuratedMutations() {
-      store.commit('admin/setReportLoading', true);
+      const store = adminStore();
+      store.setReportLoading(true);
       this.curatedMutationsSubscription = getCuratedMutations(
         this.$genomicsurl,
         this.characteristicThreshold,
@@ -1822,7 +1823,7 @@ export default {
           ['values'].flatMap((d) => d.pango_descendants)
           .map((d) => d.toLowerCase());
         this.mutationReports = results;
-        store.commit('admin/setReportLoading', false);
+        store.setReportLoading(false);
         this.filterReports();
       });
     },

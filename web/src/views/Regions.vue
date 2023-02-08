@@ -310,7 +310,7 @@ export default {
       this.setDims();
     });
   },
-  destroyed() {
+  unmounted() {
     this.dataSubscription.unsubscribe();
     this.totalSubscription.unsubscribe();
     window.removeEventListener('resize', this.setDims);

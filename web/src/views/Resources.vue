@@ -831,7 +831,7 @@ export default {
     this.debounceFilterText = debounce(this.selectFilterText, 500);
     this.debounceSearchText = debounce(this.onEnter, 500);
   },
-  beforeDestroy() {
+  beforeUnmount() {
     if (this.resultsSubscription) {
       this.resultsSubscription.unsubscribe();
     }
