@@ -13,7 +13,7 @@ const router = createRouter({
         selector: to.hash,
       };
     }
-    if (!to.params.disableScroll) {
+    if (to.params && !to.params.disableScroll) {
       return {
         x: 0,
         y: 0,

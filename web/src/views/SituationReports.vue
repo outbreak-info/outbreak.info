@@ -1221,9 +1221,10 @@
                         >
                           {{ report.mutation_name }} 3D structures
                           <img
-                            src="@/assets/resources/aquaria.svg"
+                            src="src/assets/resources/aquaria.svg"
                             style="width: 35px"
                             class="ml-2"
+                            alt="aquaria-svg"
                           />
                           ""
                         </a>

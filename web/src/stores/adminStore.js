@@ -1616,19 +1616,19 @@ export const adminStore = defineStore('admin', {
           },
         },
       },
-      {
-        date: new Date('2020-03-24 0:0'),
-        category: 'feature',
-        title: 'Added doubling rates',
-        description:
-          'Created summary of the doubling rates for a location in the last five days compared to the previous five days.',
-        route: {
-          name: 'Doubling Rates',
-          query: {
-            location: 'USA',
-          },
-        },
-      },
+      // {
+      //   date: new Date('2020-03-24 0:0'),
+      //   category: 'feature',
+      //   title: 'Added doubling rates',
+      //   description:
+      //     'Created summary of the doubling rates for a location in the last five days compared to the previous five days.',
+      //   route: {
+      //     name: 'Doubling Rates',
+      //     query: {
+      //       location: 'USA',
+      //     },
+      //   },
+      // },
       {
         date: new Date('2021-07-14 0:0'),
         category: 'feature',

@@ -906,7 +906,7 @@
                       v-model="choroNdays"
                       class="border p-1 mx-2"
                       :style="{
-                        'border-color': '#bababa !important;',
+                        'border-color': '#bababa !important',
                         width: '40px',
                       }"
                       placeholder="days"
@@ -945,7 +945,7 @@
                   v-model="choroNdays"
                   class="border p-1 mx-2"
                   :style="{
-                    'border-color': '#bababa !important;',
+                    'border-color': '#bababa !important',
                     width: '40px',
                   }"
                   placeholder="days"
