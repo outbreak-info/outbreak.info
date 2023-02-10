@@ -1703,8 +1703,8 @@ export const findAllLocationMetadata = (apiurl, locations, selected) => {
   );
 };
 
-export const findLocation = (apiurl, queryString) => {
-  const url = `${apiurl}location?name=*${queryString}*`;
+export const findLocation = (apiurl, queryString, size = 10) => {
+  const url = `${apiurl}location?name=*${queryString}*&size=${size}`;
 
   return from(
     axios.get(url, {
@@ -1725,8 +1725,8 @@ export const findLocation = (apiurl, queryString) => {
   );
 };
 
-export const findPangolin = (apiurl, queryString) => {
-  const url = `${apiurl}lineage?name=*${queryString}*`;
+export const findPangolin = (apiurl, queryString, size = 10) => {
+  const url = `${apiurl}lineage?name=*${queryString}*&size=${size}`;
 
   const vocs = CURATED.filter((d) => d.who_name).map((d) => ({
     name: d.who_name,
