@@ -94,20 +94,20 @@
       </span>
     </h4>
 
-    <template v-else>
-      <template v-if="!nolocation">
+    <div v-else>
+      <div v-if="!nolocation">
         <h4 class="plot-title pt-5 pb-3 text-highlight">
           Please select a location
         </h4>
         <button class="btn btn-main-outline" @click="lookupLocation">
           Find nearest location
         </button>
-      </template>
+      </div>
 
       <h4 v-else class="plot-title pt-5 pb-3 text-highlight">
         Cannot find a nearby location. Please select a location.
       </h4>
-    </template>
+    </div>
     <!-- metro subparts -->
     <div v-if="subParts" class="mb-4">
       <router-link :to="{ hash: '#sub_parts' }">
@@ -164,9 +164,7 @@
       </div>
 
       <!-- curve -->
-      <template
-        v-if="plottedData && showCurves && !variable.includes('Increase')"
-      >
+      <div v-if="plottedData && showCurves && !variable.includes('Increase')">
         <EpiCurve
           id="curveContainer"
           class="row"
@@ -191,7 +189,7 @@
           figureRef="epi-curve"
           :data="data$[0]"
         />
-      </template>
+      </div>
 
       <div
         v-if="subParts"
@@ -204,7 +202,7 @@
             :key="mIdx"
             class="col-sm-6 col-lg-4 line-height-1 text-left pl-2 mb-3"
           >
-            <template v-if="metro.hasSubparts">
+            <div v-if="metro.hasSubparts">
               <b>{{ metro.key }}</b>
               metro area includes:
 
@@ -230,7 +228,7 @@
                 </router-link>
                 <span v-if="idx < metro.parts.length - 1">;</span>
               </span>
-            </template>
+            </div>
           </small>
         </div>
       </div>

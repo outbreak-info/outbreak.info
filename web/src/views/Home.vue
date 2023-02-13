@@ -163,7 +163,7 @@
                 v-for="(example, gIdx) in genomicsExamples"
                 :key="gIdx"
               >
-                <template v-if="example.who_name">
+                <div v-if="example.who_name">
                   <router-link
                     :to="{
                       name: 'MutationReport',
@@ -174,8 +174,8 @@
                     {{ example.short_name }}
                     <font-awesome-icon :icon="['fas', 'angle-double-right']" />
                   </router-link>
-                </template>
-                <template v-else>
+                </div>
+                <div v-else>
                   <router-link
                     :to="{
                       name: 'MutationReport',
@@ -186,7 +186,7 @@
                     {{ example.short_name }}
                     <font-awesome-icon :icon="['fas', 'angle-double-right']" />
                   </router-link>
-                </template>
+                </div>
               </span>
             </small>
           </div>

@@ -16,7 +16,7 @@
             </h3>
 
             <!-- one group -->
-            <template v-if="Array.isArray(faq[group])">
+            <div v-if="Array.isArray(faq[group])">
               <ol :id="'group' + gIdx" class="collapse">
                 <li
                   v-for="(question, qIdx) in faq[group]"
@@ -29,7 +29,7 @@
                   <div class="font-size-normal" v-html="question.a" />
                 </li>
               </ol>
-            </template>
+            </div>
 
             <!-- subgroups -->
             <div v-else :id="'group' + gIdx" class="collapse ml-4">

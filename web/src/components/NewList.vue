@@ -10,7 +10,7 @@
       >
         {{ item.name }}
       </router-link>
-      <template v-if="item.author && item.author.length">
+      <div v-if="item.author && item.author.length">
         [{{
           item.author[0].name
             ? item.author[0].name
@@ -18,8 +18,8 @@
         }}
         <span v-if="item.author.length > 1">et al.]</span>
         <span v-else>]</span>
-      </template>
-      <template v-else-if="item.creator && item.creator.length">
+      </div>
+      <div v-else-if="item.creator && item.creator.length">
         [{{
           item.creator[0].name
             ? item.creator[0].name
@@ -27,7 +27,7 @@
         }}
         <span v-if="item.creator.length > 1">et al.]</span>
         <span v-else>]</span>
-      </template>
+      </div>
     </div>
   </div>
 </template>

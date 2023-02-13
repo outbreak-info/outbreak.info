@@ -40,15 +40,15 @@
             v-if="data.publicationType && data.publicationType[0]"
             class="pub-type mx-3"
           >
-            <template v-if="Array.isArray(data.publicationType)">
+            <div v-if="Array.isArray(data.publicationType)">
               <span v-for="(pub, idx) in data.publicationType" :key="idx">
                 {{ pub }}
                 <span v-if="idx < data.publicationType.length - 1" class="mx-2">
                   &bull;
                 </span>
               </span>
-            </template>
-            <template v-else>{{ data.publicationType }}</template>
+            </div>
+            <div v-else>{{ data.publicationType }}</div>
           </span>
         </div>
       </div>
@@ -97,13 +97,13 @@
             <div v-if="data.funding || data.funder">
               <div v-if="data.funding">
                 <ul>
-                  <template v-if="Array.isArray(data.funding)">
+                  <div v-if="Array.isArray(data.funding)">
                     <li
                       v-for="(funding, idx) in data.funding"
                       :key="idx"
                       class="mb-3"
                     >
-                      <template v-if="Array.isArray(funding.funder)">
+                      <div v-if="Array.isArray(funding.funder)">
                         <div v-for="(funder, idx) in funding.funder" :key="idx">
                           <b v-if="funder.name">{{ funder.name }}</b>
                           <span v-if="funder.name && funding.identifier">
@@ -114,9 +114,9 @@
                           </span>
                           <span v-if="funder.role">({{ funder.role }})</span>
                         </div>
-                      </template>
+                      </div>
 
-                      <template v-else>
+                      <div v-else>
                         <div class="m-0">
                           <b v-if="funding.funder && funding.funder.name">
                             {{ funding.funder.name }}
@@ -138,15 +138,15 @@
                             ({{ funding.funder.role }})
                           </span>
                         </div>
-                      </template>
+                      </div>
                       <div v-if="funding.description" class="line-height-1">
                         {{ funding.description }}
                       </div>
                     </li>
-                  </template>
-                  <template v-else>
+                  </div>
+                  <div v-else>
                     <li class="mb-3">
-                      <template v-if="Array.isArray(data.funding.funder)">
+                      <div v-if="Array.isArray(data.funding.funder)">
                         <div
                           v-for="(funder, idx) in data.funding.funder"
                           :key="idx"
@@ -160,9 +160,9 @@
                           </span>
                           <span v-if="funder.role">({{ funder.role }})</span>
                         </div>
-                      </template>
+                      </div>
 
-                      <template v-else>
+                      <div v-else>
                         <div class="m-0">
                           <b
                             v-if="
@@ -193,7 +193,7 @@
                             ({{ data.funding.funder.role }})
                           </span>
                         </div>
-                      </template>
+                      </div>
                       <div
                         v-if="data.funding.description"
                         class="line-height-1"
@@ -201,11 +201,11 @@
                         {{ data.funding.description }}
                       </div>
                     </li>
-                  </template>
+                  </div>
                 </ul>
               </div>
-              <template v-if="data.funder">
-                <template v-if="Array.isArray(data.funder)">
+              <div v-if="data.funder">
+                <div v-if="Array.isArray(data.funder)">
                   <ul>
                     <li
                       v-for="(funder, idx) in data.funder"
@@ -222,9 +222,9 @@
                       <span v-if="funder.role">({{ funder.role }})</span>
                     </li>
                   </ul>
-                </template>
+                </div>
 
-                <template v-else>
+                <div v-else>
                   <ul>
                     <li>
                       <b v-if="funder.name">{{ funder.name }}</b>
@@ -237,8 +237,8 @@
                       <span v-if="funder.role">({{ funder.role }})</span>
                     </li>
                   </ul>
-                </template>
-              </template>
+                </div>
+              </div>
             </div>
             <div v-else>
               <small>not specified</small>

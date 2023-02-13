@@ -169,7 +169,7 @@
                     </small>
                   </form>
                   <!-- Filters -->
-                  <template v-if="facet.filtered.length">
+                  <div v-if="facet.filtered.length">
                     <ul class="list-group list-unstyled rounded-0">
                       <div
                         v-for="(option, optIdx) in facet.filtered"
@@ -207,7 +207,7 @@
                     >
                       show all
                     </small>
-                  </template>
+                  </div>
                   <div v-else class="">
                     <small>none</small>
                   </div>
@@ -598,7 +598,7 @@
                     <TrialPhase :phases="item.studyDesign.phaseNumber"/>
                     </div> -->
 
-                  <template v-if="item.descriptionExpanded">
+                  <div v-if="item.descriptionExpanded">
                     <span class="text-break" v-html="item.longDescription" />
                     <span>
                       <a
@@ -610,8 +610,8 @@
                         (show less)
                       </a>
                     </span>
-                  </template>
-                  <template v-else-if="item.shortDescription">
+                  </div>
+                  <div v-else-if="item.shortDescription">
                     <span class="text-break" v-html="item.shortDescription" />
                     <span v-if="item.descriptionTooLong">
                       ...
@@ -624,8 +624,8 @@
                         (show more)
                       </a>
                     </span>
-                  </template>
-                  <template v-else>No description provided</template>
+                  </div>
+                  <div v-else>No description provided</div>
                 </div>
 
                 <!-- Bottom -->

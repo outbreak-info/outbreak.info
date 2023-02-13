@@ -31,7 +31,7 @@
         (average over last {{ rollLength }} days)
       </small>
 
-      <template v-if="timeTrace">
+      <div v-if="timeTrace">
         <div class="d-flex m-0 mt-3">
           <div class="d-flex flex-column">
             <small class="">new cases per day</small>
@@ -131,7 +131,7 @@
             </table>
           </div>
         </div>
-      </template>
+      </div>
     </div>
     <div class="d-flex flex-column">
       <HistogramLegend

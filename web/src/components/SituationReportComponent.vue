@@ -192,7 +192,7 @@
         </div>
       </div>
 
-      <template v-if="hasData">
+      <div v-if="hasData">
         <!-- SOCIAL MEDIA SHARE, BACK BTN -->
         <div v-if="!embedded" class="d-flex align-items-center mb-2 mt-3">
           <router-link :to="{ name: 'SituationReports' }" class="no-underline">
@@ -279,7 +279,7 @@
                 </small>
 
                 <!-- link to Aquaria structures -->
-                <template v-if="aquariaLink">
+                <div v-if="aquariaLink">
                   <small
                     v-for="(link, lIdx) in aquariaLink"
                     :key="lIdx"
@@ -300,7 +300,7 @@
                       &bull;
                     </span>
                   </small>
-                </template>
+                </div>
               </div>
               <div class="d-flex align-items-center">
                 <small
@@ -416,7 +416,7 @@
                 </small>
 
                 <!-- link to Aquaria structures -->
-                <template v-if="aquariaLink">
+                <div v-if="aquariaLink">
                   <small
                     v-for="(link, lIdx) in aquariaLink"
                     :key="lIdx"
@@ -437,7 +437,7 @@
                       &bull;
                     </span>
                   </small>
-                </template>
+                </div>
               </div>
             </div>
             <div
@@ -858,7 +858,7 @@
           </div>
 
           <div v-if="selectedLocation && selectedLocation.admin_level < 2">
-            <template v-if="selectedLocation.admin_level < 1">
+            <div v-if="selectedLocation.admin_level < 1">
               <div
                 class="d-flex align-items-center justify-content-end mb-3 mt-2"
               >
@@ -935,7 +935,7 @@
                 :countThreshold="choroCountThreshold"
                 :setWidth="width"
               />
-            </template>
+            </div>
 
             <div class="d-flex flex-column align-items-end">
               <!-- Ndays filter -->
@@ -1007,7 +1007,7 @@
 
         <!-- ACKNOWLEDGEMENTS -->
         <ReportAcknowledgements class="border-top pt-3" />
-      </template>
+      </div>
 
       <div
         v-else-if="reportloading"

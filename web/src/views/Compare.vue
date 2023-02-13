@@ -24,7 +24,7 @@
           {{ option.label }}
         </option>
       </select>
-      <template v-if="locationData">
+      <div v-if="locationData">
         to
 
         <router-link
@@ -32,7 +32,7 @@
         >
           {{ locationData.name }}
         </router-link>
-      </template>
+      </div>
     </h2>
 
     <SearchBar

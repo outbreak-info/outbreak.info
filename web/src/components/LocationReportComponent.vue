@@ -479,7 +479,7 @@
                 </div>
               </div>
 
-              <template v-else>
+              <div v-else>
                 <section
                   v-if="mostRecentLineages"
                   id="most-recent-lineages"
@@ -503,7 +503,7 @@
                     />
                   </div>
                 </section>
-              </template>
+              </div>
             </div>
           </div>
 

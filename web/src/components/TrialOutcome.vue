@@ -1,8 +1,6 @@
 <template>
   <div>
-    <div class="orange-title uppercase mt-2">
-      Primary
-    </div>
+    <div class="orange-title uppercase mt-2">Primary</div>
     <ul>
       <li v-for="(outcome, idx) in primary" :key="idx">
         <span class="text-dark font-weight-700">
@@ -13,10 +11,8 @@
         </span>
       </li>
     </ul>
-    <template v-if="secondary.length">
-      <div class="orange-title uppercase">
-        secondary
-      </div>
+    <div v-if="secondary.length">
+      <div class="orange-title uppercase">secondary</div>
       <ul>
         <li v-for="(outcome, idx) in secondary" :key="idx">
           <span class="text-dark">{{ outcome.outcomeMeasure }}</span>
@@ -25,7 +21,7 @@
           </span>
         </li>
       </ul>
-    </template>
+    </div>
   </div>
 </template>
 

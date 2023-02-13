@@ -65,7 +65,7 @@
 
         <div class="col-sm-12 d-flex">
           <section id="regional-epi-curves" class="w-100">
-            <template v-if="nestedData && nestedData.length > 0">
+            <div v-if="nestedData && nestedData.length > 0">
               <div
                 v-for="(region, idx) in regionDict"
                 :key="idx"
@@ -104,9 +104,9 @@
                   @regionSelected="handleTooltip"
                 />
               </div>
-            </template>
+            </div>
 
-            <template v-if="nestedData && nestedData.length > 0">
+            <div v-if="nestedData && nestedData.length > 0">
               <h3>
                 Cumulative Number of COVID-19
                 <select
@@ -124,7 +124,7 @@
                 </select>
                 by Region
               </h3>
-            </template>
+            </div>
 
             <div
               id="regional-stacked-area-plots d-flex"
