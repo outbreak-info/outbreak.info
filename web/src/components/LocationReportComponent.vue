@@ -144,7 +144,7 @@
       </div>
       <!-- end change mutations modal -->
 
-      <template>
+      <div>
         <!-- SOCIAL MEDIA SHARE, BACK BTN -->
         <div v-if="!embedded" class="d-flex align-items-center mb-2 mt-3">
           <router-link :to="{ name: 'LocationReports' }" class="no-underline">
@@ -414,10 +414,10 @@
                   <small>days</small>
                 </div>
 
-                <!-- Histogram of sequencing counts -->
+                Histogram of sequencing counts
                 <SequencingHistogram
-                  :data="seqCountsWindowed"
                   v-if="seqCountsWindowed && !noRecentData"
+                  :data="seqCountsWindowed"
                   :width="widthHist"
                   :downward="false"
                   :includeXAxis="true"
@@ -932,7 +932,7 @@
 
         <!-- ACKNOWLEDGEMENTS -->
         <ReportAcknowledgements class="border-top pt-3" />
-      </template>
+      </div>
     </div>
   </div>
 </template>
@@ -1008,7 +1008,9 @@ export default {
     },
     selected: {
       type: [Array, String],
-      default: () => [],
+      default() {
+        return [];
+      },
     },
   },
   data() {

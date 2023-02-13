@@ -246,7 +246,7 @@
           >
             <div class="d-flex justify-content-between">
               <h2 :id="group.id" class="mb-0">
-                {{ group.key | capitalize }} Reports
+                {{ $filters.capitalize(group.key) }} Reports
               </h2>
               <div v-if="i === 0" class="d-flex align-items-center text-sec">
                 <font-awesome-icon
@@ -1056,7 +1056,7 @@
           >
             <div class="d-flex justify-content-between">
               <h2 :id="group.id" class="mb-0">
-                {{ group.key | capitalize }} Reports
+                {{ $filters.capitalize(group.key) }} Reports
               </h2>
             </div>
             <small>

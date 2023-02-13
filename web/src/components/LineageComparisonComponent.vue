@@ -165,7 +165,7 @@
     </div> -->
 
       <div class="my-3 p-2 bg-white border-top border-bottom">
-        <template>
+        <div>
           <div class="d-flex justify-content-between mt-1 mb-2">
             <div class="d-flex">
               <h4>Selected lineages</h4>
@@ -221,7 +221,7 @@
               <i>none selected</i>
             </p>
           </div>
-        </template>
+        </div>
 
         <div
           class="border-top pt-3 my-3 mb-1 collapse show"
@@ -755,7 +755,7 @@
               'horiz-scroll': largeScreen && checkPango,
             }"
           >
-            <template v-if="selectedGenes.includes(geneData.key)">
+            <div v-if="selectedGenes.includes(geneData.key)">
               <h4 class="m-0 text-dark">
                 {{ geneData.key }}
               </h4>
@@ -779,7 +779,7 @@
                 :dark="darkMode"
                 :routeTo="routeTo"
               />
-            </template>
+            </div>
           </div>
         </div>
         <DownloadReportData
@@ -876,7 +876,9 @@ export default {
     },
     gene: {
       type: [Array, String],
-      default: () => ['ORF1a', 'ORF1b', 'S'],
+      default() {
+        return ['ORF1a', 'ORF1b', 'S'];
+      },
     },
   },
   data() {

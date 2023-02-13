@@ -1367,7 +1367,7 @@ export default {
       if (this.alias) {
         this.lineageName = this.alias.includes('*')
           ? this.alias.toUpperCase().replace('OMICRON', 'Omicron')
-          : this.capitalize(this.alias.toLowerCase());
+          : this.$filters.capitalize(this.alias.toLowerCase());
         this.selectedMutationArr = null;
         this.title = `${this.lineageName} Variant Report`;
         this.reportType = 'combined lineage';
@@ -1444,7 +1444,7 @@ export default {
             this.selectedMutationArr = this.$route.query.muts;
             this.reportType =
               this.$route.query.muts.length === 1 ? 'mutation' : 'variant';
-            this.title = `${this.reportName} ${this.$options.filters.capitalize(
+            this.title = `${this.reportName} ${this.$filters.capitalize(
               this.reportType,
             )} Report`;
             this.locationQueryParams = {
@@ -1816,11 +1816,6 @@ export default {
       } else if (mutation.type === 'deletion') {
         return `${mutation}`;
       }
-    },
-    capitalize(value) {
-      if (!value) return '';
-      value = value.toString();
-      return value.charAt(0).toUpperCase() + value.slice(1);
     },
   },
 };

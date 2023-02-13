@@ -143,7 +143,7 @@ export default {
     }
   },
   mounted() {
-    const locations = Vue.$cookies.get('custom_locations');
+    const locations = this.$cookies.get('custom_locations');
     this.glanceLocations = locations ? locations.split(',') : [];
 
     this.dataSubscription = getGlanceSummary(
@@ -153,7 +153,7 @@ export default {
     ).subscribe((d) => {
       this.glanceSummaries = this.sortSummaries(d);
       this.glanceLocations = d.map((d) => d.location_id);
-      Vue.$cookies.set('custom_locations', this.glanceLocations);
+      this.$cookies.set('custom_locations', this.glanceLocations);
       tippy('#first-cases', {
         content: 'Loading...',
         maxWidth: '200px',
@@ -194,7 +194,7 @@ export default {
   methods: {
     removeSummary(idx) {
       this.glanceLocations = this.glanceLocations.filter((d, i) => d !== idx);
-      Vue.$cookies.set('custom_locations', this.glanceLocations);
+      this.$cookies.set('custom_locations', this.glanceLocations);
       if (this.glanceLocations.length > 0) {
         this.updatedSubscription = getGlanceSummary(
           this.$apiurl,
@@ -209,7 +209,7 @@ export default {
     },
     addSummary(location_id) {
       this.glanceLocations = this.glanceLocations.concat(location_id);
-      Vue.$cookies.set('custom_locations', this.glanceLocations);
+      this.$cookies.set('custom_locations', this.glanceLocations);
       this.updatedSubscription = getGlanceSummary(
         this.$apiurl,
         this.$genomicsurl,
@@ -235,7 +235,7 @@ export default {
       currentDate$: getCurrentDate(this.$apiurl),
     };
   },
-});
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

@@ -175,7 +175,7 @@ app.config.globalProperties.$resourceurl =
 app.config.globalProperties.$genomicsurl =
   'https://api.outbreak.info/genomics/';
 
-app.config.globalProperties.$filter = {
+app.config.globalProperties.$filters = {
   capitalize(value) {
     if (!value) return '';
     value = value.toString();

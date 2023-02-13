@@ -2380,7 +2380,7 @@ export const getSequenceCount = (
 
 // COMPARISON REPORTS
 export const getBasicComparisonReportData = (apiurl) => {
-  storeGenomics.$patch({ locationLoading2: true });
+  storeGenomics.$patch({ locationLoading1: true });
 
   const who = CURATED.filter((d) => d.who_name)
     .map((d) => d.who_name)
