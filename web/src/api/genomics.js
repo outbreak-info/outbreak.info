@@ -1195,11 +1195,21 @@ export const getCumPrevalenceQueryLoop = (
   queries,
   location,
   totalThreshold,
+  minDate,
+  maxDate,
 ) => {
   if (queries.length) {
     return forkJoin(
       ...queries.map((queryStr) =>
-        getCumPrevalence(apiurl, queryStr, location, totalThreshold),
+        getCumPrevalence(
+          apiurl,
+          queryStr,
+          location,
+          totalThreshold,
+          true,
+          minDate,
+          maxDate,
+        ),
       ),
     ).pipe(
       map((results) => {
@@ -1256,11 +1266,13 @@ export const getCumPrevalence = (
   location,
   totalThreshold,
   returnFlat = true,
+  minDate = '',
+  maxDate = '',
 ) => {
   const url =
     location === 'Worldwide'
-      ? `${apiurl}prevalence-by-location?cumulative=true&${queryStr}`
-      : `${apiurl}prevalence-by-location?${queryStr}&location_id=${location}&cumulative=true`;
+      ? `${apiurl}prevalence-by-location?cumulative=true&${queryStr}&max_date=${maxDate}&min_date=${minDate}`
+      : `${apiurl}prevalence-by-location?${queryStr}&location_id=${location}&cumulative=true&max_date=${maxDate}&min_date=${minDate}`;
   return from(
     axios.get(url, {
       headers: {
@@ -1859,10 +1871,12 @@ export const getPrevalenceAllLineages = (
   other_threshold,
   nday_threshold,
   ndays,
+  minDate = '',
+  maxDate = '',
 ) => {
   const dateThreshold = new Date('2020-03-14');
 
-  let url = `${apiurl}prevalence-by-location-all-lineages?location_id=${location}&other_threshold=${other_threshold}&nday_threshold=${nday_threshold}&ndays=${ndays}`;
+  let url = `${apiurl}prevalence-by-location-all-lineages?location_id=${location}&other_threshold=${other_threshold}&nday_threshold=${nday_threshold}&ndays=${ndays}&max_date=${maxDate}&min_date=${minDate}`;
 
   return from(
     axios.get(url, {
@@ -1997,6 +2011,8 @@ export const getLocationReportData = (
   nday_threshold,
   ndays,
   window,
+  minDate = '',
+  maxDate = '',
 ) => {
   store.state.genomics.locationLoading2 = true;
 
@@ -2009,6 +2025,8 @@ export const getLocationReportData = (
     nday_threshold,
     ndays,
     window,
+    minDate,
+    maxDate,
   ).pipe(
     mergeMap((results) =>
       getMutationsOfInterestPrevalence(apiurl, results.recentDomain).pipe(
@@ -2036,6 +2054,8 @@ export const getLocationLineagePrevalences = (
   nday_threshold,
   ndays,
   window,
+  minDate,
+  maxDate,
 ) => {
   return forkJoin([
     getPrevalenceAllLineages(
@@ -2044,6 +2064,8 @@ export const getLocationLineagePrevalences = (
       other_threshold,
       nday_threshold,
       ndays,
+      minDate,
+      maxDate,
     ),
     getCumPrevalenceAllLineages(
       apiurl,
@@ -2206,6 +2228,8 @@ export const getLocationTable = (
   location,
   mutations,
   totalThreshold,
+  minDate = '',
+  maxDate = '',
 ) => {
   store.state.genomics.locationLoading3 = true;
   const pangos = mutations
@@ -2220,8 +2244,23 @@ export const getLocationTable = (
   const variantQueries = mutations.map((d) => d.query);
 
   return forkJoin([
-    getCumPrevalence(apiurl, pangoQuery, location, totalThreshold),
-    getCumPrevalenceQueryLoop(apiurl, variantQueries, location, totalThreshold),
+    getCumPrevalence(
+      apiurl,
+      pangoQuery,
+      location,
+      totalThreshold,
+      true,
+      minDate,
+      maxDate,
+    ),
+    getCumPrevalenceQueryLoop(
+      apiurl,
+      variantQueries,
+      location,
+      totalThreshold,
+      minDate,
+      maxDate,
+    ),
   ]).pipe(
     map(([lineages, variants]) => {
       let results = lineages.concat(variants);

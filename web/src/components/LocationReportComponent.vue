@@ -450,6 +450,7 @@
                   :colorScale="colorScale"
                   :xmin="xmin"
                   :xmax="xmax"
+                  @update="updateDateRange($event)"
                 />
               </section>
 
@@ -1126,7 +1127,9 @@ export default {
       //   "#bcbd22", // puce
       //   "#79706E", // grey
       //   "#79706E"
-      // ])
+      // ]),
+      minDate: '',
+      maxDate: '',
     };
   },
   computed: {
@@ -1447,6 +1450,8 @@ export default {
         this.ndayThresh,
         this.dayThresh,
         this.recentWindow,
+        this.minDate,
+        this.maxDate,
       ).subscribe((results) => {
         this.lineagesByDay = results.lineagesByDay;
         this.noRecentData = !(
@@ -1721,9 +1726,18 @@ export default {
         this.loc,
         this.selectedMutations,
         this.totalThresh,
+        this.minDate,
+        this.maxDate,
       ).subscribe((results) => {
         this.lineageTable = results;
       });
+    },
+    updateDateRange(event) {
+      this.maxDate = event.maxDate;
+      this.minDate = event.minDate;
+      this.setupReport();
+      this.updateMaps();
+      this.updateTable();
     },
   },
 };
