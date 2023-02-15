@@ -620,6 +620,12 @@ export default Vue.extend({
       if (selection) {
         const newMin = this.x.invert(selection[0]);
         const newMax = this.x.invert(selection[1]);
+        const format = timeFormat('%Y-%m-%d');
+        this.$emit('update', {
+          newMax: format(newMax),
+          newMin: format(newMin),
+          month: 0,
+        });
 
         this.x = scaleTime()
           .range([0, this.width - this.margin.left - this.margin.right])
@@ -657,6 +663,7 @@ export default Vue.extend({
       this.xMin = null;
       this.xMax = null;
       this.month = 0;
+      this.$emit('update', { newMax: '', newMin: '', month: 0 });
       this.isZooming = false;
       this.setXScale();
 
@@ -733,7 +740,11 @@ export default Vue.extend({
       const newMin = timeMonth.offset(newMax, -month);
 
       const format = timeFormat('%Y-%m-%d');
-      this.$emit('update', { newMax: format(newMax), newMin: format(newMin) });
+      this.$emit('update', {
+        newMax: format(newMax),
+        newMin: format(newMin),
+        month: month,
+      });
 
       this.x = scaleTime()
         .range([0, this.width - this.margin.left - this.margin.right])

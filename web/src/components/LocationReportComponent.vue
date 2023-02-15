@@ -1759,6 +1759,7 @@ export default {
     updateDateRange(event) {
       this.maxDate = event.newMax;
       this.minDate = event.newMin;
+      this.month = event.month;
       this.setupReport();
       this.updateMaps();
       this.updateTable();
