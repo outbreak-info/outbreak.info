@@ -33,6 +33,7 @@
       :xmax="xmax"
       :locationID="locationID"
       :locationName="locationName"
+      @update="updateDateRange($event)"
     />
   </div>
 </template>
@@ -174,6 +175,9 @@ export default {
         this.epi = results.epi;
         this.prevalences = results.mutations;
       });
+    },
+    updateDateRange(event) {
+      this.$emit('update', event);
     },
   },
 };

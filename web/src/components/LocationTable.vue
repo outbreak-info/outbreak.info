@@ -24,6 +24,8 @@
           <th class="text-center padded">
             cumulative prevalence
             <sup>*</sup>
+            <br />
+            <small>{{ `${xMin}  -  ${xMax}` }}</small>
           </th>
           <th />
           <th class="text-center padded">first</th>
@@ -158,8 +160,8 @@
         <em>
           <sup>*</sup>
           Apparent cumulative prevalence is the ratio of the sequences
-          containing the lineage or mutation(s) to all sequences collected since
-          the identification of lineage or mutation(s) in that location.
+          containing the lineage or mutation(s) to all sequences collected
+          within the selected time window.
         </em>
       </small>
       <small class="ml-2">
@@ -188,6 +190,22 @@ export default {
     routeTo: {
       type: String,
       default: 'MutationReport',
+    },
+    minDate: {
+      type: String,
+      default: '',
+    },
+    maxDate: {
+      type: String,
+      default: '',
+    },
+  },
+  computed: {
+    xMin() {
+      return this.minDate;
+    },
+    xMax() {
+      return this.maxDate;
     },
   },
   mounted() {

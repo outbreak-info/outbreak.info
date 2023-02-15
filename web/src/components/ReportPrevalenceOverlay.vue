@@ -3,8 +3,6 @@
     id="location-report-prevalence"
     class="d-flex flex-column align-items-center w-100"
   >
-    
-
     <div class="d-flex flex-column">
       <!-- SVGs -->
       <div class="d-flex flex-column align-items-start">
@@ -13,43 +11,45 @@
           <h5 class="p-0 m-0">
             {{ title }}
           </h5>
-          
         </div>
 
         <!-- zoom btns -->
-    <div
-      class="d-flex justify-content-start ml-0 mt-2 mb-2"
-      :style="{ width: width + 'px' }"
-    >
-      <button
-        class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2"
-        @click="enableZoom"
-      >
-        <font-awesome-icon class="text-right" :icon="['fas', 'search-plus']" />
-      </button>
-      <button
-        v-for="(beforeTime, lIdx) in timeOptions"
-        :key="lIdx"
-        class="btn btn-accent-outline timeline-btn m-0 px-2 py-1 mr-2"
-        :class="{
-          'time-btn-active': beforeTime.value === countMonth && !isZooming,
-        }"
-        @click="changeXScale(beforeTime.value)"
-      >
-        {{ beforeTime.label }}
-      </button>
-      <button
-        class="btn btn-accent-outline timeline-btn text-highlight d-flex align-items-center m-0 p-2"
-        :class="{ 'time-btn-active': countMonth === 0 && !isZooming }"
-        @click="resetZoom"
-      >
-        all time
-        <font-awesome-icon
-          class="text-right ml-1"
-          :icon="['fas', 'compress-arrows-alt']"
-        />
-      </button>
-    </div>
+        <div
+          class="d-flex justify-content-start ml-0 mt-2 mb-2"
+          :style="{ width: width + 'px' }"
+        >
+          <button
+            class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2"
+            @click="enableZoom"
+          >
+            <font-awesome-icon
+              class="text-right"
+              :icon="['fas', 'search-plus']"
+            />
+          </button>
+          <button
+            v-for="(beforeTime, lIdx) in timeOptions"
+            :key="lIdx"
+            class="btn btn-accent-outline timeline-btn m-0 px-2 py-1 mr-2"
+            :class="{
+              'time-btn-active': beforeTime.value === countMonth && !isZooming,
+            }"
+            @click="changeXScale(beforeTime.value)"
+          >
+            {{ beforeTime.label }}
+          </button>
+          <button
+            class="btn btn-accent-outline timeline-btn text-highlight d-flex align-items-center m-0 p-2"
+            :class="{ 'time-btn-active': countMonth === 0 && !isZooming }"
+            @click="resetZoom"
+          >
+            all time
+            <font-awesome-icon
+              class="text-right ml-1"
+              :icon="['fas', 'compress-arrows-alt']"
+            />
+          </button>
+        </div>
 
         <div class="d-flex mt-2">
           <svg width="15" height="15" class="mr-2">
@@ -79,16 +79,16 @@
         <div class="d-flex mb-4">
           <label class="b-contain m-auto pr-3">
             <small>show confidence intervals</small>
-              <input
-                v-model="showCI"
-                type="checkbox"
-                :value="showCI"
-                @change="hideCIs"
-              />
+            <input
+              v-model="showCI"
+              type="checkbox"
+              :value="showCI"
+              @change="hideCIs"
+            />
             <div class="b-input" />
           </label>
         </div>
-        
+
         <svg
           ref="svg"
           :width="width"
@@ -172,7 +172,7 @@
             id="weird-last values"
             :hidden="data && data.length < lengthThreshold"
           >
-          <text
+            <text
               :x="width - margin.right"
               :y="-1"
               fill="#929292"
@@ -184,7 +184,7 @@
               Latest dates are noisy due to fewer samples, or missing from
               sequencing delays
             </text>
-            
+
             <path
               stroke="#BBBBBB"
               fill="none"
@@ -209,10 +209,8 @@
           className="mutation-epi-prevalence"
         />
 
-        
-
         <!-- EPI TRACE -->
-        <div class="mt-5" :class="{ hidden: !epi.length }" >
+        <div class="mt-5" :class="{ hidden: !epi.length }">
           <h5 class="">
             Daily COVID-19 cases in
             <router-link
@@ -223,43 +221,44 @@
           </h5>
 
           <!-- zoom btns -->
-        <div
-          class="d-flex justify-content-start mt-3 mb-3"
-          :style="{ width: width + 'px' }"
-          :class="{ hidden: !epi.length }"
-        >
-          <button
-            class="btn btn-accent-flat text-highlight d-flex align-items-start m-0 p-2"
-            @click="enableZoom"
+          <div
+            class="d-flex justify-content-start mt-3 mb-3"
+            :style="{ width: width + 'px' }"
+            :class="{ hidden: !epi.length }"
           >
-            <font-awesome-icon
-              class="text-right"
-              :icon="['fas', 'search-plus']"
-            />
-          </button>
-          <button
-            v-for="(beforeTime, lIdx) in timeOptions"
-            :key="lIdx"
-            class="btn btn-accent-outline timeline-btn m-0 px-2 py-1 mr-2"
-            :class="{
-              'time-btn-active': beforeTime.value === countMonth && !isZooming,
-            }"
-            @click="changeXScale(beforeTime.value)"
-          >
-            {{ beforeTime.label }}
-          </button>
-          <button
-            class="btn btn-accent-outline timeline-btn text-highlight d-flex align-items-center m-0 p-2"
-            :class="{ 'time-btn-active': countMonth === 0 && !isZooming }"
-            @click="resetZoom"
-          >
-            all time
-            <font-awesome-icon
-              class="text-right ml-1"
-              :icon="['fas', 'compress-arrows-alt']"
-            />
-          </button>
-        </div>
+            <button
+              class="btn btn-accent-flat text-highlight d-flex align-items-start m-0 p-2"
+              @click="enableZoom"
+            >
+              <font-awesome-icon
+                class="text-right"
+                :icon="['fas', 'search-plus']"
+              />
+            </button>
+            <button
+              v-for="(beforeTime, lIdx) in timeOptions"
+              :key="lIdx"
+              class="btn btn-accent-outline timeline-btn m-0 px-2 py-1 mr-2"
+              :class="{
+                'time-btn-active':
+                  beforeTime.value === countMonth && !isZooming,
+              }"
+              @click="changeXScale(beforeTime.value)"
+            >
+              {{ beforeTime.label }}
+            </button>
+            <button
+              class="btn btn-accent-outline timeline-btn text-highlight d-flex align-items-center m-0 p-2"
+              :class="{ 'time-btn-active': countMonth === 0 && !isZooming }"
+              @click="resetZoom"
+            >
+              all time
+              <font-awesome-icon
+                class="text-right ml-1"
+                :icon="['fas', 'compress-arrows-alt']"
+              />
+            </button>
+          </div>
 
           <div class="d-flex mt-3 mb-4">
             <svg width="15" height="15" class="mr-2">
@@ -355,7 +354,15 @@ import { forceY, forceCollide, forceSimulation } from 'd3-force';
 import { scaleLinear, scaleTime, scaleOrdinal } from 'd3-scale';
 import { select, selectAll, event } from 'd3-selection';
 import { area, line } from 'd3-shape';
-import { timeSecond, timeMinute, timeHour, timeDay, timeWeek, timeMonth, timeYear } from 'd3-time';
+import {
+  timeSecond,
+  timeMinute,
+  timeHour,
+  timeDay,
+  timeWeek,
+  timeMonth,
+  timeYear,
+} from 'd3-time';
 import { timeParse, timeFormat } from 'd3-time-format';
 import { transition } from 'd3-transition';
 import cloneDeep from 'lodash/cloneDeep';
@@ -725,6 +732,9 @@ export default Vue.extend({
       const newMax = new Date();
       const newMin = timeMonth.offset(newMax, -month);
 
+      const format = timeFormat('%Y-%m-%d');
+      this.$emit('update', { newMax: format(newMax), newMin: format(newMin) });
+
       this.x = scaleTime()
         .range([0, this.width - this.margin.left - this.margin.right])
         .domain([newMin, newMax])
@@ -732,16 +742,7 @@ export default Vue.extend({
 
       // update plotted data
       this.plottedData = cloneDeep(this.data);
-      this.plottedData.forEach((mutation) => {
-        mutation.data = mutation.data.filter(
-          (d) => d[this.xVariable] >= newMin && d[this.xVariable] <= newMax,
-        );
-      });
-
       this.plottedData = this.plottedData.filter((d) => d.data.length);
-      this.plottedEpi = this.epi.filter(
-        (d) => d[this.xEpiVariable] >= newMin && d[this.xEpiVariable] <= newMax,
-      );
       // move the brush
       // this.brushRef.call(this.brush.move, null);
       // this.brushRef2.call(this.brush.move, null);
@@ -911,15 +912,25 @@ export default Vue.extend({
         .ticks(this.numXTicks)
         .tickSize(-this.height)
         .tickSizeOuter(0)
-        .tickFormat(function(date){
-          return (timeSecond(date) < date ? timeFormat('.%L')
-            : timeMinute(date) < date ? timeFormat(':%S')
-            : timeHour(date) < date ? timeFormat('%I:%M')
-            : timeDay(date) < date ? timeFormat('%I %p')
-            : timeMonth(date) < date ? timeWeek(date) < date ? timeFormat('%a %d') : timeFormat('%b %d')
-            : timeYear(date) < date ? timeFormat('%b')
-            : timeFormat('%Y'))(date)
-        });     
+        .tickFormat(function (date) {
+          return (
+            timeSecond(date) < date
+              ? timeFormat('.%L')
+              : timeMinute(date) < date
+              ? timeFormat(':%S')
+              : timeHour(date) < date
+              ? timeFormat('%I:%M')
+              : timeDay(date) < date
+              ? timeFormat('%I %p')
+              : timeMonth(date) < date
+              ? timeWeek(date) < date
+                ? timeFormat('%a %d')
+                : timeFormat('%b %d')
+              : timeYear(date) < date
+              ? timeFormat('%b')
+              : timeFormat('%Y')
+          )(date);
+        });
 
       select(this.$refs.xAxis).call(this.xAxis);
       select(this.$refs.xEpiAxis).call(this.xAxis);
@@ -1342,7 +1353,7 @@ export default Vue.extend({
   & .epi-y.axis--y text {
     font-size: 16px;
   }
-  
+
   & .epi-x {
     font-size: 16px;
     @media (max-width: 812px) {
