@@ -793,6 +793,7 @@
               :locationID="selectedLocation.id"
               :locationName="selectedLocation.label"
               :setColorScale="sublineageColorScale"
+              @update="updateDateRange($event)"
             />
           </div>
 
@@ -819,6 +820,7 @@
               :colorScale="sublineageColorScale"
               :tooltipTotal="true"
               :plotTitle="`Percentage of ${reportName} sequences by lineage`"
+              @update="updateDateRange($event)"
             />
           </div>
         </section>
@@ -1215,6 +1217,8 @@ export default {
       totalLineage: null,
       prevalence: [],
       mutationsByLineage: [],
+      maxDate: '',
+      minDate: '',
     };
   },
   computed: {
@@ -1462,6 +1466,7 @@ export default {
 
       this.setLineageAndMutationStr();
       if (this.lineageName || this.selectedMutationArr || this.alias) {
+        const defaultLocation = ['USA', 'USA_US-CA'];
         this.dataSubscription = getReportData(
           this.$genomicsurl,
           this.alias,
@@ -1471,6 +1476,9 @@ export default {
           this.selected,
           this.totalThresh,
           this.choroNdays,
+          defaultLocation,
+          this.minDate,
+          this.maxDate,
         ).subscribe((results) => {
           this.hasData = true;
 
@@ -1687,6 +1695,8 @@ export default {
         this.selected,
         this.totalThresh,
         this.choroNdays,
+        this.minDate,
+        this.maxDate,
       ).subscribe((results) => {
         // selected locations
         this.selectedLocations = results.locations;
@@ -1815,6 +1825,12 @@ export default {
       } else if (mutation.type === 'deletion') {
         return `${mutation}`;
       }
+    },
+    updateDateRange(event) {
+      this.maxDate = event.newMax;
+      this.minDate = event.newMin;
+      this.setupReport();
+      this.updateLocations();
     },
   },
 };

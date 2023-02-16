@@ -590,6 +590,8 @@ export const getReportData = (
   totalThreshold,
   ndays,
   defaultLocations = ['USA', 'USA_US-CA'],
+  minDate = '',
+  maxDate = '',
 ) => {
   store.state.admin.reportloading = true;
 
@@ -634,10 +636,25 @@ export const getReportData = (
     getCharacteristicMutations(apiurl, lineageString),
     getMutationDetails(apiurl, mutationArr),
     getMutationsByLineage(apiurl, mutationArr),
-    getCumPrevalences(apiurl, queryStr, locations, totalThreshold),
-    getSublineageTotals(apiurl, md, location),
-    getTemporalPrevalence(apiurl, location, queryStr, null),
-    getSublineagePrevalence(apiurl, md, location),
+    getCumPrevalences(
+      apiurl,
+      queryStr,
+      locations,
+      totalThreshold,
+      minDate,
+      maxDate,
+    ),
+    getSublineageTotals(apiurl, md, location, minDate, maxDate),
+    getTemporalPrevalence(
+      apiurl,
+      location,
+      queryStr,
+      null,
+      true,
+      minDate,
+      maxDate,
+    ),
+    getSublineagePrevalence(apiurl, md, location, minDate, maxDate),
     getPositiveLocations(apiurl, queryStr, 'Worldwide'),
     getPositiveLocations(apiurl, queryStr, 'USA'),
     getLocationPrevalence(apiurl, queryStr, location, ndays),
@@ -736,11 +753,25 @@ export const updateChoroData = (
   );
 };
 
-export const getSublineageTotals = (apiurl, md, location) => {
+export const getSublineageTotals = (
+  apiurl,
+  md,
+  location,
+  minDate = '',
+  maxDate = '',
+) => {
   if (md && md.pango_descendants) {
     const queryStr = `pangolin_lineage=${md.pango_descendants.join(',')}`;
 
-    return getCumPrevalence(apiurl, queryStr, location, 0).pipe(
+    return getCumPrevalence(
+      apiurl,
+      queryStr,
+      location,
+      0,
+      true,
+      minDate,
+      maxDate,
+    ).pipe(
       map((results) => {
         // sort in descending order of frequency
         results.sort((a, b) => b.lineage_count - a.lineage_count);
@@ -767,10 +798,24 @@ export const getSublineageTotals = (apiurl, md, location) => {
   return of([]);
 };
 
-export const getSublineagePrevalence = (apiurl, md, location) => {
+export const getSublineagePrevalence = (
+  apiurl,
+  md,
+  location,
+  minDate = '',
+  maxDate = '',
+) => {
   if (md) {
     const queryStr = `pangolin_lineage=${md.pango_descendants.join(',')}`;
-    return getTemporalPrevalence(apiurl, location, queryStr).pipe(
+    return getTemporalPrevalence(
+      apiurl,
+      location,
+      queryStr,
+      false,
+      true,
+      minDate,
+      maxDate,
+    ).pipe(
       map((results) => {
         results = results.filter((d) => d);
 
@@ -837,6 +882,8 @@ export const updateLocationData = (
   location,
   totalThreshold,
   ndays,
+  minDate,
+  maxDate,
 ) => {
   // lookup WHO name in curated dictionary
   const filtered = CURATED.filter(
@@ -870,11 +917,26 @@ export const updateLocationData = (
 
   return forkJoin([
     findAllLocationMetadata(apiurl, locations, location),
-    getTemporalPrevalence(apiurl, location, queryStr, null),
+    getTemporalPrevalence(
+      apiurl,
+      location,
+      queryStr,
+      null,
+      true,
+      minDate,
+      maxDate,
+    ),
     getLocationPrevalence(apiurl, queryStr, location, ndays),
-    getCumPrevalences(apiurl, queryStr, locations, totalThreshold),
-    getSublineageTotals(apiurl, md, location),
-    getSublineagePrevalence(apiurl, md, location),
+    getCumPrevalences(
+      apiurl,
+      queryStr,
+      locations,
+      totalThreshold,
+      minDate,
+      maxDate,
+    ),
+    getSublineageTotals(apiurl, md, location, minDate, maxDate),
+    getSublineagePrevalence(apiurl, md, location, minDate, maxDate),
   ]).pipe(
     map(
       ([
@@ -1163,10 +1225,20 @@ export const getCumPrevalences = (
   queryStr,
   locations,
   totalThreshold,
+  minDate = '',
+  maxDate = '',
 ) => {
   return forkJoin(
     ...locations.map((d) =>
-      getCumPrevalence(apiurl, queryStr, d, totalThreshold),
+      getCumPrevalence(
+        apiurl,
+        queryStr,
+        d,
+        totalThreshold,
+        true,
+        minDate,
+        maxDate,
+      ),
     ),
   ).pipe(
     map((results) => {
@@ -1543,13 +1615,15 @@ export const getTemporalPrevalence = (
   queryStr,
   indivCall = false,
   returnFlat = true,
+  minDate,
+  maxDate,
 ) => {
   store.state.admin.reportloading = true;
   let url;
   if (location === 'Worldwide') {
-    url = `${apiurl}prevalence-by-location?${queryStr}`;
+    url = `${apiurl}prevalence-by-location?${queryStr}&min_date=${minDate}&max_date=${maxDate}`;
   } else {
-    url = `${apiurl}prevalence-by-location?${queryStr}&location_id=${location}`;
+    url = `${apiurl}prevalence-by-location?${queryStr}&location_id=${location}&min_date=${minDate}&max_date=${maxDate}`;
   }
 
   return from(
