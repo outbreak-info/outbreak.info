@@ -1007,8 +1007,15 @@ export const getCharacteristicMutations = (
   prevalenceThreshold = store.state.genomics.characteristicThreshold,
   returnFlat = true,
   includeSublineages = false,
+  genes,
 ) => {
   if (!lineage) return of([]);
+
+  if (!genes) return of([]);
+
+  if (Array.isArray(genes)) {
+    genes = genes.join(',');
+  }
 
   // convert named curated lineages to OR queries
   if (Array.isArray(lineage)) {
@@ -1047,7 +1054,7 @@ export const getCharacteristicMutations = (
   const url = `${apiurl}lineage-mutations?pangolin_lineage=${lineage.replace(
     /\+/g,
     'AND',
-  )}&frequency=${prevalenceThreshold}`;
+  )}&frequency=${prevalenceThreshold}&gene=${genes}`;
   return from(
     axios.get(url, {
       headers: {
@@ -2580,6 +2587,7 @@ export const getLineagesComparison = (
   lineages,
   prevalenceThreshold,
   includeSublineages = false,
+  genes,
 ) => {
   store.state.genomics.locationLoading2 = true;
 
@@ -2595,11 +2603,18 @@ export const getLineagesComparison = (
 
   return forkJoin([
     ...lineages.map((lineage) =>
-      getCharacteristicMutations(apiurl, lineage, 0, true, includeSublineages),
+      getCharacteristicMutations(
+        apiurl,
+        lineage,
+        0,
+        true,
+        includeSublineages,
+        genes,
+      ),
     ),
   ]).pipe(
     map((results, idx) => {
-      console.log(results)
+      console.log(results);
       const prevalentMutations = uniq(
         results
           .flatMap((d) => d)
@@ -2610,7 +2625,6 @@ export const getLineagesComparison = (
       let filtered = results.flatMap((d) =>
         d.filter((x) => prevalentMutations.includes(x.mutation)),
       );
-
 
       filtered.forEach((d) => {
         d['id'] = `${cleanSelectors(d.pangolin_lineage)}-${cleanSelectors(
