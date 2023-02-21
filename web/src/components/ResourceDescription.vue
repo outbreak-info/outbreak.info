@@ -468,7 +468,7 @@ import tippy from 'tippy.js';
 import { lazyLoad } from '@/js/lazy-load';
 
 import 'tippy.js/themes/light.css';
-import {adminStore} from "@/stores/adminStore";
+import { adminStore } from '@/stores/adminStore';
 
 export default {
   name: 'ResourceDescription',
@@ -586,7 +586,7 @@ export default {
       }
     },
   },
-});
+};
 </script>
 
 <style lang="scss" scoped>

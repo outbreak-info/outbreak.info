@@ -163,13 +163,13 @@
                         type="text"
                         autocomplete="off"
                         class="border p-1 w-100 font-awesome"
-                        :style="{ 'border-color': '#bababa !important;' }"
+                        :style="{ 'border-color': '#bababa !important' }"
                         :placeholder="`Search ${facet.variable}`"
                       />
                     </small>
                   </form>
                   <!-- Filters -->
-                  <div v-if="facet.filtered.length">
+                  <template v-if="facet.filtered.length">
                     <ul class="list-group list-unstyled rounded-0">
                       <div
                         v-for="(option, optIdx) in facet.filtered"
@@ -207,7 +207,7 @@
                     >
                       show all
                     </small>
-                  </div>
+                  </template>
                   <div v-else class="">
                     <small>none</small>
                   </div>
@@ -568,11 +568,9 @@
                         }"
                       >
                         <img
-                          :src="
-                            require(`@/assets/resources/${getLogo(
-                              item.curatedBy.name,
-                            )}`)
-                          "
+                          :src="`src/assets/resources/${getLogo(
+                            item.curatedBy.name,
+                          )}`"
                           alt="item.curatedBy.name"
                           width="auto"
                           height="25"
@@ -598,7 +596,7 @@
                     <TrialPhase :phases="item.studyDesign.phaseNumber"/>
                     </div> -->
 
-                  <div v-if="item.descriptionExpanded">
+                  <template v-if="item.descriptionExpanded">
                     <span class="text-break" v-html="item.longDescription" />
                     <span>
                       <a
@@ -610,8 +608,8 @@
                         (show less)
                       </a>
                     </span>
-                  </div>
-                  <div v-else-if="item.shortDescription">
+                  </template>
+                  <template v-else-if="item.shortDescription">
                     <span class="text-break" v-html="item.shortDescription" />
                     <span v-if="item.descriptionTooLong">
                       ...
@@ -624,8 +622,8 @@
                         (show more)
                       </a>
                     </span>
-                  </div>
-                  <div v-else>No description provided</div>
+                  </template>
+                  <template v-else>No description provided</template>
                 </div>
 
                 <!-- Bottom -->

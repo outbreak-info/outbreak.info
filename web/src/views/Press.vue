@@ -32,6 +32,7 @@
             <img
               :src="`src/assets/press/${article.img}`"
               class="article-logo mr-3"
+              :alt="`${article.img}`"
             />
             <div class="d-flex flex-column">
               <span class="hover-underline">{{ article.title }}</span>
