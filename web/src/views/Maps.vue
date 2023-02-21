@@ -14,7 +14,7 @@
         <router-link
           class="btn btn-main-outline router-link no-underline m-1 d-flex align-items-center"
           role="button"
-          :class="{ active: admin_level === '0' }"
+          :class="{ active: adminLevel === '0' }"
           :to="{
             name: 'Maps',
             query: {
@@ -23,13 +23,14 @@
               date: selectedDate,
             },
           }"
+          @click="changeLocation('0')"
         >
           All countries
         </router-link>
         <div class="d-flex flex-column justify-content-around">
           <router-link
             class="btn btn-main-outline router-link no-underline m-1"
-            :class="{ active: admin_level === '1' }"
+            :class="{ active: adminLevel === '1' }"
             role="button"
             :to="{
               name: 'Maps',
@@ -40,6 +41,7 @@
                 date: selectedDate,
               },
             }"
+            @click="changeLocation('1')"
           >
             U.S. States
           </router-link>
@@ -47,7 +49,7 @@
             <router-link
               class="btn btn-main-outline router-link no-underline m-1"
               role="button"
-              :class="{ active: admin_level === '1.5' }"
+              :class="{ active: adminLevel === '1.5' }"
               :to="{
                 name: 'Maps',
                 query: {
@@ -57,12 +59,13 @@
                   date: selectedDate,
                 },
               }"
+              @click="changeLocation('1.5')"
             >
               U.S. Metro Areas
             </router-link>
             <router-link
               class="btn btn-main-outline router-link no-underline m-1"
-              :class="{ active: admin_level === '2' }"
+              :class="{ active: adminLevel === '2' }"
               role="button"
               :to="{
                 name: 'Maps',
@@ -73,6 +76,7 @@
                   date: selectedDate,
                 },
               }"
+              @click="changeLocation('2')"
             >
               U.S. Counties
             </router-link>
@@ -109,7 +113,7 @@
             :date="selectedDate"
             :min="minDate"
             :max="maxDate"
-            :adminLevel="admin_level"
+            :adminLevel="adminLevel"
           />
         </div>
       </div>
@@ -123,7 +127,7 @@
       :selectedMin="selectedMin"
       :selectedMax="selectedMax"
       :colorScale="colorScale"
-      :adminLevel="admin_level"
+      :adminLevel="adminLevel"
       :variable="selectedVariable.value"
       :variableLabel="selectedVariable.choro"
       :date1="selectedDate"
@@ -233,6 +237,7 @@ export default {
           value: 'dead_rolling_14days_ago_diff_per_100k',
         },
       ],
+      adminLevel: '0',
     };
   },
   computed: {
@@ -262,12 +267,15 @@ export default {
         path: 'maps',
         query: {
           location: this.location,
-          admin_level: this.admin_level,
+          admin_level: this.adminLevel,
           variable: this.selectedVariable.value,
           date: this.selectedDate,
         },
       });
     },
+  },
+  mounted() {
+    this.adminLevel = this.admin_level;
   },
   beforeUnmount() {
     this.dataSubscription.unsubscribe();
@@ -280,7 +288,7 @@ export default {
       this.dataSubscription = getComparisonData(
         this.$apiurl,
         this.location,
-        this.admin_level,
+        this.adminLevel,
         this.variable,
         this.selectedVariable.choro,
         date,
@@ -295,6 +303,9 @@ export default {
         }
         this.colorScale = results.colorScale;
       });
+    },
+    changeLocation(adminLevel) {
+      this.adminLevel = adminLevel;
     },
   },
 };

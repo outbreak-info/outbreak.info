@@ -1,7 +1,6 @@
 import { createApp, h } from 'vue';
 import VueGtag from 'vue-gtag';
 import VueCookies from 'vue-cookies';
-import VueMeta from 'vue-meta';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { createPinia } from 'pinia';
 import 'd3-transition';

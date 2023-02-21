@@ -735,7 +735,7 @@ export default {
       this.$router.replace({
         path: 'epidemiology',
         name: 'Epidemiology',
-        params: {
+        meta: {
           disableScroll: true,
         },
         query: {

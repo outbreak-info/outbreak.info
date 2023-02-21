@@ -94,20 +94,20 @@
       </span>
     </h4>
 
-    <div v-else>
-      <div v-if="!nolocation">
+    <template v-else>
+      <template v-if="!nolocation">
         <h4 class="plot-title pt-5 pb-3 text-highlight">
           Please select a location
         </h4>
         <button class="btn btn-main-outline" @click="lookupLocation">
           Find nearest location
         </button>
-      </div>
+      </template>
 
       <h4 v-else class="plot-title pt-5 pb-3 text-highlight">
         Cannot find a nearby location. Please select a location.
       </h4>
-    </div>
+    </template>
     <!-- metro subparts -->
     <div v-if="subParts" class="mb-4">
       <router-link :to="{ hash: '#sub_parts' }">
@@ -164,7 +164,9 @@
       </div>
 
       <!-- curve -->
-      <div v-if="plottedData && showCurves && !variable.includes('Increase')">
+      <template
+        v-if="plottedData && showCurves && !variable.includes('Increase')"
+      >
         <EpiCurve
           id="curveContainer"
           class="row"
@@ -189,9 +191,9 @@
           figureRef="epi-curve"
           :data="data$[0]"
         />
-      </div>
+      </template>
 
-      <div
+      <template
         v-if="subParts"
         id="sub_parts"
         class="container my-4 border-top pt-3"
@@ -231,7 +233,7 @@
             </div>
           </small>
         </div>
-      </div>
+      </template>
 
       <!-- table -->
       <EpiTable
@@ -423,7 +425,7 @@ export default {
       if (this.$route.query.location !== newLocation) {
         this.$router.push({
           name: 'Epidemiology',
-          params: {
+          meta: {
             disableScroll: true,
           },
           query: {
@@ -478,7 +480,7 @@ export default {
         const newVariable = this.variable.replace('_numIncrease', '_rolling');
         this.$router.push({
           name: 'Epidemiology',
-          params: {
+          meta: {
             disableScroll: true,
           },
           query: {
@@ -567,7 +569,7 @@ export default {
 
       this.$router.push({
         name: 'Epidemiology',
-        params: {
+        meta: {
           disableScroll: true,
         },
         query: {

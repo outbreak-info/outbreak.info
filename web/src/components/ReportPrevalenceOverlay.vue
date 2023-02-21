@@ -656,7 +656,7 @@ export default {
         const params = this.$route.params;
         this.$router.push({
           name: this.routeName,
-          params: {
+          meta: {
             disableScroll: true,
             alias: params.alias,
           },
@@ -671,7 +671,7 @@ export default {
       if (this.routeName === 'LocationReport') {
         this.$router.push({
           name: 'LocationReport',
-          params: {
+          meta: {
             disableScroll: true,
           },
           query: {
@@ -757,7 +757,7 @@ export default {
         const params = this.$route.params;
         this.$router.push({
           name: this.routeName,
-          params: {
+          meta: {
             disableScroll: true,
             alias: params.alias,
           },
@@ -774,7 +774,7 @@ export default {
         const params = this.$route.params;
         this.$router.push({
           name: 'GenomicsEmbed',
-          params: {
+          meta: {
             disableScroll: true,
           },
           query: {
@@ -791,7 +791,7 @@ export default {
       } else if (this.routeName === 'LocationReport') {
         this.$router.push({
           name: 'LocationReport',
-          params: {
+          meta: {
             disableScroll: true,
           },
           query: {
@@ -808,7 +808,7 @@ export default {
       } else if (this.routeName === 'GenomicsEmbedLocation') {
         this.$router.push({
           name: 'GenomicsEmbed',
-          params: {
+          meta: {
             disableScroll: true,
           },
           query: {

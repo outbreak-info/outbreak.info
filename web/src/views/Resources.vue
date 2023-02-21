@@ -934,13 +934,13 @@ export default {
       this.filterString = this.filters2String();
       this.$router.push({
         name: 'Resources',
-        params: {
+        meta: {
           disableScroll: true,
         },
         query: {
           q: this.searchInput,
           filter: this.filterString,
-          params: {
+          meta: {
             disableScroll: true,
           },
           page: '0',
@@ -957,7 +957,7 @@ export default {
       this.filterString = this.filters2String();
       this.$router.push({
         name: 'Resources',
-        params: {
+        meta: {
           disableScroll: true,
         },
         query: {
@@ -992,7 +992,7 @@ export default {
       this.filterString = null;
       this.$router.push({
         name: 'Resources',
-        params: {
+        meta: {
           disableScroll: true,
         },
         query: {
@@ -1032,7 +1032,7 @@ export default {
       if (type === 'min') {
         this.$router.push({
           name: 'Resources',
-          params: {
+          meta: {
             disableScroll: true,
           },
           query: {
@@ -1048,7 +1048,7 @@ export default {
       } else {
         this.$router.push({
           name: 'Resources',
-          params: {
+          meta: {
             disableScroll: true,
           },
           query: {
@@ -1078,7 +1078,7 @@ export default {
     changeSort() {
       this.$router.push({
         name: 'Resources',
-        params: {
+        meta: {
           disableScroll: true,
         },
         query: {
@@ -1097,7 +1097,7 @@ export default {
 
       this.$router.push({
         name: 'Resources',
-        params: {
+        meta: {
           disableScroll: true,
         },
         query: {
@@ -1116,7 +1116,7 @@ export default {
 
       this.$router.push({
         name: 'Resources',
-        params: {
+        meta: {
           disableScroll: true,
         },
         query: {

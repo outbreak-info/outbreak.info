@@ -605,7 +605,7 @@ export default {
         locs.push(id);
         this.$router.push({
           name: 'MutationReport',
-          params: {
+          meta: {
             disableScroll: true,
             alias: params.alias,
           },
@@ -625,7 +625,7 @@ export default {
           : [];
         this.$router.push({
           name: 'GenomicsEmbed',
-          params: {
+          meta: {
             disableScroll: true,
           },
           query: {

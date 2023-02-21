@@ -1655,7 +1655,7 @@ export default {
             selected: this.selectedLocation,
             overlay: this.sublineageOverlay,
           },
-          params: {
+          meta: {
             alias: this.alias,
             disableScroll: true,
           },
@@ -1672,7 +1672,7 @@ export default {
             selected: this.selectedLocation,
             overlay: this.sublineageOverlay,
           },
-          params: {
+          meta: {
             disableScroll: true,
           },
         });
@@ -1744,7 +1744,7 @@ export default {
             xmax: this.xmax,
             overlay: this.sublineageOverlay,
           },
-          params: {
+          meta: {
             alias: this.alias,
             disableScroll: true,
           },
@@ -1763,7 +1763,7 @@ export default {
             xmax: this.xmax,
             overlay: this.sublineageOverlay,
           },
-          params: {
+          meta: {
             disableScroll: true,
           },
         });

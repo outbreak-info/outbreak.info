@@ -387,7 +387,7 @@ export default {
       if (newLocation) {
         this.$router.push({
           name: 'SituationReportStatus',
-          params: {
+          meta: {
             disableScroll: true,
           },
           query: {

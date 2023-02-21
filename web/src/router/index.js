@@ -10,13 +10,13 @@ const router = createRouter({
   scrollBehavior(to, from, savedPosition) {
     if (to.hash) {
       return {
-        selector: to.hash,
+        el: to.hash,
       };
     }
-    if (to.params && !to.params.disableScroll) {
+    if (to.params && !to.meta.disableScroll) {
       return {
-        x: 0,
-        y: 0,
+        left: 0,
+        top: 0,
       };
     }
   },

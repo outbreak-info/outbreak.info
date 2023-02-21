@@ -85,7 +85,7 @@
       class="swoopy-arrow-group position-absolute"
     >
       <g
-        v-if="loggable"
+        v-if="isLoggable"
         ref="switchY"
         class="switch-y-button-group"
         transform="translate(5,0)"
@@ -190,6 +190,7 @@ export default {
       // methods
       line: null,
       brush: null,
+      isLoggable: false,
     };
   },
   computed: {
@@ -252,6 +253,7 @@ export default {
     },
   },
   mounted() {
+    this.isLoggable = this.loggable;
     this.setupPlot();
     this.updateBrush();
     this.updatePlot();
@@ -308,7 +310,7 @@ export default {
       this.$router.replace({
         path: 'epidemiology',
         name: 'Epidemiology',
-        params: {
+        meta: {
           disableScroll: true,
         },
         query: {
@@ -364,7 +366,7 @@ export default {
 
         this.$router.push({
           name: 'Epidemiology',
-          params: {
+          meta: {
             disableScroll: true,
           },
           query: {
@@ -382,7 +384,6 @@ export default {
     resetZoom() {
       this.brushRef.call(this.brush.move, null);
       const queryParams = this.$route.query;
-      const params = this.$route.params;
 
       this.xMin = null;
       this.xMax = null;
@@ -390,7 +391,7 @@ export default {
 
       this.$router.push({
         name: 'Epidemiology',
-        params: {
+        meta: {
           disableScroll: true,
         },
         query: {
@@ -495,15 +496,15 @@ export default {
       }
     },
     prepData() {
-      this.loggable = this.selectedVariable !== 'testing_positivity';
-      this.isLogY = this.loggable && this.log;
+      this.isLoggable = this.selectedVariable !== 'testing_positivity';
+      this.isLogY = this.isLoggable && this.log;
 
       if (this.data) {
         this.plottedData = cloneDeep(this.data);
 
         this.plottedData.forEach((d) => {
           d['value'] =
-            this.isLogY && this.loggable
+            this.isLogY && this.isLoggable
               ? d.value.filter(
                   (x) =>
                     x[this.selectedVariable] >= 1 &&
@@ -571,7 +572,7 @@ export default {
       this.prepData();
     },
     updateScales() {
-      if (this.isLogY && this.loggable) {
+      if (this.isLogY && this.isLoggable) {
         this.y = scaleLog()
           .range([this.height - this.margin.top - this.margin.bottom, 0])
           .nice()
@@ -600,7 +601,7 @@ export default {
 
       select(this.$refs.xAxis).call(this.xAxis);
 
-      if (this.isLogY && this.loggable) {
+      if (this.isLogY && this.isLoggable) {
         this.yAxis = axisLeft(this.y)
           .tickSizeOuter(0)
           .ticks(this.numYTicks)
@@ -622,7 +623,7 @@ export default {
       const xSwoop = 30;
       const ySwoop = -35;
       const swoopOffset = 10;
-      if (this.loggable) {
+      if (this.isLoggable) {
         this.switchBtn = select(this.$refs.switchY);
 
         select(this.$refs.switchY)

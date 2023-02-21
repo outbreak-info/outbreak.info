@@ -207,7 +207,7 @@ export default {
 
       this.$router.push({
         name: 'Resources',
-        params: {
+        meta: {
           disableScroll: true,
         },
         query: {

@@ -1516,7 +1516,7 @@ export default {
 
       this.$router.push({
         name: 'SituationReports',
-        params: {
+        meta: {
           disableScroll: true,
         },
         query: {
@@ -1619,7 +1619,7 @@ export default {
 
       this.$router.push({
         name: 'SituationReports',
-        params: {
+        meta: {
           disableScroll: true,
         },
         query: {

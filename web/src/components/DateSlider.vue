@@ -182,7 +182,7 @@ export default {
       this.$router.replace({
         path: 'maps',
         name: 'Maps',
-        params: {
+        meta: {
           disableScroll: true,
         },
         query: {

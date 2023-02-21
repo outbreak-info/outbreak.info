@@ -110,7 +110,7 @@ export default {
       if (this.routeTo === 'GenomicsEmbedLocation')
         this.$router.push({
           name: 'GenomicsEmbed',
-          params: {
+          meta: {
             disableScroll: true,
           },
           query: {
@@ -128,7 +128,7 @@ export default {
       else {
         this.$router.push({
           name: this.routeTo,
-          params: {
+          meta: {
             disableScroll: true,
           },
           query: {

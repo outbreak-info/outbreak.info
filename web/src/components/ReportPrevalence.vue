@@ -764,7 +764,7 @@ export default {
         const params = this.$route.params;
         this.$router.push({
           name: this.routeName,
-          params: {
+          meta: {
             disableScroll: true,
             alias: params.alias,
           },
@@ -781,7 +781,7 @@ export default {
         const params = this.$route.params;
         this.$router.push({
           name: 'GenomicsEmbed',
-          params: {
+          meta: {
             disableScroll: true,
           },
           query: {
@@ -812,7 +812,7 @@ export default {
       if (this.routeName === 'MutationReport') {
         this.$router.push({
           name: this.routeName,
-          params: {
+          meta: {
             disableScroll: true,
             alias: params.alias,
           },
@@ -826,7 +826,7 @@ export default {
       } else if (this.routeName === 'GenomicsEmbedVariant') {
         this.$router.push({
           name: 'GenomicsEmbed',
-          params: {
+          meta: {
             disableScroll: true,
           },
           query: {

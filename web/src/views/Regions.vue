@@ -320,9 +320,10 @@ export default {
       this.nestedData = this.data[this.selectedVariable];
     },
     changeVariableObject() {
-      this.loading = true;
+      const store = adminStore();
+      store.$patch({ loading: true });
       setTimeout(() => {
-        this.loading = false;
+        store.$patch({ loading: false });
       }, 3000);
     },
     handleTooltip(selected) {
