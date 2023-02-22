@@ -14,7 +14,7 @@
         <router-link
           class="btn btn-main-outline router-link no-underline m-1 d-flex align-items-center"
           role="button"
-          :class="{ active: adminLevel === '0' }"
+          :class="{ active: admin_level === '0' }"
           :to="{
             name: 'Maps',
             query: {
@@ -23,14 +23,13 @@
               date: selectedDate,
             },
           }"
-          @click="changeLocation('0')"
         >
           All countries
         </router-link>
         <div class="d-flex flex-column justify-content-around">
           <router-link
             class="btn btn-main-outline router-link no-underline m-1"
-            :class="{ active: adminLevel === '1' }"
+            :class="{ active: admin_level === '1' }"
             role="button"
             :to="{
               name: 'Maps',
@@ -41,7 +40,6 @@
                 date: selectedDate,
               },
             }"
-            @click="changeLocation('1')"
           >
             U.S. States
           </router-link>
@@ -49,7 +47,7 @@
             <router-link
               class="btn btn-main-outline router-link no-underline m-1"
               role="button"
-              :class="{ active: adminLevel === '1.5' }"
+              :class="{ active: admin_level === '1.5' }"
               :to="{
                 name: 'Maps',
                 query: {
@@ -59,13 +57,12 @@
                   date: selectedDate,
                 },
               }"
-              @click="changeLocation('1.5')"
             >
               U.S. Metro Areas
             </router-link>
             <router-link
               class="btn btn-main-outline router-link no-underline m-1"
-              :class="{ active: adminLevel === '2' }"
+              :class="{ active: admin_level === '2' }"
               role="button"
               :to="{
                 name: 'Maps',
@@ -76,7 +73,6 @@
                   date: selectedDate,
                 },
               }"
-              @click="changeLocation('2')"
             >
               U.S. Counties
             </router-link>
@@ -96,7 +92,11 @@
       >
         <!-- variable options -->
         <div class="row d-flex align-items-center">
-          <select v-model="selectedVariable" class="select-dropdown">
+          <select
+            v-model="selectedVariable"
+            class="select-dropdown"
+            @change="changeVariable"
+          >
             <option
               v-for="option in variableOptions"
               :key="option.value"
@@ -113,7 +113,7 @@
             :date="selectedDate"
             :min="minDate"
             :max="maxDate"
-            :adminLevel="adminLevel"
+            :adminLevel="admin_level"
           />
         </div>
       </div>
@@ -127,7 +127,7 @@
       :selectedMin="selectedMin"
       :selectedMax="selectedMax"
       :colorScale="colorScale"
-      :adminLevel="adminLevel"
+      :adminLevel="admin_level"
       :variable="selectedVariable.value"
       :variableLabel="selectedVariable.choro"
       :date1="selectedDate"
@@ -237,7 +237,6 @@ export default {
           value: 'dead_rolling_14days_ago_diff_per_100k',
         },
       ],
-      adminLevel: '0',
     };
   },
   computed: {
@@ -259,23 +258,11 @@ export default {
 
         this.selectedDate = this.date;
 
-        this.getData(this.selectedDate);
+        setTimeout(() => {
+          this.getData(this.selectedDate);
+        }, 2000);
       },
     },
-    selectedVariable() {
-      this.$router.push({
-        path: 'maps',
-        query: {
-          location: this.location,
-          admin_level: this.adminLevel,
-          variable: this.selectedVariable.value,
-          date: this.selectedDate,
-        },
-      });
-    },
-  },
-  mounted() {
-    this.adminLevel = this.admin_level;
   },
   beforeUnmount() {
     this.dataSubscription.unsubscribe();
@@ -288,7 +275,7 @@ export default {
       this.dataSubscription = getComparisonData(
         this.$apiurl,
         this.location,
-        this.adminLevel,
+        this.admin_level,
         this.variable,
         this.selectedVariable.choro,
         date,
@@ -304,8 +291,16 @@ export default {
         this.colorScale = results.colorScale;
       });
     },
-    changeLocation(adminLevel) {
-      this.adminLevel = adminLevel;
+    changeVariable() {
+      this.$router.push({
+        path: 'maps',
+        query: {
+          location: this.location,
+          admin_level: this.admin_level,
+          variable: this.selectedVariable.value,
+          date: this.selectedDate,
+        },
+      });
     },
   },
 };
