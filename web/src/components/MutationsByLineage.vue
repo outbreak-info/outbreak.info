@@ -78,7 +78,8 @@
               <b class="text-underline">{{ other.pangolin_lineage }}</b>
               :
               <span class="text-muted text-right">
-                ({{ other.mutation_count }} / {{ other.lineage_count }})
+                ({{ numberWithCommas(other.mutation_count) }} /
+                {{ numberWithCommas(other.lineage_count) }})
               </span>
             </span>
             <b>{{ other.proportion_formatted }}</b>
@@ -209,13 +210,9 @@ export default Vue.extend({
         return b.proportion - a.proportion;
       });
 
-      this.processedData = sortedData.filter(
-        (d) => d.proportion >= this.characteristicThreshold,
-      );
-      if (this.processedData.length < sortedData.length) {
-        this.otherDataArr = sortedData.filter(
-          (d) => d.proportion < this.characteristicThreshold,
-        );
+      if (sortedData.length > 10) {
+        this.processedData = sortedData.slice(0, 10);
+        this.otherDataArr = sortedData.slice(10);
 
         const otherData = this.otherDataArr.reduce((x, y) => {
           return {
@@ -467,6 +464,9 @@ export default Vue.extend({
         .on('mousemove', (d) => this.tooltipYAxisOn(d))
         .on('mouseleave', () => this.tooltipOff())
         .on('click', (d) => this.handleLineageClick(d));
+    },
+    numberWithCommas(x) {
+      return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     },
   },
 });
