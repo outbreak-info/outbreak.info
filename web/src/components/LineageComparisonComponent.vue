@@ -589,7 +589,7 @@
                     v-model.lazy="selectedGenes"
                     type="checkbox"
                     :value="gene"
-                    @change="updateGenes()"
+                    @change="debounceGenes"
                   />
                   <div class="b-input" />
                 </label>
@@ -1050,6 +1050,7 @@ export default {
   created() {
     this.debounceThreshold = debounce(this.changeThreshold, 250);
     this.debounceCountThreshold = debounce(this.changeCountThreshold, 250);
+    this.debounceGenes = debounce(this.updateGenes, 250);
   },
   destroyed() {
     if (this.basicSubscription) {
