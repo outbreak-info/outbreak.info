@@ -1302,7 +1302,7 @@ export default {
         this.reportMetadata = null;
         this.setupReport();
       } else {
-        this.updateLocations();
+        this.debounceUpdateLocations();
       }
     },
   },
@@ -1310,6 +1310,7 @@ export default {
     this.debounceSetDims = debounce(this.setDims, 150);
     this.debounceSelectSublineage = debounce(this.selectSublineage, 250);
     this.debounceChoroWindowChange = debounce(this.updateChoroWindow, 700);
+    this.debounceUpdateLocations = debounce(this.updateLocations, 500);
   },
   mounted() {
     this.sublineageOverlay = this.overlay === 'true';
@@ -1656,9 +1657,9 @@ export default {
             overlay: this.sublineageOverlay,
           },
           meta: {
-            alias: this.alias,
             disableScroll: true,
           },
+          params: { alias: this.alias },
         });
       } else if (this.routeTo === 'GenomicsEmbedVariant') {
         this.$router.push({
@@ -1745,9 +1746,9 @@ export default {
             overlay: this.sublineageOverlay,
           },
           meta: {
-            alias: this.alias,
             disableScroll: true,
           },
+          params: { alias: this.alias },
         });
       } else if (this.routeTo === 'GenomicsEmbedVariant') {
         this.$router.push({

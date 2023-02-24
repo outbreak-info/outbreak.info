@@ -271,16 +271,20 @@ export default {
       this.drawBars();
     },
     tooltipOn(d) {
-      this.svg.selectAll('.lineage-group').style('opacity', 0.3);
+      if (d) {
+        this.svg.selectAll('.lineage-group').style('opacity', 0.3);
 
-      select(this.$refs.yAxis).selectAll('text').style('opacity', 0.3);
+        select(this.$refs.yAxis).selectAll('text').style('opacity', 0.3);
 
-      select(this.$refs.yAxis)
-        .selectAll('text')
-        .filter((axis_label) => axis_label === d[this.yVar])
-        .style('opacity', 1);
+        if (d.hasOwnProperty(this.yVar)) {
+          select(this.$refs.yAxis)
+            .selectAll('text')
+            .filter((axis_label) => axis_label === d[this.yVar])
+            .style('opacity', 1);
+        }
 
-      this.svg.select(`#${d.id}`).style('opacity', 1);
+        this.svg.select(`#${d.id}`).style('opacity', 1);
+      }
     },
     tooltipOff() {
       this.svg.selectAll('.lineage-group').style('opacity', 1);

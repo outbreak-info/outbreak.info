@@ -561,8 +561,8 @@ export default {
           name: this.routeName,
           meta: {
             disableScroll: true,
-            alias: params.alias,
           },
+          params: { alias: params.alias },
           query: {
             xmin: timeFormat('%Y-%m-%d')(newMin),
             xmax: timeFormat('%Y-%m-%d')(newMax),
@@ -643,8 +643,8 @@ export default {
           name: this.routeName,
           meta: {
             disableScroll: true,
-            alias: params.alias,
           },
+          params: { alias: params.alias },
           query: {
             loc: queryParams.loc,
             muts: queryParams.muts,

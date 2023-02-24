@@ -607,8 +607,8 @@ export default {
           name: 'MutationReport',
           meta: {
             disableScroll: true,
-            alias: params.alias,
           },
+          params: { alias: params.alias },
           query: {
             pango: query.pango,
             muts: query.muts,

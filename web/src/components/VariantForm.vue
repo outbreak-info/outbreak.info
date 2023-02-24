@@ -226,6 +226,11 @@ export default {
       default: false,
     },
   },
+  emits: [
+    'update:submitLabel',
+    'update:selectedLineage',
+    'update:selectedMutations',
+  ],
   data() {
     return {
       queryPangolin: null,

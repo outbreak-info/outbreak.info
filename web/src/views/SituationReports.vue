@@ -181,6 +181,7 @@
                   <img
                     :src="`src/assets/icon-01.svg`"
                     class="variant-logo mr-1"
+                    alt="variant-logo"
                   />
                   <span>outbreak.info</span>
                   <input
@@ -292,6 +293,7 @@
                   <img
                     :src="`src/assets/${curator.src}`"
                     class="variant-logo mr-1"
+                    alt="curator"
                   />
                   <span>{{ curator.label }}</span>
                   <input
@@ -1552,7 +1554,7 @@ export default {
 
       this.$router.push({
         name: 'SituationReports',
-        params: {
+        meta: {
           disableScroll: disableScroll,
         },
         query: {
@@ -1577,7 +1579,7 @@ export default {
 
       this.$router.push({
         name: 'SituationReports',
-        params: {
+        meta: {
           disableScroll: disableScroll,
         },
         query: {
