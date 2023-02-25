@@ -14,7 +14,7 @@
         <router-link
           class="btn btn-main-outline router-link no-underline m-1 d-flex align-items-center"
           role="button"
-          :class="{ active: admin_level === '0' }"
+          :class="{ 'active-btn': adminLevel === '0' }"
           :to="{
             name: 'Maps',
             query: {
@@ -29,7 +29,7 @@
         <div class="d-flex flex-column justify-content-around">
           <router-link
             class="btn btn-main-outline router-link no-underline m-1"
-            :class="{ active: admin_level === '1' }"
+            :class="{ 'active-btn': adminLevel === '1' }"
             role="button"
             :to="{
               name: 'Maps',
@@ -47,7 +47,7 @@
             <router-link
               class="btn btn-main-outline router-link no-underline m-1"
               role="button"
-              :class="{ active: admin_level === '1.5' }"
+              :class="{ 'active-btn': adminLevel === '1.5' }"
               :to="{
                 name: 'Maps',
                 query: {
@@ -62,7 +62,7 @@
             </router-link>
             <router-link
               class="btn btn-main-outline router-link no-underline m-1"
-              :class="{ active: admin_level === '2' }"
+              :class="{ 'active-btn': adminLevel === '2' }"
               role="button"
               :to="{
                 name: 'Maps',
@@ -95,7 +95,7 @@
           <select
             v-model="selectedVariable"
             class="select-dropdown"
-            @change="changeVariable"
+            @change="debounceChangeVariable"
           >
             <option
               v-for="option in variableOptions"
@@ -113,7 +113,7 @@
             :date="selectedDate"
             :min="minDate"
             :max="maxDate"
-            :adminLevel="admin_level"
+            :adminLevel="adminLevel"
           />
         </div>
       </div>
@@ -127,7 +127,7 @@
       :selectedMin="selectedMin"
       :selectedMax="selectedMax"
       :colorScale="colorScale"
-      :adminLevel="admin_level"
+      :adminLevel="adminLevel"
       :variable="selectedVariable.value"
       :variableLabel="selectedVariable.choro"
       :date1="selectedDate"
@@ -145,6 +145,7 @@
 <script>
 import { mapState } from 'pinia';
 import { timeFormat } from 'd3-time-format';
+import debounce from 'lodash/debounce';
 
 import { getComparisonData } from '@/api/epi-comparison.js';
 import { lazyLoad } from '@/js/lazy-load';
@@ -184,7 +185,11 @@ export default {
       maxDate: null,
       minDate: new Date('2020-01-22 0:0'),
       dataSubscription: null,
-      selectedVariable: null,
+      selectedVariable: {
+        label: '2 week change in cases/day',
+        choro: 'cases vs. 2 weeks ago',
+        value: 'confirmed_rolling_14days_ago_diff',
+      },
       variableOptions: [
         {
           label: 'total cases per capita',
@@ -237,20 +242,17 @@ export default {
           value: 'dead_rolling_14days_ago_diff_per_100k',
         },
       ],
+      adminLevel: '0',
     };
   },
   computed: {
     ...mapState(adminStore, ['dataloading']),
   },
   watch: {
-    '$route.params': {
+    $route: {
       immediate: true,
       handler(newRoute, oldRoute) {
-        // update selections based on routes
-        const filtered = this.variableOptions.filter(
-          (d) => d.value === this.variable,
-        );
-        this.selectedVariable = filtered.length === 1 ? filtered[0] : null;
+        this.adminLevel = newRoute.query.admin_level || '0';
         // reset selected min/max
         // If the data already exists, pull out the min/max.
         this.selectedMin = this.min || this.min === 0 ? +this.min : null;
@@ -259,26 +261,32 @@ export default {
         this.selectedDate = this.date;
 
         setTimeout(() => {
-          this.getData(this.selectedDate);
-        }, 2000);
+          this.getData();
+        }, 1000);
       },
     },
   },
+  created() {
+    this.debounceChangeVariable = debounce(this.changeVariable, 250);
+  },
   beforeUnmount() {
     this.dataSubscription.unsubscribe();
+  },
+  mounted() {
+    this.getData();
   },
   methods: {
     formatDate(dateStr) {
       return timeFormat('%Y-%m-%d')(dateStr);
     },
-    getData(date) {
+    getData() {
       this.dataSubscription = getComparisonData(
         this.$apiurl,
         this.location,
-        this.admin_level,
+        this.adminLevel,
         this.variable,
         this.selectedVariable.choro,
-        date,
+        this.selectedDate,
       ).subscribe((results) => {
         this.data = results.data;
         this.outline = results.overlay;
@@ -296,7 +304,7 @@ export default {
         path: 'maps',
         query: {
           location: this.location,
-          admin_level: this.admin_level,
+          admin_level: this.adminLevel,
           variable: this.selectedVariable.value,
           date: this.selectedDate,
         },
@@ -348,7 +356,7 @@ tr.table-header-merged {
   // border-bottom: 1px solid $grey-40;
 }
 
-.btn-main-outline.active {
+.active-btn {
   background: $primary-color !important;
   color: white;
 }

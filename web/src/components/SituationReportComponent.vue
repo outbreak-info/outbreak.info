@@ -1066,6 +1066,7 @@ import { schemeYlGnBu } from 'd3-scale-chromatic';
 import uniq from 'lodash/uniq';
 import isEqual from 'lodash/isEqual';
 import debounce from 'lodash/debounce';
+import { isArray } from 'lodash/lang';
 
 import {
   findLocation,
@@ -1300,7 +1301,7 @@ export default {
         this.newPangolin = null;
         this.lineageName = null;
         this.reportMetadata = null;
-        this.setupReport();
+        this.debounceSetupReport();
       } else {
         this.debounceUpdateLocations();
       }
@@ -1311,6 +1312,7 @@ export default {
     this.debounceSelectSublineage = debounce(this.selectSublineage, 250);
     this.debounceChoroWindowChange = debounce(this.updateChoroWindow, 700);
     this.debounceUpdateLocations = debounce(this.updateLocations, 500);
+    this.debounceSetupReport = debounce(this.setupReport, 500);
   },
   mounted() {
     this.sublineageOverlay = this.overlay === 'true';
@@ -1432,7 +1434,7 @@ export default {
               selected: this.selectedMutationArr.join(' AND '),
             };
             this.title = `${this.reportName} Mutation Report`;
-          } else {
+          } else if (isArray(this.$route.query.muts)) {
             // Variant (multiple mutation) report
             this.lineageName = null;
             this.reportName = this.$route.query.muts.join(', ');
