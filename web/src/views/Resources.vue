@@ -568,9 +568,7 @@
                         }"
                       >
                         <img
-                          :src="`src/assets/resources/${getLogo(
-                            item.curatedBy.name,
-                          )}`"
+                          :src="`${imgUrl(getLogo(item.curatedBy.name))}`"
                           alt="item.curatedBy.name"
                           width="auto"
                           height="25"
@@ -938,9 +936,6 @@ export default {
         query: {
           q: this.searchInput,
           filter: this.filterString,
-          meta: {
-            disableScroll: true,
-          },
           page: '0',
           size: String(this.numPerPage),
           sort: this.sortValue,
@@ -1127,6 +1122,9 @@ export default {
           dateMax: this.dateMax,
         },
       });
+    },
+    imgUrl(name) {
+      return new URL(`../assets/resources/${name}`, import.meta.url).href;
     },
   },
 };

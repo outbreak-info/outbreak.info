@@ -88,8 +88,8 @@
               <!-- <CustomLocationForm :curated="null" :includeLocation="false" :selectedMutations.sync="newMuts" :selectedLineage.sync="newPango" :formCount.sync="formCount" /> -->
               <VariantForm
                 :minimalistic="false"
-                :selectedLineage.sync="newPango"
-                :selectedMutations.sync="newMuts"
+                v-model:selectedLineage="newPango"
+                v-model:selectedMutations="newMuts"
                 :submitted="submitCount"
               />
 
