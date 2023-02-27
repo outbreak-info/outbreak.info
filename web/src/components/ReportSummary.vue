@@ -19,8 +19,7 @@
         <span v-else>
           sequences with the
           <b>{{ mutationName }}</b>
-          {{ reportType }} have been detected since the {{ reportType }} was
-          identified:
+          {{ reportType }} have been detected between {{ xmin }} and {{ xmax }}:
         </span>
       </span>
       <!-- PREVALENCE SUMMARY TABLE -->
