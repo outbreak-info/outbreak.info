@@ -4,11 +4,6 @@
       Citing this report
     </h4>
     <section id="outbreak-citation" class="my-3 border-top pt-3">
-      <p class="m-0">
-        <b>{{ title }}</b>
-        . {{ mutationAuthors }}. outbreak.info, (available at {{ url }}).
-        Accessed {{ today }}.
-      </p>
       <p class="mt-2" v-html="genomicsCitation" />
     </section>
     <section id="gisaid-citation">
