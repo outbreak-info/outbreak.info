@@ -42,6 +42,8 @@
               colspan="2"
             >
               {{ mutationName }} found
+              <br />
+              <small>{{ getDateRangeText() }}</small>
             </th>
             <th />
             <th
@@ -233,6 +235,8 @@ export default {
     locationTotals: Array,
     countries: Array,
     states: Array,
+    xmin: String,
+    xmax: String,
   },
   data() {
     return {
@@ -265,6 +269,13 @@ export default {
       this.summaryWidth = document.getElementById('geo-summary')
         ? document.getElementById('geo-summary').offsetWidth * summaryFraction
         : 400;
+    },
+    getDateRangeText() {
+      if (this.xmin && this.xmax) {
+        return `${this.xmin}  -  ${this.xmax}`;
+      } else {
+        return 'all time';
+      }
     },
   },
 };

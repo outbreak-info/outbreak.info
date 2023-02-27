@@ -1615,8 +1615,8 @@ export const getTemporalPrevalence = (
   queryStr,
   indivCall = false,
   returnFlat = true,
-  minDate,
-  maxDate,
+  minDate = '',
+  maxDate = '',
 ) => {
   store.state.admin.reportloading = true;
   let url;

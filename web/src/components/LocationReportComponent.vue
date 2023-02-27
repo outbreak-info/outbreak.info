@@ -747,7 +747,7 @@
                 <ClassedLegend
                   :colorScale="choroColorScale"
                   :horizontal="false"
-                  :label="`Est. prevalence over the last ${recentWindow} days`"
+                  :label="`Est. prevalence ${getDateRangeText()}`"
                   :countThreshold="choroCountThreshold"
                   :mutationName="null"
                 />
@@ -797,7 +797,7 @@
                   :margin="marginHist"
                   :mutationName="null"
                   className="sequencing-histogram"
-                  :title="`Samples sequenced per day over last ${recentWindow} days`"
+                  :title="`Samples sequenced per day ${getDateRangeText()}`"
                   :onlyTotals="true"
                   notDetectedColor="#bab0ab"
                 />
@@ -928,8 +928,8 @@
             :data="lineageTable"
             :locationName="selectedLocation.label"
             :locationID="selectedLocation.id"
-            :minDate="minDate"
-            :maxDate="maxDate"
+            :minDate="xmin"
+            :maxDate="xmax"
           />
         </section>
 
@@ -1771,9 +1771,6 @@ export default {
       const format = timeFormat('%Y-%m-%d');
       this.maxDate = format(newMax);
       this.minDate = format(newMin);
-      this.setupReport();
-      this.updateMaps();
-      this.updateTable();
       const queryParams = this.$route.query;
       this.$router.push({
         name: 'LocationReport',
@@ -1791,6 +1788,16 @@ export default {
           selected: queryParams.selected,
         },
       });
+      this.setupReport();
+      this.updateMaps();
+      this.updateTable();
+    },
+    getDateRangeText() {
+      if (this.xmin && this.xmax) {
+        return `${this.xmin}  -  ${this.xmax}`;
+      } else {
+        return 'all time';
+      }
     },
   },
 };

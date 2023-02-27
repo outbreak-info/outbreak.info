@@ -9,26 +9,25 @@
             colspan="2"
           >
             lineage found
+            <br />
+            <small>{{ getDateRangeText() }}</small>
           </th>
           <th />
           <th
             class="text-center padded border-bottom border-secondary"
             colspan="2"
           >
-            when found
+            when found in date range
             <sup>**</sup>
           </th>
         </tr>
         <tr class="border-bottom">
-          <th class="text-center padded">total</th>
+          <th class="text-center padded">count</th>
           <th class="text-center padded">
             cumulative prevalence
             <sup>*</sup>
-            <br />
-            <small>{{ `${xMin}  -  ${xMax}` }}</small>
           </th>
           <th />
-          <th class="text-center padded">first</th>
           <th class="text-center padded">last</th>
         </tr>
       </thead>
@@ -111,7 +110,7 @@
               :to="{
                 name: 'MutationReport',
                 params: lineage.params ? lineage.params : {},
-                query: lineage.route,
+                query: transformQuery(lineage.route),
               }"
               :data-tippy-info="lineage.tooltip"
             >
@@ -146,9 +145,6 @@
 
           <td class="spacer" />
           <td>
-            {{ lineage.first_detected }}
-          </td>
-          <td>
             {{ lineage.last_detected }}
           </td>
         </tr>
@@ -177,6 +173,7 @@
 <script>
 import tippy from 'tippy.js';
 import 'tippy.js/themes/light.css';
+import { isArray } from 'lodash/lang';
 
 export default {
   name: 'LocationTable',
@@ -244,6 +241,24 @@ export default {
         instance.setContent(info);
       },
     });
+  },
+  methods: {
+    getDateRangeText() {
+      if (this.xMin && this.xMax) {
+        return `${this.xMin}  -  ${this.xMax}`;
+      } else {
+        return 'all time';
+      }
+    },
+    transformQuery(query) {
+      if (typeof query.pango === 'string') {
+        return query;
+      } else if (isArray(query.pango)) {
+        let tempQuery = query;
+        tempQuery.pango = tempQuery.pango[0];
+        return tempQuery;
+      }
+    },
   },
 };
 </script>

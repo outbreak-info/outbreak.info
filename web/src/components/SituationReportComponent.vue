@@ -634,6 +634,8 @@
               :countries="countries"
               :states="states"
               :routeTo="routeTo"
+              :xmin="xmin"
+              :xmax="xmax"
             />
           </section>
         </div>
@@ -1077,7 +1079,7 @@ import {
   updateLocationData,
 } from '@/api/genomics.js';
 import { lazyLoad } from '@/js/lazy-load';
-import {timeMonth} from "d3-time";
+import { timeMonth } from 'd3-time';
 
 export default {
   name: 'SituationReportComponent',
