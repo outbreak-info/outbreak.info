@@ -48,18 +48,17 @@
               class="text-center padded border-bottom border-secondary"
               colspan="2"
             >
-              when found
+              when found in date range
               <sup>**</sup>
             </th>
           </tr>
           <tr class="border-bottom">
-            <th class="text-center padded">total</th>
+            <th class="text-center padded">count</th>
             <th class="text-center padded">
               cumulative prevalence
               <sup>*</sup>
             </th>
             <th />
-            <th class="text-center padded">first</th>
             <th class="text-center padded">last</th>
           </tr>
         </thead>
@@ -122,9 +121,6 @@
             </td>
             <td />
             <td class="text-center">
-              {{ location.first_detected }}
-            </td>
-            <td class="text-center">
               {{ location.last_detected }}
             </td>
           </tr>
@@ -146,8 +142,8 @@
             <em>
               <sup>*</sup>
               Apparent cumulative prevalence is the ratio of the sequences
-              containing {{ mutationName }} to all sequences collected since the
-              identification of {{ mutationName }} in that location.
+              containing {{ mutationName }} to all sequences collected within
+              the selected time window
             </em>
           </small>
           <small class="ml-2">

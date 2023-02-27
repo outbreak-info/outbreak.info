@@ -17,7 +17,7 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
           <div class="modal-content">
             <div class="modal-header border-secondary">
-              <h5 id="exampleModalLabel" class="modal-title">
+              <h5 id="selectReportModalLabel" class="modal-title">
                 Select report location
               </h5>
               <button
@@ -217,7 +217,7 @@
                 </small>
                 <div
                   v-if="totalSequences"
-                  id="sequence-count"
+                  id="sequence-count-1"
                   class="text-grey font-size-2 ml-3"
                 >
                   with
@@ -436,7 +436,7 @@
             >
               <section
                 v-if="lineagesByDay"
-                id="lineages-over-time"
+                id="lineages-over-time-1"
                 class="flex-grow-1 flex-shrink-1"
               >
                 <LineagesByLocation

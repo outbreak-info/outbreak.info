@@ -130,7 +130,7 @@
       </div>
       <div v-else class="d-flex align-items-center">
         Prevalence in the last {{ recentWindow }} days:
-        <b id="proportion" class="ml-1" />
+        <b id="proportion-1" class="ml-1" />
       </div>
     </div>
   </div>

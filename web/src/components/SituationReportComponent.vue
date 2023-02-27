@@ -17,7 +17,7 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
           <div class="modal-content">
             <div class="modal-header border-secondary">
-              <h5 id="exampleModalLabel" class="modal-title">
+              <h5 id="selectReportLocationModalLabel" class="modal-title">
                 Select report locations
               </h5>
               <button
@@ -65,7 +65,7 @@
                 </div>
 
                 <div
-                  id="select-location"
+                  id="select-location-1"
                   class="d-flex align-items-center justify-content-center my-3"
                 >
                   <TypeaheadSelect
@@ -103,7 +103,7 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
           <div class="modal-content">
             <div class="modal-header border-secondary">
-              <h5 id="exampleModalLabel" class="modal-title">
+              <h5 id="changeSelectedLocationModalLabel" class="modal-title">
                 Change selected location
               </h5>
               <button
@@ -649,7 +649,7 @@
           <small class="text-muted mb-2">
             Based on reported sample collection date
           </small>
-          <div id="location-buttons" class="d-flex flex-wrap mb-3">
+          <div id="location-buttons-1" class="d-flex flex-wrap mb-3">
             <button
               v-for="(location, lIdx) in selectedLocations"
               :key="lIdx"
@@ -697,7 +697,7 @@
 
           <!-- change location selectors for sublineage prevalences -->
           <div
-            id="location-buttons"
+            id="location-buttons-2"
             class="d-flex flex-wrap align-items-center"
           >
             <button
@@ -1077,6 +1077,7 @@ import {
   updateLocationData,
 } from '@/api/genomics.js';
 import { lazyLoad } from '@/js/lazy-load';
+import {timeMonth} from "d3-time";
 
 export default {
   name: 'SituationReportComponent',
@@ -1327,8 +1328,12 @@ export default {
 
     // Get date for the citation object
     const formatDate = timeFormat('%e %B %Y');
+    const format = timeFormat('%Y-%m-%d');
     let currentTime = new Date();
     this.today = formatDate(currentTime);
+    let newMin = timeMonth.offset(currentTime, -6);
+    this.maxDate = format(currentTime);
+    this.minDate = format(newMin);
 
     // set URL for sharing, etc.
     this.$nextTick(() => {
