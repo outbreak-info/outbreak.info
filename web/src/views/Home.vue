@@ -13,8 +13,7 @@
               class="w-20"
             />
             <p class="text-light my-1 mx-3">
-              an open-source database of SARS-CoV-2 variant data, COVID-19
-              epidemiology data, and published research
+              Tools to explore COVID-19 and SARS-CoV-2 data with variant surveillance reports, data on cases and deaths, and a standardized, searchable research library
             </p>
           </div>
         </div>
