@@ -73,14 +73,9 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { lazyLoad } from '@/js/lazy-load';
 
-export default {
-  name: 'Terms',
-  components: {
-    DataUsage: lazyLoad('DataUsage'),
-    CiteUs: lazyLoad('CiteUs'),
-  },
-};
+const DataUsage = lazyLoad('DataUsage');
+const CiteUs = lazyLoad('CiteUs');
 </script>

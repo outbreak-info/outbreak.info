@@ -100,48 +100,43 @@
   </div>
 </template>
 
-<script>
-import { mapState } from 'pinia';
+<script setup>
+import { onMounted, ref, onUnmounted, inject } from 'vue';
+import { storeToRefs } from 'pinia';
 
 import { getIndivSourcesUpdated } from '@/api/metadata.js';
 import { lazyLoad } from '@/js/lazy-load';
 import { adminStore } from '@/stores/adminStore';
 
-export default {
-  name: 'Sources',
-  components: {
-    SourceDescription: lazyLoad('SourceDescription'),
-    DownloadData: lazyLoad('DownloadData'),
-  },
-  data() {
-    return {
-      metadataSubscription: null,
-      sourceMetadata: null,
-    };
-  },
-  computed: {
-    ...mapState(adminStore, [
-      'sources',
-      'geoSources',
-      'genomicSources',
-      'resources',
-    ]),
-  },
-  mounted() {
-    this.metadataSubscription = getIndivSourcesUpdated(
-      this.$genomicsurl,
-      this.$resourceurl,
-      this.$apiurl,
-    ).subscribe((results) => {
-      this.sourceMetadata = results;
-    });
-  },
-  unmounted() {
-    if (this.metadataSubscription) {
-      this.metadataSubscription.unsubscribe();
-    }
-  },
-};
+const SourceDescription = lazyLoad('SourceDescription');
+const DownloadData = lazyLoad('DownloadData');
+
+const apiUrl = inject('apiUrl');
+const genomicsUrl = inject('genomicsUrl');
+const resourceUrl = inject('resourceUrl');
+
+const metadataSubscription = ref(null);
+const sourceMetadata = ref(null);
+
+const store = adminStore();
+
+const { sources, geoSources, genomicSources, resources } = storeToRefs(store);
+
+onMounted(() => {
+  metadataSubscription.value = getIndivSourcesUpdated(
+    genomicsUrl,
+    resourceUrl,
+    apiUrl,
+  ).subscribe((results) => {
+    sourceMetadata.value = results;
+  });
+});
+
+onUnmounted(() => {
+  if (metadataSubscription.value) {
+    metadataSubscription.unsubscribe();
+  }
+});
 </script>
 
 <style lang="scss" scoped>
