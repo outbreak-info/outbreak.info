@@ -164,9 +164,7 @@
       </div>
     </div> -->
 
-      <div
-        class="my-3 p-2 bg-white border-top border-bottom"
-      >
+      <div class="my-3 p-2 bg-white border-top border-bottom">
         <template>
           <div class="d-flex justify-content-between mt-1 mb-2">
             <div class="d-flex">
@@ -225,7 +223,10 @@
           </div>
         </template>
 
-        <div class="border-top pt-3 my-3 mb-1 collapse show" id="select-lineages">
+        <div
+          class="border-top pt-3 my-3 mb-1 collapse show"
+          id="select-lineages"
+        >
           <h4 class="mb-3">Add lineages</h4>
           <div class="d-flex flex-wrap justify-content-between">
             <div
@@ -588,7 +589,7 @@
                     v-model.lazy="selectedGenes"
                     type="checkbox"
                     :value="gene"
-                    @change="updateGenes()"
+                    @change="debounceGenes"
                   />
                   <div class="b-input" />
                 </label>
@@ -1049,6 +1050,7 @@ export default {
   created() {
     this.debounceThreshold = debounce(this.changeThreshold, 250);
     this.debounceCountThreshold = debounce(this.changeCountThreshold, 250);
+    this.debounceGenes = debounce(this.updateGenes, 250);
   },
   destroyed() {
     if (this.basicSubscription) {
@@ -1104,6 +1106,7 @@ export default {
           },
         });
       }
+      this.getData();
     },
     changeThreshold() {
       if (this.prevalenceThreshold) {
@@ -1205,6 +1208,8 @@ export default {
         this.$genomicsurl,
         this.selectedPango,
         this.prevalenceThreshold / 100,
+        false,
+        this.selectedGenes,
       ).subscribe((results) => {
         this.prepResults(results);
       });
