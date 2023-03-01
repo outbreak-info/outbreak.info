@@ -71,7 +71,7 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-  tableSubscription.unsubscribe();
+  tableSubscription.value.unsubscribe();
 });
 
 const regionColorScale = (location) => {

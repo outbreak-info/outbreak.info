@@ -130,7 +130,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   if (metadataSubscription.value) {
-    metadataSubscription.unsubscribe();
+    metadataSubscription.value.unsubscribe();
   }
 });
 </script>

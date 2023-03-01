@@ -65,22 +65,17 @@
 </template>
 
 <!-- Javascript code to import variables, manipulate them, etc. -->
-<script>
+<script setup>
+import { ref, onMounted } from 'vue';
 import FAQ from '@/assets/faq.json';
 
-export default {
-  name: 'Faq',
-  data() {
-    return {
-      faq: null,
-      faqGroups: null,
-    };
-  },
-  mounted() {
-    this.faq = FAQ;
-    this.faqGroups = Object.keys(this.faq);
-  },
-};
+const faq = ref(null);
+const faqGroups = ref(null);
+
+onMounted(() => {
+  faq.value = FAQ;
+  faqGroups.value = Object.keys(faq.value);
+});
 </script>
 
 <style lang="scss">

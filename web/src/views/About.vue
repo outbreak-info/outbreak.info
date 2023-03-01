@@ -288,10 +288,10 @@ onMounted(() => {
 
 onUnmounted(() => {
   if (resourceSubscription.value) {
-    resourceSubscription.unsubscribe();
+    resourceSubscription.value.unsubscribe();
   }
   if (genomicsSubscription.value) {
-    genomicsSubscription.unsubscribe();
+    genomicsSubscription.value.unsubscribe();
   }
 });
 </script>

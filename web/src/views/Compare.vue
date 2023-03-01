@@ -273,7 +273,7 @@ watch(
 
 onBeforeUnmount(() => {
   if (dataSubscription.value) {
-    dataSubscription.unsubscribe();
+    dataSubscription.value.unsubscribe();
   }
 });
 

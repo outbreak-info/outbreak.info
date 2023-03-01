@@ -824,8 +824,10 @@
     </div>
   </div>
 </template>
-<script>
-import { mapState } from 'pinia';
+<script setup>
+import { onMounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { storeToRefs } from 'pinia';
 
 import { findPangolin, findLocation } from '@/api/genomics.js';
 import RESOURCEEXAMPLES from '@/assets/examples/resources_examples.json';
@@ -833,67 +835,63 @@ import GENOMICSEXAMPLES from '@/assets/examples/genomics_examples.json';
 import { lazyLoad } from '@/js/lazy-load';
 import { adminStore } from '@/stores/adminStore';
 
-export default {
-  name: 'Home',
-  components: {
-    SearchBar: lazyLoad('SearchBar'),
-    CustomReportForm: lazyLoad('CustomReportForm'),
-    TypeaheadSelect: lazyLoad('TypeaheadSelect'),
-  },
-  data() {
-    return {
-      searchQuery: '',
-      queryPangolin: null,
-      queryLocation: null,
-      resourceExamples: [],
-      genomicsExamples: [],
-    };
-  },
-  computed: {
-    ...mapState(adminStore, ['loading']),
-  },
-  mounted() {
-    this.resourceExamples = RESOURCEEXAMPLES;
-    this.genomicsExamples = GENOMICSEXAMPLES;
+const SearchBar = lazyLoad('SearchBar');
+const CustomReportForm = lazyLoad('CustomReportForm');
+const TypeaheadSelect = lazyLoad('TypeaheadSelect');
 
-    this.queryPangolin = findPangolin;
-    this.queryLocation = findLocation;
-  },
-  methods: {
-    submitLocation(selected) {
-      this.$router.push({
-        name: 'LocationReport',
-        query: {
-          loc: selected.id,
-        },
-      });
+const store = adminStore();
+const { loading } = storeToRefs(store);
+
+const router = useRouter();
+
+const searchQuery = ref('');
+const queryPangolin = ref(null);
+const queryLocation = ref(null);
+const resourceExamples = ref([]);
+const genomicsExamples = ref([]);
+
+onMounted(() => {
+  resourceExamples.value = RESOURCEEXAMPLES;
+  genomicsExamples.value = GENOMICSEXAMPLES;
+
+  queryPangolin.value = findPangolin;
+  queryLocation.value = findLocation;
+});
+
+const submitLocation = (selected) => {
+  router.push({
+    name: 'LocationReport',
+    query: {
+      loc: selected.id,
     },
-    submitSearch() {
-      this.$router.push({
-        name: 'Resources',
-        query: {
-          q: this.searchQuery,
-        },
-      });
+  });
+};
+
+const submitSearch = () => {
+  router.push({
+    name: 'Resources',
+    query: {
+      q: searchQuery.value,
     },
-    updatePangolin(selected) {
-      if (selected.alias) {
-        this.$router.push({
-          name: 'MutationReport',
-          params: {
-            alias: selected.name.toLowerCase(),
-          },
-        });
-      } else {
-        this.$router.push({
-          name: 'MutationReport',
-          query: {
-            pango: selected.name,
-          },
-        });
-      }
-    },
-  },
+  });
+};
+
+const updatePangolin = (selected) => {
+  if (selected.alias) {
+    router.push({
+      name: 'MutationReport',
+      params: {
+        alias: selected.name.toLowerCase(),
+      },
+    });
+  } else {
+    router.push({
+      name: 'MutationReport',
+      query: {
+        pango: selected.name,
+      },
+    });
+  }
 };
 </script>
 

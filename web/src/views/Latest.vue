@@ -97,47 +97,45 @@
   </div>
 </template>
 
-<script>
-import { mapState } from 'pinia';
+<script setup>
+import { onMounted, ref, inject, onUnmounted } from 'vue';
+import { storeToRefs } from 'pinia';
 import { timeFormat } from 'd3-time-format';
 
 import { getSourcesUpdated } from '@/api/metadata.js';
 import { adminStore } from '@/stores/adminStore';
 
-export default {
-  name: 'Latest',
-  components: {},
-  data() {
-    return {
-      updateSubscription: null,
-      lastUpdated: null,
-    };
-  },
-  computed: {
-    ...mapState(adminStore, ['updates']),
-  },
-  mounted() {
-    this.updateSubscription = getSourcesUpdated(
-      this.$genomicsurl,
-      this.$resourceurl,
-      this.$apiurl,
-    ).subscribe((results) => {
-      this.lastUpdated = results;
-    });
+const store = adminStore();
+const apiUrl = inject('apiUrl');
+const genomicsUrl = inject('genomicsUrl');
+const resourceUrl = inject('resourceUrl');
 
-    this.updates.sort((a, b) => b.date - a.date);
-  },
-  unmounted() {
-    if (this.updateSubscription) {
-      this.updateSubscription.unsubscribe();
-    }
-  },
-  methods: {
-    formatDate(date) {
-      const dateFormatter = timeFormat('%d %B %Y');
-      return dateFormatter(date);
-    },
-  },
+const updateSubscription = ref(null);
+const lastUpdated = ref(null);
+
+const { updates } = storeToRefs(store);
+
+onMounted(() => {
+  updateSubscription.value = getSourcesUpdated(
+    genomicsUrl,
+    resourceUrl,
+    apiUrl,
+  ).subscribe((results) => {
+    lastUpdated.value = results;
+  });
+
+  updates.sort((a, b) => b.date - a.date);
+});
+
+onUnmounted(() => {
+  if (updateSubscription.value) {
+    updateSubscription.value.unsubscribe();
+  }
+});
+
+const formatDate = (date) => {
+  const dateFormatter = timeFormat('%d %B %Y');
+  return dateFormatter(date);
 };
 </script>
 
