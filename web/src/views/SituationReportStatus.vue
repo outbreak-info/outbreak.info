@@ -270,8 +270,9 @@
   </div>
 </template>
 
-<script>
-import { mapState } from 'pinia';
+<script setup>
+import { inject, ref, watch, onMounted, computed, onBeforeUnmount } from 'vue';
+import { storeToRefs } from 'pinia';
 import debounce from 'lodash/debounce';
 
 import {
@@ -285,185 +286,182 @@ import {
 } from '@/api/genomics.js';
 import { lazyLoad } from '@/js/lazy-load';
 import { genomicsStore } from '@/stores/genomicsStore';
+import { useRouter } from 'vue-router';
 
-export default {
-  name: 'SituationReportStatus',
-  components: {
-    TypeaheadSelect: lazyLoad('TypeaheadSelect'),
-    SequencingHistogram: lazyLoad('SequencingHistogram'),
-    Histogram: lazyLoad('Histogram'),
-    GapOverTime: lazyLoad('GapOverTime'),
+const TypeaheadSelect = lazyLoad('TypeaheadSelect');
+const SequencingHistogram = lazyLoad('SequencingHistogram');
+const Histogram = lazyLoad('Histogram');
+const GapOverTime = lazyLoad('GapOverTime');
+
+const props = defineProps({
+  loc: String,
+  var: String,
+});
+
+const apiUrl = inject('apiUrl');
+const genomicsUrl = inject('genomicsUrl');
+
+const router = useRouter();
+
+const store = genomicsStore();
+const { locationLoading1, locationLoading2, locationLoading3 } =
+  storeToRefs(store);
+
+const queryLocation = ref(null);
+const totalSubscription = ref(null);
+const locationSubscription = ref(null);
+const longitudinalSubscription = ref(null);
+const gapSubscription = ref(null);
+const mapSubscription = ref(null);
+const idSubscription = ref(null);
+const dateUpdated = ref(null);
+const lastUpdated = ref(null);
+const total = ref(null);
+const locTotal = ref(null);
+const seqCounts = ref(null);
+const seqGaps = ref(null);
+const seqMap = ref(null);
+const seqGapMedian = ref(null);
+const weeklyMedianGap = ref(null);
+const selectedLocation = ref(null);
+const selectedSequence = ref(null);
+const sequenceFound = ref(null);
+const widthHist = ref(800);
+const marginHist = ref({
+  top: 10,
+  bottom: 30,
+  left: 75,
+  right: 75,
+});
+
+const reportloading = computed(() => {
+  return locationLoading1 || locationLoading2 || locationLoading3;
+});
+
+const locationTitle = computed(() => {
+  if (selectedLocation.value) {
+    return `in ${selectedLocation.value.label}`;
+  } else {
+    return 'Worldwide';
+  }
+});
+
+const debounceSeqSearch = debounce(lookupSequence, 250);
+
+watch(selectedSequence, () => {
+  debounceSeqSearch();
+});
+
+watch(
+  () => props.loc,
+  () => {
+    updateLocationMd();
+    updateSeqCounts();
+    updateGap();
+    updateMap();
   },
-  props: {
-    loc: String,
-    var: String,
-  },
-  data() {
-    return {
-      // methods
-      queryLocation: null,
-      // subscriptions
-      totalSubscription: null,
-      locationSubscription: null,
-      longitudinalSubscription: null,
-      gapSubscription: null,
-      mapSubscription: null,
-      idSubscription: null,
-      // data
-      dateUpdated: null,
-      lastUpdated: null,
-      total: null,
-      locTotal: null,
-      seqCounts: null,
-      seqGaps: null,
-      seqMap: null,
-      seqGapMedian: null,
-      weeklyMedianGap: null,
-      // selections
-      selectedLocation: null,
-      selectedSequence: null,
-      sequenceFound: null,
-      // layout variables
-      widthHist: 800,
-      marginHist: {
-        top: 10,
-        bottom: 30,
-        left: 75,
-        right: 75,
+);
+
+onMounted(() => {
+  queryLocation.value = findLocation;
+  totalSubscription.value = getStatusBasics(genomicsUrl, props.loc).subscribe(
+    (results) => {
+      lastUpdated.value = results.lastUpdated;
+      dateUpdated.value = results.dateUpdated;
+      total.value = results.total;
+    },
+  );
+
+  updateLocationMd();
+  updateSeqCounts();
+  updateGap();
+  updateMap();
+});
+
+const updateLocation = (newLocation) => {
+  if (newLocation) {
+    router.push({
+      name: 'SituationReportStatus',
+      meta: {
+        disableScroll: true,
       },
-    };
-  },
-  computed: {
-    ...mapState(genomicsStore, [
-      'locationLoading1',
-      'locationLoading2',
-      'locationLoading3',
-    ]),
-    reportloading() {
-      return (
-        this.locationLoading1 || this.locationLoading2 || this.locationLoading3
-      );
-    },
-    locationTitle() {
-      if (this.selectedLocation) {
-        return `in ${this.selectedLocation.label}`;
-      } else {
-        return 'Worldwide';
-      }
-    },
-  },
-  watch: {
-    selectedSequence() {
-      this.debounceSeqSearch();
-    },
-    loc() {
-      this.updateLocationMd();
-      this.updateSeqCounts();
-      this.updateGap();
-      this.updateMap();
-    },
-  },
-  created() {
-    this.debounceSeqSearch = debounce(this.lookupSequence, 250);
-  },
-  mounted() {
-    this.queryLocation = findLocation;
-    this.totalSubscription = getStatusBasics(
-      this.$genomicsurl,
-      this.loc,
-    ).subscribe((results) => {
-      this.lastUpdated = results.lastUpdated;
-      this.dateUpdated = results.dateUpdated;
-      this.total = results.total;
+      query: {
+        loc: newLocation.id,
+        var: props.var,
+      },
     });
-
-    this.updateLocationMd();
-    this.updateSeqCounts();
-    this.updateGap();
-    this.updateMap();
-  },
-  methods: {
-    updateLocation(newLocation) {
-      if (newLocation) {
-        this.$router.push({
-          name: 'SituationReportStatus',
-          meta: {
-            disableScroll: true,
-          },
-          query: {
-            loc: newLocation.id,
-            var: this.var,
-          },
-        });
-      }
-    },
-    lookupSequence() {
-      if (this.selectedSequence) {
-        this.checkID();
-      } else {
-        this.sequenceFound = null;
-      }
-    },
-    updateLocationMd() {
-      this.longitudinalSubscription = getStatusLocation(
-        this.$genomicsurl,
-        this.loc,
-      ).subscribe((results) => {
-        this.locTotal = results.total;
-        this.selectedLocation = results.location;
-      });
-    },
-    updateSeqCounts() {
-      this.longitudinalSubscription = getSequenceCount(
-        this.$genomicsurl,
-        this.loc,
-        false,
-      ).subscribe((results) => {
-        this.seqCounts = results;
-      });
-    },
-    updateGap() {
-      this.gapSubscription = getSeqGaps(this.$genomicsurl, this.loc).subscribe(
-        (results) => {
-          this.seqGaps = results.gapHist;
-          this.seqGapMedian = results.median;
-          this.weeklyMedianGap = results.weeklyMedian;
-        },
-      );
-    },
-    updateMap() {
-      this.mapSubscription = getSeqMap(
-        this.$genomicsurl,
-        this.$apiurl,
-        this.loc,
-      ).subscribe((results) => {
-        this.seqMap = results;
-      });
-    },
-    checkID() {
-      this.idSubscription = checkGisaidID(
-        this.$genomicsurl,
-        this.selectedSequence,
-      ).subscribe((found) => {
-        this.sequenceFound = found;
-      });
-    },
-  },
-  beforeUnmount() {
-    if (this.totalSubscription) {
-      this.totalSubscription.unsubscribe();
-    }
-    if (this.longitudinalSubscription) {
-      this.longitudinalSubscription.unsubscribe();
-    }
-    if (this.idSubscription) {
-      this.idSubscription.unsubscribe();
-    }
-    if (this.mapSubscription) {
-      this.mapSubscription.unsubscribe();
-    }
-  },
+  }
 };
+
+const lookupSequence = () => {
+  if (selectedSequence.value) {
+    checkID();
+  } else {
+    sequenceFound.value = null;
+  }
+};
+
+const updateLocationMd = () => {
+  longitudinalSubscription.value = getStatusLocation(
+    genomicsUrl,
+    props.loc,
+  ).subscribe((results) => {
+    locTotal.value = results.total;
+    selectedLocation.value = results.location;
+  });
+};
+
+const updateSeqCounts = () => {
+  longitudinalSubscription.value = getSequenceCount(
+    genomicsUrl,
+    props.loc,
+    false,
+  ).subscribe((results) => {
+    seqCounts.value = results;
+  });
+};
+
+const updateGap = () => {
+  gapSubscription.value = getSeqGaps(genomicsUrl, props.loc).subscribe(
+    (results) => {
+      seqGaps.value = results.gapHist;
+      seqGapMedian.value = results.median;
+      weeklyMedianGap.value = results.weeklyMedian;
+    },
+  );
+};
+
+const updateMap = () => {
+  mapSubscription.value = getSeqMap(genomicsUrl, apiUrl, props.loc).subscribe(
+    (results) => {
+      seqMap.value = results;
+    },
+  );
+};
+
+const checkID = () => {
+  idSubscription.vlaue = checkGisaidID(
+    genomicsUrl,
+    selectedSequence.value,
+  ).subscribe((found) => {
+    sequenceFound.value = found;
+  });
+};
+
+onBeforeUnmount(() => {
+  if (totalSubscription.value) {
+    totalSubscription.value.unsubscribe();
+  }
+  if (longitudinalSubscription.value) {
+    longitudinalSubscription.value.unsubscribe();
+  }
+  if (idSubscription.value) {
+    idSubscription.value.unsubscribe();
+  }
+  if (mapSubscription.value) {
+    mapSubscription.value.unsubscribe();
+  }
+});
 </script>
 
 <style lang="scss" scoped>

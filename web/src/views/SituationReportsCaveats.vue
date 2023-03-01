@@ -140,13 +140,8 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { lazyLoad } from '@/js/lazy-load';
 
-export default {
-  name: 'SituationReportsCaveats',
-  components: {
-    SituationReportDefinitions: lazyLoad('SituationReportDefinitions'),
-  },
-};
+const SituationReportDefinitions = lazyLoad('SituationReportDefinitions');
 </script>
