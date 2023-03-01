@@ -179,52 +179,43 @@
   </div>
 </template>
 
-<script>
-import { mapState } from 'pinia';
+<script setup>
+import { ref } from 'vue';
+import { storeToRefs } from 'pinia';
 import { adminStore } from '@/stores/adminStore';
 
-export default {
-  name: 'Contributing',
-  components: {},
-  data() {
-    return {
-      types: [
-        {
-          label: 'Clinical Trials',
-          description: 'Publicly and privately funded human clinical studies',
-          id: 'ClinicalTrial',
-        },
-        {
-          label: 'Datasets',
-          description: 'A collection of primary or secondary data',
-          id: 'Dataset',
-        },
-        // {
-        //   label: "Analyses",
-        //   description:
-        //     "Web-based resources that interpret data based off assumptions and frequently update with new data",
-        //   id: "Analysis"
-        // },
-        {
-          label: 'Protocols',
-          description:
-            'A detailed series of instructions to perform an experimental technique and/or analysis',
-          id: 'Protocol',
-        },
-
-        {
-          label: 'Publications',
-          description:
-            'A published report, set of results, or commentary, including preprints and blog posts',
-          id: 'Publication',
-        },
-      ],
-    };
+const store = adminStore();
+const { resources } = storeToRefs(store);
+const types = ref([
+  {
+    label: 'Clinical Trials',
+    description: 'Publicly and privately funded human clinical studies',
+    id: 'ClinicalTrial',
   },
-  computed: {
-    ...mapState(adminStore, ['resources']),
+  {
+    label: 'Datasets',
+    description: 'A collection of primary or secondary data',
+    id: 'Dataset',
   },
-};
+  // {
+  //   label: "Analyses",
+  //   description:
+  //     "Web-based resources that interpret data based off assumptions and frequently update with new data",
+  //   id: "Analysis"
+  // },
+  {
+    label: 'Protocols',
+    description:
+      'A detailed series of instructions to perform an experimental technique and/or analysis',
+    id: 'Protocol',
+  },
+  {
+    label: 'Publications',
+    description:
+      'A published report, set of results, or commentary, including preprints and blog posts',
+    id: 'Publication',
+  },
+]);
 </script>
 
 <style lang="scss">

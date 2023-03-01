@@ -10,14 +10,9 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { lazyLoad } from '@/js/lazy-load';
 
-export default {
-  name: 'Citation',
-  components: {
-    CiteUs: lazyLoad('CiteUs'),
-    DataUsage: lazyLoad('DataUsage'),
-  },
-};
+const CiteUs = lazyLoad('CiteUs');
+const DataUsage = lazyLoad('DataUsage');
 </script>

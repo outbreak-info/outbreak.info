@@ -16,70 +16,66 @@
     </section>
   </div>
 </template>
-<script>
-import { mapState } from 'pinia';
+<script setup>
+import { inject, onMounted, onUnmounted, ref } from 'vue';
+import { storeToRefs } from 'pinia';
 
 import { getEpiTable } from '@/api/epi-traces.js';
 import { lazyLoad } from '@/js/lazy-load';
 import { adminStore } from '@/stores/adminStore';
 import { colorsStore } from '@/stores/colorsStore';
 
-export default {
-  name: 'Home',
-  components: {
-    DataSource: lazyLoad('DataSource'),
-    EpiTable: lazyLoad('EpiTable'),
+const DataSource = lazyLoad('DataSource');
+const EpiTable = lazyLoad('EpiTable');
+
+const apiUrl = inject('apiUrl');
+
+const stackedWidth = ref(500);
+const stackedHeight = ref(250);
+const data = ref(null);
+const dataSubscription = ref(null);
+const tableSubscription = ref(null);
+const nestedData = ref(null);
+const selectedVariable = ref('confirmed');
+const variableOptions = ref([
+  {
+    label: 'Cases',
+    value: 'confirmed',
   },
-  data() {
-    return {
-      stackedWidth: 500,
-      stackedHeight: 250,
-      data: null,
-      dataSubscription: null,
-      tableSubscription: null,
-      nestedData: null,
-      selectedVariable: 'confirmed',
-      variableOptions: [
-        {
-          label: 'Cases',
-          value: 'confirmed',
-        },
-        {
-          label: 'Recoveries',
-          value: 'recovered',
-        },
-        {
-          label: 'Deaths',
-          value: 'dead',
-        },
-      ],
-      searchQuery: '',
-    };
+  {
+    label: 'Recoveries',
+    value: 'recovered',
   },
-  computed: {
-    ...mapState(adminStore, ['loading']),
-    ...mapState(colorsStore, ['getRegionColorFromLocation']),
+  {
+    label: 'Deaths',
+    value: 'dead',
   },
-  watch: {},
-  mounted() {
-    this.tableSubscription = getEpiTable(
-      this.$apiurl,
-      null,
-      [0, 1, 2],
-      '-confirmed',
-      10,
-      0,
-    ).subscribe((_) => null);
-  },
-  unmounted() {
-    this.tableSubscription.unsubscribe();
-  },
-  methods: {
-    regionColorScale(location) {
-      const scale = this.getRegionColorFromLocation;
-      return scale(location);
-    },
-  },
+]);
+const searchQuery = ref('');
+
+const storeAdmin = adminStore();
+const storeColor = colorsStore();
+
+const { loading } = storeToRefs(storeAdmin);
+const { getRegionColorFromLocation } = storeToRefs(storeColor);
+
+onMounted(() => {
+  tableSubscription.value = getEpiTable(
+    apiUrl,
+    null,
+    [0, 1, 2],
+    '-confirmed',
+    10,
+    0,
+  ).subscribe((_) => null);
+});
+
+onUnmounted(() => {
+  tableSubscription.unsubscribe();
+});
+
+const regionColorScale = (location) => {
+  return getRegionColorFromLocation(location);
 };
 </script>
 

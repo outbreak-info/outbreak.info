@@ -242,63 +242,58 @@
   </div>
 </template>
 
-<script>
-import { mapState } from 'pinia';
+<script setup>
+import { inject, ref, onMounted, onUnmounted } from 'vue';
+import { storeToRefs } from 'pinia';
 
 import { getResourceTotal } from '@/api/resources.js';
 import { getSequenceCount } from '@/api/genomics.js';
 import { lazyLoad } from '@/js/lazy-load';
 import { adminStore } from '@/stores/adminStore';
 
-export default {
-  name: 'About',
-  components: {
-    Jobs: lazyLoad('Jobs'),
-    EmailSubscription: lazyLoad('EmailSubscription'),
-  },
-  data() {
-    return {
-      resourceCount: null,
-      gisaidCount: null,
-      resourceSubscription: null,
-      genomicsSubscription: null,
-    };
-  },
-  computed: {
-    ...mapState(adminStore, ['funding', 'team', 'formerTeam']),
-  },
-  mounted() {
-    let twitterScript = document.createElement('script');
-    twitterScript.setAttribute(
-      'src',
-      'https://platform.twitter.com/widgets.js',
-    );
-    document.head.appendChild(twitterScript);
+const Jobs = lazyLoad('Jobs');
+const EmailSubscription = lazyLoad('EmailSubscription');
 
-    // get totals from the API
-    this.resourceSubscription = getResourceTotal(this.$resourceurl).subscribe(
-      (total) => {
-        this.resourceCount = total.floor;
-      },
-    );
-    this.genomicsSubscription = getSequenceCount(
-      this.$genomicsurl,
-      null,
-      true,
-      true,
-    ).subscribe((total) => {
-      this.gisaidCount = total;
-    });
-  },
-  unmounted() {
-    if (this.resourceSubscription) {
-      this.resourceSubscription.unsubscribe();
-    }
-    if (this.genomicsSubscription) {
-      this.genomicsSubscription.unsubscribe();
-    }
-  },
-};
+const resourceCount = ref(null);
+const gisaidCount = ref(null);
+const resourceSubscription = ref(null);
+const genomicsSubscription = ref(null);
+
+const resourceUrl = inject('resourceUrl');
+const genomicsUrl = inject('genomicsUrl');
+
+const store = adminStore();
+const { funding, team, formerTeam } = storeToRefs(store);
+
+onMounted(() => {
+  let twitterScript = document.createElement('script');
+  twitterScript.setAttribute('src', 'https://platform.twitter.com/widgets.js');
+  document.head.appendChild(twitterScript);
+
+  // get totals from the API
+  resourceSubscription.value = getResourceTotal(resourceUrl).subscribe(
+    (total) => {
+      resourceCount.value = total.floor;
+    },
+  );
+  genomicsSubscription.value = getSequenceCount(
+    genomicsUrl,
+    null,
+    true,
+    true,
+  ).subscribe((total) => {
+    gisaidCount.value = total;
+  });
+});
+
+onUnmounted(() => {
+  if (resourceSubscription.value) {
+    resourceSubscription.unsubscribe();
+  }
+  if (genomicsSubscription.value) {
+    genomicsSubscription.unsubscribe();
+  }
+});
 </script>
 
 <style lang="scss">

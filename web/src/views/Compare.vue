@@ -161,8 +161,10 @@
   </div>
 </template>
 
-<script>
-import { mapState } from 'pinia';
+<script setup>
+import { ref, inject, onBeforeUnmount, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { storeToRefs } from 'pinia';
 import { format } from 'd3-format';
 import { scaleOrdinal } from 'd3-scale';
 
@@ -171,170 +173,173 @@ import { lazyLoad } from '@/js/lazy-load';
 import { colorsStore } from '@/stores/colorsStore';
 import { adminStore } from '@/stores/adminStore';
 
-export default {
-  name: 'Compare',
-  components: {
-    MiniLocation: lazyLoad('MiniLocation'),
-    LineComparison: lazyLoad('LineComparison'),
-    SearchBar: lazyLoad('SearchBar'),
-  },
-  props: {
-    location: String,
-    admin_levels: String,
-    variable: String,
-    similarity: String,
-  },
-  data() {
-    return {
-      lat: 10,
-      lon: 0,
-      locationData: null,
-      similar: null,
-      xDomain: null,
-      yMaxC: null,
-      yMaxD: null,
-      colorScale: null,
-      selectedLocation: null,
-      selectedSimilarity: null,
-      similarOptions: [
-        {
-          value: 'population',
-          label: 'population',
-        },
-        {
-          value: 'confirmed',
-          label: 'total cases',
-        },
-        {
-          value: 'confirmed_per_100k',
-          label: 'total cases per capita',
-        },
-        {
-          value: 'confirmed_rolling',
-          label: 'new cases today',
-        },
-        {
-          value: 'confirmed_rolling_per_100k',
-          label: 'new cases today per capita',
-        },
-        {
-          value: 'dead',
-          label: 'total deaths',
-        },
-        {
-          value: 'dead_per_100k',
-          label: 'total deaths per capita',
-        },
-        {
-          value: 'dead_rolling',
-          label: 'new deaths today',
-        },
-        {
-          value: 'dead_rolling_per_100k',
-          label: 'new deaths today per capita',
-        },
-      ],
-      selectedAdminLevels: [
-        'countries',
-        'non-U.S. States/Provinces',
-        'U.S. States',
-        'U.S. Metro Areas',
-        'U.S. Counties',
-      ],
-      adminOptions: [
-        'countries',
-        'non-U.S. States/Provinces',
-        'U.S. States',
-        'U.S. Metro Areas',
-        'U.S. Counties',
-      ],
-      dataSubscription: null,
-    };
-  },
-  computed: {
-    ...mapState(adminStore, ['dataloading']),
-    ...mapState(colorsStore, ['colors']),
-  },
-  watch: {
-    $route: {
-      immediate: true,
-      handler(to, from) {
-        this.selectedSimilarity = this.similarity;
-        this.selectedAdminLevels = this.admin_levels
-          ? this.admin_levels.split(';')
-          : [];
+const MiniLocation = lazyLoad('MiniLocation');
+const LineComparison = lazyLoad('LineComparison');
+const SearchBar = lazyLoad('SearchBar');
 
-        this.getSimilar();
-      },
-    },
+const props = defineProps({
+  location: String,
+  admin_levels: String,
+  variable: String,
+  similarity: String,
+});
+
+const apiUrl = inject('apiUrl');
+
+const lat = ref(10);
+const lon = ref(0);
+const locationData = ref(null);
+const similar = ref(null);
+const xDomain = ref(null);
+const yMaxC = ref(null);
+const yMaxD = ref(null);
+const colorScale = ref(null);
+const selectedLocation = ref(null);
+const selectedSimilarity = ref(null);
+const similarOptions = ref([
+  {
+    value: 'population',
+    label: 'population',
   },
-  beforeUnmount() {
-    if (this.dataSubscription) {
-      this.dataSubscription.unsubscribe();
-    }
+  {
+    value: 'confirmed',
+    label: 'total cases',
   },
-  methods: {
-    getSimilar() {
-      if (this.location && this.similarity) {
-        this.dataSubscription = findSimilar(
-          this.$apiurl,
-          this.location,
-          this.variable,
-          this.similarity,
-          this.selectedAdminLevels,
-        ).subscribe((results) => {
-          this.similar = results.similar;
-          this.locationData = results.location;
-          this.xDomain = results.xDomain;
-          this.yMaxC = results.yMaxC;
-          this.yMaxD = results.yMaxD;
-          this.colorScale = scaleOrdinal()
-            .range(this.colors)
-            .domain(this.similar.map((d) => d.key));
-        });
-      }
-    },
-    changeSimilarity() {
-      this.$router.push({
-        name: 'Compare',
-        query: {
-          location: this.location,
-          admin_levels: this.admin_levels,
-          variable: this.variable,
-          similarity: this.selectedSimilarity,
-        },
-      });
-    },
-    changeAdmin() {
-      this.$router.push({
-        name: 'Compare',
-        query: {
-          location: this.location,
-          admin_levels: this.selectedAdminLevels.join(';'),
-          variable: this.variable,
-          similarity: this.similarity,
-        },
-      });
-    },
-    changeLocation(location_id) {
-      this.selectedLocation = location_id;
-      this.$router.push({
-        name: 'Compare',
-        query: {
-          location: location_id,
-          admin_levels: this.admin_levels,
-          variable: this.variable,
-          similarity: this.similarity,
-        },
-      });
-    },
-    formatValue(val) {
-      return this.similarity.includes('_per_100k') ||
-        this.similarity.includes('rolling')
-        ? format(',.1f')(val)
-        : format(',.0f')(val);
-    },
+  {
+    value: 'confirmed_per_100k',
+    label: 'total cases per capita',
   },
+  {
+    value: 'confirmed_rolling',
+    label: 'new cases today',
+  },
+  {
+    value: 'confirmed_rolling_per_100k',
+    label: 'new cases today per capita',
+  },
+  {
+    value: 'dead',
+    label: 'total deaths',
+  },
+  {
+    value: 'dead_per_100k',
+    label: 'total deaths per capita',
+  },
+  {
+    value: 'dead_rolling',
+    label: 'new deaths today',
+  },
+  {
+    value: 'dead_rolling_per_100k',
+    label: 'new deaths today per capita',
+  },
+]);
+const selectedAdminLevels = ref([
+  'countries',
+  'non-U.S. States/Provinces',
+  'U.S. States',
+  'U.S. Metro Areas',
+  'U.S. Counties',
+]);
+const adminOptions = ref([
+  'countries',
+  'non-U.S. States/Provinces',
+  'U.S. States',
+  'U.S. Metro Areas',
+  'U.S. Counties',
+]);
+const dataSubscription = ref(null);
+
+const storeAdmin = adminStore();
+const storeColor = colorsStore();
+
+const { dataloading } = storeToRefs(storeAdmin);
+const { colors } = storeToRefs(storeColor);
+
+const route = useRoute();
+const router = useRouter();
+
+watch(
+  () => route,
+  () => {
+    selectedSimilarity.value = props.similarity;
+    selectedAdminLevels.value = props.admin_levels
+      ? props.admin_levels.split(';')
+      : [];
+    getSimilar();
+  },
+  { immediate: true },
+);
+
+onBeforeUnmount(() => {
+  if (dataSubscription.value) {
+    dataSubscription.unsubscribe();
+  }
+});
+
+const getSimilar = () => {
+  if (props.location && props.similarity) {
+    dataSubscription.value = findSimilar(
+      apiUrl,
+      props.location,
+      props.variable,
+      props.similarity,
+      selectedAdminLevels.value,
+    ).subscribe((results) => {
+      similar.value = results.similar;
+      locationData.value = results.location;
+      xDomain.value = results.xDomain;
+      yMaxC.value = results.yMaxC;
+      yMaxD.value = results.yMaxD;
+      colorScale.value = scaleOrdinal()
+        .range(colors)
+        .domain(similar.value.map((d) => d.key));
+    });
+  }
+};
+
+const changeSimilarity = () => {
+  router.push({
+    name: 'Compare',
+    query: {
+      location: props.location,
+      admin_levels: props.admin_levels,
+      variable: props.variable,
+      similarity: selectedSimilarity.value,
+    },
+  });
+};
+
+const changeAdmin = () => {
+  router.push({
+    name: 'Compare',
+    query: {
+      location: props.location,
+      admin_levels: selectedAdminLevels.value.join(';'),
+      variable: props.variable,
+      similarity: props.similarity,
+    },
+  });
+};
+
+const changeLocation = (location_id) => {
+  selectedLocation.value = location_id;
+  router.push({
+    name: 'Compare',
+    query: {
+      location: location_id,
+      admin_levels: props.admin_levels,
+      variable: props.variable,
+      similarity: props.similarity,
+    },
+  });
+};
+
+const formatValue = (val) => {
+  return props.similarity.includes('_per_100k') ||
+    props.similarity.includes('rolling')
+    ? format(',.1f')(val)
+    : format(',.0f')(val);
 };
 </script>
 
