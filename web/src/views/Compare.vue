@@ -172,6 +172,7 @@ import { findSimilar } from '@/api/find-similar.js';
 import { lazyLoad } from '@/js/lazy-load';
 import { colorsStore } from '@/stores/colorsStore';
 import { adminStore } from '@/stores/adminStore';
+import debounce from 'lodash/debounce';
 
 const MiniLocation = lazyLoad('MiniLocation');
 const LineComparison = lazyLoad('LineComparison');
@@ -259,24 +260,6 @@ const { colors } = storeToRefs(storeColor);
 const route = useRoute();
 const router = useRouter();
 
-watch(
-  () => route,
-  () => {
-    selectedSimilarity.value = props.similarity;
-    selectedAdminLevels.value = props.admin_levels
-      ? props.admin_levels.split(';')
-      : [];
-    getSimilar();
-  },
-  { immediate: true },
-);
-
-onBeforeUnmount(() => {
-  if (dataSubscription.value) {
-    dataSubscription.value.unsubscribe();
-  }
-});
-
 const getSimilar = () => {
   if (props.location && props.similarity) {
     dataSubscription.value = findSimilar(
@@ -297,6 +280,8 @@ const getSimilar = () => {
     });
   }
 };
+
+const debounceGetSimilar = debounce(getSimilar, 500);
 
 const changeSimilarity = () => {
   router.push({
@@ -341,6 +326,24 @@ const formatValue = (val) => {
     ? format(',.1f')(val)
     : format(',.0f')(val);
 };
+
+watch(
+  route,
+  (to, from) => {
+    selectedSimilarity.value = props.similarity;
+    selectedAdminLevels.value = props.admin_levels
+      ? props.admin_levels.split(';')
+      : [];
+    debounceGetSimilar();
+  },
+  { immediate: true },
+);
+
+onBeforeUnmount(() => {
+  if (dataSubscription.value) {
+    dataSubscription.value.unsubscribe();
+  }
+});
 </script>
 
 <style lang="scss">
