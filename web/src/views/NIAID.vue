@@ -61,10 +61,10 @@
   </div>
 </template>
 
-<script>
-import { mapState } from 'pinia';
+<script setup>
+import { computed, inject, onBeforeUnmount, onMounted, ref } from 'vue';
+import { storeToRefs } from 'pinia';
 import { nest } from 'd3-collection';
-import tippy from 'tippy.js';
 
 import { getQuerySummaries, getSourceSummary } from '@/api/resources.js';
 import { lazyLoad } from '@/js/lazy-load';
@@ -72,102 +72,101 @@ import { lazyLoad } from '@/js/lazy-load';
 import 'tippy.js/themes/light.css';
 import { adminStore } from '@/stores/adminStore';
 
-export default {
-  name: 'NIAID',
-  components: {
-    WhatsNew: lazyLoad('WhatsNew'),
-    CirclePacking: lazyLoad('CirclePacking'),
-    HorizontalBargraph: lazyLoad('HorizontalBargraph'),
-    ResourceTimeline: lazyLoad('ResourceTimeline'),
-  },
-  data() {
-    return {
-      resultSubscription: null,
-      countSubscription: null,
-      counts: null,
-      results: null,
-      dates: null,
-      authors: null,
-      affiliations: null,
-      query: [
-        {
-          terms: [
-            'NIAID',
-            'National Institute of Allergy and Infectious Diseases',
-          ],
-          // 'sponsor.name:"national institute of allergy and infectious diseases (niaid)"']
-          // funding: "Division of Intramural Research, National Institute of Allergy and Infectious Diseases (Division of Intramural Research of the NIAID)", "National Institute of Allergy and Infectious Disease of the National Institutes of Health", "U.S. Department of Health &amp; Human Services | NIH | National Institute of Allergy and Infectious Diseases (NIAID)"
-          // "funding.funder.name:NIAID NIH HHS,National Institutes of Health/National Institute Of Allergy and Infectious Diseases (NIH/NIAID)"]
-        },
-      ],
-    };
-  },
-  computed: {
-    ...mapState(adminStore, ['loading']),
-    types() {
-      return this.results ? this.results.flatMap((d) => d.types) : null;
-    },
-    queryString() {
-      return this.query.map((d) => `"${d.terms.join('" "')}"`)[0];
-    },
-  },
-  mounted() {
-    this.resultSubscription = getQuerySummaries(
-      this.query,
-      this.$resourceurl,
-    ).subscribe((results) => {
-      this.results = results;
-      this.dates = results[0].facets.date.terms;
+const WhatsNew = lazyLoad('WhatsNew');
+const CirclePacking = lazyLoad('CirclePacking');
+const HorizontalBargraph = lazyLoad('HorizontalBargraph');
+const ResourceTimeline = lazyLoad('ResourceTimeline');
 
-      // const keys = results[0]["hits"].flatMap(d => d.keywords)
-      // const keywords = nest()
-      //   .key(d => d ? d.toLowerCase() : "unknown")
-      //   .rollup(values => values.length)
-      //   .entries(keys)
-      //   .sort((a, b) => b.value - a.value);
-      //
-      // console.log(keywords);
+const resourceUrl = inject('resourceUrl');
 
-      this.authors = nest()
-        .key((d) => (d ? d : 'unknown'))
-        .rollup((values) => values.length)
-        .entries(
-          results[0]['hits']
-            .flatMap((d) => d.author)
-            .flatMap((d) =>
-              d.name
-                ? d.name
-                : d.givenName
-                ? `${d.givenName} ${d.familyName}`
-                : 'unknown',
-            ),
-        )
-        .sort((a, b) => b.value - a.value);
-
-      this.affiliations = nest()
-        .key((d) => (d ? d : 'unknown'))
-        .rollup((values) => values.length)
-        .entries(
-          results[0]['hits']
-            .flatMap((d) => d.author)
-            .flatMap((d) => (d.affiliation ? d.affiliation : 'unknown'))
-            .flatMap((d) => d.name),
-        )
-        .sort((a, b) => b.value - a.value);
-    });
-
-    this.countSubscription = getSourceSummary(
-      this.$resourceurl,
-      this.queryString,
-    ).subscribe((results) => {
-      this.counts = results;
-    });
+const resultSubscription = ref(null);
+const countSubscription = ref(null);
+const counts = ref(null);
+const results = ref(null);
+const dates = ref(null);
+const authors = ref(null);
+const affiliations = ref(null);
+const query = ref([
+  {
+    terms: ['NIAID', 'National Institute of Allergy and Infectious Diseases'],
+    // 'sponsor.name:"national institute of allergy and infectious diseases (niaid)"']
+    // funding: "Division of Intramural Research, National Institute of Allergy and Infectious Diseases (Division of Intramural Research of the NIAID)", "National Institute of Allergy and Infectious Disease of the National Institutes of Health", "U.S. Department of Health &amp; Human Services | NIH | National Institute of Allergy and Infectious Diseases (NIAID)"
+    // "funding.funder.name:NIAID NIH HHS,National Institutes of Health/National Institute Of Allergy and Infectious Diseases (NIH/NIAID)"]
   },
-  beforeUnmount() {
-    this.resultSubscription.unsubscribe();
-    this.countSubscription.unsubscribe();
-  },
-};
+]);
+
+const store = adminStore();
+const { loading } = storeToRefs(store);
+
+const types = computed(() => {
+  return results.value ? results.value.flatMap((d) => d.types) : null;
+});
+
+const queryString = computed(() => {
+  return query.value.map((d) => `"${d.terms.join('" "')}"`)[0];
+});
+
+onMounted(() => {
+  resultSubscription.value = getQuerySummaries(
+    query.value,
+    resourceUrl,
+  ).subscribe((results) => {
+    results.value = results;
+    dates.value = results[0].facets.date.terms;
+
+    // const keys = results[0]["hits"].flatMap(d => d.keywords)
+    // const keywords = nest()
+    //   .key(d => d ? d.toLowerCase() : "unknown")
+    //   .rollup(values => values.length)
+    //   .entries(keys)
+    //   .sort((a, b) => b.value - a.value);
+    //
+    // console.log(keywords);
+
+    authors.value = nest()
+      .key((d) => (d ? d : 'unknown'))
+      .rollup((values) => values.length)
+      .entries(
+        results[0]['hits']
+          .flatMap((d) => d.author)
+          .flatMap((d) =>
+            d.name
+              ? d.name
+              : d.givenName
+              ? `${d.givenName} ${d.familyName}`
+              : 'unknown',
+          ),
+      )
+      .sort((a, b) => b.value - a.value);
+
+    affiliations.value = nest()
+      .key((d) => (d ? d : 'unknown'))
+      .rollup((values) => values.length)
+      .entries(
+        results[0]['hits']
+          .flatMap((d) => d.author)
+          .flatMap((d) => (d.affiliation ? d.affiliation : 'unknown'))
+          .flatMap((d) => d.name),
+      )
+      .sort((a, b) => b.value - a.value);
+  });
+
+  countSubscription.value = getSourceSummary(
+    resourceUrl,
+    queryString,
+  ).subscribe((results) => {
+    counts.value = results;
+  });
+});
+
+onBeforeUnmount(() => {
+  if (resultSubscription.value) {
+    resultSubscription.value.unsubscribe();
+  }
+  if (countSubscription.value) {
+    countSubscription.value.unsubscribe();
+  }
+});
 </script>
 
 <style lang="scss" scoped>

@@ -384,7 +384,7 @@ const colorScaleFunc = (location) => {
 };
 
 const colorScale = computed(() => {
-  return store.getColor();
+  return store.getColor;
 });
 
 const noData = computed(() => {
