@@ -672,7 +672,15 @@
 </template>
 
 <script setup>
-import { inject, ref, onUpdated, computed, watch, onBeforeUnmount } from 'vue';
+import {
+  inject,
+  ref,
+  onUpdated,
+  computed,
+  watch,
+  onBeforeUnmount,
+  onMounted,
+} from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
 import cloneDeep from 'lodash/cloneDeep';
@@ -683,7 +691,6 @@ import { getResources } from '@/api/resources.js';
 import { lazyLoad } from '@/js/lazy-load';
 import 'tippy.js/themes/light.css';
 import { adminStore } from '@/stores/adminStore';
-import { resources } from '@/constants';
 
 const StripeAccent = lazyLoad('StripeAccent');
 const TrialPhase = lazyLoad('TrialPhase');
@@ -782,6 +789,7 @@ const resourceTypes = ref([
     id: 'Protocol',
   },
 ]);
+const resources = ref([]);
 
 const new2Display = ref(3);
 const newData = ref(null);
@@ -810,6 +818,10 @@ const showSearchHelper = computed(() => {
   return searchInput.value
     ? searchInput.value.includes(' ') && !searchInput.value.includes('"')
     : false;
+});
+
+onMounted(() => {
+  resources.value = store.$state.resources;
 });
 
 onBeforeUnmount(() => {
@@ -910,7 +922,7 @@ const filters2String = () => {
 };
 
 const getLogo = (curator) => {
-  const source = resources
+  const source = resources.value
     .flatMap((d) => d.sources)
     .filter(
       (d) =>
