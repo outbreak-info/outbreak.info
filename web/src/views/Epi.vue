@@ -146,7 +146,7 @@
             :fixedYMax="yMax"
             :animate="true"
             :id="String(idx)"
-            :color="colorScale(countryData.key)"
+            :color="colorScaleFunc(countryData.key)"
           />
         </div>
 
@@ -239,15 +239,24 @@
       <EpiTable
         class="row overflow-auto mx-5"
         :locations="selectedPlaces"
-        :colorScale="colorScale"
+        :colorScale="colorScaleFunc"
         colorVar="location_id"
       />
     </div>
   </div>
 </template>
 
-<script>
-import { mapState } from 'pinia';
+<script setup>
+import {
+  computed,
+  inject,
+  nextTick,
+  onMounted,
+  onUnmounted,
+  ref,
+  watch,
+} from 'vue';
+import { storeToRefs } from 'pinia';
 import { extent, max } from 'd3-array';
 
 import {
@@ -260,391 +269,430 @@ import { lazyLoad } from '@/js/lazy-load';
 import { adminStore } from '@/stores/adminStore';
 import { geoStore } from '@/stores/geoStore';
 import { colorsStore } from '@/stores/colorsStore';
+import { useRoute, useRouter } from 'vue-router';
 
-export default {
-  name: 'Epidemiology',
-  components: {
-    DataSource: lazyLoad('DataSource'),
-    Warning: lazyLoad('Warning'),
-    EpiCurve: lazyLoad('EpiCurve'),
-    Bargraph: lazyLoad('Bargraph'),
-    EpiTable: lazyLoad('EpiTable'),
-    Autocomplete: lazyLoad('Autocomplete'),
+const DataSource = lazyLoad('DataSource');
+const Warning = lazyLoad('Warning');
+const EpiCurve = lazyLoad('EpiCurve');
+const Bargraph = lazyLoad('Bargraph');
+const EpiTable = lazyLoad('EpiTable');
+const Autocomplete = lazyLoad('Autocomplete');
+
+const props = defineProps({
+  variable: {
+    type: String,
+    default: 'confirmed_numIncrease',
   },
-  props: {
-    variable: {
-      type: String,
-      default: 'confirmed_numIncrease',
-    },
-    log: {
-      type: String,
-      default: 'false',
-    },
-    fixedY: {
-      type: String,
-      default: 'false',
-    },
-    percapita: {
-      type: String,
-      default: 'false',
-    },
-    location: String,
-    xmin: String,
-    xmax: String,
+  log: {
+    type: String,
+    default: 'false',
   },
-  data() {
-    return {
-      selectedPlaces: [],
-      addable: [],
-      data$: null,
-      plottedData: [],
-      showCurves: true,
-      lengthThreshold: 8,
-      showAll: false,
-      nolocation: false,
-      isFixedY: false,
-      isPerCapita: false,
-      isOverlay: false,
-      bargraphWidth: 750,
-      bargraphHeight: 400,
-      bargraphTransform: 1,
-      yMax: null,
-      variableObj: {
-        label: 'cumulative cases',
-        value: 'confirmed',
-        sources: ['NYT', 'JHU'],
-      },
-      variableOptions: [
-        {
-          label: 'cumulative cases',
-          ttip: 'cases',
-          value: 'confirmed',
-          sources: ['NYT', 'JHU'],
-        },
-        {
-          label: 'cumulative recoveries',
-          ttip: 'recoveries',
-          value: 'recovered',
-          sources: ['NYT', 'JHU'],
-        },
-        {
-          label: 'cumulative deaths',
-          ttip: 'deaths',
-          value: 'dead',
-          sources: ['NYT', 'JHU'],
-        },
-        {
-          label: 'daily new cases',
-          ttip: 'new cases',
-          value: 'confirmed_numIncrease',
-          sources: ['NYT', 'JHU'],
-        },
-        {
-          label: 'daily new cases (7-day rolling average)',
-          ttip: 'new cases (7 day average)',
-          value: 'confirmed_rolling',
-          sources: ['NYT', 'JHU'],
-        },
-        {
-          label: 'daily new deaths',
-          ttip: 'new deaths',
-          value: 'dead_numIncrease',
-          sources: ['NYT', 'JHU'],
-        },
-        {
-          label: 'daily new deaths (7 day rolling average)',
-          ttip: 'new deaths (7 day average)',
-          value: 'dead_rolling',
-          sources: ['NYT', 'JHU'],
-        },
-      ],
-    };
+  fixedY: {
+    type: String,
+    default: 'false',
   },
-  computed: {
-    ...mapState(adminStore, ['loading']),
-    ...mapState(geoStore, ['allPlaces']),
-    ...mapState(colorsStore, ['getColor']),
-    colorScale() {
-      return this.getColor;
-    },
-    noData() {
-      if (this.data$) {
-        return !this.data$[0]
-          .flatMap((d) => d.value)
-          .map((d) => d[this.variable])
-          .some((d) => d);
-      } else {
-        return false;
-      }
-    },
-    isLogY() {
-      return this.log === 'true';
-    },
-    dataLength() {
-      return this.data$ ? this.data$[0].length : null;
-    },
-    locationName() {
-      if (
-        this.data$ &&
-        this.data$[0].length === 1 &&
-        this.data$[0][0].value[0].name
-      ) {
-        return this.data$[0][0].value[0].name;
-      }
-      return null;
-    },
-    subParts() {
-      if (this.data$) {
-        const parts = this.data$[0].map((d) => {
-          return {
-            key: d.value[0].name,
-            parts: d.value[0].sub_parts,
-            hasSubparts: d.value[0].sub_parts
-              ? d.value[0].sub_parts.length > 0
-              : false,
-          };
-        });
-        return parts.some((d) => d.hasSubparts) ? parts : null;
-      }
-      return null;
-    },
-    xLim() {
-      if (this.data$ && this.data$[0]) {
-        return extent(
-          this.data$[0].flatMap((d) => d.value),
-          (d) => d.date,
-        );
-      } else {
-        return null;
-      }
-    },
+  percapita: {
+    type: String,
+    default: 'false',
   },
-  watch: {
-    selectedPlaces(newValue, oldValue) {
-      const newLocation = newValue ? newValue.join(';') : '';
-      if (this.$route.query.location !== newLocation) {
-        this.$router.push({
-          name: 'Epidemiology',
-          meta: {
-            disableScroll: true,
-          },
-          query: {
-            location: newLocation,
-            log: String(this.isLogY),
-            variable: this.variable,
-            fixedY: String(this.isFixedY),
-            percapita: String(this.isPerCapita),
-          },
-        });
-      }
-    },
-    // route props
-    location(newLocation, oldLocation) {
-      this.setLocation(newLocation);
-    },
-    variable: {
-      immediate: true,
-      handler(newVal, oldVal) {
-        this.variableObj = this.variableOptions.filter(
-          (d) => d.value === newVal,
-        )[0];
-      },
-    },
-    fixedY(newValue, oldValue) {
-      if (newValue === 'true') {
-        const varUsed = this.isPerCapita
-          ? this.variable + '_per_100k'
-          : this.variable;
-        this.yMax = max(
-          this.plottedData.flatMap((d) => d.value),
-          (d) => d[varUsed],
-        );
-        this.isFixedY = true;
-      } else {
-        this.yMax = null;
-        this.isFixedY = false;
-      }
-    },
-    isFixedY(newValue, oldValue) {
-      this.changeVariable();
-    },
-    percapita(newValue, oldValue) {
-      this.isPerCapita = newValue === 'true';
-    },
-    isPerCapita(newValue, oldValue) {
-      this.changeVariable();
-    },
-    isOverlay(newValue, oldValue) {
-      if (newValue) {
-        this.isOverlay = false;
-        const newVariable = this.variable.replace('_numIncrease', '_rolling');
-        this.$router.push({
-          name: 'Epidemiology',
-          meta: {
-            disableScroll: true,
-          },
-          query: {
-            location: this.location,
-            log: String(this.isLogY),
-            variable: newVariable,
-            fixedY: String(this.isFixedY),
-            percapita: String(this.isPerCapita),
-          },
-        });
-      }
-    },
-    showAll(newValue, oldValue) {
-      if (newValue) {
-        this.addable = [];
-        this.plottedData = this.data$ ? this.data$[0] : null;
-      } else {
-        this.plottedData = this.hideExtra();
-      }
-    },
+  location: String,
+  xmin: String,
+  xmax: String,
+});
+
+const apiUrl = inject('apiUrl');
+
+const route = useRoute();
+const router = useRouter();
+
+const selectedPlaces = ref([]);
+const addable = ref([]);
+const data$ = ref(null);
+const plottedData = ref([]);
+const showCurves = ref(true);
+const lengthThreshold = ref(8);
+const showAll = ref(false);
+const nolocation = ref(false);
+const isFixedY = ref(false);
+const isPerCapita = ref(false);
+const isOverlay = ref(false);
+const bargraphWidth = ref(750);
+const bargraphHeight = ref(400);
+const bargraphTransform = ref(1);
+const yMax = ref(null);
+const variableObj = ref({
+  label: 'cumulative cases',
+  value: 'confirmed',
+  sources: ['NYT', 'JHU'],
+});
+const variableOptions = ref([
+  {
+    label: 'cumulative cases',
+    ttip: 'cases',
+    value: 'confirmed',
+    sources: ['NYT', 'JHU'],
   },
-  unmounted() {
-    window.removeEventListener('resize', this.setDims);
+  {
+    label: 'cumulative recoveries',
+    ttip: 'recoveries',
+    value: 'recovered',
+    sources: ['NYT', 'JHU'],
   },
-  mounted() {
-    this.setLocation(this.location);
-    this.$nextTick(function () {
-      window.addEventListener('resize', this.setDims);
-      // set initial dimensions for the stacked area plots.
-      this.setDims();
+  {
+    label: 'cumulative deaths',
+    ttip: 'deaths',
+    value: 'dead',
+    sources: ['NYT', 'JHU'],
+  },
+  {
+    label: 'daily new cases',
+    ttip: 'new cases',
+    value: 'confirmed_numIncrease',
+    sources: ['NYT', 'JHU'],
+  },
+  {
+    label: 'daily new cases (7-day rolling average)',
+    ttip: 'new cases (7 day average)',
+    value: 'confirmed_rolling',
+    sources: ['NYT', 'JHU'],
+  },
+  {
+    label: 'daily new deaths',
+    ttip: 'new deaths',
+    value: 'dead_numIncrease',
+    sources: ['NYT', 'JHU'],
+  },
+  {
+    label: 'daily new deaths (7 day rolling average)',
+    ttip: 'new deaths (7 day average)',
+    value: 'dead_rolling',
+    sources: ['NYT', 'JHU'],
+  },
+]);
+
+const dataSubscription = ref(null);
+
+const storeAdmin = adminStore();
+const storeGeo = geoStore();
+const store = colorsStore();
+
+const { loading } = storeToRefs(storeAdmin);
+const { allPlaces } = storeToRefs(storeGeo);
+
+const colorScaleFunc = (location) => {
+  return store.getColor(location);
+};
+
+const colorScale = computed(() => {
+  return store.getColor();
+});
+
+const noData = computed(() => {
+  if (data$.value) {
+    return !data$.value[0]
+      .flatMap((d) => d.value)
+      .map((d) => d[this.variable])
+      .some((d) => d);
+  } else {
+    return false;
+  }
+});
+
+const isLogY = computed(() => {
+  return props.log === 'true';
+});
+
+const dataLength = computed(() => {
+  return data$.value ? data$.value[0].length : null;
+});
+
+const locationName = computed(() => {
+  if (
+    data$.value &&
+    data$.value[0].length === 1 &&
+    data$.value[0][0].value[0].name
+  ) {
+    return data$.value[0][0].value[0].name;
+  }
+  return null;
+});
+
+const subParts = computed(() => {
+  if (data$.value) {
+    const parts = data$.value[0].map((d) => {
+      return {
+        key: d.value[0].name,
+        parts: d.value[0].sub_parts,
+        hasSubparts: d.value[0].sub_parts
+          ? d.value[0].sub_parts.length > 0
+          : false,
+      };
     });
-  },
-  methods: {
-    setLocation(locationString, nullLocationHandler) {
-      if (locationString && locationString !== '') {
-        const locations = locationString.split(';').map((d) => d.trim());
-        this.selectedPlaces = locations;
-        this.dataSubscription = getEpiData(
-          this.$apiurl,
-          locations,
-          null,
-          '-confirmed',
-          10,
-          0,
-        ).subscribe((d) => {
-          this.data$ = d;
-          this.plottedData =
-            this.data$[0].length > this.lengthThreshold
-              ? this.hideExtra()
-              : this.data$[0];
-          this.isFixedY = this.fixedY === 'true';
-          this.isPerCapita = this.percapita === 'true';
-          const varUsed = this.isPerCapita
-            ? this.variable + '_per_100k'
-            : this.variable;
-          this.yMax = this.isFixedY
-            ? max(
-                this.plottedData.flatMap((d) => d.value),
-                (d) => d[varUsed],
-              )
-            : null;
-        });
-        // need to call subscription in order to trigger calling API function and passing subscription to child
-      } else {
-        this.clearLocations();
-      }
-    },
-    clearLocations() {
-      this.selectedPlaces = [];
-      epiDataSubject.next([]);
-      epiTableSubject.next([]);
-    },
-    changeVariable() {
-      const newVariable = this.variableObj.value;
+    return parts.some((d) => d.hasSubparts) ? parts : null;
+  }
+  return null;
+});
 
-      // update y-max
-      const varUsed = this.isPerCapita
-        ? newVariable + '_per_100k'
-        : newVariable;
-      this.yMax = this.isFixedY
+const xLim = computed(() => {
+  if (data$.value && data$.value[0]) {
+    return extent(
+      data$.value[0].flatMap((d) => d.value),
+      (d) => d.date,
+    );
+  } else {
+    return null;
+  }
+});
+
+const clearLocations = () => {
+  selectedPlaces.value = [];
+  epiDataSubject.next([]);
+  epiTableSubject.next([]);
+};
+
+const hideExtra = () => {
+  const selectedData = data$.value
+    ? data$.value[0]
+        .slice()
+        .sort((a, b) => b.currentCases - a.currentCases)
+        .slice(0, lengthThreshold.value)
+    : null;
+
+  addable.value = data$.value[0]
+    .slice()
+    .sort((a, b) => b.currentCases - a.currentCases)
+    .slice(lengthThreshold.value)
+    .map((d) => d.key);
+
+  return selectedData;
+};
+
+const setLocation = (locationString, nullLocationHandler) => {
+  if (locationString && locationString !== '') {
+    const locations = locationString.split(';').map((d) => d.trim());
+    selectedPlaces.value = locations;
+    dataSubscription.value = getEpiData(
+      apiUrl,
+      locations,
+      null,
+      '-confirmed',
+      10,
+      0,
+    ).subscribe((d) => {
+      data$.value = d;
+      plottedData.value =
+        data$.value[0].length > lengthThreshold.value
+          ? hideExtra()
+          : data$.value[0];
+      isFixedY.value = props.fixedY === 'true';
+      isPerCapita.value = props.percapita === 'true';
+      const varUsed = isPerCapita.value
+        ? props.variable + '_per_100k'
+        : props.variable;
+      yMax.value = isFixedY.value
         ? max(
-            this.plottedData.flatMap((d) => d.value),
+            plottedData.value.flatMap((d) => d.value),
             (d) => d[varUsed],
           )
         : null;
-
-      this.$router.push({
-        name: 'Epidemiology',
-        meta: {
-          disableScroll: true,
-        },
-        query: {
-          location: this.location,
-          log: String(this.isLogY),
-          variable: newVariable,
-          xmin: this.xmin,
-          xmax: this.xmax,
-          fixedY: String(this.isFixedY),
-          percapita: String(this.isPerCapita),
-        },
-      });
-    },
-    updateSelected(selected) {
-      this.selectedPlaces = [...new Set(selected)];
-    },
-    updateAddable: (selected) => {
-      this.addable = selected;
-    },
-    setDims() {
-      const minWidth = 550;
-      const hwRatio = 0.75;
-      const marginPadding = 80; // size of margin
-      const framePadding = 16; // size of margin
-      const dimWidth = document.getElementById('bar-group')
-        ? document.getElementById('bar-group').offsetWidth
-        : minWidth;
-      this.bargraphWidth = 650;
-      if (window.innerWidth < 360) {
-        this.bargraphTransform = 0.4;
-      } else if (window.innerWidth < 390) {
-        this.bargraphTransform = 0.45;
-      } else if (window.innerWidth < 630) {
-        this.bargraphTransform = 0.5;
-      } else if (window.innerWidth < 790) {
-        this.bargraphTransform = 0.8;
-      } else {
-        this.bargraphTransform = 1;
-      }
-    },
-    hideExtra() {
-      const selectedData = this.data$
-        ? this.data$[0]
-            .slice()
-            .sort((a, b) => b.currentCases - a.currentCases)
-            .slice(0, this.lengthThreshold)
-        : null;
-
-      this.addable = this.data$[0]
-        .slice()
-        .sort((a, b) => b.currentCases - a.currentCases)
-        .slice(this.lengthThreshold)
-        .map((d) => d.key);
-
-      return selectedData;
-    },
-    lookupLocation() {
-      const store = adminStore();
-      store.$patch({ loading: true });
-      getLocation(this.$apiurl).subscribe((nearestPlace) => {
-        store.$patch({ loading: false });
-        if (nearestPlace !== 'none') {
-          this.$router.push({
-            name: 'Epidemiology',
-            query: {
-              location: nearestPlace,
-            },
-          });
-        } else {
-          this.nolocation = true;
-        }
-      });
-    },
-  },
+    });
+    // need to call subscription in order to trigger calling API function and passing subscription to child
+  } else {
+    clearLocations();
+  }
 };
+
+const changeVariable = () => {
+  const newVariable = variableObj.value.value;
+
+  // update y-max
+  const varUsed = isPerCapita.value ? newVariable + '_per_100k' : newVariable;
+  yMax.value = isFixedY.value
+    ? max(
+        plottedData.value.flatMap((d) => d.value),
+        (d) => d[varUsed],
+      )
+    : null;
+
+  router.push({
+    name: 'Epidemiology',
+    meta: {
+      disableScroll: true,
+    },
+    query: {
+      location: props.location,
+      log: String(isLogY),
+      variable: newVariable,
+      xmin: props.xmin,
+      xmax: props.xmax,
+      fixedY: String(isFixedY.value),
+      percapita: String(isPerCapita.value),
+    },
+  });
+};
+
+const updateSelected = (selected) => {
+  selectedPlaces.value = [...new Set(selected)];
+};
+
+const updateAddable = (selected) => {
+  addable.value = selected;
+};
+const setDims = () => {
+  const minWidth = 550;
+  const hwRatio = 0.75;
+  const marginPadding = 80; // size of margin
+  const framePadding = 16; // size of margin
+  const dimWidth = document.getElementById('bar-group')
+    ? document.getElementById('bar-group').offsetWidth
+    : minWidth;
+  bargraphWidth.value = 650;
+  if (window.innerWidth < 360) {
+    bargraphTransform.value = 0.4;
+  } else if (window.innerWidth < 390) {
+    bargraphTransform.value = 0.45;
+  } else if (window.innerWidth < 630) {
+    bargraphTransform.value = 0.5;
+  } else if (window.innerWidth < 790) {
+    bargraphTransform.value = 0.8;
+  } else {
+    bargraphTransform.value = 1;
+  }
+};
+
+const lookupLocation = () => {
+  storeAdmin.$patch({ loading: true });
+  getLocation(apiUrl).subscribe((nearestPlace) => {
+    storeAdmin.$patch({ loading: false });
+    if (nearestPlace !== 'none') {
+      router.push({
+        name: 'Epidemiology',
+        query: {
+          location: nearestPlace,
+        },
+      });
+    } else {
+      nolocation.value = true;
+    }
+  });
+};
+
+watch(selectedPlaces, (newValue, oldValue) => {
+  const newLocation = newValue ? newValue.join(';') : '';
+  if (route.query.location !== newLocation) {
+    router.push({
+      name: 'Epidemiology',
+      meta: {
+        disableScroll: true,
+      },
+      query: {
+        location: newLocation,
+        log: String(isLogY),
+        variable: props.variable,
+        fixedY: String(isFixedY.value),
+        percapita: String(isPerCapita.value),
+      },
+    });
+  }
+});
+
+watch(
+  () => props.location,
+  (newLocation, oldLocation) => {
+    if (newLocation) {
+      setLocation(newLocation);
+    }
+  },
+);
+
+watch(
+  () => props.variable,
+  (newVal, oldVal) => {
+    variableObj.value = variableOptions.value.filter(
+      (d) => d.value === newVal,
+    )[0];
+  },
+  { immediate: true },
+);
+
+watch(
+  () => props.fixedY,
+  (newValue, oldValue) => {
+    if (newValue === 'true') {
+      const varUsed = isPerCapita.value
+        ? props.variable + '_per_100k'
+        : props.variable;
+      yMax.value = max(
+        plottedData.value.flatMap((d) => d.value),
+        (d) => d[varUsed],
+      );
+      isFixedY.value = true;
+    } else {
+      yMax.value = null;
+      isFixedY.value = false;
+    }
+  },
+);
+
+watch(isFixedY, (newValue, oldValue) => {
+  changeVariable();
+});
+
+watch(
+  () => props.percapita,
+  (newValue, oldValue) => {
+    isPerCapita.value = newValue === 'true';
+  },
+);
+
+watch(isPerCapita, (newValue, oldValue) => {
+  changeVariable();
+});
+
+watch(isOverlay, (newValue, oldValue) => {
+  if (newValue) {
+    isOverlay.value = false;
+    const newVariable = props.variable.replace('_numIncrease', '_rolling');
+    router.push({
+      name: 'Epidemiology',
+      meta: {
+        disableScroll: true,
+      },
+      query: {
+        location: props.location,
+        log: String(isLogY),
+        variable: newVariable,
+        fixedY: String(isFixedY.value),
+        percapita: String(isPerCapita.value),
+      },
+    });
+  }
+});
+
+watch(showAll, (newValue, oldValue) => {
+  if (newValue) {
+    addable.value = [];
+    plottedData.value = data$.value ? data$.value[0] : null;
+  } else {
+    plottedData.value = hideExtra();
+  }
+});
+
+onUnmounted(() => {
+  if (dataSubscription.value) {
+    dataSubscription.value.unsubscribe();
+  }
+  window.removeEventListener('resize', setDims);
+});
+
+onMounted(() => {
+  setLocation(props.location);
+  nextTick(function () {
+    window.addEventListener('resize', setDims);
+    // set initial dimensions for the stacked area plots.
+    setDims();
+  });
+});
 </script>
 
 <style lang="scss" scoped>
