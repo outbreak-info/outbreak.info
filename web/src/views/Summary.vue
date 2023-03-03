@@ -53,6 +53,27 @@ const dataSubscription = ref(null);
 const store = adminStore();
 const { loading } = storeToRefs(store);
 
+const sortSummaries = (data) => {
+  if (glanceLocations.value && glanceLocations.value.length > 0) {
+    data.sort(
+      (a, b) =>
+        glanceLocations.value.indexOf(a.location_id) -
+        glanceLocations.value.indexOf(b.location_id),
+    );
+  }
+  return data;
+};
+
+const getData = () => {
+  dataSubscription.value = getGlanceSummary(
+    apiUrl,
+    genomicsUrl,
+    glanceLocations.value,
+  ).subscribe((d) => {
+    glanceSummaries.value = sortSummaries(d);
+  });
+};
+
 watch(
   () => props.location,
   (newValue, oldValue) => {
@@ -71,27 +92,6 @@ onUnmounted(() => {
     dataSubscription.value.unsubscribe();
   }
 });
-
-const getData = () => {
-  dataSubscription.value = getGlanceSummary(
-    apiUrl,
-    genomicsUrl,
-    glanceLocations.value,
-  ).subscribe((d) => {
-    glanceSummaries.value = sortSummaries(d);
-  });
-};
-
-const sortSummaries = (data) => {
-  if (glanceLocations.value && glanceLocations.value.length > 0) {
-    data.sort(
-      (a, b) =>
-        glanceLocations.value.indexOf(a.location_id) -
-        glanceLocations.value.indexOf(b.location_id),
-    );
-  }
-  return data;
-};
 </script>
 
 <style lang="scss" scoped></style>

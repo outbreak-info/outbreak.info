@@ -64,10 +64,6 @@ const topicUrl = ref(
 );
 const topicArr = ref([]);
 
-onMounted(() => {
-  getTopics();
-});
-
 const getTopics = () => {
   tsv(topicUrl.value).then((data) => {
     topicArr.value = nest()
@@ -84,4 +80,8 @@ const getTopics = () => {
       .sort((a, b) => (a.key < b.key ? -1 : 1));
   });
 };
+
+onMounted(() => {
+  getTopics();
+});
 </script>
