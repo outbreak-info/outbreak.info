@@ -386,270 +386,122 @@
   </div>
 </template>
 
-<script>
-import { mapState } from 'pinia';
+<script setup>
+import { computed, inject, onMounted, onUnmounted, ref, watch } from 'vue';
+import { onBeforeRouteUpdate, useRoute } from 'vue-router';
+import { storeToRefs } from 'pinia';
 import { timeFormat, timeParse } from 'd3-time-format';
-import cloneDeep from 'lodash/cloneDeep';
 
 import { getResourceMetadata } from '@/api/resources.js';
 import { lazyLoad } from '@/js/lazy-load';
 import { adminStore } from '@/stores/adminStore';
 
-export default {
-  name: 'ResourcePage',
-  components: {
-    ResourceDescription: lazyLoad('ResourceDescription'),
-    ResourceSidebar: lazyLoad('ResourceSidebar'),
-    ClinicalTrialDescription: lazyLoad('ClinicalTrialDescription'),
-    ResourceCitation: lazyLoad('ResourceCitation'),
-  },
-  beforeRouteUpdate(to, from, next) {
-    this.id = to.params.id;
-    this.getData(to.params.id);
-    next();
-  },
-  data() {
-    return {
-      type: null,
-      data: null,
-      id: null,
-      anchors: {
-        default: [
-          'authors',
-          'description',
-          'downloads',
-          'license',
-          'funder',
-          'based on',
-          'cited by',
-          'related',
-        ],
-        Publication: [
-          'authors',
-          'description',
-          'funder',
-          'corrections',
-          'based on',
-          'cited by',
-          'related',
-        ],
-        ClinicalTrial: [
-          'authors',
-          'description',
-          'design',
-          'interventions',
-          'eligibility',
-          'outcome',
-          'status',
-          'funder',
-          'publications',
-          'based on',
-          'related',
-        ],
-      },
-    };
-  },
-  computed: {
-    ...mapState(adminStore, ['loading']),
-    anchorsArr() {
-      if (Object.keys(this.anchors).includes(this.type)) {
-        return this.anchors[this.type];
-      }
-      return this.anchors['default'];
-    },
-    resourceId() {
-      return this.$route.params.id;
-    },
-  },
-  watch: {
-    '$route.params': {
-      immediate: true,
-      handler(newRoute, oldRoute) {
-        this.getData(newRoute.id);
-      },
-    },
-  },
-  mounted() {
-    this.id = this.$route.params.id;
+const ResourceDescription = lazyLoad('ResourceDescription');
+const ResourceSidebar = lazyLoad('ResourceSidebar');
+const ClinicalTrialDescription = lazyLoad('ClinicalTrialDescription');
+const ResourceCitation = lazyLoad('ResourceCitation');
 
-    this.getData(this.id);
-  },
-  methods: {
-    formatDate(dateStr) {
-      const parseDate = timeParse('%Y-%m-%d');
-      const formatDate = timeFormat('%d %B %Y');
-      return dateStr ? formatDate(parseDate(dateStr)) : null;
-    },
-    getData(id) {
-      this.resultsSubscription = getResourceMetadata(
-        this.$resourceurl,
-        id,
-      ).subscribe((results) => {
-        this.data = results;
-        if (this.data) {
-          this.type = this.data['@type'];
-          this.dateModified = this.formatDate(this.data.date);
-        } else {
-          this.type = null;
-          this.dateModified = null;
-        }
-      });
-    },
-  },
-  metaInfo() {
-    let metadata = null;
-    // Based on https://scholar.google.com/intl/en/scholar/inclusion.html#indexing
-    // Dublin Core ref: https://www.dublincore.org/specifications/dublin-core/dcmi-terms/#section-4
-    let citationTags = [];
-    if (this.data) {
-      metadata = cloneDeep(this.data);
+const resourceUrl = inject('resourceUrl');
 
-      // phaseNumber causes problems
-      if (metadata.studyDesign && metadata.studyDesign.phaseNumber) {
-        delete metadata.studyDesign.phaseNumber;
-      }
-      // [null] will have problems embedding...
-      metadata.citedBy = metadata.citedBy
-        ? metadata.citedBy.filter((d) => d)
-        : null;
+const store = adminStore();
+const { loading } = storeToRefs(store);
 
-      metadata['includedInDataCatalog'] = {
-        '@type': 'DataCatalog',
-        name: 'outbreak.info',
-        description:
-          'During outbreaks of emerging diseases such as COVID-19, efficiently collecting, sharing, and integrating data is critical to scientific research. outbreak.info is a resource to aggregate all this information into a single location.',
-        url: 'https://outbreak.info/resources',
-        publisher: {
-          '@type': 'Organization',
-          name: 'outbreak.info',
-          url: 'https://outbreak.info/',
-        },
-      };
+const route = useRoute();
 
-      citationTags.push({
-        title: 'DC.type',
-        content: this.data['@type'],
-        vmid: 'DC.type',
-      });
+const type = ref(null);
+const data = ref(null);
+const id = ref(null);
+const dateModified = ref(null);
+const anchors = ref({
+  default: [
+    'authors',
+    'description',
+    'downloads',
+    'license',
+    'funder',
+    'based on',
+    'cited by',
+    'related',
+  ],
+  Publication: [
+    'authors',
+    'description',
+    'funder',
+    'corrections',
+    'based on',
+    'cited by',
+    'related',
+  ],
+  ClinicalTrial: [
+    'authors',
+    'description',
+    'design',
+    'interventions',
+    'eligibility',
+    'outcome',
+    'status',
+    'funder',
+    'publications',
+    'based on',
+    'related',
+  ],
+});
+const resultsSubscription = ref(null);
 
-      citationTags.push({
-        title: 'citation_title',
-        content: this.data.name,
-        vmid: 'citation_title',
-      });
+const anchorsArr = computed(() => {
+  if (Object.keys(anchors.value).includes(type.value)) {
+    return anchors.value[type.value];
+  }
+  return anchors.value['default'];
+});
 
-      if (this.data.description) {
-        citationTags.push({
-          title: 'DC.description',
-          content: this.data.description,
-          vmid: 'DC.description',
-        });
-      }
-
-      if (this.data.abstract) {
-        citationTags.push({
-          title: 'DC.abstract',
-          content: this.data.abstract,
-          vmid: 'DC.abstract',
-        });
-      }
-
-      if (this.data.doi) {
-        citationTags.push({
-          title: 'DC.identifier.DOI',
-          content: this.data.doi,
-          vmid: 'DC.identifier.DOI',
-        });
-      }
-
-      if (this.data.datePublished) {
-        citationTags.push({
-          title: 'citation_publication_date',
-          content: this.data.datePublished,
-          vmid: 'citation_publication_date',
-        });
-      }
-
-      if (this.data.journalName) {
-        citationTags.push({
-          title: 'citation_journal_title',
-          content: this.data.journalName,
-          vmid: 'citation_journal_title',
-        });
-      }
-
-      if (this.data.volumeNumber) {
-        citationTags.push({
-          title: 'citation_volume',
-          content: this.data.volumeNumber,
-          vmid: 'citation_volume',
-        });
-      }
-
-      if (this.data.issueNumber) {
-        citationTags.push({
-          title: 'citation_issue',
-          content: this.data.issueNumber,
-          vmid: 'citation_issue',
-        });
-      }
-
-      if (this.data.pagination) {
-        citationTags.push({
-          title: 'citation_issue',
-          content: this.data.issueNumber,
-          vmid: 'citation_issue',
-        });
-      }
-
-      if (this.data.author) {
-        if (Array.isArray(this.data.author)) {
-          citationTags = citationTags.concat(
-            this.data.author.map((d) => {
-              return {
-                title: 'citation_author',
-                content: d.name ? d.name : `${d.givenName} ${d.familyName}`,
-                vmid: 'citation_author',
-              };
-            }),
-          );
-        } else {
-          citationTags = citationTags.concat({
-            title: 'citation_author',
-            content: this.data.author.name
-              ? this.data.author.name
-              : `${this.data.author.givenName} ${this.data.author.familyName}`,
-            vmid: 'citation_author',
-          });
-        }
-      }
-
-      if (this.data.creator) {
-        citationTags = citationTags.concat(
-          this.data.creator.map((d) => {
-            return {
-              title: 'DC.creator',
-              content: d.name ? d.name : `${d.givenName} ${d.familyName}`,
-              vmid: 'DC.creator',
-            };
-          }),
-        );
-      }
-    }
-
-    if (metadata) {
-      return {
-        script: [
-          {
-            type: 'application/ld+json',
-            json: metadata,
-          },
-        ],
-        meta: citationTags,
-      };
-    }
-  },
+const formatDate = (dateStr) => {
+  const parseDate = timeParse('%Y-%m-%d');
+  const formatDate = timeFormat('%d %B %Y');
+  return dateStr ? formatDate(parseDate(dateStr)) : null;
 };
+
+const getData = (id) => {
+  resultsSubscription.value = getResourceMetadata(resourceUrl, id).subscribe(
+    (results) => {
+      data.value = results;
+      if (data.value) {
+        type.value = data.value['@type'];
+        dateModified.value = formatDate(data.value.date);
+      } else {
+        type.value = null;
+        dateModified.value = null;
+      }
+    },
+  );
+};
+
+onMounted(() => {
+  id.value = route.params.id;
+  getData(id.value);
+});
+
+onUnmounted(() => {
+  if (resultsSubscription.value) {
+    resultsSubscription.value.unsubscribe();
+  }
+});
+
+watch(
+  () => route.params,
+  (newRoute, oldRoute) => {
+    if (newRoute) {
+      getData(newRoute.id);
+    }
+  },
+  { immediate: true, deep: true },
+);
+
+onBeforeRouteUpdate((to, from, next) => {
+  id.value = to.params.id;
+  getData(to.params.id);
+  next();
+});
 </script>
 
 <style lang="scss" scoped>

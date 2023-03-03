@@ -178,9 +178,4 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'Privacy',
-  components: {},
-};
-</script>
+<script setup></script>

@@ -104,49 +104,50 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref, inject, onMounted, onBeforeUnmount } from 'vue';
+import { useRouter } from 'vue-router';
+
 import { getSourceSummary } from '@/api/resources.js';
 import RESOURCEEXAMPLES from '@/assets/examples/resources_examples.json';
 import { lazyLoad } from '@/js/lazy-load';
 
-export default {
-  name: 'ResourceSummary',
-  components: {
-    WhatsNew: lazyLoad('WhatsNew'),
-    CirclePacking: lazyLoad('CirclePacking'),
-  },
-  data() {
-    return {
-      demos: [],
-      counts: [],
-      searchInput: null,
-    };
-  },
-  mounted() {
-    this.demos = RESOURCEEXAMPLES;
+const WhatsNew = lazyLoad('WhatsNew');
+const CirclePacking = lazyLoad('CirclePacking');
 
-    this.countSubscription = getSourceSummary(
-      this.$resourceurl,
-      '__all__',
-    ).subscribe((results) => {
+const resourceUrl = inject('resourceUrl');
+const router = useRouter();
+
+const demos = ref([]);
+const counts = ref([]);
+const searchInput = ref(null);
+const countSubscription = ref(null);
+
+onMounted(() => {
+  demos.value = RESOURCEEXAMPLES;
+
+  countSubscription.value = getSourceSummary(resourceUrl, '__all__').subscribe(
+    (results) => {
       // console.log(results)
-      this.counts = results;
-    });
-  },
-  beforeUnmount() {
-    this.countSubscription.unsubscribe();
-  },
-  methods: {
-    onEnter() {
-      this.$router.push({
-        name: 'Resources',
-        query: {
-          q: this.searchInput,
-        },
-      });
+      counts.value = results;
     },
-  },
+  );
+});
+
+const onEnter = () => {
+  router.push({
+    name: 'Resources',
+    query: {
+      q: searchInput.value,
+    },
+  });
 };
+
+onBeforeUnmount(() => {
+  if (countSubscription.value) {
+    countSubscription.value.unsubscribe();
+  }
+});
 </script>
 
 <style lang="scss" scoped>

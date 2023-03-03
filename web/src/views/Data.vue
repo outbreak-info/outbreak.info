@@ -57,7 +57,6 @@ const storeAdmin = adminStore();
 const storeColor = colorsStore();
 
 const { loading } = storeToRefs(storeAdmin);
-const { getRegionColorFromLocation } = storeToRefs(storeColor);
 
 onMounted(() => {
   tableSubscription.value = getEpiTable(
@@ -75,7 +74,7 @@ onUnmounted(() => {
 });
 
 const regionColorScale = (location) => {
-  return getRegionColorFromLocation(location);
+  return storeColor.getRegionColorFromLocation(location);
 };
 </script>
 

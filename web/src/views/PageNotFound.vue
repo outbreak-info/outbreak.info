@@ -43,13 +43,10 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'PageNotFound',
-  computed: {
-    randomNum() {
-      return Math.random();
-    },
-  },
-};
+<script setup>
+import { computed } from 'vue';
+
+const randomNum = computed(() => {
+  return Math.random();
+});
 </script>
