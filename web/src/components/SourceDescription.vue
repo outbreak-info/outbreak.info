@@ -112,12 +112,9 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'SourceDescription',
-  props: {
-    sources: Array,
-    metadata: Object,
-  },
-};
+<script setup>
+const props = defineProps({
+  sources: Array,
+  metadata: Object,
+});
 </script>
