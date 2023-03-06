@@ -1056,8 +1056,18 @@
   </div>
 </template>
 
-<script>
-import { mapState } from 'pinia';
+<script setup>
+import {
+  computed,
+  inject,
+  nextTick,
+  onMounted,
+  onUnmounted,
+  ref,
+  watch,
+} from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { storeToRefs } from 'pinia';
 import { max } from 'd3-array';
 import { nest } from 'd3-collection';
 import { scaleOrdinal, scaleThreshold } from 'd3-scale';
@@ -1078,750 +1088,765 @@ import {
 import { lazyLoad } from '@/js/lazy-load';
 import { adminStore } from '@/stores/adminStore';
 
-export default {
-  name: 'SituationReportComponent',
-  components: {
-    CharacteristicMutations: lazyLoad('CharacteristicMutations'),
-    ClassedLegend: lazyLoad('ClassedLegend'),
-    CustomReportForm: lazyLoad('CustomReportForm'),
-    GenomicsCitation: lazyLoad('GenomicsCitation'),
-    HorizontalCategoricalLegend: lazyLoad('HorizontalCategoricalLegend'),
-    LineagesByLocation: lazyLoad('LineagesByLocation'),
-    MutationsByLineage: lazyLoad('MutationsByLineage'),
-    ReportAcknowledgements: lazyLoad('ReportAcknowledgements'),
-    ReportChoropleth: lazyLoad('ReportChoropleth'),
-    ReportMethodology: lazyLoad('ReportMethodology'),
-    ReportPrevalence: lazyLoad('ReportPrevalence'),
-    ReportPrevalenceByLocation: lazyLoad('ReportPrevalenceByLocation'),
-    ReportPrevalenceOverlay: lazyLoad('ReportPrevalenceOverlay'),
-    ReportResources: lazyLoad('ReportResources'),
-    ReportSummary: lazyLoad('ReportSummary'),
-    ShareReport: lazyLoad('ShareReport'),
-    SublineageTotals: lazyLoad('SublineageTotals'),
-    ThresholdSlider: lazyLoad('ThresholdSlider'),
-    TypeaheadSelect: lazyLoad('TypeaheadSelect'),
-    Warning: lazyLoad('Warning'),
+const CharacteristicMutations = lazyLoad('CharacteristicMutations');
+const ClassedLegend = lazyLoad('ClassedLegend');
+const CustomReportForm = lazyLoad('CustomReportForm');
+const GenomicsCitation = lazyLoad('GenomicsCitation');
+const HorizontalCategoricalLegend = lazyLoad('HorizontalCategoricalLegend');
+const LineagesByLocation = lazyLoad('LineagesByLocation');
+const MutationsByLineage = lazyLoad('MutationsByLineage');
+const ReportAcknowledgements = lazyLoad('ReportAcknowledgements');
+const ReportChoropleth = lazyLoad('ReportChoropleth');
+const ReportMethodology = lazyLoad('ReportMethodology');
+const ReportPrevalence = lazyLoad('ReportPrevalence');
+const ReportPrevalenceByLocation = lazyLoad('ReportPrevalenceByLocation');
+const ReportPrevalenceOverlay = lazyLoad('ReportPrevalenceOverlay');
+const ReportResources = lazyLoad('ReportResources');
+const ReportSummary = lazyLoad('ReportSummary');
+const ShareReport = lazyLoad('ShareReport');
+const SublineageTotals = lazyLoad('SublineageTotals');
+const ThresholdSlider = lazyLoad('ThresholdSlider');
+const TypeaheadSelect = lazyLoad('TypeaheadSelect');
+const Warning = lazyLoad('Warning');
+
+const props = defineProps({
+  alias: String,
+  loc: [Array, String],
+  muts: [Array, String],
+  pango: String,
+  xmin: String,
+  xmax: String,
+  overlay: {
+    type: [String, Boolean],
+    default: 'false',
   },
-  props: {
-    alias: String,
-    loc: [Array, String],
-    muts: [Array, String],
-    pango: String,
-    xmin: String,
-    xmax: String,
-    overlay: {
-      type: [String, Boolean],
-      default: 'false',
-    },
-    selected: {
-      type: String,
-      default: 'Worldwide',
-    },
-    embedded: {
-      type: Boolean,
-      default: false,
-    },
-    routeTo: {
-      type: String,
-      default: 'MutationReport',
-    },
+  selected: {
+    type: String,
+    default: 'Worldwide',
   },
-  data() {
-    return {
-      // report details
-      today: null,
-      url: null,
-      lineageName: null,
-      mutationName: null,
-      reportName: null,
-      mutationVar: null,
-      mutations: null,
-      reportType: null,
-      locationQueryParams: null,
-      title: null,
-      lastUpdated: null,
-      disclaimer: `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the ${this.reportType} but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`,
-      width: 800,
-
-      // Changing locations
-      queryLocation: null,
-      queryPangolin: null,
-      newPangolin: null,
-      currentLocs: null, // placeholder for current locations
-      loc2Add: [], // array to stores new locations to add
-      newSelectedLocation: null, // stores location data when change the selected value
-
-      // subscriptions
-      dataSubscription: null,
-      curatedSubscription: null,
-      locationChangeSubscription: null,
-      choroSubscription: null,
-      hasData: false,
-
-      // curated values
-      searchTerms: null,
-
-      // methods
-      choroColorDomain: [0.01, 0.05, 0.1, 0.2, 0.35, 0.5, 0.75],
-      choroColorScale: null,
-      choroCountThreshold: 25,
-      choroNdays: 60,
-      totalThresh: 25, // threshold for "unreliable estimate" in the table
-
-      // forms
-      sublineageOverlay: null,
-
-      // data
-      selectedLocations: null,
-      selectedLocation: null,
-      dateUpdated: null,
-      reportMetadata: null,
-      choroLocation: 'country',
-      choroData: null,
-      choroMaxCount: null,
-      countries: null,
-      states: null,
-      additionalMutations: null,
-      sublineagePrev: null,
-      sublineageLongitudinalAll: null,
-      sublineageLongitudinal: null,
-      sublineageTotalStacked: null,
-      lineagesByDay: null,
-      sublineageColorScale: null,
-      sublineageColorPalette: [
-        '#4E79A7', // dk blue
-        '#f28e2b', // orange
-        '#59a14f', // green
-        '#e15759', // red
-        '#499894', // teal
-        '#B6992D', // dk yellow
-        '#D37295', // dk pink
-        '#B07AA1', // dk purple
-        '#9D7660', // brown
-        '#aecBe8', // lt blue
-        '#FFBE7D', // lt. orange
-        '#8CD17D', // lt. green
-        '#FF9D9A', // lt. red
-        '#86BCB6', // lt. teal
-        '#F1CE63', // yellow
-        '#FABFD2', // lt. pink,
-        '#D4A6C8', // lt. purple
-        '#D7B5A6', // lt. brown
-        '#bcbd22', // puce
-        '#79706E', // grey
-      ],
-      sublineageOptions: [],
-      selectedSublineages: [],
-      sublineages2Plot: 5,
-      locationTotals: null,
-      totalLineage: null,
-      prevalence: [],
-      mutationsByLineage: [],
-    };
+  embedded: {
+    type: Boolean,
+    default: false,
   },
-  computed: {
-    ...mapState(adminStore, [
-      'mutationAuthors',
-      'genomicsCitation',
-      'reportloading',
-    ]),
-    smallScreen() {
-      return window.innerWidth < 500;
-    },
-    definitionLabel() {
-      return this.reportType === 'lineage'
-        ? 'Characteristic mutations in lineage'
-        : this.reportType === 'lineage with added mutations'
-        ? 'Characteristic mutations in variant'
-        : 'List of mutations';
-    },
-    locationLabel() {
-      if (this.selectedLocation) {
-        return this.selectedLocation.label === 'Worldwide'
-          ? 'globally'
-          : `in ${this.selectedLocation.label}`;
-      } else {
-        return null;
-      }
-    },
-    pangoLink() {
-      return this.lineageName
-        ? `https://cov-lineages.org/lineage.html?lineage=${this.lineageName}`
-        : null;
-    },
-    aquariaLink() {
-      if (this.additionalMutations && this.additionalMutations.length > 0) {
-        const aquariaStub = 'https://aquaria.app/SARS-CoV-2/';
-        return nest()
-          .key((d) => d.gene)
-          .rollup((values) => {
-            return {
-              link:
-                values[0].gene.toLowerCase() === 'orf1b'
-                  ? // convert between ORF1b and ORF1ab: e.g. ORF1b P314L becomes https://aquaria.app/SARS-CoV-2/PP1ab?P4715L
-                    // in general: gene?mutations, separated by &
-                    `${aquariaStub}PP1ab?${values
-                      .map((d) => this.calcORF1bLink(d))
-                      .join('&')}`
-                  : `${aquariaStub}${values[0].gene}?${values
-                      .map((d) =>
-                        d.mutation.replace(d.gene, '').replace(':', ''),
-                      )
-                      .join('&')}`,
-              count: values.length,
-            };
-          })
-          .entries(this.additionalMutations);
-      } else {
-        return null;
-      }
-    },
-    choroplethLocations() {
-      return this.selectedLocations
-        ? this.selectedLocations.filter((d) => d.admin_level < 2)
-        : null;
-    },
-    choroLabel() {
-      return `Est. ${this.reportName} prevalence ${this.choroTimeFrame}`;
-    },
-    choroTimeFrame() {
-      return this.choroNdays
-        ? `last ${this.choroNdays} days`
-        : 'since identification';
-    },
+  routeTo: {
+    type: String,
+    default: 'MutationReport',
   },
-  watch: {
-    $route: function (newVal, oldVal) {
-      if (
-        !isEqual(newVal.query.pango, oldVal.query.pango) ||
-        !isEqual(newVal.params.alias, oldVal.params.alias) ||
-        !isEqual(newVal.query.alias, oldVal.query.alias) ||
-        !isEqual(newVal.query.muts, oldVal.query.muts)
-      ) {
-        this.newPangolin = null;
-        this.lineageName = null;
-        this.reportMetadata = null;
-        this.debounceSetupReport();
-      } else {
-        this.debounceUpdateLocations();
-      }
-    },
-  },
-  created() {
-    this.debounceSetDims = debounce(this.setDims, 150);
-    this.debounceSelectSublineage = debounce(this.selectSublineage, 250);
-    this.debounceChoroWindowChange = debounce(this.updateChoroWindow, 700);
-    this.debounceUpdateLocations = debounce(this.updateLocations, 500);
-    this.debounceSetupReport = debounce(this.setupReport, 500);
-  },
-  mounted() {
-    this.sublineageOverlay = this.overlay === 'true';
-    this.setDims();
-    this.queryLocation = findLocation;
-    this.queryPangolin = findPangolin;
+});
 
-    // common color scale for choropleth
-    this.choroColorScale = scaleThreshold(
-      schemeYlGnBu[this.choroColorDomain.length + 2],
-    ).domain(this.choroColorDomain);
+const genomicsUrl = inject('genomicsUrl');
+const filters = inject('filters');
 
-    // Get date for the citation object
-    const formatDate = timeFormat('%e %B %Y');
-    let currentTime = new Date();
-    this.today = formatDate(currentTime);
+const route = useRoute();
+const router = useRouter();
 
-    // set URL for sharing, etc.
-    this.$nextTick(() => {
-      window.addEventListener('resize', this.debounceSetDims);
+const store = adminStore();
+const { mutationAuthors, genomicsCitation, reportloading } = storeToRefs(store);
 
-      const location = window.location;
-      this.url =
-        location.search !== ''
-          ? `${location.origin}${location.pathname}${location.search}`
-          : `${location.origin}${location.pathname}`;
-    });
-    this.setupReport();
-  },
-  unmounted() {
-    if (this.dataSubscription) {
-      this.dataSubscription.unsubscribe();
-    }
+// report details
+const today = ref(null);
+const url = ref(null);
+const lineageName = ref(null);
+const mutationName = ref(null);
+const reportName = ref(null);
+const mutationVar = ref(null);
+const mutations = ref(null);
+const reportType = ref(null);
+const locationQueryParams = ref(null);
+const title = ref(null);
+const lastUpdated = ref(null);
+const disclaimer = ref(
+  `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the ${reportType.value} but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`,
+);
+const width = ref(800);
+// Changing locations
+const queryLocation = ref(null);
+const queryPangolin = ref(null);
+const newPangolin = ref(null);
+const currentLocs = ref(null); // placeholder for current locations
+const loc2Add = ref([]); // array to stores new locations to add
+const newSelectedLocation = ref(null); // stores location data when change the selected value
+// subscriptions
+const dataSubscription = ref(null);
+const curatedSubscription = ref(null);
+const locationChangeSubscription = ref(null);
+const choroSubscription = ref(null);
+const hasData = ref(false);
+// curated values
+const searchTerms = ref(null);
+// methods
+const choroColorDomain = ref([0.01, 0.05, 0.1, 0.2, 0.35, 0.5, 0.75]);
+const choroColorScale = ref(null);
+const choroCountThreshold = ref(25);
+const choroNdays = ref(60);
+const totalThresh = ref(25); // threshold for "unreliable estimate" in the table
+// forms
+const sublineageOverlay = ref(null);
+// data
+const selectedLocations = ref(null);
+const selectedLocation = ref(null);
+const dateUpdated = ref(null);
+const reportMetadata = ref(null);
+const choroLocation = ref('country');
+const choroData = ref(null);
+const choroMaxCount = ref(null);
+const countries = ref(null);
+const states = ref(null);
+const additionalMutations = ref(null);
+const sublineagePrev = ref(null);
+const sublineageLongitudinalAll = ref(null);
+const sublineageLongitudinal = ref(null);
+const sublineageTotalStacked = ref(null);
+const lineagesByDay = ref(null);
+const sublineageColorScale = ref(null);
+const sublineageColorPalette = ref([
+  '#4E79A7', // dk blue
+  '#f28e2b', // orange
+  '#59a14f', // green
+  '#e15759', // red
+  '#499894', // teal
+  '#B6992D', // dk yellow
+  '#D37295', // dk pink
+  '#B07AA1', // dk purple
+  '#9D7660', // brown
+  '#aecBe8', // lt blue
+  '#FFBE7D', // lt. orange
+  '#8CD17D', // lt. green
+  '#FF9D9A', // lt. red
+  '#86BCB6', // lt. teal
+  '#F1CE63', // yellow
+  '#FABFD2', // lt. pink,
+  '#D4A6C8', // lt. purple
+  '#D7B5A6', // lt. brown
+  '#bcbd22', // puce
+  '#79706E', // grey
+]);
+const sublineageOptions = ref([]);
+const selectedSublineages = ref([]);
+const sublineages2Plot = ref(5);
+const locationTotals = ref(null);
+const totalLineage = ref(null);
+const prevalence = ref([]);
+const mutationsByLineage = ref([]);
+const selectedMutationArr = ref(null);
 
-    if (this.choroSubscription) {
-      this.choroSubscription.unsubscribe();
-    }
+const smallScreen = computed(() => {
+  return window.innerWidth < 500;
+});
 
-    if (this.curatedSubscription) {
-      this.curatedSubscription.unsubscribe();
-    }
+const definitionLabel = computed(() => {
+  return reportType.value === 'lineage'
+    ? 'Characteristic mutations in lineage'
+    : reportType.value === 'lineage with added mutations'
+    ? 'Characteristic mutations in variant'
+    : 'List of mutations';
+});
 
-    if (this.locationChangeSubscription) {
-      this.locationChangeSubscription.unsubscribe();
-    }
-  },
-  methods: {
-    setDims() {
-      const windowWidth = window.innerWidth;
-      const widthRatio = windowWidth > 1000 ? 0.7 : 0.9;
-      this.width = windowWidth * widthRatio;
-    },
-    setLineageAndMutationStr() {
-      // Combined report for the WHO lineages; requires lookup of the WHO name using the curated lineages file.
-      if (this.alias) {
-        this.lineageName = this.alias.includes('*')
-          ? this.alias.toUpperCase().replace('OMICRON', 'Omicron')
-          : this.$filters.capitalize(this.alias.toLowerCase());
-        this.selectedMutationArr = null;
-        this.title = `${this.lineageName} Variant Report`;
-        this.reportType = 'combined lineage';
-        this.reportName = this.lineageName;
-      } else {
-        if (this.$route.query.pango) {
-          if (this.$route.query.muts && this.$route.query.muts.length) {
-            // Lineage + Mutation report
-            this.lineageName = this.$route.query.pango.toUpperCase();
-            this.selectedMutationArr =
-              typeof this.$route.query.muts == 'string'
-                ? [this.$route.query.muts]
-                : this.$route.query.muts;
-            this.mutationName =
-              typeof this.$route.query.muts == 'string'
-                ? this.$route.query.muts
-                : this.$route.query.muts.join(', ');
-            this.reportName = `${this.lineageName} Lineage with ${this.mutationName}`;
-            this.reportType = 'lineage with added mutations';
-            this.searchTerms = [
-              `${this.lineageName}" AND "${
-                typeof this.$route.query.muts == 'string'
-                  ? this.$route.query.muts.split(':').slice(-1)
-                  : this.$route.query.muts
-                      .map((d) => d.split(':').slice(-1)[0])
-                      .join('" AND "')
-              }`,
-            ];
-            this.title = `${this.reportName} Report`;
-            const qParam =
-              typeof this.$route.query.muts == 'string'
-                ? `${this.lineageName}|${this.$route.query.muts}`
-                : `${this.lineageName}|${this.$route.query.muts.join(',')}`;
-            this.locationQueryParams = {
-              variant: [qParam],
-            };
-          } else {
-            // Lineage report
-            this.lineageName = this.$route.query.pango.toUpperCase();
-            this.reportName = this.lineageName;
-            this.selectedMutationArr = null;
-            this.reportType = 'lineage';
-            this.title = `${this.reportName} Lineage Report`;
-            this.searchTerms = [this.lineageName];
-            this.locationQueryParams = {
-              pango: [this.lineageName],
-              selected: this.lineageName,
-            };
-          }
-        } else {
-          if (typeof this.$route.query.muts == 'string') {
-            // Single mutation report
-            this.lineageName = null;
-            this.selectedMutationArr = this.$route.query.muts.split(',');
-            this.reportName = this.selectedMutationArr.join(', ');
-            this.mutationName = this.reportName;
-            this.reportType = 'mutation';
-            this.searchTerms = [this.mutationName.split(':').slice(-1)];
-            this.locationQueryParams = {
-              muts: this.selectedMutationArr.join(' AND '),
-              selected: this.selectedMutationArr.join(' AND '),
-            };
-            this.title = `${this.reportName} Mutation Report`;
-          } else if (isArray(this.$route.query.muts)) {
-            // Variant (multiple mutation) report
-            this.lineageName = null;
-            this.reportName = this.$route.query.muts.join(', ');
-            this.mutationName = this.reportName;
-            this.searchTerms = [
-              this.$route.query.muts
-                .map((d) => d.split(':').slice(-1)[0])
-                .join('" AND "'),
-            ];
-            this.selectedMutationArr = this.$route.query.muts;
-            this.reportType =
-              this.$route.query.muts.length === 1 ? 'mutation' : 'variant';
-            this.title = `${this.reportName} ${this.$filters.capitalize(
-              this.reportType,
-            )} Report`;
-            this.locationQueryParams = {
-              muts: this.selectedMutationArr.join(' AND '),
-              selected: this.selectedMutationArr.join(' AND '),
-            };
-          }
-        }
-      }
-    },
-    setupReport() {
-      // set default, if needed.
-      // if (!this.selected) {
-      //   this.selected = 'Worldwide';
-      // }
+const locationLabel = computed(() => {
+  if (selectedLocation.value) {
+    return selectedLocation.value.label === 'Worldwide'
+      ? 'globally'
+      : `in ${selectedLocation.value.label}`;
+  } else {
+    return null;
+  }
+});
 
-      this.setLineageAndMutationStr();
-      if (this.lineageName || this.selectedMutationArr || this.alias) {
-        this.dataSubscription = getReportData(
-          this.$genomicsurl,
-          this.alias,
-          this.loc,
-          this.selectedMutationArr,
-          this.lineageName,
-          this.selected,
-          this.totalThresh,
-          this.choroNdays,
-        ).subscribe((results) => {
-          this.hasData = true;
+const pangoLink = computed(() => {
+  return lineageName.value
+    ? `https://cov-lineages.org/lineage.html?lineage=${lineageName.value}`
+    : null;
+});
 
-          // selected locations
-          this.selectedLocations = results.locations;
-          this.currentLocs = results.locations.filter(
-            (d) => d.id !== 'Worldwide',
-          );
-          const _selected = results.locations.filter((d) => d.isActive);
-          this.selectedLocation = _selected.length === 1 ? _selected[0] : null;
+const aquariaLink = computed(() => {
+  if (additionalMutations.value && additionalMutations.value.length > 0) {
+    const aquariaStub = 'https://aquaria.app/SARS-CoV-2/';
+    return nest()
+      .key((d) => d.gene)
+      .rollup((values) => {
+        return {
+          link:
+            values[0].gene.toLowerCase() === 'orf1b'
+              ? // convert between ORF1b and ORF1ab: e.g. ORF1b P314L becomes https://aquaria.app/SARS-CoV-2/PP1ab?P4715L
+                // in general: gene?mutations, separated by &
+                `${aquariaStub}PP1ab?${values
+                  .map((d) => calcORF1bLink(d))
+                  .join('&')}`
+              : `${aquariaStub}${values[0].gene}?${values
+                  .map((d) => d.mutation.replace(d.gene, '').replace(':', ''))
+                  .join('&')}`,
+          count: values.length,
+        };
+      })
+      .entries(additionalMutations.value);
+  } else {
+    return null;
+  }
+});
 
-          // date updated
-          this.dateUpdated = results.dateUpdated.dateUpdated;
-          this.lastUpdated = results.dateUpdated.lastUpdated;
+const choroplethLocations = computed(() => {
+  return selectedLocations.value
+    ? selectedLocations.value.filter((d) => d.admin_level < 2)
+    : null;
+});
 
-          // worldwide stats
-          const global = results.locPrev.filter(
-            (d) => d.location_id === 'Worldwide',
-          );
-          this.totalLineage =
-            global.length === 1 ? global[0].lineage_count_formatted : null;
+const choroLabel = computed(() => {
+  return `Est. ${reportName.value} prevalence ${choroTimeFrame.value}`;
+});
 
-          // sublineagePrev
-          this.sublineagePrev = results.sublineagePrev;
+const choroTimeFrame = computed(() => {
+  return choroNdays.value
+    ? `last ${choroNdays.value} days`
+    : 'since identification';
+});
 
-          // location prevalence
-          this.locationTotals = results.locPrev;
-
-          // longitudinal data: prevalence over time
-          this.prevalence = results.longitudinal;
-          this.sublineageLongitudinalAll = results.longitudinalSublineages;
-          // stream graph of lineages by day
-          this.lineagesByDay = results.lineagesByDay;
-          this.sublineageTotalStacked = results.sublineageTotalStacked;
-          this.setSublineageColorScale();
-
-          // // recent data by country & countries with that lineage.
-          this.countries = results.countries;
-          this.states = results.states;
-          this.choroData = results.choroData;
-          this.choroMaxCount = max(this.choroData, (d) => d.cum_total_count);
-
-          // characteristic mutations
-          this.mutations = results.mutations;
-
-          // Mutation details for queried mutations -- to add to the characteristic mutation maps for things like Alpha + E484K
-          this.additionalMutations = results.mutationDetails;
-
-          // Mutation distribution by lineage
-          this.mutationsByLineage = results.mutationsByLineage;
-
-          if (results.md) {
-            this.reportMetadata = results.md;
-            this.searchTerms =
-              this.reportType !== 'lineage with added mutations' &&
-              results.md.searchTerms
-                ? results.md.searchTerms
-                : [this.searchTerms];
-            this.disclaimer = results.md.disclaimer
-              ? results.md.disclaimer
-              : this.disclaimer;
-          } else {
-            this.searchTerms = [this.searchTerms];
-          }
-        });
-      }
-    },
-    selectSublineage() {
-      this.sublineageLongitudinal = this.sublineageLongitudinalAll.filter((d) =>
-        this.selectedSublineages.includes(d.label),
-      );
-    },
-    setSublineageColorScale() {
-      if (this.sublineagePrev) {
-        this.sublineageOptions = this.sublineagePrev
-          .filter((d) => d.lineage_count)
-          .map((d) => d.mutation_string)
-          .slice(0, this.sublineageColorPalette.length);
-
-        // only show the top 5 most prevalent sublineages
-        if (!this.selectedSublineages.length) {
-          this.selectedSublineages = this.sublineageOptions.slice(
-            0,
-            this.sublineages2Plot,
-          );
-        }
-        this.selectSublineage();
-
-        this.sublineageColorScale = scaleOrdinal(this.sublineageColorPalette)
-          .domain(this.sublineageOptions)
-          .unknown('#bab0ab');
-      }
-    },
-    removeLocation(idx) {
-      this.currentLocs.splice(idx, 1);
-    },
-    addLoc2Add(selected) {
-      this.loc2Add.push(selected);
-    },
-    updateSelectedLoc(selected) {
-      this.selectedLocations.push(selected);
-      this.closeLocModal();
-      this.switchLocation(selected);
-    },
-    removeLoc2Add(idx) {
-      this.loc2Add.splice(idx, 1);
-    },
-    clearNewLocations() {
-      this.loc2Add = [];
-    },
-    // Add new locations
-    selectNewLocations() {
-      let locationIDs = this.loc2Add.map((d) => d.id);
-      const newSelected = locationIDs[0];
-      // de-duplicate
-      locationIDs = uniq(
-        this.currentLocs
-          .map((d) => d.id)
-          .concat(locationIDs)
-          .filter((d) => d !== 'Worldwide'),
-      );
-
-      // reset the fields.
-      this.loc2Add = [];
-
-      if (this.routeTo === 'MutationReport') {
-        this.$router.push({
-          name: 'MutationReport',
-          params: {
-            alias: this.alias,
-          },
-          query: {
-            pango: this.pango,
-            muts: this.muts,
-            selected: newSelected,
-            loc: locationIDs,
-            overlay: this.sublineageOverlay,
-          },
-        });
-      } else if (this.routeTo === 'GenomicsEmbedVariant') {
-        this.$router.push({
-          name: 'GenomicsEmbed',
-          query: {
-            type: 'var',
-            alias: this.alias,
-            pango: this.pango,
-            muts: this.muts,
-            selected: newSelected,
-            loc: locationIDs,
-            overlay: this.sublineageOverlay,
-          },
-        });
-      }
-    },
-    // Select a location button on the longitudinal traces or choropleths
-    switchLocation(location) {
-      this.selectedLocations.forEach((d) => {
-        d.isActive = false;
-      });
-
-      if (!location) {
-        this.selectedLocation = 'Worldwide';
-      } else {
-        location.isActive = true;
-
-        this.selectedLocation = location.id;
-      }
-
-      // const countries = this.selectedLocations.filter(d => d.type == "country").map(d => d.name);
-      const ids = this.selectedLocations
-        .map((d) => d.id)
-        .filter((d) => d !== 'Worldwide');
-
-      if (this.routeTo === 'MutationReport') {
-        this.$router.push({
-          name: 'MutationReport',
-          query: {
-            pango: this.pango,
-            muts: this.muts,
-            loc: ids,
-            selected: this.selectedLocation,
-            overlay: this.sublineageOverlay,
-          },
-          meta: {
-            disableScroll: true,
-          },
-          params: { alias: this.alias },
-        });
-      } else if (this.routeTo === 'GenomicsEmbedVariant') {
-        this.$router.push({
-          name: 'GenomicsEmbed',
-          query: {
-            type: 'var',
-            alias: this.alias,
-            pango: this.pango,
-            muts: this.muts,
-            loc: ids,
-            selected: this.selectedLocation,
-            overlay: this.sublineageOverlay,
-          },
-          meta: {
-            disableScroll: true,
-          },
-        });
-      }
-    },
-    updateLocations() {
-      this.locationChangeSubscription = updateLocationData(
-        this.$genomicsurl,
-        this.alias,
-        this.selectedMutationArr,
-        this.lineageName,
-        this.loc,
-        this.selected,
-        this.totalThresh,
-        this.choroNdays,
-      ).subscribe((results) => {
-        // selected locations
-        this.selectedLocations = results.locations;
-        this.currentLocs = results.locations.filter(
-          (d) => d.id !== 'Worldwide',
-        );
-        const _selected = results.locations.filter((d) => d.isActive);
-        this.selectedLocation = _selected.length === 1 ? _selected[0] : null;
-
-        // longitudinal data: prevalence over time
-        this.prevalence = results.longitudinal;
-        this.sublineageLongitudinalAll = results.longitudinalSublineages;
-        // stream graph of lineages by day
-        this.lineagesByDay = results.lineagesByDay;
-        this.sublineageTotalStacked = results.sublineageTotalStacked;
-        this.setSublineageColorScale();
-
-        // cumulative totals for table
-        this.locationTotals = results.locPrev;
-
-        // recent data by country.
-        this.choroData = results.byCountry;
-
-        // sublineage breakdown
-        this.sublineagePrev = results.sublineagePrev;
-      });
-    },
-    updateChoroWindow(resetData) {
-      if (resetData) {
-        this.choroNdays = null;
-      }
-      this.choroSubscription = updateChoroData(
-        this.$genomicsurl,
-        this.alias,
-        this.selectedMutationArr,
-        this.lineageName,
-        this.selected,
-        this.choroNdays,
-      ).subscribe((results) => {
-        this.choroData = results;
-        this.choroMaxCount = max(this.choroData, (d) => d.cum_total_count);
-      });
-    },
-    changeSublineageOverlay(selected) {
-      if (this.routeTo === 'MutationReport') {
-        this.$router.push({
-          name: 'MutationReport',
-          query: {
-            pango: this.pango,
-            muts: this.muts,
-            loc: this.loc,
-            selected: this.selected,
-            xmin: this.xmin,
-            xmax: this.xmax,
-            overlay: this.sublineageOverlay,
-          },
-          meta: {
-            disableScroll: true,
-          },
-          params: { alias: this.alias },
-        });
-      } else if (this.routeTo === 'GenomicsEmbedVariant') {
-        this.$router.push({
-          name: 'GenomicsEmbed',
-          query: {
-            type: 'var',
-            alias: this.alias,
-            pango: this.pango,
-            muts: this.muts,
-            loc: this.loc,
-            selected: this.selected,
-            xmin: this.xmin,
-            xmax: this.xmax,
-            overlay: this.sublineageOverlay,
-          },
-          meta: {
-            disableScroll: true,
-          },
-        });
-      }
-    },
-    updatePangolin(selected) {
-      this.newPangolin = selected.name;
-    },
-    selectNewPangolin() {
-      // const queryParams = this.$route.query;
-      if (this.routeTo === 'MutationReport') {
-        this.$router.push({
-          name: 'MutationReport',
-          query: {
-            loc: this.loc,
-            pango: this.newPangolin,
-            muts: this.muts,
-            selected: this.selected,
-            overlay: this.sublineageOverlay,
-          },
-        });
-      } else if (this.routeTo === 'GenomicsEmbedVariant') {
-        this.$router.push({
-          name: 'GenomicsEmbed',
-          query: {
-            type: 'var',
-            alias: this.alias,
-            loc: this.loc,
-            pango: this.newPangolin,
-            muts: this.muts,
-            selected: this.selected,
-            overlay: this.sublineageOverlay,
-          },
-        });
-      }
-    },
-    closeLocModal() {
-      $('#change-selected-location').modal('hide');
-    },
-    closeModal() {
-      $('#change-pangolin-modal').modal('hide');
-    },
-    calcORF1bLink(mutation) {
-      const codonOffset = 4401;
-      // convert between ORF1b and ORF1ab: e.g. ORF1b P314L becomes https://aquaria.app/SARS-CoV-2/PP1ab?P4715L
-      if (mutation.type === 'substitution') {
-        return `${mutation.ref_aa}${mutation.codon_num + codonOffset}${
-          mutation.alt_aa
-        }`;
-      } else if (mutation.type === 'deletion') {
-        return `${mutation}`;
-      }
-    },
-  },
+const setDims = () => {
+  const windowWidth = window.innerWidth;
+  const widthRatio = windowWidth > 1000 ? 0.7 : 0.9;
+  width.value = windowWidth * widthRatio;
 };
+
+const setLineageAndMutationStr = () => {
+  // Combined report for the WHO lineages; requires lookup of the WHO name using the curated lineages file.
+  if (props.alias) {
+    lineageName.value = props.alias.includes('*')
+      ? props.alias.toUpperCase().replace('OMICRON', 'Omicron')
+      : filters.capitalize(props.alias.toLowerCase());
+    selectedMutationArr.value = null;
+    title.value = `${lineageName.value} Variant Report`;
+    reportType.value = 'combined lineage';
+    reportName.value = lineageName.value;
+  } else {
+    if (route.query.pango) {
+      if (route.query.muts && route.query.muts.length) {
+        // Lineage + Mutation report
+        lineageName.value = route.query.pango.toUpperCase();
+        selectedMutationArr.value =
+          typeof route.query.muts == 'string'
+            ? [route.query.muts]
+            : route.query.muts;
+        mutationName.value =
+          typeof route.query.muts == 'string'
+            ? route.query.muts
+            : route.query.muts.join(', ');
+        reportName.value = `${lineageName.value} Lineage with ${mutationName.value}`;
+        reportType.value = 'lineage with added mutations';
+        searchTerms.value = [
+          `${lineageName.value}" AND "${
+            typeof route.query.muts == 'string'
+              ? route.query.muts.split(':').slice(-1)
+              : route.query.muts
+                  .map((d) => d.split(':').slice(-1)[0])
+                  .join('" AND "')
+          }`,
+        ];
+        title.value = `${reportName.value} Report`;
+        const qParam =
+          typeof route.query.muts == 'string'
+            ? `${lineageName.value}|${route.query.muts}`
+            : `${lineageName.value}|${route.query.muts.join(',')}`;
+        locationQueryParams.value = {
+          variant: [qParam],
+        };
+      } else {
+        // Lineage report
+        lineageName.value = route.query.pango.toUpperCase();
+        reportName.value = lineageName.value;
+        selectedMutationArr.value = null;
+        reportType.value = 'lineage';
+        title.value = `${reportName.value} Lineage Report`;
+        searchTerms.value = [lineageName.value];
+        locationQueryParams.value = {
+          pango: [lineageName.value],
+          selected: lineageName.value,
+        };
+      }
+    } else {
+      if (typeof route.query.muts == 'string') {
+        // Single mutation report
+        lineageName.value = null;
+        selectedMutationArr.value = route.query.muts.split(',');
+        reportName.value = selectedMutationArr.value.join(', ');
+        mutationName.value = reportName.value;
+        reportType.value = 'mutation';
+        searchTerms.value = [mutationName.value.split(':').slice(-1)];
+        locationQueryParams.value = {
+          muts: selectedMutationArr.value.join(' AND '),
+          selected: selectedMutationArr.value.join(' AND '),
+        };
+        title.value = `${reportName.value} Mutation Report`;
+      } else if (isArray(route.query.muts)) {
+        // Variant (multiple mutation) report
+        lineageName.value = null;
+        reportName.value = route.query.muts.join(', ');
+        mutationName.value = reportName.value;
+        searchTerms.value = [
+          route.query.muts
+            .map((d) => d.split(':').slice(-1)[0])
+            .join('" AND "'),
+        ];
+        selectedMutationArr.value = route.query.muts;
+        reportType.value =
+          route.query.muts.length === 1 ? 'mutation' : 'variant';
+        title.value = `${reportName.value} ${filters.capitalize(
+          reportType.value,
+        )} Report`;
+        locationQueryParams.value = {
+          muts: selectedMutationArr.value.join(' AND '),
+          selected: selectedMutationArr.value.join(' AND '),
+        };
+      }
+    }
+  }
+};
+
+const setupReport = () => {
+  // set default, if needed.
+  // if (!this.selected) {
+  //   this.selected = 'Worldwide';
+  // }
+
+  setLineageAndMutationStr();
+  if (lineageName.value || selectedMutationArr.value || props.alias) {
+    dataSubscription.value = getReportData(
+      genomicsUrl,
+      props.alias,
+      props.loc,
+      selectedMutationArr.value,
+      lineageName.value,
+      props.selected,
+      totalThresh.value,
+      choroNdays.value,
+    ).subscribe((results) => {
+      hasData.value = true;
+
+      // selected locations
+      selectedLocations.value = results.locations;
+      currentLocs.value = results.locations.filter((d) => d.id !== 'Worldwide');
+      const _selected = results.locations.filter((d) => d.isActive);
+      selectedLocation.value = _selected.length === 1 ? _selected[0] : null;
+
+      // date updated
+      dateUpdated.value = results.dateUpdated.dateUpdated;
+      lastUpdated.value = results.dateUpdated.lastUpdated;
+
+      // worldwide stats
+      const global = results.locPrev.filter(
+        (d) => d.location_id === 'Worldwide',
+      );
+      totalLineage.value =
+        global.length === 1 ? global[0].lineage_count_formatted : null;
+
+      // sublineagePrev
+      sublineagePrev.value = results.sublineagePrev;
+
+      // location prevalence
+      locationTotals.value = results.locPrev;
+
+      // longitudinal data: prevalence over time
+      prevalence.value = results.longitudinal;
+      sublineageLongitudinalAll.value = results.longitudinalSublineages;
+      // stream graph of lineages by day
+      lineagesByDay.value = results.lineagesByDay;
+      sublineageTotalStacked.value = results.sublineageTotalStacked;
+      setSublineageColorScale();
+
+      // // recent data by country & countries with that lineage.
+      countries.value = results.countries;
+      states.value = results.states;
+      choroData.value = results.choroData;
+      choroMaxCount.value = max(choroData.value, (d) => d.cum_total_count);
+
+      // characteristic mutations
+      mutations.value = results.mutations;
+
+      // Mutation details for queried mutations -- to add to the characteristic mutation maps for things like Alpha + E484K
+      additionalMutations.value = results.mutationDetails;
+
+      // Mutation distribution by lineage
+      mutationsByLineage.value = results.mutationsByLineage;
+
+      if (results.md) {
+        reportMetadata.value = results.md;
+        searchTerms.value =
+          reportType.value !== 'lineage with added mutations' &&
+          results.md.searchTerms
+            ? results.md.searchTerms
+            : [searchTerms.value];
+        disclaimer.value = results.md.disclaimer
+          ? results.md.disclaimer
+          : disclaimer.value;
+      } else {
+        searchTerms.value = [searchTerms.value];
+      }
+    });
+  }
+};
+
+const selectSublineage = () => {
+  sublineageLongitudinal.value = sublineageLongitudinalAll.value.filter((d) =>
+    selectedSublineages.value.includes(d.label),
+  );
+};
+
+const setSublineageColorScale = () => {
+  if (sublineagePrev.value) {
+    sublineageOptions.value = sublineagePrev.value
+      .filter((d) => d.lineage_count)
+      .map((d) => d.mutation_string)
+      .slice(0, sublineageColorPalette.value.length);
+
+    // only show the top 5 most prevalent sublineages
+    if (!selectedSublineages.value.length) {
+      selectedSublineages.value = sublineageOptions.value.slice(
+        0,
+        sublineages2Plot.value,
+      );
+    }
+    selectSublineage();
+
+    sublineageColorScale.value = scaleOrdinal(sublineageColorPalette.value)
+      .domain(sublineageOptions.value)
+      .unknown('#bab0ab');
+  }
+};
+
+const removeLocation = (idx) => {
+  currentLocs.value.splice(idx, 1);
+};
+
+const addLoc2Add = (selected) => {
+  loc2Add.value.push(selected);
+};
+
+const updateSelectedLoc = (selected) => {
+  selectedLocations.value.push(selected);
+  closeLocModal();
+  switchLocation(selected);
+};
+
+const removeLoc2Add = (idx) => {
+  loc2Add.value.splice(idx, 1);
+};
+
+const clearNewLocations = () => {
+  loc2Add.value = [];
+};
+
+// Add new locations
+const selectNewLocations = () => {
+  let locationIDs = loc2Add.value.map((d) => d.id);
+  const newSelected = locationIDs[0];
+  // de-duplicate
+  locationIDs = uniq(
+    currentLocs.value
+      .map((d) => d.id)
+      .concat(locationIDs)
+      .filter((d) => d !== 'Worldwide'),
+  );
+
+  // reset the fields.
+  loc2Add.value = [];
+
+  if (props.routeTo === 'MutationReport') {
+    router.push({
+      name: 'MutationReport',
+      params: {
+        alias: props.alias,
+      },
+      query: {
+        pango: props.pango,
+        muts: props.muts,
+        selected: newSelected,
+        loc: locationIDs,
+        overlay: sublineageOverlay.value,
+      },
+    });
+  } else if (props.routeTo === 'GenomicsEmbedVariant') {
+    router.push({
+      name: 'GenomicsEmbed',
+      query: {
+        type: 'var',
+        alias: props.alias,
+        pango: props.pango,
+        muts: props.muts,
+        selected: newSelected,
+        loc: locationIDs,
+        overlay: sublineageOverlay.value,
+      },
+    });
+  }
+};
+
+// Select a location button on the longitudinal traces or choropleths
+const switchLocation = (location) => {
+  selectedLocations.value.forEach((d) => {
+    d.isActive = false;
+  });
+
+  if (!location) {
+    selectedLocation.value = 'Worldwide';
+  } else {
+    location.isActive = true;
+
+    selectedLocation.value = location.id;
+  }
+
+  // const countries = selectedLocations.value.filter(d => d.type == "country").map(d => d.name);
+  const ids = selectedLocations.value
+    .map((d) => d.id)
+    .filter((d) => d !== 'Worldwide');
+
+  if (props.routeTo === 'MutationReport') {
+    router.push({
+      name: 'MutationReport',
+      query: {
+        pango: props.pango,
+        muts: props.muts,
+        loc: ids,
+        selected: selectedLocation.value,
+        overlay: sublineageOverlay.value,
+      },
+      meta: {
+        disableScroll: true,
+      },
+      params: { alias: props.alias },
+    });
+  } else if (props.routeTo === 'GenomicsEmbedVariant') {
+    router.push({
+      name: 'GenomicsEmbed',
+      query: {
+        type: 'var',
+        alias: props.alias,
+        pango: props.pango,
+        muts: props.muts,
+        loc: ids,
+        selected: selectedLocation.value,
+        overlay: sublineageOverlay.value,
+      },
+      meta: {
+        disableScroll: true,
+      },
+    });
+  }
+};
+
+const updateLocations = () => {
+  locationChangeSubscription.value = updateLocationData(
+    genomicsUrl,
+    props.alias,
+    selectedMutationArr.value,
+    lineageName.value,
+    props.loc,
+    props.selected,
+    totalThresh.value,
+    choroNdays.value,
+  ).subscribe((results) => {
+    // selected locations
+    selectedLocations.value = results.locations;
+    currentLocs.value = results.locations.filter((d) => d.id !== 'Worldwide');
+    const _selected = results.locations.filter((d) => d.isActive);
+    selectedLocation.value = _selected.length === 1 ? _selected[0] : null;
+
+    // longitudinal data: prevalence over time
+    prevalence.value = results.longitudinal;
+    sublineageLongitudinalAll.value = results.longitudinalSublineages;
+    // stream graph of lineages by day
+    lineagesByDay.value = results.lineagesByDay;
+    sublineageTotalStacked.value = results.sublineageTotalStacked;
+    setSublineageColorScale();
+
+    // cumulative totals for table
+    locationTotals.value = results.locPrev;
+
+    // recent data by country.
+    choroData.value = results.byCountry;
+
+    // sublineage breakdown
+    sublineagePrev.value = results.sublineagePrev;
+  });
+};
+
+const updateChoroWindow = (resetData) => {
+  if (resetData) {
+    choroNdays.value = null;
+  }
+  choroSubscription.value = updateChoroData(
+    genomicsUrl,
+    props.alias,
+    selectedMutationArr.value,
+    lineageName.value,
+    props.selected,
+    choroNdays.value,
+  ).subscribe((results) => {
+    choroData.value = results;
+    choroMaxCount.value = max(choroData.value, (d) => d.cum_total_count);
+  });
+};
+
+const changeSublineageOverlay = (selected) => {
+  if (props.routeTo === 'MutationReport') {
+    router.push({
+      name: 'MutationReport',
+      query: {
+        pango: props.pango,
+        muts: props.muts,
+        loc: props.loc,
+        selected: props.selected,
+        xmin: props.xmin,
+        xmax: props.xmax,
+        overlay: sublineageOverlay.value,
+      },
+      meta: {
+        disableScroll: true,
+      },
+      params: { alias: props.alias },
+    });
+  } else if (props.routeTo === 'GenomicsEmbedVariant') {
+    router.push({
+      name: 'GenomicsEmbed',
+      query: {
+        type: 'var',
+        alias: props.alias,
+        pango: props.pango,
+        muts: props.muts,
+        loc: props.loc,
+        selected: props.selected,
+        xmin: props.xmin,
+        xmax: props.xmax,
+        overlay: sublineageOverlay.value,
+      },
+      meta: {
+        disableScroll: true,
+      },
+    });
+  }
+};
+
+const updatePangolin = (selected) => {
+  newPangolin.value = selected.name;
+};
+
+const selectNewPangolin = () => {
+  // const queryParams = route.query;
+  if (props.routeTo === 'MutationReport') {
+    router.push({
+      name: 'MutationReport',
+      query: {
+        loc: props.loc,
+        pango: newPangolin.value,
+        muts: props.muts,
+        selected: props.selected,
+        overlay: sublineageOverlay.value,
+      },
+    });
+  } else if (props.routeTo === 'GenomicsEmbedVariant') {
+    router.push({
+      name: 'GenomicsEmbed',
+      query: {
+        type: 'var',
+        alias: props.alias,
+        loc: props.loc,
+        pango: newPangolin.value,
+        muts: props.muts,
+        selected: props.selected,
+        overlay: sublineageOverlay.value,
+      },
+    });
+  }
+};
+
+const closeLocModal = () => {
+  $('#change-selected-location').modal('hide');
+};
+
+const closeModal = () => {
+  $('#change-pangolin-modal').modal('hide');
+};
+
+const calcORF1bLink = (mutation) => {
+  const codonOffset = 4401;
+  // convert between ORF1b and ORF1ab: e.g. ORF1b P314L becomes https://aquaria.app/SARS-CoV-2/PP1ab?P4715L
+  if (mutation.type === 'substitution') {
+    return `${mutation.ref_aa}${mutation.codon_num + codonOffset}${
+      mutation.alt_aa
+    }`;
+  } else if (mutation.type === 'deletion') {
+    return `${mutation}`;
+  }
+};
+
+watch(
+  () => route,
+  (newVal, oldVal) => {
+    if (
+      !isEqual(newVal.query.pango, oldVal.query.pango) ||
+      !isEqual(newVal.params.alias, oldVal.params.alias) ||
+      !isEqual(newVal.query.alias, oldVal.query.alias) ||
+      !isEqual(newVal.query.muts, oldVal.query.muts)
+    ) {
+      newPangolin.value = null;
+      lineageName.value = null;
+      reportMetadata.value = null;
+      debounceSetupReport();
+    } else {
+      debounceUpdateLocations();
+    }
+  },
+);
+
+const debounceSetDims = debounce(setDims, 150);
+const debounceSelectSublineage = debounce(selectSublineage, 250);
+const debounceChoroWindowChange = debounce(updateChoroWindow, 700);
+const debounceUpdateLocations = debounce(updateLocations, 500);
+const debounceSetupReport = debounce(setupReport, 500);
+
+onMounted(() => {
+  sublineageOverlay.value = props.overlay === 'true';
+  setDims();
+  queryLocation.value = findLocation;
+  queryPangolin.value = findPangolin;
+
+  // common color scale for choropleth
+  choroColorScale.value = scaleThreshold(
+    schemeYlGnBu[choroColorDomain.value.length + 2],
+  ).domain(choroColorDomain.value);
+
+  // Get date for the citation object
+  const formatDate = timeFormat('%e %B %Y');
+  let currentTime = new Date();
+  today.value = formatDate(currentTime);
+
+  // set URL for sharing, etc.
+  nextTick(() => {
+    window.addEventListener('resize', debounceSetDims);
+
+    const location = window.location;
+    url.value =
+      location.search !== ''
+        ? `${location.origin}${location.pathname}${location.search}`
+        : `${location.origin}${location.pathname}`;
+  });
+  setupReport();
+});
+
+onUnmounted(() => {
+  if (dataSubscription.value) {
+    dataSubscription.value.unsubscribe();
+  }
+
+  if (choroSubscription.value) {
+    choroSubscription.value.unsubscribe();
+  }
+
+  if (curatedSubscription.value) {
+    curatedSubscription.value.unsubscribe();
+  }
+
+  if (locationChangeSubscription.value) {
+    locationChangeSubscription.value.unsubscribe();
+  }
+});
 </script>
 
 <style lang="scss" scoped>

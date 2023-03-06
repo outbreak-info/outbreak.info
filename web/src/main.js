@@ -185,5 +185,10 @@ app.config.globalProperties.$filters = {
 app.provide('apiUrl', 'https://api.outbreak.info/covid19/');
 app.provide('resourceUrl', 'https://api.outbreak.info/resources/');
 app.provide('genomicsUrl', 'https://api.outbreak.info/genomics/');
+app.provide('filters', function capitalize(value) {
+  if (!value) return '';
+  value = value.toString();
+  return value.charAt(0).toUpperCase() + value.slice(1);
+});
 
 app.mount('#app');
