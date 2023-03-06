@@ -205,192 +205,188 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { computed, onMounted, ref, watch } from 'vue';
 import debounce from 'lodash/debounce';
 
 import { findPangolin } from '@/api/genomics.js';
 import { lazyLoad } from '@/js/lazy-load';
 
-export default {
-  name: 'CustomReportForm',
-  components: {
-    TypeaheadSelect: lazyLoad('TypeaheadSelect'),
-    SARSMutationMap: lazyLoad('SARSMutationMap'),
-  },
-  props: {
-    selectedLineage: Object,
-    selectedMutations: Array,
-    submitted: Number,
-    minimalistic: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  emits: [
-    'update:submitLabel',
-    'update:selectedLineage',
-    'update:selectedMutations',
-  ],
-  data() {
-    return {
-      queryPangolin: null,
-      selectedBulkMutations: [],
-      selectedBulkString: null,
-      badBulkGene: false,
-      badBulkSubstitution: false,
-      badBulkDeletion: false,
-      selectedType: null,
-      typeOptions: [
-        {
-          id: 'pango',
-          label: 'PANGO lineage',
-        },
-        {
-          id: 'variant',
-          label: 'PANGO lineage + mutation(s)',
-        },
-        {
-          id: 'mut',
-          label: 'Mutation(s)',
-        },
-      ],
-    };
-  },
-  computed: {
-    title() {
-      if (this.selectedLineage) {
-        return this.selectedMutations.length
-          ? `${this.selectedLineage.name} lineage with ${this.selectedMutations
-              .map((d) => d.mutation)
-              .join(', ')}`
-          : `${this.selectedLineage.name} lineage`;
-      } else {
-        return this.selectedMutations.length > 1
-          ? this.selectedMutations.map((d) => d.mutation).join(', ') +
-              ' Variant'
-          : this.selectedMutations.map((d) => d.mutation).join(', ') +
-              ' Mutation';
-      }
-    },
-    formValid() {
-      return this.selectedMutations.length > 0 || this.selectedLineage;
-    },
-  },
-  watch: {
-    submitted(newVal, oldVal) {
-      this.clearForm();
-    },
-    selectedType: {
-      immediate: false,
-      handler(newVal, oldVal) {
-        if (this.selectedType && this.selectedType.id === 'variant') {
-          this.$emit('update:submitLabel', 5);
-        } else {
-          this.$emit('update:submitLabel', 4);
-        }
-      },
-    },
-  },
-  created() {
-    this.debounceBulk = debounce(this.changeBulk, 500);
-  },
-  mounted() {
-    this.queryPangolin = findPangolin;
-  },
-  methods: {
-    updatePangolin(selected) {
-      selected
-        ? this.$emit('update:selectedLineage', selected)
-        : this.$emit('update:selectedLineage', null);
-    },
-    changeBulk() {
-      const bulk = this.selectedBulkString.split(',').map((d) => d.trim());
-      this.badBulkSubstitution = false;
-      this.badBulkDeletion = false;
-      this.badBulkGene = false;
+const TypeaheadSelect = lazyLoad('TypeaheadSelect');
+const SARSMutationMap = lazyLoad('SARSMutationMap');
 
-      this.selectedBulkMutations = bulk.map((d) => {
-        const splitted = d.split(':');
-        if (splitted.length === 2) {
-          const aaChange = splitted[1];
-          const mutationType = aaChange.toLowerCase().includes('del')
-            ? 'deletion'
-            : 'substitution';
-          const changeSplitted = aaChange
-            .split(/(\d+)/g)
-            .filter((d) => d !== '');
-          if (mutationType === 'substitution') {
-            if (changeSplitted.length === 3) {
-              return {
-                mutation: d,
-                gene: splitted[0],
-                type: mutationType,
-                ref_aa: changeSplitted[0],
-                codon_num: +changeSplitted[1],
-                alt_aa: changeSplitted[2],
-              };
-            } else {
-              this.badBulkSubstitution = true;
-            }
-          } else if (mutationType === 'deletion') {
-            if (changeSplitted.length === 4) {
-              return {
-                mutation: d,
-                gene: splitted[0],
-                type: mutationType,
-                codon_num: +changeSplitted[1],
-                change_length_nt:
-                  (Number(changeSplitted[3]) - Number(changeSplitted[1]) + 1) *
-                  3,
-              };
-            } else if (changeSplitted.length === 2) {
-              return {
-                mutation: d,
-                gene: splitted[0],
-                type: mutationType,
-                codon_num: +changeSplitted[1],
-                change_length_nt: 3,
-              };
-            } else {
-              this.badBulkDeletion = true;
-            }
-          }
-        } else {
-          this.badBulkGene = true;
-        }
-      });
-
-      const newMutations = this.selectedBulkMutations.filter((d) => d);
-
-      this.$emit('update:selectedMutations', newMutations);
-    },
-    deleteMutation(idx) {
-      const removed = this.selectedMutations.splice(idx, 1);
-      const newMutations = this.selectedMutations.filter(
-        (d) => d.mutation !== removed[0].mutation,
-      );
-      this.$emit('update:selectedMutations', newMutations);
-
-      // Remove from bulk mutations
-      this.selectedBulkMutations = this.selectedBulkMutations.filter(
-        (d) => d.mutation !== removed[0].mutation,
-      );
-      this.selectedBulkString = this.selectedBulkMutations
-        .map((d) => d.mutation)
-        .join(',');
-    },
-    clearForm() {
-      this.badBulkSubstitution = false;
-      this.badBulkDeletion = false;
-      this.badBulkGene = false;
-      this.selectedBulkMutations = [];
-      this.selectedBulkString = null;
-      this.selectedType = null;
-      this.$emit('update:selectedLineage', null);
-      this.$emit('update:selectedMutations', []);
-    },
+const props = defineProps({
+  selectedLineage: Object,
+  selectedMutations: Array,
+  submitted: Number,
+  minimalistic: {
+    type: Boolean,
+    default: false,
   },
+});
+const emit = defineEmits([
+  'update:submitLabel',
+  'update:selectedLineage',
+  'update:selectedMutations',
+]);
+
+const queryPangolin = ref(null);
+const selectedBulkMutations = ref([]);
+
+const selectedBulkString = ref(null);
+const badBulkGene = ref(false);
+const badBulkSubstitution = ref(false);
+const badBulkDeletion = ref(false);
+const selectedType = ref(null);
+const typeOptions = ref([
+  {
+    id: 'pango',
+    label: 'PANGO lineage',
+  },
+  {
+    id: 'variant',
+    label: 'PANGO lineage + mutation(s)',
+  },
+  {
+    id: 'mut',
+    label: 'Mutation(s)',
+  },
+]);
+
+const title = computed(() => {
+  if (props.selectedLineage) {
+    return props.selectedMutations.length
+      ? `${props.selectedLineage.name} lineage with ${props.selectedMutations
+          .map((d) => d.mutation)
+          .join(', ')}`
+      : `${props.selectedLineage.name} lineage`;
+  } else {
+    return props.selectedMutations.length > 1
+      ? props.selectedMutations.map((d) => d.mutation).join(', ') + ' Variant'
+      : props.selectedMutations.map((d) => d.mutation).join(', ') + ' Mutation';
+  }
+});
+
+const formValid = computed(() => {
+  return props.selectedMutations.length > 0 || props.selectedLineage;
+});
+
+const updatePangolin = (selected) => {
+  selected
+    ? emit('update:selectedLineage', selected)
+    : emit('update:selectedLineage', null);
 };
+
+const changeBulk = () => {
+  const bulk = selectedBulkString.value.split(',').map((d) => d.trim());
+  badBulkSubstitution.value = false;
+  badBulkDeletion.value = false;
+  badBulkGene.value = false;
+
+  selectedBulkMutations.value = bulk.map((d) => {
+    const splitted = d.split(':');
+    if (splitted.length === 2) {
+      const aaChange = splitted[1];
+      const mutationType = aaChange.toLowerCase().includes('del')
+        ? 'deletion'
+        : 'substitution';
+      const changeSplitted = aaChange.split(/(\d+)/g).filter((d) => d !== '');
+      if (mutationType === 'substitution') {
+        if (changeSplitted.length === 3) {
+          return {
+            mutation: d,
+            gene: splitted[0],
+            type: mutationType,
+            ref_aa: changeSplitted[0],
+            codon_num: +changeSplitted[1],
+            alt_aa: changeSplitted[2],
+          };
+        } else {
+          badBulkSubstitution.value = true;
+        }
+      } else if (mutationType === 'deletion') {
+        if (changeSplitted.length === 4) {
+          return {
+            mutation: d,
+            gene: splitted[0],
+            type: mutationType,
+            codon_num: +changeSplitted[1],
+            change_length_nt:
+              (Number(changeSplitted[3]) - Number(changeSplitted[1]) + 1) * 3,
+          };
+        } else if (changeSplitted.length === 2) {
+          return {
+            mutation: d,
+            gene: splitted[0],
+            type: mutationType,
+            codon_num: +changeSplitted[1],
+            change_length_nt: 3,
+          };
+        } else {
+          badBulkDeletion.value = true;
+        }
+      }
+    } else {
+      badBulkGene.value = true;
+    }
+  });
+
+  const newMutations = selectedBulkMutations.value.filter((d) => d);
+
+  emit('update:selectedMutations', newMutations);
+};
+
+const deleteMutation = (idx) => {
+  const removed = props.selectedMutations.splice(idx, 1);
+  const newMutations = props.selectedMutations.filter(
+    (d) => d.mutation !== removed[0].mutation,
+  );
+  emit('update:selectedMutations', newMutations);
+
+  // Remove from bulk mutations
+  selectedBulkMutations.value = selectedBulkMutations.value.filter(
+    (d) => d.mutation !== removed[0].mutation,
+  );
+  selectedBulkString.value = selectedBulkMutations.value
+    .map((d) => d.mutation)
+    .join(',');
+};
+
+const clearForm = () => {
+  badBulkSubstitution.value = false;
+  badBulkDeletion.value = false;
+  badBulkGene.value = false;
+  selectedBulkMutations.value = [];
+  selectedBulkString.value = null;
+  selectedType.value = null;
+  emit('update:selectedLineage', null);
+  emit('update:selectedMutations', []);
+};
+
+watch(
+  () => props.submitted,
+  (newVal, oldVal) => {
+    clearForm();
+  },
+);
+
+watch(
+  selectedType,
+  (newVal, oldVal) => {
+    if (selectedType.value && selectedType.value.id === 'variant') {
+      emit('update:submitLabel', 5);
+    } else {
+      emit('update:submitLabel', 4);
+    }
+  },
+  { immediate: true },
+);
+
+const debounceBulk = debounce(changeBulk, 500);
+
+onMounted(() => {
+  queryPangolin.value = findPangolin;
+});
 </script>
 
 <style lang="scss">

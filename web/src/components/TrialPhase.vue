@@ -43,33 +43,26 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'TrialPhase',
-  props: {
-    phases: Array,
-    includeLabel: {
-      type: Boolean,
-      default: true,
-    },
+<script setup>
+import { computed, ref } from 'vue';
+
+const props = defineProps({
+  phases: Array,
+  includeLabel: {
+    type: Boolean,
+    default: true,
   },
-  data() {
-    return {
-      phaseWidth: 55,
-      triangleWidth: 10,
-      allPhases: [1, 2, 3, 4],
-      spacer: 7,
-      height: 22,
-    };
-  },
-  computed: {
-    width() {
-      return this.phaseWidth * 4 + this.spacer * 5;
-    },
-  },
-  watch: {},
-  methods: {},
-};
+});
+
+const phaseWidth = ref(55);
+const triangleWidth = ref(10);
+const allPhases = ref([1, 2, 3, 4]);
+const spacer = ref(7);
+const height = ref(22);
+
+const width = computed(() => {
+  return phaseWidth.value * 4 + spacer.value * 5;
+});
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

@@ -25,24 +25,20 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'TrialOutcome',
-  props: {
-    data: Array,
-  },
-  data() {
-    return {};
-  },
-  computed: {
-    primary() {
-      return this.data.filter((d) => d.outcomeType === 'primary');
-    },
-    secondary() {
-      return this.data.filter((d) => d.outcomeType !== 'primary');
-    },
-  },
-};
+<script setup>
+import { computed } from 'vue';
+
+const props = defineProps({
+  data: Array,
+});
+
+const primary = computed(() => {
+  return props.data.filter((d) => d.outcomeType === 'primary');
+});
+
+const secondary = computed(() => {
+  return props.data.filter((d) => d.outcomeType !== 'primary');
+});
 </script>
 
 <style lang="scss" scoped></style>

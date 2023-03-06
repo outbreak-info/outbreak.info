@@ -76,87 +76,89 @@
   </svg>
 </template>
 
-<script>
+<script setup>
+import { computed, nextTick, onMounted, ref } from 'vue';
 import { drag } from 'd3-drag';
 import { format } from 'd3-format';
 import { select, event } from 'd3-selection';
 import { scaleLog } from 'd3-scale';
 
-export default {
-  name: 'ThresholdSlider',
-  props: {
-    width: {
-      type: Number,
-      default: 235,
-    },
-    filterWidth: {
-      type: Number,
-      default: 200,
-    },
-    height: {
-      type: Number,
-      default: 50,
-    },
-    accentColor: {
-      type: String,
-      default: '#df4ab7',
-    },
-    greyColor: {
-      type: String,
-      default: '#A5A5A5',
-    },
-    strokeColor: {
-      type: String,
-      default: '#2c3e50',
-    },
-    countThreshold: Number,
-    maxCount: Number,
+const props = defineProps({
+  width: {
+    type: Number,
+    default: 235,
   },
-  data() {
-    return {
-      xFilter: null,
-      newThreshold: null,
-    };
+  filterWidth: {
+    type: Number,
+    default: 200,
   },
-  computed: {
-    filterShift() {
-      return this.xFilter ? this.xFilter(this.newThreshold) : 0;
-    },
-    maxCountFormatted() {
-      return this.maxCount ? format(',')(this.maxCount) : null;
-    },
+  height: {
+    type: Number,
+    default: 50,
   },
-  mounted() {
-    this.newThreshold = this.countThreshold;
-    this.updateAxes();
+  accentColor: {
+    type: String,
+    default: '#df4ab7',
+  },
+  greyColor: {
+    type: String,
+    default: '#A5A5A5',
+  },
+  strokeColor: {
+    type: String,
+    default: '#2c3e50',
+  },
+  countThreshold: Number,
+  maxCount: Number,
+});
 
-    this.$nextTick(() => {
-      // set up drag for threshold filter
-      this.setupDrag();
-    });
-  },
-  methods: {
-    updateAxes() {
-      this.xFilter = scaleLog()
-        .range([0, this.filterWidth])
-        .domain([1, this.maxCount])
-        .clamp(true);
-    },
-    setupDrag() {
-      // draggable filters
-      select(this.$refs.threshold_slider).call(
-        drag()
-          .on('drag', () => this.updateDrag())
-          .on('end', () => this.changeFilters()),
-      );
-    },
-    updateDrag() {
-      this.newThreshold = Math.round(this.xFilter.invert(event.x));
-      select(this.$refs.threshold_label).text(format(',')(this.newThreshold));
-    },
-    changeFilters() {
-      this.$emit('update:countThreshold', this.newThreshold);
-    },
-  },
+const emit = defineEmits(['update:countThreshold']);
+
+const xFilter = ref(null);
+const newThreshold = ref(null);
+const threshold_slider = ref(null);
+const threshold_label = ref(null);
+
+const filterShift = computed(() => {
+  return xFilter.value ? xFilter.value(newThreshold.value) : 0;
+});
+
+const maxCountFormatted = computed(() => {
+  return props.maxCount ? format(',')(props.maxCount) : null;
+});
+
+const updateAxes = () => {
+  xFilter.value = scaleLog()
+    .range([0, props.filterWidth])
+    .domain([1, props.maxCount])
+    .clamp(true);
 };
+
+const updateDrag = () => {
+  newThreshold.value = Math.round(xFilter.value.invert(event.x));
+  select(threshold_label.value).text(format(',')(newThreshold.value));
+};
+
+const changeFilters = () => {
+  emit('update:countThreshold', newThreshold.value);
+};
+
+const setupDrag = () => {
+  // draggable filters
+  select(threshold_slider.value).call(
+    drag()
+      .on('drag', () => updateDrag())
+      .on('end', () => changeFilters()),
+  );
+};
+
+onMounted(() => {
+  newThreshold.value = props.countThreshold;
+  updateAxes();
+
+  nextTick(() => {
+    // set up drag for threshold filter
+    setupDrag();
+  });
+});
 </script>

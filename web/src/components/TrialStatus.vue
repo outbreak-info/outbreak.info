@@ -42,50 +42,42 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { computed, onMounted, ref } from 'vue';
 import uniq from 'lodash/uniq';
 
 import { lazyLoad } from '@/js/lazy-load';
 
-export default {
-  name: 'TrialStatus',
-  components: {
-    CountryMap: lazyLoad('CountryMap'),
+const CountryMap = lazyLoad('CountryMap');
+
+const props = defineProps({
+  status: Object,
+  setWidth: Number,
+  locations: Array,
+  includeDate: {
+    type: Boolean,
+    default: false,
   },
-  props: {
-    status: Object,
-    setWidth: Number,
-    locations: Array,
-    includeDate: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  data() {
-    return {
-      mapWidth: null,
-    };
-  },
-  computed: {
-    countries() {
-      return uniq(
-        this.locations
-          .map((d) => d.studyLocationCountry)
-          .sort((a, b) => (a < b ? -1 : 1)),
-      );
-    },
-  },
-  watch: {},
-  mounted() {
-    if (this.setWidth) {
-      this.mapWidth = this.setWidth;
-    } else {
-      const targetWidth = this.$refs.map.clientWidth * 0.85;
-      this.mapWidth = targetWidth > 600 ? 600 : targetWidth;
-    }
-  },
-  methods: {},
-};
+});
+
+const mapWidth = ref(null);
+const clientWidth = ref(null);
+
+const countries = computed(() => {
+  return uniq(
+    props.locations
+      .map((d) => d.studyLocationCountry)
+      .sort((a, b) => (a < b ? -1 : 1)),
+  );
+});
+onMounted(() => {
+  if (props.setWidth) {
+    mapWidth.value = props.setWidth;
+  } else {
+    const targetWidth = clientWidth.value * 0.85;
+    mapWidth.value = targetWidth > 600 ? 600 : targetWidth;
+  }
+});
 </script>
 
 <style lang="scss" scoped>

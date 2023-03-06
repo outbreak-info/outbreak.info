@@ -86,26 +86,17 @@
   </div>
 </template>
 
-<script>
-import tippy from 'tippy.js';
-
+<script setup>
 import { lazyLoad } from '@/js/lazy-load';
 
 import 'tippy.js/themes/light.css';
 
-export default {
-  name: 'TrialDesign',
-  components: {
-    TrialPhase: lazyLoad('TrialPhase'),
-    SearchLink: lazyLoad('SearchLink'),
-  },
-  props: {
-    data: Object,
-  },
-  data() {
-    return {};
-  },
-};
+const TrialPhase = lazyLoad('TrialPhase');
+const SearchLink = lazyLoad('SearchLink');
+
+const props = defineProps({
+  data: Object,
+});
 </script>
 
 <style lang="scss" scoped></style>
