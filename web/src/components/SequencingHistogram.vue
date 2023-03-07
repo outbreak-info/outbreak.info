@@ -23,15 +23,18 @@
       :class="className"
       :name="svgTitle"
     >
-      <g ref="counts" :transform="`translate(${margin.left}, ${margin.top})`" />
       <g
-        ref="xAxis"
+        ref="countsRef"
+        :transform="`translate(${margin.left}, ${margin.top})`"
+      />
+      <g
+        ref="xAxisRef"
         :transform="`translate(${margin.left}, ${height - margin.bottom + 1})`"
         class="prevalence-axis total-axis axis--x"
         :hidden="!includeXAxis"
       />
       <g
-        ref="yAxisLeft"
+        ref="yAxisLeftRef"
         :transform="`translate(${margin.left - xBandwidth / 2 - 5}, ${
           margin.top
         })`"
@@ -39,7 +42,7 @@
         :hidden="!data.length"
       />
       <g
-        ref="yAxisRight"
+        ref="yAxisRightRef"
         :transform="`translate(${width - margin.right + xBandwidth / 2 + 5}, ${
           margin.top
         })`"
@@ -102,7 +105,8 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { onMounted, ref, watch } from 'vue';
 import { max, extent } from 'd3-array';
 import { axisLeft, axisBottom, axisRight } from 'd3-axis';
 import { format } from 'd3-format';
@@ -110,292 +114,298 @@ import { scaleLinear, scaleTime } from 'd3-scale';
 import { select, selectAll, event } from 'd3-selection';
 import { timeDay } from 'd3-time';
 
-export default {
-  name: 'SequencingHistogram',
-  props: {
-    data: Array,
-    mutationName: String,
-    svgTitle: String,
-    title: {
-      type: String,
-      default: 'Total samples sequenced per day',
-    },
-    xInput: Function,
-    className: {
-      type: String,
-      default: 'sequencing-histogram',
-    },
-    width: Number,
-    height: {
-      type: Number,
-      default: 80,
-    },
-    margin: Object,
-    notDetectedColor: {
-      type: String,
-      default: '#af88a5',
-    },
-    detectedColor: {
-      type: String,
-      default: '#980072',
-    },
-    downward: {
-      type: Boolean,
-      default: true,
-    },
-    includeXAxis: {
-      type: Boolean,
-      default: false,
-    },
-    onlyTotals: {
-      type: Boolean,
-      default: false,
-    },
+const props = defineProps({
+  data: Array,
+  mutationName: String,
+  svgTitle: String,
+  title: {
+    type: String,
+    default: 'Total samples sequenced per day',
   },
-  data() {
-    return {
-      fontFamily: "'DM Sans', Avenir, Helvetica, Arial, sans-serif;",
-
-      showDetected: null,
-      detectedDisplayThresh: 50,
-      // variables
-      xVariable: 'dateTime',
-      totalVariable: 'total_count',
-      // axes
-      x: null,
-      y: scaleLinear(),
-      maxCounts: null,
-      xBandwidth: 1,
-      xAxis: null,
-      yAxisLeft: null,
-      yAxisRight: null,
-      numXTicks: 2,
-      // refs
-      counts: null,
-    };
+  xInput: Function,
+  className: {
+    type: String,
+    default: 'sequencing-histogram',
   },
-  watch: {
-    xInput() {
-      this.updatePlot();
-    },
-    width() {
-      this.updatePlot();
-    },
-    data() {
-      this.updatePlot();
-    },
+  width: Number,
+  height: {
+    type: Number,
+    default: 80,
   },
-  mounted() {
-    this.setupPlot();
-    this.updatePlot();
+  margin: Object,
+  notDetectedColor: {
+    type: String,
+    default: '#af88a5',
   },
-  methods: {
-    setupPlot() {
-      this.counts = select(this.$refs.counts);
-    },
-    updateScales() {
-      if (!this.xInput) {
-        this.x = scaleTime()
-          .range([0, this.width - this.margin.left - this.margin.right])
-          .domain(extent(this.data.map((d) => d[this.xVariable])));
-      } else {
-        this.x = this.xInput;
-      }
-
-      this.maxCounts = max(this.data, (d) => d[this.totalVariable]);
-      if (this.downward) {
-        this.y = scaleLinear()
-          .range([0, this.height - this.margin.top - this.margin.bottom])
-          .domain([0, this.maxCounts]);
-      } else {
-        this.y = scaleLinear()
-          .range([this.height - this.margin.top - this.margin.bottom, 0])
-          .domain([0, this.maxCounts]);
-      }
-
-      const numDays = timeDay.count(...this.x.domain());
-      this.xBandwidth =
-        (0.65 * (this.width - this.margin.left - this.margin.right)) / numDays;
-
-      this.xAxis = axisBottom(this.x).ticks(this.numXTicks);
-      select(this.$refs.xAxis).call(this.xAxis);
-
-      this.yAxisLeft = axisLeft(this.y)
-        .tickSizeOuter(0)
-        .tickValues([0, this.maxCounts]);
-
-      this.yAxisRight = axisRight(this.y)
-        .tickSizeOuter(0)
-        .tickValues([0, this.maxCounts]);
-
-      if (this.includeXAxis) {
-        select(this.$refs.xAxis).call(this.xAxis);
-      }
-
-      select(this.$refs.yAxisLeft).call(this.yAxisLeft);
-      select(this.$refs.yAxisRight).call(this.yAxisRight);
-    },
-    tooltipOn() {
-      const ttipShift = 20;
-
-      // find the closest date
-      const selectedX = this.x.invert(event.offsetX - this.margin.left);
-      const selectedDate = timeDay.round(selectedX);
-      const selected = this.data.filter(
-        (d) => Math.abs(d[this.xVariable] - selectedDate) < 1e-12,
-      );
-
-      if (selected.length) {
-        // tooltip on
-        const ttip = select(this.$refs.tooltip_prevalence);
-
-        // edit text
-        ttip.select('h5').text(selected[0].date);
-
-        if (this.onlyTotals) {
-          ttip
-            .select('#sequencing-count')
-            .text(`Samples sequenced: ${format(',')(selected[0].total_count)}`);
-        } else {
-          ttip
-            .select('#proportion')
-            .text(format('.0%')(selected[0].proportion));
-          ttip
-            .select('#confidence-interval')
-            .text(
-              `(95% CI: ${format('.0%')(
-                selected[0].proportion_ci_lower,
-              )}-${format('.0%')(selected[0].proportion_ci_upper)})`,
-            );
-          ttip
-            .select('#sequencing-count')
-            .text(
-              `Number of cases: ${format(',')(
-                selected[0].lineage_count,
-              )}/${format(',')(selected[0].total_count)}`,
-            );
-          ttip
-            .select('#sequencing-count-rolling')
-            .text(
-              `Rolling average: ${format(',.1f')(
-                selected[0].lineage_count_rolling,
-              )}/${format(',.1f')(selected[0].total_count_rolling)}`,
-            );
-        }
-        // fix location
-        ttip
-          .style('left', `${event.clientX + ttipShift}px`)
-          .style('top', `${event.clientY + ttipShift}px`)
-          .style('display', 'block');
-
-        // histogram off/on
-        selectAll('.raw-counts').style('opacity', 0.3);
-
-        selectAll(`#date${selected[0].date}`).style('opacity', 1);
-      }
-    },
-    tooltipOff() {
-      select(this.$refs.tooltip_prevalence).style('display', 'none');
-
-      selectAll('.raw-counts').style('opacity', 1);
-    },
-    updatePlot() {
-      if (this.data) {
-        this.updateScales();
-
-        let detected = this.data.filter((d) => d.lineage_count);
-        this.showDetected = detected.length < this.detectedDisplayThresh;
-        if (!this.showDetected) {
-          detected = [];
-        }
-        const detectedSelector = this.counts
-          .selectAll('.detected')
-          .data(detected);
-
-        detectedSelector.join(
-          (enter) => {
-            enter
-              .append('text')
-              .attr('class', 'detected')
-              .attr('id', (d) => `date${d.date}`)
-              .attr('x', (d) => this.x(d[this.xVariable]))
-              .attr('y', (d) => this.y(d[this.totalVariable]))
-              .attr('dy', 3)
-              .style('dominant-baseline', 'hanging')
-              .style('text-anchor', 'middle')
-              .text('*')
-              .style('fill', this.detectedColor);
-          },
-          (update) =>
-            update
-              .attr('class', 'detected')
-              .attr('id', (d) => `date${d.date}`)
-              .attr('x', (d) => this.x(d[this.xVariable]))
-              .attr('y', (d) => this.y(d[this.totalVariable])),
-          (exit) =>
-            exit.call((exit) =>
-              exit.transition().style('opacity', 1e-5).remove(),
-            ),
-        );
-
-        const countSelector = this.counts
-          .selectAll('.raw-counts')
-          .data(this.data);
-        countSelector.join(
-          (enter) => {
-            enter
-              .append('line')
-              .attr('class', 'raw-counts')
-              .attr('id', (d) => `date${d.date}`)
-              .attr('x1', (d) => this.x(d[this.xVariable]))
-              .attr('x2', (d) => this.x(d[this.xVariable]))
-              .attr('y1', (d) => this.y(0))
-              .attr('y2', (d) => this.y(d[this.totalVariable]))
-              .classed(
-                'hidden',
-                (d) =>
-                  this.x(d[this.xVariable]) < 0 ||
-                  this.x(d[this.xVariable]) >
-                    this.width - this.margin.left - this.margin.right,
-              )
-              .style('stroke-width', this.xBandwidth)
-              .style('stroke', (d) =>
-                d.lineage_count ? this.detectedColor : this.notDetectedColor,
-              );
-          },
-          (update) =>
-            update
-              .attr('id', (d) => `date${d.date}`)
-              .attr('x1', (d) => this.x(d[this.xVariable]))
-              .attr('x2', (d) => this.x(d[this.xVariable]))
-              .attr('y1', (d) => this.y(0))
-              .attr('y2', (d) => this.y(d[this.totalVariable]))
-              .classed(
-                'hidden',
-                (d) =>
-                  this.x(d[this.xVariable]) < 0 ||
-                  this.x(d[this.xVariable]) >
-                    this.width - this.margin.left - this.margin.right,
-              )
-              .style('stroke', (d) =>
-                d.lineage_count ? this.detectedColor : this.notDetectedColor,
-              )
-              .style('stroke-width', this.xBandwidth),
-          (exit) =>
-            exit.call((exit) =>
-              exit.transition().style('opacity', 1e-5).remove(),
-            ),
-        );
-
-        // tooltip event listener
-        this.counts
-          .selectAll('.raw-counts')
-          .on('mousemove', () => this.tooltipOn())
-          .on('mouseleave', () => this.tooltipOff());
-      }
-    },
+  detectedColor: {
+    type: String,
+    default: '#980072',
   },
+  downward: {
+    type: Boolean,
+    default: true,
+  },
+  includeXAxis: {
+    type: Boolean,
+    default: false,
+  },
+  onlyTotals: {
+    type: Boolean,
+    default: false,
+  },
+});
+
+const fontFamily = ref("'DM Sans', Avenir, Helvetica, Arial, sans-serif;");
+const showDetected = ref(null);
+const detectedDisplayThresh = ref(50);
+// variables
+const xVariable = ref('dateTime');
+const totalVariable = ref('total_count');
+// axes
+const x = ref(null);
+const y = ref(scaleLinear());
+const maxCounts = ref(null);
+const xBandwidth = ref(1);
+const xAxis = ref(null);
+const yAxisLeft = ref(null);
+const yAxisRight = ref(null);
+const numXTicks = ref(2);
+const counts = ref(null);
+const svg_counts = ref(null);
+const countsRef = ref(null);
+const xAxisRef = ref(null);
+const yAxisLeftRef = ref(null);
+const yAxisRightRef = ref(null);
+const tooltip_prevalence = ref(null);
+
+const setupPlot = () => {
+  counts.value = countsRef.value;
 };
+
+const updateScales = () => {
+  if (!props.xInput) {
+    x.value = scaleTime()
+      .range([0, props.width - props.margin.left - props.margin.right])
+      .domain(extent(props.data.map((d) => d[xVariable.value])));
+  } else {
+    x.value = props.xInput;
+  }
+
+  maxCounts.value = max(props.data, (d) => d[totalVariable.value]);
+  if (props.downward) {
+    y.value = scaleLinear()
+      .range([0, props.height - props.margin.top - props.margin.bottom])
+      .domain([0, maxCounts.value]);
+  } else {
+    y.value = scaleLinear()
+      .range([props.height - props.margin.top - props.margin.bottom, 0])
+      .domain([0, maxCounts.value]);
+  }
+
+  const numDays = timeDay.count(...x.value.domain());
+  xBandwidth.value =
+    (0.65 * (props.width - props.margin.left - props.margin.right)) / numDays;
+
+  xAxis.value = axisBottom(x.value).ticks(numXTicks.value);
+  select(xAxisRef.value).call(xAxis.value);
+
+  yAxisLeft.value = axisLeft(y.value)
+    .tickSizeOuter(0)
+    .tickValues([0, maxCounts.value]);
+
+  yAxisRight.value = axisRight(y.value)
+    .tickSizeOuter(0)
+    .tickValues([0, maxCounts.value]);
+
+  if (props.includeXAxis) {
+    select(xAxisRef.value).call(xAxis.value);
+  }
+
+  select(yAxisLeftRef.value).call(yAxisLeft.value);
+  select(yAxisRightRef.value).call(yAxisRight.value);
+};
+
+const tooltipOn = () => {
+  const ttipShift = 20;
+
+  // find the closest date
+  const selectedX = x.value.invert(event.offsetX - props.margin.left);
+  const selectedDate = timeDay.round(selectedX);
+  const selected = props.data.filter(
+    (d) => Math.abs(d[xVariable.value] - selectedDate) < 1e-12,
+  );
+
+  if (selected.length) {
+    // tooltip on
+    const ttip = select(tooltip_prevalence.value);
+
+    // edit text
+    ttip.select('h5').text(selected[0].date);
+
+    if (props.onlyTotals) {
+      ttip
+        .select('#sequencing-count')
+        .text(`Samples sequenced: ${format(',')(selected[0].total_count)}`);
+    } else {
+      ttip.select('#proportion').text(format('.0%')(selected[0].proportion));
+      ttip
+        .select('#confidence-interval')
+        .text(
+          `(95% CI: ${format('.0%')(selected[0].proportion_ci_lower)}-${format(
+            '.0%',
+          )(selected[0].proportion_ci_upper)})`,
+        );
+      ttip
+        .select('#sequencing-count')
+        .text(
+          `Number of cases: ${format(',')(selected[0].lineage_count)}/${format(
+            ',',
+          )(selected[0].total_count)}`,
+        );
+      ttip
+        .select('#sequencing-count-rolling')
+        .text(
+          `Rolling average: ${format(',.1f')(
+            selected[0].lineage_count_rolling,
+          )}/${format(',.1f')(selected[0].total_count_rolling)}`,
+        );
+    }
+    // fix location
+    ttip
+      .style('left', `${event.clientX + ttipShift}px`)
+      .style('top', `${event.clientY + ttipShift}px`)
+      .style('display', 'block');
+
+    // histogram off/on
+    selectAll('.raw-counts').style('opacity', 0.3);
+
+    selectAll(`#date${selected[0].date}`).style('opacity', 1);
+  }
+};
+
+const tooltipOff = () => {
+  select(tooltip_prevalence.value).style('display', 'none');
+
+  selectAll('.raw-counts').style('opacity', 1);
+};
+
+const updatePlot = () => {
+  if (props.data) {
+    updateScales();
+
+    let detected = props.data.filter((d) => d.lineage_count);
+    showDetected.value = detected.length < detectedDisplayThresh.value;
+    if (!showDetected.value) {
+      detected = [];
+    }
+    const detectedSelector = select(countsRef.value)
+      .selectAll('.detected')
+      .data(detected);
+
+    detectedSelector.join(
+      (enter) => {
+        enter
+          .append('text')
+          .attr('class', 'detected')
+          .attr('id', (d) => `date${d.date}`)
+          .attr('x', (d) => x.value(d[xVariable.value]))
+          .attr('y', (d) => y.value(d[totalVariable.value]))
+          .attr('dy', 3)
+          .style('dominant-baseline', 'hanging')
+          .style('text-anchor', 'middle')
+          .text('*')
+          .style('fill', props.detectedColor);
+      },
+      (update) =>
+        update
+          .attr('class', 'detected')
+          .attr('id', (d) => `date${d.date}`)
+          .attr('x', (d) => x.value(d[xVariable.value]))
+          .attr('y', (d) => y.value(d[totalVariable.value])),
+      (exit) =>
+        exit.call((exit) => exit.transition().style('opacity', 1e-5).remove()),
+    );
+
+    const countSelector = select(countsRef.value)
+      .selectAll('.raw-counts')
+      .data(props.data);
+    countSelector.join(
+      (enter) => {
+        enter
+          .append('line')
+          .attr('class', 'raw-counts')
+          .attr('id', (d) => `date${d.date}`)
+          .attr('x1', (d) => x.value(d[xVariable.value]))
+          .attr('x2', (d) => x.value(d[xVariable.value]))
+          .attr('y1', (d) => y.value(0))
+          .attr('y2', (d) => y.value(d[totalVariable.value]))
+          .classed(
+            'hidden',
+            (d) =>
+              x.value(d[xVariable.value]) < 0 ||
+              x.value(d[xVariable.value]) >
+                props.width - props.margin.left - props.margin.right,
+          )
+          .style('stroke-width', xBandwidth.value)
+          .style('stroke', (d) =>
+            d.lineage_count ? props.detectedColor : props.notDetectedColor,
+          );
+      },
+      (update) =>
+        update
+          .attr('id', (d) => `date${d.date}`)
+          .attr('x1', (d) => x.value(d[xVariable.value]))
+          .attr('x2', (d) => x.value(d[xVariable.value]))
+          .attr('y1', (d) => y.value(0))
+          .attr('y2', (d) => y.value(d[totalVariable.value]))
+          .classed(
+            'hidden',
+            (d) =>
+              x.value(d[xVariable.value]) < 0 ||
+              x.value(d[xVariable.value]) >
+                props.width - props.margin.left - props.margin.right,
+          )
+          .style('stroke', (d) =>
+            d.lineage_count ? props.detectedColor : props.notDetectedColor,
+          )
+          .style('stroke-width', xBandwidth.value),
+      (exit) =>
+        exit.call((exit) => exit.transition().style('opacity', 1e-5).remove()),
+    );
+
+    // tooltip event listener
+    select(countsRef.value)
+      .selectAll('.raw-counts')
+      .on('mousemove', () => tooltipOn())
+      .on('mouseleave', () => tooltipOff());
+  }
+};
+
+watch(
+  () => props.xInput,
+  () => {
+    updatePlot();
+  },
+);
+
+watch(
+  () => props.width,
+  () => {
+    updatePlot();
+  },
+);
+
+watch(
+  () => props.data,
+  () => {
+    updatePlot();
+  },
+);
+
+onMounted(() => {
+  setupPlot();
+  updatePlot();
+});
 </script>
 
 <style>
