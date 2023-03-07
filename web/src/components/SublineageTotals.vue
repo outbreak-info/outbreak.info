@@ -196,7 +196,7 @@ const geographicName = computed(() => {
 
 const title = computed(() => {
   return geographicName
-    ? `${props.lineageName} ${geographicName}`
+    ? `${props.lineageName} ${geographicName.value}`
     : props.lineageName;
 });
 
