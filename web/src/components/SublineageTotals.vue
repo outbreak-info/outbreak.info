@@ -19,6 +19,7 @@
     </p>
 
     <svg
+      ref="svgRef"
       :width="width"
       :height="height"
       class="sublineage_counts"
@@ -47,7 +48,7 @@
         :transform="`translate(${margin.left}, ${margin.top})`"
       />
       <g
-        ref="yAxis"
+        ref="yAxisRef"
         :transform="`translate(${margin.left}, ${margin.top})`"
         class="horizontal-bargraph-y pointer axis--y"
       />
@@ -172,15 +173,18 @@ const areZerosFiltered = ref(false);
 const yVar = ref('mutation_string');
 // refs
 const svg = ref(null);
+const svgRef = ref(null);
 // axes
 const x = ref(null);
 const y = ref(null);
+
 const combinedTotal = ref(null);
 const yAxis = ref(null);
 const showAll = ref(false);
 const showZero = ref(false);
 const processedData = ref(null);
 const horizontal_bargraph = ref(null);
+const yAxisRef = ref(null);
 
 const geographicName = computed(() => {
   return props.location === 'Worldwide'
@@ -253,7 +257,7 @@ const preprocessData = () => {
 };
 
 const setupPlot = () => {
-  props.svg = select(horizontal_bargraph.value);
+  svgRef.value = horizontal_bargraph.value;
   preprocessData();
 };
 
@@ -279,34 +283,33 @@ const updateAxes = () => {
 
   yAxis.value = axisLeft(y.value).tickSizeOuter(0);
 
-  select(yAxis.value).call(yAxis.value);
+  select(yAxisRef.value).call(yAxis.value);
 };
 
 const tooltipOn = (d) => {
   if (d) {
-    svg.value.selectAll('.lineage-group').style('opacity', 0.3);
+    select(svgRef.value).selectAll('.lineage-group').style('opacity', 0.3);
 
-    select(yAxis.value).selectAll('text').style('opacity', 0.3);
+    select(yAxisRef.value).selectAll('text').style('opacity', 0.3);
 
     if (d.hasOwnProperty(yVar.value)) {
-      select(yAxis.value)
+      select(yAxisRef.value)
         .selectAll('text')
         .filter((axis_label) => axis_label === d[yVar.value])
         .style('opacity', 1);
     }
-
-    svg.value.select(`#${d.id}`).style('opacity', 1);
+    select(svgRef.value).select(`#${d.id}`).style('opacity', 1);
   }
 };
 
 const tooltipOff = () => {
-  svg.value.selectAll('.lineage-group').style('opacity', 1);
+  select(svgRef.value).selectAll('.lineage-group').style('opacity', 1);
 
-  select(yAxis.value).selectAll('text').style('opacity', 1);
+  select(yAxisRef.value).selectAll('text').style('opacity', 1);
 };
 
 const drawBars = () => {
-  const rectSelector = svg.value
+  const rectSelector = select(svgRef.value)
     .selectAll('.lineage-group')
     .data(processedData.value, (d) => d[yVar.value]);
 
@@ -382,7 +385,7 @@ const drawBars = () => {
   );
 
   // event listener for click event
-  select(yAxis.value)
+  select(yAxisRef.value)
     .selectAll('text')
     .classed('pointer', true)
     .on('click', (d) => handleLineageClick(d));
