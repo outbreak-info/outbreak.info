@@ -55,7 +55,7 @@ export default Vue.extend({
       currentYear: new Date().getFullYear(),
       year: null,
       pressList: null,
-      yearOptions: [2021, 2022, 2023],
+      yearOptions: null,
     };
   },
   computed: {
@@ -63,6 +63,11 @@ export default Vue.extend({
   },
   mounted() {
     this.year = this.currentYear;
+
+    // create an array of yearOptions from 2021 till now.
+    const numYears = this.year - 2021 + 1;
+    this.yearOptions = Array.from({length: numYears},(v,k) => k + 2021);
+
     this.updatePress();
   },
   methods: {
