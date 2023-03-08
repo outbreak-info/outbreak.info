@@ -332,7 +332,8 @@ const state = {
        {
          url:
            'https://www.advisory.com/daily-briefing/2023/02/13/ch-variant',
-         img: 'advisoryboard.svg', title: "Could 'orthrus' be the next dominant omicron subvariant?",
+         img: 'advisoryboard.svg',
+         title: "Could 'orthrus' be the next dominant omicron subvariant?",
          publisher: 'Advisory Board',
          date: 'February 2023'
         },
@@ -340,7 +341,7 @@ const state = {
           url:
              'https://www.nationalworld.com/health/omicron-xbb15-covid-variant-most-transmissible-who-3972475',
           img: 'nationalworld.png',
-          title: 'Omicron XBB.1.5: new Covid variant nicknamed ‘Kraken’ is ‘most transmissible yet’, WHO warns',
+          title: "Omicron XBB.1.5: new Covid variant nicknamed ‘Kraken’ is ‘most transmissible yet’, WHO warns",
           publisher: 'National World',
           date: 'January 2023'
          },
@@ -370,7 +371,7 @@ const state = {
          },
          {url:
               'https://www.firstpost.com/explainers/orthrus-ch11-omircon-variant-us-china-kraken-12089702.html',
-          img: 'firstpost.svg',
+          img: 'firstpost.png',
           title: 'First Kraken, now Orthrus: What’s this highly transmissible COVID variant that US, China are tracking?',
           publisher: 'Firstpost',
           date: 'February 2023'
