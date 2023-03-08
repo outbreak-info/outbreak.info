@@ -55,7 +55,7 @@ export default Vue.extend({
       currentYear: new Date().getFullYear(),
       year: null,
       pressList: null,
-      yearOptions: [2021, 2022],
+      yearOptions: [2021, 2022, 2023],
     };
   },
   computed: {
