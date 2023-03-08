@@ -17,7 +17,7 @@
 
     <!-- SEQUENCING HISTOGRAM -->
     <svg
-      ref="svg-counts"
+      ref="svgRef"
       :width="width"
       :height="height"
       :class="className"
@@ -155,7 +155,6 @@ const props = defineProps({
   },
 });
 
-const fontFamily = ref("'DM Sans', Avenir, Helvetica, Arial, sans-serif;");
 const showDetected = ref(null);
 const detectedDisplayThresh = ref(50);
 // variables
@@ -171,7 +170,7 @@ const yAxisLeft = ref(null);
 const yAxisRight = ref(null);
 const numXTicks = ref(2);
 const counts = ref(null);
-const svg_counts = ref(null);
+const svgRef = ref(null);
 const countsRef = ref(null);
 const xAxisRef = ref(null);
 const yAxisLeftRef = ref(null);
@@ -179,7 +178,7 @@ const yAxisRightRef = ref(null);
 const tooltip_prevalence = ref(null);
 
 const setupPlot = () => {
-  counts.value = countsRef.value;
+  svgRef.value = countsRef.value;
 };
 
 const updateScales = () => {
@@ -298,7 +297,7 @@ const updatePlot = () => {
     if (!showDetected.value) {
       detected = [];
     }
-    const detectedSelector = select(countsRef.value)
+    const detectedSelector = select(svgRef.value)
       .selectAll('.detected')
       .data(detected);
 
@@ -326,7 +325,7 @@ const updatePlot = () => {
         exit.call((exit) => exit.transition().style('opacity', 1e-5).remove()),
     );
 
-    const countSelector = select(countsRef.value)
+    const countSelector = select(svgRef.value)
       .selectAll('.raw-counts')
       .data(props.data);
     countSelector.join(
@@ -374,7 +373,7 @@ const updatePlot = () => {
     );
 
     // tooltip event listener
-    select(countsRef.value)
+    select(svgRef.value)
       .selectAll('.raw-counts')
       .on('mousemove', () => tooltipOn())
       .on('mouseleave', () => tooltipOff());

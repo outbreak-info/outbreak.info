@@ -44,161 +44,172 @@
   </form>
 </template>
 
-<script>
+<script setup>
 // adapted from https://alligator.io/vuejs/vue-autocomplete-component/
-import { mapState } from 'pinia';
+import { inject, onMounted, onUnmounted, ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
 
 import { getLocations } from '@/api/epi-basics.js';
 import { geoStore } from '@/stores/geoStore';
 
-export default {
-  name: 'SearchBar',
-  components: {},
-  props: {
-    items: {
-      type: Array,
-      required: false,
-      default: () => [],
-    },
-    isAsync: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
-    placeholder: {
-      type: String,
-      required: false,
-      default: 'Search',
-    },
-    routeTo: {
-      type: String,
-      required: false,
-      default: null,
-    },
-    darkMode: {
-      type: Boolean,
-      required: false,
-      default: true,
-    },
+const props = defineProps({
+  items: {
+    type: Array,
+    required: false,
+    default: () => [],
   },
-  data() {
-    return {
-      isOpen: false,
-      results: [],
-      search: '',
-      selected: null,
-      isLoading: false,
-      arrowCounter: 0,
-    };
+  isAsync: {
+    type: Boolean,
+    required: false,
+    default: false,
   },
-  computed: {
-    ...mapState(geoStore, ['allPlaces']),
+  placeholder: {
+    type: String,
+    required: false,
+    default: 'Search',
   },
-  watch: {
-    items(val, oldValue) {
-      // actually compare them
-      if (val.length !== oldValue.length) {
-        this.results = val;
-        this.isLoading = false;
-      }
-    },
+  routeTo: {
+    type: String,
+    required: false,
+    default: null,
   },
-  mounted() {
-    getLocations(this.$apiurl).subscribe((_) => null);
-    document.addEventListener('click', this.handleClickOutside, {
-      passive: true,
-    });
+  darkMode: {
+    type: Boolean,
+    required: false,
+    default: true,
   },
-  unmounted() {
-    document.removeEventListener('click', this.handleClickOutside);
-  },
-  methods: {
-    onChange() {
-      // Is the data given by an outside ajax request?
-      if (this.isAsync) {
-        this.isLoading = true;
-      } else {
-        // Let us  our flat array
-        this.filterResults();
-        this.isOpen = true;
-      }
-    },
-    filterResults() {
-      // first uncapitalize all the things
-      this.results = this.allPlaces.filter((item) => {
-        return item.label.toLowerCase().indexOf(this.search.toLowerCase()) > -1;
-      });
-    },
-    setResult(result) {
-      this.selected = result;
-      this.isOpen = false;
-      if (this.routeTo) {
-        this.search = '';
-        this.$router.push({
-          path: this.routeTo,
-          query: {
-            location: this.selected.id,
-          },
-        });
-      } else {
-        this.search = this.selected.label;
-        this.$emit('location', this.selected.id);
-      }
-    },
-    onArrowDown(evt) {
-      if (this.arrowCounter < this.results.length) {
-        this.arrowCounter = this.arrowCounter + 1;
-      }
-    },
-    onArrowUp() {
-      if (this.arrowCounter > 0) {
-        this.arrowCounter = this.arrowCounter - 1;
-      }
-    },
-    onEnter() {
-      // // Let's warn the parent that a change was made
-      // this.$emit('input', result);
-      this.selected = this.results[this.arrowCounter]
-        ? this.results[this.arrowCounter]
-        : this.search;
-      this.$emit('input', this.selected);
-      this.search = '';
-      this.isOpen = false;
-      this.arrowCounter = -1;
-      if (this.routeTo && this.routeTo !== '') {
-        this.$router.push({
-          path: this.routeTo,
-          query: {
-            location: this.selected.id,
-          },
-        });
-      } else {
-        this.$emit('location', this.selected.id);
-      }
-    },
-    onBackspace() {
-      if (this.search === '') {
-        this.search = this.selected.pop();
-      }
+});
 
-      if (this.isSelectAll) {
-        this.search = '';
-        this.$emit('selected', []);
-        this.isSelectAll = false;
-      }
-    },
-    onSelectAll() {
-      this.isSelectAll = true;
-    },
-    handleClickOutside(evt) {
-      this.isSelectAll = false;
-      if (!this.$el.contains(evt.target)) {
-        this.isOpen = false;
-        this.arrowCounter = -1;
-      }
-    },
+const emit = defineEmits(['location', 'input']);
+
+const apiUrl = inject('apiUrl');
+
+const store = geoStore();
+
+const router = useRouter();
+
+const isOpen = ref(false);
+const results = ref([]);
+const search = ref('');
+const selected = ref(null);
+const isLoading = ref(false);
+const arrowCounter = ref(0);
+const isSelectAll = ref(false);
+
+watch(
+  () => props.items,
+  (val, oldValue) => {
+    if (val.length !== oldValue.length) {
+      results.value = val;
+      isLoading.value = false;
+    }
   },
+);
+
+const filterResults = () => {
+  // first uncapitalize all the things
+  results.value = store.$state.allPlaces.filter((item) => {
+    return item.label.toLowerCase().indexOf(search.value.toLowerCase()) > -1;
+  });
 };
+
+const onChange = () => {
+  // Is the data given by an outside ajax request?
+  if (props.isAsync) {
+    isLoading.value = true;
+  } else {
+    // Let us  our flat array
+    filterResults();
+    isOpen.value = true;
+  }
+};
+
+const setResult = (result) => {
+  selected.value = result;
+  isOpen.value = false;
+  if (props.routeTo) {
+    search.value = '';
+    router.push({
+      path: props.routeTo,
+      query: {
+        location: selected.value.id,
+      },
+    });
+  } else {
+    search.value = selected.value.label;
+    emit('location', selected.value.id);
+  }
+};
+
+const onArrowDown = (evt) => {
+  if (arrowCounter.value < results.value.length) {
+    arrowCounter.value = arrowCounter.value + 1;
+  }
+};
+
+const onArrowUp = () => {
+  if (arrowCounter.value > 0) {
+    arrowCounter.value = arrowCounter.value - 1;
+  }
+};
+
+const onEnter = () => {
+  // // Let's warn the parent that a change was made
+  // this.$emit('input', result);
+  selected.value = results.value[arrowCounter.value]
+    ? results.value[arrowCounter.value]
+    : search.value;
+  emit('input', selected.value);
+  search.value = '';
+  isOpen.value = false;
+  arrowCounter.value = -1;
+  if (props.routeTo && props.routeTo !== '') {
+    router.push({
+      path: props.routeTo,
+      query: {
+        location: selected.value.id,
+      },
+    });
+  } else {
+    emit('location', selected.value.id);
+  }
+};
+
+const onBackspace = () => {
+  if (search.value === '') {
+    search.value = selected.value.pop();
+  }
+
+  if (isSelectAll.value) {
+    search.value = '';
+    emit('selected', []);
+    isSelectAll.value = false;
+  }
+};
+
+const onSelectAll = () => {
+  isSelectAll.value = true;
+};
+
+const handleClickOutside = (evt) => {
+  isSelectAll.value = false;
+  //TODO: no longer $el in composition api
+  // if (!$el.contains(evt.target)) {
+  //   isOpen.value = false;
+  //   arrowCounter.value = -1;
+  // }
+};
+
+onMounted(() => {
+  getLocations(apiUrl).subscribe((_) => null);
+  document.addEventListener('click', handleClickOutside, {
+    passive: true,
+  });
+});
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside);
+});
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

@@ -178,67 +178,60 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref, watch } from 'vue';
 import { select, selectAll } from 'd3-selection';
 
-export default {
-  name: 'ClassedLegend',
-  props: {
-    colorScale: Function,
-    strokeColor: {
-      type: String,
-      default: '#2c3e50',
-    },
-    filteredColor: {
-      type: String,
-      default: '#A5A5A5',
-    },
-    nullColor: {
-      type: String,
-      default: '#EFEFEF',
-    },
-    label: String,
-    mutationName: String,
-    countThreshold: Number,
-    horizontal: {
-      type: Boolean,
-      default: true,
-    },
-    includeNulls: {
-      type: Boolean,
-      default: true,
-    },
+const props = defineProps({
+  colorScale: Function,
+  strokeColor: {
+    type: String,
+    default: '#2c3e50',
   },
-  data() {
-    return {
-      filterWidth: 200,
-      rectWidth: 15,
-      colorDomain: [],
-    };
+  filteredColor: {
+    type: String,
+    default: '#A5A5A5',
   },
-  watch: {
-    colorScale: {
-      immediate: true,
-      handler(newVal, oldVal) {
-        this.updateColorLegend();
-      },
-    },
+  nullColor: {
+    type: String,
+    default: '#EFEFEF',
   },
-  mounted() {},
-  methods: {
-    updateColorLegend() {
-      if (this.colorScale) {
-        this.colorDomain = this.colorScale.domain();
-        selectAll('.categorical-rect').each(function () {
-          const bbox = this.getBBox();
-          select(this).attr('width', bbox.width + 1 < 18 ? 18 : bbox.width + 1);
+  label: String,
+  mutationName: String,
+  countThreshold: Number,
+  horizontal: {
+    type: Boolean,
+    default: true,
+  },
+  includeNulls: {
+    type: Boolean,
+    default: true,
+  },
+});
 
-          select(this)
-            .select('rect')
-            .attr('x', (bbox.width + 1 - 15) / 2);
-        });
-      }
-    },
-  },
+const filterWidth = ref(200);
+const rectWidth = ref(15);
+const colorDomain = ref([]);
+
+const updateColorLegend = () => {
+  if (props.colorScale) {
+    colorDomain.value = props.colorScale.domain();
+    selectAll('.categorical-rect').each(function () {
+      const bbox = this.getBBox();
+      select(this).attr('width', bbox.width + 1 < 18 ? 18 : bbox.width + 1);
+
+      select(this)
+        .select('rect')
+        .attr('x', (bbox.width + 1 - 15) / 2);
+    });
+  }
 };
+
+watch(
+  () => props.colorScale,
+  (newVal, oldVal) => {
+    updateColorLegend();
+  },
+  { immediate: true, deep: true },
+);
 </script>

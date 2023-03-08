@@ -131,7 +131,6 @@ export default {
     updateSelected() {
       this.lookupSubscription = lookupEpiLocations(
         this.$apiurl,
-
         this.selected,
       ).subscribe((results) => {
         this.selectedItems = results.map((d) => {

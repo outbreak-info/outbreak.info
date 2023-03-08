@@ -94,45 +94,43 @@
   </div>
 </template>
 
-<script>
-import tippy from 'tippy.js';
-
+<script setup>
+import { inject, onBeforeUnmount, onMounted, ref } from 'vue';
 import { getCTPublications } from '@/api/resources.js';
 import { lazyLoad } from '@/js/lazy-load';
 
 import 'tippy.js/themes/light.css';
 
-export default {
-  name: 'ClinicalTrialDescription',
-  components: {
-    TrialDesign: lazyLoad('TrialDesign'),
-    TrialInterventions: lazyLoad('TrialInterventions'),
-    TrialEligibility: lazyLoad('TrialEligibility'),
-    TrialOutcome: lazyLoad('TrialOutcome'),
-    TrialEvents: lazyLoad('TrialEvents'),
-    ResourceCitation: lazyLoad('ResourceCitation'),
-  },
-  props: {
-    data: Object,
-  },
-  data() {
-    return {
-      citations: null,
-      citationSubscription: null,
-    };
-  },
-  mounted() {
-    this.citationSubscription = getCTPublications(
-      this.$resourceurl,
-      this.data['_id'],
-    ).subscribe((citations) => {
-      this.citations = citations.length ? citations : null;
-    });
-  },
-  beforeUnmount() {
-    this.citationSubscription.unsubscribe();
-  },
-};
+const TrialDesign = lazyLoad('TrialDesign');
+const TrialInterventions = lazyLoad('TrialInterventions');
+const TrialEligibility = lazyLoad('TrialEligibility');
+const TrialOutcome = lazyLoad('TrialOutcome');
+const TrialEvents = lazyLoad('TrialEvents');
+const ResourceCitation = lazyLoad('ResourceCitation');
+
+const props = defineProps({
+  data: Object,
+});
+
+const resourceUrl = inject('resourceUrl');
+
+const citations = ref(null);
+const citationSubscription = ref(null);
+
+onMounted(() => {
+  citationSubscription.value = getCTPublications(
+    resourceUrl,
+    props.data['_id'],
+  ).subscribe((citationResponse) => {
+    citations.value = citationResponse.length ? citationResponse : null;
+  });
+});
+
+onBeforeUnmount(() => {
+  if (citationSubscription.value) {
+    citationSubscription.value.unsubscribe();
+  }
+});
 </script>
 
 <style lang="scss" scoped></style>

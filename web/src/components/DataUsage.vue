@@ -49,9 +49,4 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'DataUsage',
-  components: {},
-};
-</script>
+<script setup></script>

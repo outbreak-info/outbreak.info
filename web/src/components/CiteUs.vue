@@ -111,22 +111,18 @@
   </div>
 </template>
 
-<script>
-import { mapState } from 'pinia';
+<script setup>
+import { storeToRefs } from 'pinia';
 import { adminStore } from '@/stores/adminStore';
 
-export default {
-  name: 'CiteUs',
-  components: {},
-  computed: {
-    ...mapState(adminStore, [
-      'genomicsCitation',
-      'resourcesCitation',
-      'sources',
-      'geoSources',
-      'resources',
-      'genomicSources',
-    ]),
-  },
-};
+const store = adminStore();
+
+const {
+  genomicsCitation,
+  resourcesCitation,
+  sources,
+  geoSources,
+  resources,
+  genomicSources,
+} = storeToRefs(store);
 </script>
