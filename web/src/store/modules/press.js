@@ -305,6 +305,100 @@ const state = {
       date: 'February 2022',
       order: 8,
     },
+    {
+      url: 
+        'https://www.eurekalert.org/news-releases/980636', 
+      img: 'eurekalert.svg', 
+      title: 'Two new papers demonstrate use of Outbreak.info as one-stop online source for COVID data', 
+      publisher: 'EurekAlert!', 
+      date: 'February 2023'
+     },
+     {
+       url: 
+          'https://fortune.com/well/2023/01/27/meet-orthus-ch11-new-omcrion-covid-variant-delta-mutation-deltacron-convergent-evolution/', 
+       img: 'fortune.svg', 
+       title: 'What’s CH.1.1? Meet ‘Orthrus,’ a new wildcard Omicron strain with a concerning Delta mutation', 
+       publisher: 'Fortune', 
+       date: 'January 2023'
+      },
+      {
+        url: 
+          'https://www.news-medical.net/news/20220125/COVID-19-research-made-easier-with-outbreakinfo.aspx/', 
+        img: 'newsmedical.png', 
+        title: 'COVID-19 research made easier with outbreak.info', 
+        publisher: 'News Medical', 
+        date: 'January 2022'
+       },
+       {
+         url: 
+           'https://www.advisory.com/daily-briefing/2023/02/13/ch-variant', 
+         img: 'advisoryboard.svg', title: 'Could 'orthrus' be the next dominant omicron subvariant?', 
+         publisher: 'Advisory Board', 
+         date: 'February 2023'
+        },
+        {
+          url: 
+             'https://www.nationalworld.com/health/omicron-xbb15-covid-variant-most-transmissible-who-3972475', 
+          img: 'nationalworld.png', 
+          title: 'Omicron XBB.1.5: new Covid variant nicknamed ‘Kraken’ is ‘most transmissible yet’, WHO warns', 
+          publisher: 'National World', 
+          date: 'January 2023'
+         },
+         {
+           url: 
+              'https://www.freep.com/story/news/local/michigan/2022/03/18/coronavirus-omicron-ba-2-subvariant-detected-michigan/7093197001/', 
+           img: 'detroitfp.png', 
+           title: 'Coronavirus subvariant omicron BA.2 detected in Michigan', 
+           publisher: 'Detroit Free Press', 
+           date: 'March 2022'
+         },
+         {
+           url:
+              'https://www.cnn.com/2022/06/01/health/covid-new-omicron-variants/index.html', 
+           img: 'cnn.svg', 
+           title: 'New variants are poised to keep Covid-19 circulating at high levels throughout the summer', 
+           publisher: 'CNN', 
+           date: 'June 2022'
+         },
+         {
+           url:
+              'https://www.cnn.com/2022/05/04/world/coronavirus-newsletter-intl-05-04-22/index.html', 
+           img: 'cnn.svg', 
+           title: 'The US is closely watching this Covid surge for clues', 
+           publisher: 'CNN', 
+           date: 'May 2022'
+         },
+         {url:
+              'https://www.firstpost.com/explainers/orthrus-ch11-omircon-variant-us-china-kraken-12089702.html', 
+          img: 'firstpost.svg', 
+          title: 'First Kraken, now Orthrus: What’s this highly transmissible COVID variant that US, China are tracking?', 
+          publisher: 'Firstpost', 
+          date: 'February 2023'
+         },
+         {
+           url: 
+               'https://indianexpress.com/article/world/two-omicron-sub-variants-behind-fresh-covid-surge-in-china-who-8361770/', 
+           img: 'indianexpress.svg', 
+           title: 'Two omicron sub-variants behind fresh Covid surge in China: WHO', 
+           publisher: 'Indian Express', 
+           date: 'January 2023'
+         },
+         {
+           url: 
+                'https://www.financialexpress.com/lifestyle/health/explainer-india-and-omicron-bf-7-covid-risk/2927326/', 
+           img: 'financialexpress.svg', 
+           title: 'Explainer: India and Omicron BF.7 Covid risk', 
+           publisher: 'Financial Express', 
+           date: 'December 2022'
+         },
+         {
+           url:
+                'https://www.forbes.com/sites/brucelee/2023/02/04/ch11-orthrus-how-concerning-is-this-new-covid-19-subvariant/?sh=1a4b52984bd6',
+           img: 'forbes.png', 
+           title: 'CH.1.1 ‘Orthrus’: How Concerning Is This New Covid-19 Subvariant?', 
+           publisher: 'Forbes', 
+           date: 'February 2023'
+         },
   ],
 };
 
