@@ -1,7 +1,7 @@
 <template>
   <div class="d-flex flex-column">
     <svg
-      ref="svg"
+      ref="svgRef"
       :width="width + margin.left + margin.right"
       :height="height + margin.top + margin.bottom"
     >
@@ -16,114 +16,121 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { onMounted, ref, watch } from 'vue';
 import { geoPath, geoEqualEarth } from 'd3-geo';
 import { select } from 'd3-selection';
 
 import GEODATA from '@/assets/geo/countries_ne.json';
 import GADM from '@/assets/geo/gadm_adm0_simplified.json';
 
-export default {
-  name: 'CountryMap',
-  props: {
-    countries: Array,
-    mapSource: {
-      type: String,
-      default: 'NE',
-    },
-    width: {
-      type: Number,
-      default: 200,
-    },
-    fill: {
-      type: String,
-      default: '#df4ab7',
-    },
-    showNames: {
-      type: Boolean,
-      default: true,
-    },
+const props = defineProps({
+  countries: Array,
+  mapSource: {
+    type: String,
+    default: 'NE',
   },
-  data() {
-    return {
-      margin: {
-        top: 5,
-        right: 5,
-        bottom: 5,
-        left: 5,
-      },
-      // refs
-      svg: null,
-      regions: null,
-      height: null,
-    };
+  width: {
+    type: Number,
+    default: 200,
   },
-  watch: {
-    countries() {
-      this.drawMetro();
-    },
-    width() {
-      this.height = this.width * 0.5;
-      this.drawMetro();
-    },
+  fill: {
+    type: String,
+    default: '#df4ab7',
   },
-  mounted() {
-    this.setupChoro();
-    this.drawMetro();
+  showNames: {
+    type: Boolean,
+    default: true,
   },
-  methods: {
-    setupChoro() {
-      this.svg = select(this.$refs.svg);
-      this.regions = select(this.$refs.countries);
-      this.height = this.width * 0.5;
+});
 
-      this.baseMap =
-        this.mapSource === 'GADM' ? GADM.features : GEODATA.features;
-    },
-    drawMetro() {
-      const path = geoPath();
-      const projection = geoEqualEarth()
-        .center([15, 12]) // so this should be calcuable from the bounds of the geojson, but it's being weird, and it's constant for the world anyway...
-        .translate([this.width / 2, this.height / 2])
-        .scale(this.width / 1.45 / Math.PI);
+const margin = ref({
+  top: 5,
+  right: 5,
+  bottom: 5,
+  left: 5,
+});
+const height = ref(null);
+// refs
+const svg = ref(null);
+const regions = ref(null);
+// variables to replace this.$refs
+const svgRef = ref(null);
+const countries = ref(null);
+// missing variables in previous version
+const baseMap = ref(null);
 
-      // regional data
-      this.regions
-        .selectAll('path')
-        .data(this.baseMap)
-        .join(
-          (enter) => {
-            enter
-              .append('path')
-              .attr('class', 'region')
-              .attr('id', (d) => d.location_id)
-              // draw each region
-              .attr('d', path.projection(projection))
-              .attr('fill', (d) =>
-                this.countries.includes(d.properties.NAME)
-                  ? this.fill
-                  : '#dce4ec',
-              )
-              .attr('stroke', (d) =>
-                this.countries.includes(d.properties.NAME) ? 'white' : 'none',
-              );
-          },
-          (update) =>
-            update
-              .attr('fill', (d) =>
-                this.countries.includes(d.properties.NAME)
-                  ? this.fill
-                  : '#dce4ec',
-              )
-              .attr('d', path.projection(projection)),
-          (exit) =>
-            exit.call((exit) =>
-              exit.transition().duration(10).style('opacity', 1e-5).remove(),
-            ),
-        );
-    },
-  },
+const setupChoro = () => {
+  svg.value = select(svgRef.value);
+  regions.value = select(countries.value);
+  height.value = props.width * 0.5;
+
+  baseMap.value = props.mapSource === 'GADM' ? GADM.features : GEODATA.features;
 };
+
+const drawMetro = () => {
+  const path = geoPath();
+  const projection = geoEqualEarth()
+    .center([15, 12]) // so this should be calcuable from the bounds of the geojson, but it's being weird, and it's constant for the world anyway...
+    .translate([props.width / 2, height.value / 2])
+    .scale(props.width / 1.45 / Math.PI);
+
+  // regional data
+  regions.value
+    .selectAll('path')
+    .data(baseMap.value)
+    .join(
+      (enter) => {
+        enter
+          .append('path')
+          .attr('class', 'region')
+          .attr('id', (d) => d.location_id)
+          // draw each region
+          .attr('d', path.projection(projection))
+          .attr('fill', (d) =>
+            props.countries.includes(d.properties.NAME)
+              ? props.fill
+              : '#dce4ec',
+          )
+          .attr('stroke', (d) =>
+            props.countries.includes(d.properties.NAME) ? 'white' : 'none',
+          );
+      },
+      (update) =>
+        update
+          .attr('fill', (d) =>
+            props.countries.includes(d.properties.NAME)
+              ? props.fill
+              : '#dce4ec',
+          )
+          .attr('d', path.projection(projection)),
+      (exit) =>
+        exit.call((exit) =>
+          exit.transition().duration(10).style('opacity', 1e-5).remove(),
+        ),
+    );
+};
+
+watch(
+  () => props.countries,
+  () => {
+    drawMetro();
+  },
+  { deep: true },
+);
+
+watch(
+  () => props.width,
+  () => {
+    height.value = props.width * 0.5;
+    drawMetro();
+  },
+);
+
+onMounted(() => {
+  setupChoro();
+  drawMetro();
+});
 </script>
 
 <style lang="scss">

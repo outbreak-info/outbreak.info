@@ -32,72 +32,74 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { computed, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import { lazyLoad } from '@/js/lazy-load';
 
-export default {
-  name: 'CustomReportForm',
-  components: {
-    VariantForm: lazyLoad('VariantForm'),
-  },
-  props: {
-    minimalistic: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  data() {
-    return {
-      selectedMutations: [],
-      selectedLineage: null,
-      submitCount: 0,
-      submitLabel: null,
-    };
-  },
-  computed: {
-    formValid() {
-      return this.selectedMutations.length > 0 || this.selectedLineage;
-    },
-  },
-  methods: {
-    clearQuery() {
-      // forces the form to clear
-      this.submitCount += 1;
-    },
-    submitQuery() {
-      this.$emit('exit', true);
-      const routeQuery = this.$route.query;
+const VariantForm = lazyLoad('VariantForm');
 
-      this.submitCount += 1;
-      if (this.selectedLineage && this.selectedLineage.alias) {
-        this.$router.push({
-          name: 'MutationReport',
-          params: {
-            alias: this.selectedLineage.name,
-          },
-          query: {
-            muts: this.selectedMutations.map((d) => d.mutation),
-            loc: routeQuery.loc,
-            overlay: routeQuery.overlay,
-            selected: routeQuery.selected,
-          },
-        });
-      } else {
-        const selectedPango = this.selectedLineage
-          ? this.selectedLineage.name
-          : null;
-        this.$router.push({
-          name: 'MutationReport',
-          query: {
-            pango: selectedPango,
-            muts: this.selectedMutations.map((d) => d.mutation),
-            loc: routeQuery.loc,
-            overlay: routeQuery.overlay,
-            selected: routeQuery.selected,
-          },
-        });
-      }
-    },
+const props = defineProps({
+  minimalistic: {
+    type: Boolean,
+    default: false,
   },
+});
+
+// instead of this.$emit in previous version
+const emit = defineEmits(['exit']);
+
+// instead of this.$router
+const router = useRouter();
+// instead of this.$route
+const route = useRoute();
+
+const selectedMutations = ref([]);
+const selectedLineage = ref(null);
+const submitCount = ref(0);
+const submitLabel = ref(null);
+
+const formValid = computed(() => {
+  return selectedMutations.value.length > 0 || selectedLineage.value;
+});
+
+const clearQuery = () => {
+  // forces the form to clear
+  submitCount.value += 1;
+};
+
+const submitQuery = () => {
+  emit('exit', true);
+  const routeQuery = route.query;
+
+  submitCount.value += 1;
+  if (selectedLineage.value && selectedLineage.value.alias) {
+    router.push({
+      name: 'MutationReport',
+      params: {
+        alias: selectedLineage.value.name,
+      },
+      query: {
+        muts: selectedMutations.value.map((d) => d.mutation),
+        loc: routeQuery.loc,
+        overlay: routeQuery.overlay,
+        selected: routeQuery.selected,
+      },
+    });
+  } else {
+    const selectedPango = selectedLineage.value
+      ? selectedLineage.value.name
+      : null;
+    router.push({
+      name: 'MutationReport',
+      query: {
+        pango: selectedPango,
+        muts: selectedMutations.value.map((d) => d.mutation),
+        loc: routeQuery.loc,
+        overlay: routeQuery.overlay,
+        selected: routeQuery.selected,
+      },
+    });
+  }
 };
 </script>
