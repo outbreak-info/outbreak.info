@@ -208,6 +208,7 @@ watch(
   (val, oldValue) => {
     updateSelected();
   },
+  { deep: true },
 );
 
 //TODO: should check this again

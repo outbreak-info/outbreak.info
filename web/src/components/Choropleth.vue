@@ -5,17 +5,17 @@
     class="d-flex flex-wrap justify-content-center align-items-center"
   >
     <div class="d-flex flex-column align-items-center">
-      <h4 ref="date" />
+      <h4 ref="dateRef" />
       <svg
-        ref="svg"
+        ref="svgRef"
         :width="width"
         :height="height"
         class="epi-map-svg"
         :subtitle="title"
       >
         <g ref="blank_map" class="blank-map-group" />
-        <g ref="regions" class="region-group" />
-        <g ref="overlay" class="overlay-map-group" />
+        <g ref="regionsRef" class="region-group" />
+        <g ref="overlayRef" class="overlay-map-group" />
       </svg>
     </div>
     <div
@@ -178,7 +178,16 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import {
+  computed,
+  inject,
+  nextTick,
+  onBeforeUnmount,
+  onMounted,
+  ref,
+  watch,
+} from 'vue';
 import { geoEqualEarth, geoAlbersUsa, geoPath } from 'd3-geo';
 import { max, min } from 'd3-array';
 import { format } from 'd3-format';
@@ -189,423 +198,446 @@ import cloneDeep from 'lodash/cloneDeep';
 import { getSparklineTraces } from '@/api/epi-traces.js';
 import { lazyLoad } from '@/js/lazy-load';
 import { adminStore } from '@/stores/adminStore';
-import { mapStores } from 'pinia';
+import { useRouter } from 'vue-router';
 
-export default {
-  name: 'Choropleth',
-  components: {
-    HistogramLegend: lazyLoad('HistogramLegend'),
-    DataUpdated: lazyLoad('DataUpdated'),
-    Bargraph: lazyLoad('Bargraph'),
-    DotPlot: lazyLoad('DotPlot'),
-  },
-  props: {
-    data: Array,
-    outline: Array,
-    blankMap: Object,
-    variable: String,
-    selectedMin: Number,
-    selectedMax: Number,
-    date1: String,
-    maxDate: Date,
-    variableLabel: String,
-    colorScale: Function,
-    adminLevel: String,
-    animate: Boolean,
-  },
-  data() {
-    return {
-      width: 0,
-      height: 350,
-      widthLegend: 350,
-      margin: {
-        top: 2,
-        right: 2,
-        bottom: 2,
-        left: 2,
-      },
-      // data
-      filteredData: null,
-      projection: null,
-      timeTrace: null,
-      timeConfirmed: null,
-      timeConfirmedPC: null,
-      timeDead: null,
-      timeDeadPC: null,
-      // refs
-      svg: null,
-      blank: null,
-      overlay: null,
-      regions: null,
-      event: null,
-      // methods
-      path: geoPath(),
-      transition1: 500,
-    };
-  },
-  computed: {
-    ...mapStores(adminStore),
-    maxVal() {
-      return this.filteredData
-        ? max(this.filteredData, (d) => d[this.variable])
-        : null;
-    },
-    minVal() {
-      return this.filteredData
-        ? min(this.filteredData, (d) => d[this.variable])
-        : null;
-    },
-    varMax() {
-      return Math.max(Math.abs(this.minVal), this.maxVal);
-    },
-    rightAlignAsc() {
-      return this.minVal < -1;
-    },
-    rightAlignDesc() {
-      return this.maxVal < -1;
-    },
-    isDiff() {
-      return this.variable.includes('_14days_ago_diff');
-    },
-    dateTime() {
-      return this.date1 ? timeParse('%Y-%m-%d')(this.date1) : null;
-    },
-    date() {
-      if (this.dateTime) {
-        return timeFormat('%d %B %Y')(this.dateTime);
-      } else {
-        return null;
-      }
-    },
-    rollLength() {
-      const dateDiff = (this.maxDate - this.dateTime) / (1000 * 3600 * 24);
-      return dateDiff > 2 ? 7 : dateDiff + 4;
-    },
-    title() {
-      return this.date1
-        ? `${this.variableLabel} as of ${this.date}`
-        : this.variableLabel;
-    },
-  },
-  watch: {
-    data() {
-      this.drawMap();
-    },
-  },
-  created() {
-    this.debounceMouseon = this.debounce(this.mouseOn, 250);
-  },
-  mounted() {
-    this.$nextTick(() => {
-      window.addEventListener('resize', this.setDims);
-      // set initial dimensions for the stacked area plots.
-      this.setDims(false);
+const HistogramLegend = lazyLoad('HistogramLegend');
+const DataUpdated = lazyLoad('DataUpdated');
+const Bargraph = lazyLoad('Bargraph');
+const DotPlot = lazyLoad('DotPlot');
 
-      // event listener to hide tooltips
-      document.addEventListener(
-        'mousemove',
-        (evt) => {
-          if (
-            !evt.target.className ||
-            !evt.target.className.baseVal ||
-            !evt.target.className.baseVal.includes('region')
-          ) {
-            this.mouseOff();
-          }
-        },
-        {
-          passive: true,
-        },
-      );
-      document.addEventListener(
-        'mouseleave',
-        (evt) => {
-          if (
-            !evt.target.className ||
-            !evt.target.className.baseVal ||
-            !evt.target.className.baseVal.includes('region')
-          ) {
-            this.mouseOff();
-          }
-        },
-        {
-          passive: true,
-        },
-      );
-    });
+const props = defineProps({
+  data: Array,
+  outline: Array,
+  blankMap: Object,
+  variable: String,
+  selectedMin: Number,
+  selectedMax: Number,
+  date1: String,
+  maxDate: Date,
+  variableLabel: String,
+  colorScale: Function,
+  adminLevel: String,
+  animate: Boolean,
+});
 
-    this.setupChoro();
-  },
-  beforeUnmount() {
-    if (this.dataSubscritpion) {
-      this.dataSubscription.unsubscribe();
+const apiUrl = inject('apiUrl');
+
+const router = useRouter();
+
+const store = adminStore();
+
+const width = ref(0);
+const height = ref(350);
+const widthLegend = ref(350);
+const margin = ref({
+  top: 2,
+  right: 2,
+  bottom: 2,
+  left: 2,
+});
+// data
+const filteredData = ref(null);
+const projection = ref(null);
+const timeTrace = ref(null);
+const timeConfirmed = ref(null);
+const timeConfirmedPC = ref(null);
+const timeDead = ref(null);
+const timeDeadPC = ref(null);
+// refs
+const svg = ref(null);
+const blank = ref(null);
+const overlay = ref(null);
+const regions = ref(null);
+const ttips = ref(null);
+// methods
+const path = ref(geoPath());
+const transition1 = ref(500);
+// variables to replace this.$refs
+const map_container = ref(null);
+const svgRef = ref(null);
+const blank_map = ref(null);
+const overlayRef = ref(null);
+const regionsRef = ref(null);
+const choropleth_tooltip = ref(null);
+const dateRef = ref(null);
+
+// missing variables
+const dataSubscription = ref(null);
+
+const maxVal = computed(() => {
+  return filteredData.value
+    ? max(filteredData.value, (d) => d[props.variable])
+    : null;
+});
+
+const minVal = computed(() => {
+  return filteredData.value
+    ? min(filteredData.value, (d) => d[props.variable])
+    : null;
+});
+
+const varMax = computed(() => {
+  return Math.max(Math.abs(minVal.value), maxVal.value);
+});
+
+const rightAlignAsc = computed(() => {
+  return minVal.value < -1;
+});
+
+const rightAlignDesc = computed(() => {
+  return maxVal.value < -1;
+});
+
+const isDiff = computed(() => {
+  return props.variable.includes('_14days_ago_diff');
+});
+
+const dateTime = computed(() => {
+  return props.date1 ? timeParse('%Y-%m-%d')(props.date1) : null;
+});
+
+const date = computed(() => {
+  if (dateTime.value) {
+    return timeFormat('%d %B %Y')(dateTime.value);
+  } else {
+    return null;
+  }
+});
+
+const rollLength = computed(() => {
+  const dateDiff = (props.maxDate - dateTime.value) / (1000 * 3600 * 24);
+  return dateDiff > 2 ? 7 : dateDiff + 4;
+});
+
+const title = computed(() => {
+  return props.date1
+    ? `${props.variableLabel} as of ${date.value}`
+    : props.variableLabel;
+});
+
+const setDims = (redraw = true) => {
+  const whRatio = 1.72; // based on the
+  const selector = map_container.value;
+  const marginLegend = 25;
+  const selectorsProportion = 1;
+
+  if (selector) {
+    const dims = selector.getBoundingClientRect();
+
+    width.value =
+      dims.width >= 800
+        ? dims.width - marginLegend - widthLegend.value
+        : dims.width;
+    widthLegend.value = dims.width >= 225 ? widthLegend.value : dims.width; // make legend smaller on small screens
+
+    const idealHeight = width.value / whRatio;
+    if (idealHeight < window.innerHeight * selectorsProportion) {
+      height.value = idealHeight * selectorsProportion;
+    } else {
+      height.value = window.innerHeight * selectorsProportion;
+      width.value = height.value * whRatio - marginLegend - widthLegend.value;
     }
-  },
-  methods: {
-    setDims(redraw = true) {
-      const whRatio = 1.72; // based on the
-      const selector = this.$refs.map_container;
-      const marginLegend = 25;
-      const selectorsProportion = 1;
 
-      if (selector) {
-        const dims = selector.getBoundingClientRect();
-
-        this.width =
-          dims.width >= 800
-            ? dims.width - marginLegend - this.widthLegend
-            : dims.width;
-        this.widthLegend = dims.width >= 225 ? this.widthLegend : dims.width; // make legend smaller on small screens
-
-        const idealHeight = this.width / whRatio;
-        if (idealHeight < window.innerHeight * selectorsProportion) {
-          this.height = idealHeight * selectorsProportion;
-        } else {
-          this.height = window.innerHeight * selectorsProportion;
-          this.width = this.height * whRatio - marginLegend - this.widthLegend;
-        }
-
-        // Set scale and projection for the map
-        if (redraw) {
-          this.drawMap();
-        }
-      }
-    },
-    setupChoro() {
-      this.svg = select(this.$refs.svg);
-      this.blank = select(this.$refs.blank_map);
-      this.overlay = select(this.$refs.overlay);
-      this.regions = select(this.$refs.regions);
-      this.ttips = select(this.$refs.choropleth_tooltip);
-    },
-    setupMap() {
-      if (this.adminLevel === '0') {
-        this.projection = geoEqualEarth()
-          .center([30.05125, 11.528635]) // so this should be calcuable from the bounds of the geojson, but it's being weird, and it's constant for the world anyway...
-          .scale(1)
-          .translate([this.width / 2, this.height / 2]);
-      } else {
-        this.projection = geoAlbersUsa()
-          .scale(1)
-          .translate([this.width / 2, this.height / 2]);
-      }
-
-      this.path = this.path.projection(this.projection);
-      // calc and set scale
-      // from zoom to bounds: https://bl.ocks.org/mbostock/4699541
-      const bounds = this.path.bounds(this.blankMap),
-        dx = bounds[1][0] - bounds[0][0],
-        dy = bounds[1][1] - bounds[0][1],
-        xscale = (this.width / dx) * 0.98,
-        yscale = (this.height / dy) * 0.98,
-        scale = min([xscale, yscale]);
-
-      this.projection = this.projection.scale(scale);
-    },
-    drawMap() {
-      const store = adminStore();
-      this.setupMap();
-
-      this.filteredData = cloneDeep(this.data);
-
-      if (this.selectedMin || this.selectedMin === 0) {
-        this.filteredData = this.filteredData.filter(
-          (d) => d[this.variable] >= this.selectedMin,
-        );
-      }
-      if (this.selectedMax || this.selectedMax === 0) {
-        this.filteredData = this.filteredData.filter(
-          (d) => d[this.variable] <= this.selectedMax,
-        );
-      }
-
-      if (this.filteredData && this.width) {
-        // blank map outline
-        this.blank
-          .selectAll('path')
-          .data(this.blankMap.features)
-          .join(
-            (enter) => {
-              enter
-                .append('path')
-                .attr('class', 'blank-outline')
-                .style('fill', 'none')
-                .style('stroke', '#8aa4be')
-                .style('stroke-width', 0.25)
-                // draw each region
-                .attr('d', this.path);
-            },
-            (update) => update.attr('d', this.path),
-            (exit) =>
-              exit.call((exit) =>
-                exit.transition().style('opacity', 1e-5).remove(),
-              ),
-          );
-
-        // regional data
-        this.regions
-          .selectAll('path')
-          .data(this.filteredData, (d) => d.location_id)
-          .join(
-            (enter) => {
-              // update date
-              select(this.$refs.date).html(this.date);
-
-              enter
-                .append('path')
-                .attr('class', 'region pointer')
-                .attr('id', (d) => d.location_id)
-                .style('stroke', '#8aa4be')
-                .style('stroke-width', 0.25)
-                // draw each region
-                .attr('d', this.path)
-                .attr('fill', (d) => (d.fill ? d.fill : 'none'));
-            },
-            (update) => {
-              // update date
-              select(this.$refs.date).html(this.date);
-
-              update
-                .attr('id', (d) => d.location_id)
-                .attr('d', this.path)
-                .call((update) => {
-                  if (this.animate) {
-                    update
-                      .transition()
-                      .duration(this.transition1)
-                      .attr('fill', (d) => (d.fill ? d.fill : 'none'));
-                  } else {
-                    update.attr('fill', (d) => (d.fill ? d.fill : 'none'));
-                  }
-                });
-            },
-            (exit) =>
-              exit.call((exit) =>
-                exit.transition().style('opacity', 1e-5).remove(),
-              ),
-          );
-
-        // state map overlay
-        this.overlay
-          .selectAll('path')
-          .data(this.outline)
-          .join(
-            (enter) => {
-              enter
-                .append('path')
-                .attr('class', 'outline')
-                .style('fill', 'none')
-                .style('stroke', '#3e5871')
-                .style('stroke-width', '1')
-                // draw each region
-                .attr('d', this.path);
-            },
-            (update) => update.attr('d', this.path),
-            (exit) =>
-              exit.call((exit) =>
-                exit.transition().style('opacity', 1e-5).remove(),
-              ),
-          );
-
-        // tooltip
-        this.regions
-          .selectAll('path.region')
-          .on('click', (d) => this.handleClick(d))
-          .on('mouseenter', (d) => this.debounceMouseon(d))
-          .on('mouseleave', this.mouseOff);
-
-        store.$patch({ dataloading: false });
-      } else {
-        store.$patch({ dataloading: false });
-      }
-    },
-    handleClick(d) {
-      this.$router.push({
-        path: 'epidemiology',
-        query: {
-          location: d.location_id,
-        },
-      });
-    },
-    // https://stackoverflow.com/questions/43407947/how-to-throttle-function-call-on-mouse-event-with-d3-js/43448820
-    // modified to save the d3. event to vue::this
-    debounce(fn, delay) {
-      let timer = null;
-      return () => {
-        const context = this,
-          args = arguments,
-          evt = event;
-        //we get the D3 event here
-        clearTimeout(timer);
-        timer = setTimeout(() => {
-          context.event = evt;
-          //and use the reference here
-          fn.apply(context, args);
-        }, delay);
-      };
-    },
-    mouseOn(d) {
-      this.timeTrace = null; // reset to avoid seeing old data
-      this.timeConfirmed =
-        this.timeConfirmedPC =
-        this.timeDead =
-        this.timeDeadPC =
-          null; // reset to avoid seeing old data
-      if (d.value) {
-        this.getTimetrace(d.location_id);
-
-        const ttip = this.ttips
-          .style('top', this.event.y + 'px')
-          .style('left', this.event.x + 'px')
-          .style('opacity', 1);
-
-        this.regions.selectAll('path.region').style('opacity', 0.5);
-        this.regions.selectAll('path.outline').style('opacity', 0.75);
-        this.regions.selectAll(`#${d.location_id}`).style('opacity', 1);
-        this.ttips.select('.country-name').text(d.name);
-        this.ttips.select('.value').html(d.tooltip);
-      }
-    },
-    mouseOff() {
-      this.timeTrace = []; // reset to avoid seeing old data
-      this.timeConfirmed =
-        this.timeConfirmedPC =
-        this.timeDead =
-        this.timeDeadPC =
-          null;
-      selectAll('.tooltip').style('opacity', 0);
-      this.regions.selectAll('path.region').style('opacity', 1);
-      this.regions.selectAll('path.outline').style('opacity', 1);
-      // cancel data subscription
-      if (this.dataSubscritpion) {
-        this.dataSubscription.unsubscribe();
-      }
-    },
-    getTimetrace(location_id) {
-      this.dataSubscription = getSparklineTraces(
-        this.$apiurl,
-        [location_id],
-        'confirmed_numIncrease, confirmed_rolling, dead_numIncrease, dead_rolling, dead_rolling_per_100k, confirmed_rolling_per_100k',
-      ).subscribe((results) => {
-        this.timeTrace = results[0].value;
-        const currentData = this.timeTrace.filter(
-          (d) => d.date - this.dateTime === 0,
-        );
-
-        if (currentData.length === 1) {
-          this.timeConfirmed = format(',.1f')(currentData[0].confirmed_rolling);
-          this.timeConfirmedPC = format(',.1f')(
-            currentData[0].confirmed_rolling_per_100k,
-          );
-          this.timeDead = format(',.1f')(currentData[0].dead_rolling);
-          this.timeDeadPC = format(',.1f')(
-            currentData[0].dead_rolling_per_100k,
-          );
-        }
-      });
-    },
-  },
+    // Set scale and projection for the map
+    if (redraw) {
+      drawMap();
+    }
+  }
 };
+
+const setupChoro = () => {
+  svg.value = select(svgRef.value);
+  blank.value = select(blank_map.value);
+  overlay.value = select(overlayRef.value);
+  regions.value = select(regionsRef.value);
+  ttips.value = select(choropleth_tooltip.value);
+};
+
+const setupMap = () => {
+  if (props.adminLevel === '0') {
+    projection.value = geoEqualEarth()
+      .center([30.05125, 11.528635]) // so this should be calcuable from the bounds of the geojson, but it's being weird, and it's constant for the world anyway...
+      .scale(1)
+      .translate([width.value / 2, height.value / 2]);
+  } else {
+    projection.value = geoAlbersUsa()
+      .scale(1)
+      .translate([width.value / 2, height.value / 2]);
+  }
+
+  path.value = path.value.projection(projection.value);
+  // calc and set scale
+  // from zoom to bounds: https://bl.ocks.org/mbostock/4699541
+  const bounds = path.value.bounds(props.blankMap),
+    dx = bounds[1][0] - bounds[0][0],
+    dy = bounds[1][1] - bounds[0][1],
+    xscale = (width.value / dx) * 0.98,
+    yscale = (height.value / dy) * 0.98,
+    scale = min([xscale, yscale]);
+
+  projection.value = projection.value.scale(scale);
+};
+
+const drawMap = () => {
+  setupMap();
+
+  filteredData.value = cloneDeep(props.data);
+
+  if (props.selectedMin || props.selectedMin === 0) {
+    filteredData.value = filteredData.value.filter(
+      (d) => d[props.variable] >= props.selectedMin,
+    );
+  }
+  if (props.selectedMax || props.selectedMax === 0) {
+    filteredData.value = filteredData.value.filter(
+      (d) => d[props.variable] <= props.selectedMax,
+    );
+  }
+
+  if (filteredData.value && width.value) {
+    // blank map outline
+    blank.value
+      .selectAll('path')
+      .data(props.blankMap.features)
+      .join(
+        (enter) => {
+          enter
+            .append('path')
+            .attr('class', 'blank-outline')
+            .style('fill', 'none')
+            .style('stroke', '#8aa4be')
+            .style('stroke-width', 0.25)
+            // draw each region
+            .attr('d', path.value);
+        },
+        (update) => update.attr('d', path.value),
+        (exit) =>
+          exit.call((exit) =>
+            exit.transition().style('opacity', 1e-5).remove(),
+          ),
+      );
+
+    // regional data
+    regions.value
+      .selectAll('path')
+      .data(filteredData.value, (d) => d.location_id)
+      .join(
+        (enter) => {
+          // update date
+          select(dateRef.value).html(date.value);
+
+          enter
+            .append('path')
+            .attr('class', 'region pointer')
+            .attr('id', (d) => d.location_id)
+            .style('stroke', '#8aa4be')
+            .style('stroke-width', 0.25)
+            // draw each region
+            .attr('d', path.value)
+            .attr('fill', (d) => (d.fill ? d.fill : 'none'));
+        },
+        (update) => {
+          // update date
+          select(dateRef.value).html(date.value);
+
+          update
+            .attr('id', (d) => d.location_id)
+            .attr('d', path.value)
+            .call((update) => {
+              if (props.animate) {
+                update
+                  .transition()
+                  .duration(transition1.value)
+                  .attr('fill', (d) => (d.fill ? d.fill : 'none'));
+              } else {
+                update.attr('fill', (d) => (d.fill ? d.fill : 'none'));
+              }
+            });
+        },
+        (exit) =>
+          exit.call((exit) =>
+            exit.transition().style('opacity', 1e-5).remove(),
+          ),
+      );
+
+    // state map overlay
+    overlay.value
+      .selectAll('path')
+      .data(props.outline)
+      .join(
+        (enter) => {
+          enter
+            .append('path')
+            .attr('class', 'outline')
+            .style('fill', 'none')
+            .style('stroke', '#3e5871')
+            .style('stroke-width', '1')
+            // draw each region
+            .attr('d', path.value);
+        },
+        (update) => update.attr('d', path.value),
+        (exit) =>
+          exit.call((exit) =>
+            exit.transition().style('opacity', 1e-5).remove(),
+          ),
+      );
+
+    // tooltip
+    regions.value
+      .selectAll('path.region')
+      .on('click', (d) => handleClick(d))
+      .on('mouseenter', (d) => debounceMouseon(d))
+      .on('mouseleave', mouseOff);
+
+    store.$patch({ dataloading: false });
+  } else {
+    store.$patch({ dataloading: false });
+  }
+};
+
+const handleClick = (d) => {
+  router.push({
+    path: 'epidemiology',
+    query: {
+      location: d.location_id,
+    },
+  });
+};
+// https://stackoverflow.com/questions/43407947/how-to-throttle-function-call-on-mouse-event-with-d3-js/43448820
+// modified to save the d3. event to vue::this
+const debounce = (fn, delay) => {
+  let timer = null;
+  return () => {
+    const context = this,
+      args = arguments,
+      evt = event;
+    //we get the D3 event here
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      context.event = evt;
+      //and use the reference here
+      fn.apply(context, args);
+    }, delay);
+  };
+};
+
+const mouseOn = (d) => {
+  timeTrace.value = null; // reset to avoid seeing old data
+  timeConfirmed.value =
+    timeConfirmedPC.value =
+    timeDead.value =
+    timeDeadPC.value =
+      null; // reset to avoid seeing old data
+  if (d.value) {
+    getTimetrace(d.location_id);
+
+    const ttip = ttips.value
+      .style('top', event.value.y + 'px')
+      .style('left', event.value.x + 'px')
+      .style('opacity', 1);
+
+    regions.value.selectAll('path.region').style('opacity', 0.5);
+    regions.value.selectAll('path.outline').style('opacity', 0.75);
+    regions.value.selectAll(`#${d.location_id}`).style('opacity', 1);
+    ttips.value.select('.country-name').text(d.name);
+    ttips.value.select('.value').html(d.tooltip);
+  }
+};
+
+const mouseOff = () => {
+  timeTrace.value = []; // reset to avoid seeing old data
+  timeConfirmed.value =
+    timeConfirmedPC.value =
+    timeDead.value =
+    timeDeadPC.value =
+      null; // reset to avoid seeing old data
+  selectAll('.tooltip').style('opacity', 0);
+  regions.value.selectAll('path.region').style('opacity', 1);
+  regions.value.selectAll('path.outline').style('opacity', 1);
+  // cancel data subscription
+  if (dataSubscription.value) {
+    dataSubscription.value.unsubscribe();
+  }
+};
+
+const getTimetrace = (location_id) => {
+  dataSubscription.value = getSparklineTraces(
+    apiUrl,
+    [location_id],
+    'confirmed_numIncrease, confirmed_rolling, dead_numIncrease, dead_rolling, dead_rolling_per_100k, confirmed_rolling_per_100k',
+  ).subscribe((results) => {
+    timeTrace.value = results[0].value;
+    const currentData = timeTrace.value.filter(
+      (d) => d.date - dateTime.value === 0,
+    );
+
+    if (currentData.length === 1) {
+      timeConfirmed.value = format(',.1f')(currentData[0].confirmed_rolling);
+      timeConfirmedPC.value = format(',.1f')(
+        currentData[0].confirmed_rolling_per_100k,
+      );
+      timeDead.value = format(',.1f')(currentData[0].dead_rolling);
+      timeDeadPC.value = format(',.1f')(currentData[0].dead_rolling_per_100k);
+    }
+  });
+};
+
+watch(
+  () => props.data,
+  () => {
+    drawMap();
+  },
+);
+
+const debounceMouseon = debounce(mouseOn, 250);
+
+onMounted(() => {
+  nextTick(() => {
+    window.addEventListener('resize', setDims);
+    // set initial dimensions for the stacked area plots.
+    setDims(false);
+
+    // event listener to hide tooltips
+    document.addEventListener(
+      'mousemove',
+      (evt) => {
+        if (
+          !evt.target.className ||
+          !evt.target.className.baseVal ||
+          !evt.target.className.baseVal.includes('region')
+        ) {
+          mouseOff();
+        }
+      },
+      {
+        passive: true,
+      },
+    );
+    document.addEventListener(
+      'mouseleave',
+      (evt) => {
+        if (
+          !evt.target.className ||
+          !evt.target.className.baseVal ||
+          !evt.target.className.baseVal.includes('region')
+        ) {
+          mouseOff();
+        }
+      },
+      {
+        passive: true,
+      },
+    );
+  });
+
+  setupChoro();
+});
+
+onBeforeUnmount(() => {
+  if (dataSubscription.value) {
+    dataSubscription.value.unsubscribe();
+  }
+});
 </script>
 
 <style lang="scss">
