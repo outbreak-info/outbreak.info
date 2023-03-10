@@ -23,7 +23,7 @@
         </div>
       </div>
       <svg
-        ref="svg"
+        ref="svgRef"
         :width="width + margin.left + margin.right"
         :height="height + margin.top + margin.bottom"
         class="epi-bargraph"
@@ -57,13 +57,13 @@
 
         <g
           id="xAxis"
-          ref="xAxis"
+          ref="xAxisRef"
           :transform="`translate(${margin.left}, ${height + margin.top + 2})`"
           class="epi-axis axis--x axis-font"
         />
         <g
           id="yAxis"
-          ref="yAxis"
+          ref="yAxisRef"
           :transform="`translate(${margin.left - 5}, ${margin.top})`"
           class="epi-axis axis--y axis-font"
         />
@@ -94,7 +94,6 @@
             :style="{
               fill: colorAverage,
               'dominant-baseline': 'hanging',
-
               'font-family': 'DM Sans, Avenir, Helvetica, Arial, sans-serif',
             }"
           >
@@ -137,7 +136,8 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { computed, onMounted, ref, watch } from 'vue';
 import { extent, max } from 'd3-array';
 import { axisBottom, axisLeft } from 'd3-axis';
 import { format } from 'd3-format';
@@ -149,609 +149,629 @@ import { timeFormat, timeParse } from 'd3-time-format';
 import cloneDeep from 'lodash/cloneDeep';
 import * as PIXI from 'pixi.js';
 import { SmoothGraphics } from '@pixi/graphics-smooth';
+import { useRouter } from 'vue-router';
 
-export default {
-  name: 'Bargraph',
-  props: {
-    data: Array,
-    width: Number,
-    height: Number,
-    transformChart: Number,
-    tooltipIdx: String,
-    // variable: String,
-    variableObj: Object,
-    id: String,
-    color: String,
-    colorAverage: {
-      type: String,
-      default: 'black',
-    },
-    title: String,
-    log: Boolean,
-    percapita: Boolean,
-    location: String,
-    includeAxis: {
-      type: Boolean,
-      default: false,
-    },
-    loggable: {
-      type: Boolean,
-      default: true,
-    },
-    includeTooltips: {
-      type: Boolean,
-      default: false,
-    },
-    fixedYMax: {
-      type: Number,
-      default: null,
-    },
-    xVariableLim: {
-      type: Array,
-      default: null,
-    },
-    date1: {
-      type: String,
-    },
-    include2week: {
-      type: Boolean,
-      default: false,
-    },
-    animate: {
-      type: Boolean,
-      default: false,
-    },
+const props = defineProps({
+  data: Array,
+  width: Number,
+  height: Number,
+  transformChart: Number,
+  tooltipIdx: String,
+  variableObj: Object,
+  id: String,
+  color: String,
+  colorAverage: {
+    type: String,
+    default: 'black',
   },
-  data() {
-    return {
-      margin: {
-        top: 15,
-        bottom: 60,
-        left: 95,
-        right: 35,
-      },
-      // axes
-      y: null,
-      x: scaleBand().paddingInner(0),
-      numYTicks: 6,
-      isLogY: false,
-      yMin: 0,
-      // methods
-      line: null,
-      // refs
-      chart: null,
-      average: null,
-      noRollinAvg: true,
-      pixiApp: null,
-      location_id: null,
-    };
+  title: String,
+  log: Boolean,
+  percapita: Boolean,
+  location: String,
+  includeAxis: {
+    type: Boolean,
+    default: false,
   },
-  computed: {
-    plotTitle() {
-      return this.percapita
-        ? `Number of COVID-19 ${this.variableObj.label} per 100,000 residents`
-        : `Number of COVID-19 ${this.variableObj.label}`;
-    },
+  loggable: {
+    type: Boolean,
+    default: true,
   },
-  watch: {
-    data() {
-      this.updatePlot();
-      this.drawBarchart();
-    },
-    variableObj: {
-      immediate: true,
-      handler(newObj, oldObj) {
-        this.variable = newObj.value;
-        this.noRollingAvg =
-          ![
-            'confirmed_numIncrease',
-            'dead_numIncrease',
-            'recovered_numIncrease',
-          ].includes(this.variable) || !this.animate;
-        this.updatePlot();
-        this.drawBarchart();
-      },
-    },
-    // variable() {
-    //   this.updatePlot()
-    // },
-    fixedYMax() {
-      this.updatePlot();
-      this.drawBarchart();
-    },
-    log: {
-      immediate: true,
-      handler(newVal, oldVal) {
-        this.isLogY = newVal;
-        this.updatePlot();
-        this.drawBarchart();
-      },
-    },
-    percapita: {
-      immediate: true,
-      handler(newVal, oldVal) {
-        if (newVal !== oldVal) {
-          this.updatePlot();
-          this.drawBarchart();
-        }
-      },
-    },
-    width() {
-      this.updatePlot();
-      this.drawBarchart();
-    },
-    height() {
-      this.updatePlot();
-      this.drawBarchart();
-    },
+  includeTooltips: {
+    type: Boolean,
+    default: false,
   },
-  mounted() {
-    if (!this.includeAxis) {
-      this.margin = {
-        top: 0,
-        bottom: 0,
-        left: 0,
-        right: 0,
-      };
+  fixedYMax: {
+    type: Number,
+    default: null,
+  },
+  xVariableLim: {
+    type: Array,
+    default: null,
+  },
+  date1: {
+    type: String,
+  },
+  include2week: {
+    type: Boolean,
+    default: false,
+  },
+  animate: {
+    type: Boolean,
+    default: false,
+  },
+});
+
+const router = useRouter();
+
+const margin = ref({
+  top: 15,
+  bottom: 60,
+  left: 95,
+  right: 35,
+});
+// axes
+const y = ref(null);
+const x = ref(scaleBand().paddingInner(0));
+const numYTicks = ref(6);
+const isLogY = ref(false);
+const yMin = ref(0);
+// renamed due to duplicated name - there is line function in d3
+const lineMethod = ref(null);
+// refs
+const chart = ref(null);
+const average = ref(null);
+const noRollingAvg = ref(true);
+const pixiApp = ref(null);
+const location_id = ref(null);
+// added these variables to replace this.$refs
+const svgRef = ref(null);
+const barchart_wrapper = ref(null);
+const switch_btn = ref(null);
+const xAxisRef = ref(null);
+const yAxisRef = ref(null);
+// missing variables
+const wrapper = ref(null);
+const plottedData = ref(null);
+const logData = ref(null);
+const switchBtn = ref(null);
+const xAxis = ref(null);
+const yAxis = ref(null);
+// new variable
+const variable = ref('confirmed_numIncrease');
+
+const plotTitle = computed(() => {
+  return props.percapita
+    ? `Number of COVID-19 ${props.variableObj.label} per 100,000 residents`
+    : `Number of COVID-19 ${props.variableObj.label}`;
+});
+
+const setupPlot = () => {
+  svgRef.value = select(`#bargraph-${props.id}-${variable.value}`).select(
+    'svg.epi-bargraph',
+  );
+  chart.value = svgRef.value.select('#case-counts');
+  average.value = svgRef.value.select('#rolling-average');
+
+  lineMethod.value = line()
+    .x((d) => x.value(d.date))
+    .y((d) => y.value(d[variable.value.replace('_numIncrease', '_rolling')]));
+};
+
+const setupBarChart = () => {
+  wrapper.value = barchart_wrapper.value;
+  pixiApp.value = new PIXI.Application({
+    backgroundAlpha: 0,
+    width: 650,
+    height: props.height,
+  });
+  wrapper.value.appendChild(pixiApp.value.view);
+  prepData();
+  if (plottedData.value && props.width && props.height) {
+    updateScales();
+    drawBarchart();
+  }
+};
+
+const prepData = () => {
+  location_id.value =
+    props.data && props.data.length && props.data[0].admin_level >= 0
+      ? props.data[0].location_id
+      : null;
+
+  if (props.percapita) {
+    variable.value =
+      variable.value.includes('_per_100k') ||
+      props.variableObj.percapita === false
+        ? variable.value
+        : variable.value + '_per_100k';
+  } else {
+    variable.value = variable.value.replace('_per_100k', '');
+  }
+
+  if (props.data && props.includeAxis) {
+    logData.value = cloneDeep(props.data).filter((d) => d[variable.value] >= 1);
+    logData.value.forEach((d) => {
+      d['confirmed_log'] = Math.log10(d.confirmed_numIncrease);
+    });
+    plottedData.value = isLogY.value
+      ? logData.value
+      : props.data.filter((d) => d[variable.value] >= 0);
+  } else {
+    plottedData.value = props.data.filter((d) => d[variable.value] >= 0);
+  }
+};
+
+const updatePlot = () => {
+  prepData();
+
+  if (plottedData.value && props.width && props.height) {
+    updateScales();
+    drawPlot();
+    drawBarchart();
+  }
+};
+
+const updateScales = () => {
+  const range = props.xVariableLim
+    ? props.xVariableLim
+    : extent(plottedData.value, (d) => d.date);
+
+  x.value = x.value
+    .range([0, props.width])
+    .domain(timeDay.range(range[0], timeDay.offset(range[1], 1)));
+
+  const yMax = props.fixedYMax
+    ? props.fixedYMax
+    : max(plottedData.value, (d) => d[variable.value]);
+
+  if (isLogY.value) {
+    yMin.value = 0.5;
+
+    y.value = scaleLog().range([props.height, 0]).domain([yMin.value, yMax]);
+  } else {
+    yMin.value = 0;
+
+    y.value = scaleLinear().range([props.height, 0]).domain([yMin.value, yMax]);
+  }
+
+  // --- update y-scale switch button --
+  const dySwitch = 30;
+  const xSwoop = 15;
+  const ySwoop = -35;
+  const swoopOffset = 5;
+
+  switchBtn.value = select(switch_btn.value);
+
+  switchBtn.value
+    .select('.switch-button-rect')
+    .attr('y', props.height + margin.value.top + dySwitch)
+    .on('click', () => changeScale());
+
+  switchBtn.value.select('path').attr(
+    'd',
+    `M ${xSwoop} ${
+      props.height + margin.value.top + margin.value.bottom + ySwoop
     }
-
-    this.setupPlot();
-    this.setupBarChart();
-    this.updatePlot();
-  },
-  methods: {
-    setupPlot() {
-      this.svg = select(`#bargraph-${this.id}-${this.variable}`).select(
-        'svg.epi-bargraph',
-      );
-      this.chart = this.svg.select('#case-counts');
-      this.average = this.svg.select('#rolling-average');
-
-      this.line = line()
-        .x((d) => this.x(d.date))
-        .y((d) => this.y(d[this.variable.replace('_numIncrease', '_rolling')]));
-    },
-    setupBarChart() {
-      this.wrapper = this.$refs.barchart_wrapper;
-      this.pixiApp = new PIXI.Application({
-        backgroundAlpha: 0,
-        width: 650,
-        height: this.height,
-      });
-      this.wrapper.appendChild(this.pixiApp.view);
-      this.prepData();
-      if (this.plottedData && this.width && this.height) {
-        this.updateScales();
-        this.drawBarchart();
-      }
-    },
-    prepData() {
-      this.location_id =
-        this.data && this.data.length && this.data[0].admin_level >= 0
-          ? this.data[0].location_id
-          : null;
-
-      if (this.percapita) {
-        this.variable =
-          this.variable.includes('_per_100k') ||
-          this.variableObj.percapita === false
-            ? this.variable
-            : this.variable + '_per_100k';
-      } else {
-        this.variable = this.variable.replace('_per_100k', '');
-      }
-
-      if (this.data && this.includeAxis) {
-        this.logData = cloneDeep(this.data).filter(
-          (d) => d[this.variable] >= 1,
-        );
-        this.logData.forEach((d) => {
-          d['confirmed_log'] = Math.log10(d.confirmed_numIncrease);
-        });
-        this.plottedData = this.isLogY
-          ? this.logData
-          : this.data.filter((d) => d[this.variable] >= 0);
-      } else {
-        this.plottedData = this.data.filter((d) => d[this.variable] >= 0);
-      }
-    },
-    updatePlot() {
-      this.prepData();
-
-      if (this.plottedData && this.width && this.height) {
-        this.updateScales();
-        this.drawPlot();
-        this.drawBarchart();
-      }
-    },
-    updateScales() {
-      const range = this.xVariableLim
-        ? this.xVariableLim
-        : extent(this.plottedData, (d) => d.date);
-
-      this.x = this.x
-        .range([0, this.width])
-        .domain(timeDay.range(range[0], timeDay.offset(range[1], 1)));
-
-      const yMax = this.fixedYMax
-        ? this.fixedYMax
-        : max(this.plottedData, (d) => d[this.variable]);
-
-      if (this.isLogY) {
-        this.yMin = 0.5;
-
-        this.y = scaleLog().range([this.height, 0]).domain([this.yMin, yMax]);
-      } else {
-        this.yMin = 0;
-
-        this.y = scaleLinear()
-          .range([this.height, 0])
-          .domain([this.yMin, yMax]);
-      }
-
-      // --- update y-scale switch button --
-      const dySwitch = 30;
-      const xSwoop = 15;
-      const ySwoop = -35;
-      const swoopOffset = 5;
-
-      this.switchBtn = select(this.$refs.switch_btn);
-
-      this.switchBtn
-        .select('.switch-button-rect')
-        .attr('y', this.height + this.margin.top + dySwitch)
-        .on('click', () => this.changeScale());
-
-      this.switchBtn.select('path').attr(
-        'd',
-        `M ${xSwoop} ${
-          this.height + this.margin.top + this.margin.bottom + ySwoop
-        }
             C ${xSwoop} ${
-          this.height + this.margin.top + this.margin.bottom + ySwoop - 10
-        },
-            ${this.margin.left + ySwoop - 10} ${
-          this.height + this.margin.top + 5
-        },
-            ${this.margin.left + ySwoop + 5} ${this.height + this.margin.top}`,
+      props.height + margin.value.top + margin.value.bottom + ySwoop - 10
+    },
+            ${margin.value.left + ySwoop - 10} ${
+      props.height + margin.value.top + 5
+    },
+            ${margin.value.left + ySwoop + 5} ${
+      props.height + margin.value.top
+    }`,
+  );
+
+  switchBtn.value
+    .select('text')
+    .text(`switch to ${isLogY.value ? 'linear' : 'log'} scale`)
+    .attr('y', props.height + margin.value.top + dySwitch + 20);
+
+  if (switchBtn.value.select('text').node()) {
+    switchBtn.value
+      .select('rect')
+      .attr('width', switchBtn.value.select('text').node().getBBox().width + 10)
+      .attr(
+        'height',
+        switchBtn.value.select('text').node().getBBox().height + 5,
+      );
+  }
+
+  if (props.includeAxis) {
+    // ~ 4 tick marks, rounded to the nearest week interval (4*7)
+    const plotInterval = Math.round(x.value.domain().length / 28) * 7;
+    xAxis.value = axisBottom(x.value)
+      .tickSizeOuter(0)
+      .tickValues(
+        x.value.domain().filter(function (d, i) {
+          return !(i % plotInterval);
+        }),
+      )
+      .tickFormat(timeFormat('%b %Y'));
+
+    select(xAxisRef.value).call(xAxis.value);
+
+    yAxis.value = isLogY.value
+      ? axisLeft(y.value)
+          .tickSizeOuter(0)
+          .ticks(numYTicks.value)
+          .tickFormat((d, i) => {
+            const log = Math.log10(d);
+            return Math.abs(Math.round(log) - log) < 1e-6 && log >= 0
+              ? format(',')(d)
+              : '';
+          })
+      : axisLeft(y.value).tickSizeOuter(0).ticks(numYTicks.value);
+
+    select(yAxisRef.value).call(yAxis.value);
+  }
+};
+
+const drawPlot = () => {
+  if (chart.value) {
+    const endDate = timeParse('%Y-%m-%d')(props.date1);
+    // v-line to indicate dates
+    if (props.date1) {
+      const dateSelector = chart.value
+        .selectAll(`.date-annotation_${variable.value}`)
+        .data([endDate]);
+
+      dateSelector.join(
+        (enter) =>
+          enter
+            .append('line')
+            .attr(
+              'class',
+              (d) => `.date-annotation_${variable.value} annotation-date1`,
+            )
+            .style('stroke', '#D13B62')
+            .attr('x1', (d) => x.value(d))
+            .attr('x2', (d) => x.value(d))
+            .attr('y1', (d) => 0)
+            .attr('y2', (d) => props.height),
+
+        (update) =>
+          update
+            .attr('x1', (d) => x.value(d))
+            .attr('x2', (d) => x.value(d))
+            .attr('y1', (d) => 0)
+            .attr('y2', (d) => props.height),
+
+        (exit) =>
+          exit.call((exit) =>
+            exit.transition().duration(10).style('opacity', 1e-5).remove(),
+          ),
       );
 
-      this.switchBtn
-        .select('text')
-        .text(`switch to ${this.isLogY ? 'linear' : 'log'} scale`)
-        .attr('y', this.height + this.margin.top + dySwitch + 20);
+      if (props.include2week && x.value(endDate)) {
+        const dateSelector = chart.value
+          .selectAll(`.date-annotation_${variable.value}`)
+          .data([endDate]);
 
-      if (this.switchBtn.select('text').node()) {
-        this.switchBtn
-          .select('rect')
-          .attr(
-            'width',
-            this.switchBtn.select('text').node().getBBox().width + 10,
-          )
-          .attr(
-            'height',
-            this.switchBtn.select('text').node().getBBox().height + 5,
-          );
-      }
-
-      if (this.includeAxis) {
-        // ~ 4 tick marks, rounded to the nearest week interval (4*7)
-        const plotInterval = Math.round(this.x.domain().length / 28) * 7;
-        this.xAxis = axisBottom(this.x)
-          .tickSizeOuter(0)
-          .tickValues(
-            this.x.domain().filter(function (d, i) {
-              return !(i % plotInterval);
-            }),
-          )
-          .tickFormat(timeFormat('%b %Y'));
-
-        select(this.$refs.xAxis).call(this.xAxis);
-
-        this.yAxis = this.isLogY
-          ? axisLeft(this.y)
-              .tickSizeOuter(0)
-              .ticks(this.numYTicks)
-              .tickFormat((d, i) => {
-                const log = Math.log10(d);
-                return Math.abs(Math.round(log) - log) < 1e-6 && log >= 0
-                  ? format(',')(d)
-                  : '';
-              })
-          : axisLeft(this.y).tickSizeOuter(0).ticks(this.numYTicks);
-
-        select(this.$refs.yAxis).call(this.yAxis);
-      }
-    },
-    drawPlot() {
-      if (this.chart) {
-        const endDate = timeParse('%Y-%m-%d')(this.date1);
-        // v-line to indicate dates
-        if (this.date1) {
-          const dateSelector = this.chart
-            .selectAll(`.date-annotation_${this.variable}`)
-            .data([endDate]);
-
-          dateSelector.join(
-            (enter) =>
-              enter
-                .append('line')
-                .attr(
-                  'class',
-                  (d) => `.date-annotation_${this.variable} annotation-date1`,
-                )
-                .style('stroke', '#D13B62')
-                .attr('x1', (d) => this.x(d))
-                .attr('x2', (d) => this.x(d))
-                .attr('y1', (d) => 0)
-                .attr('y2', (d) => this.height),
-
-            (update) =>
-              update
-                .attr('x1', (d) => this.x(d))
-                .attr('x2', (d) => this.x(d))
-                .attr('y1', (d) => 0)
-                .attr('y2', (d) => this.height),
-
-            (exit) =>
-              exit.call((exit) =>
-                exit.transition().duration(10).style('opacity', 1e-5).remove(),
-              ),
-          );
-
-          if (this.include2week && this.x(endDate)) {
-            const dateSelector = this.chart
-              .selectAll(`.date-annotation_${this.variable}`)
-              .data([endDate]);
-
-            dateSelector.join(
-              (enter) =>
-                enter
-                  .append('rect')
-                  .attr(
-                    'class',
-                    (d) => `.date-annotation_${this.variable} annotation-date1`,
-                  )
-                  .style('fill', '#D13B62')
-                  .style('fill-opacity', 0.1)
-                  .attr('x', (d) => this.x(timeDay.offset(endDate, -14)))
-                  .attr(
-                    'width',
-                    (d) => this.x(d) - this.x(timeDay.offset(d, -14)),
-                  )
-                  .attr('y', 0)
-                  .attr('height', this.height),
-
-              (update) =>
-                update
-                  .attr('x1', (d) => this.x(d))
-                  .attr('x2', (d) => this.x(d))
-                  .attr('y1', (d) => 0)
-                  .attr('y2', (d) => this.height),
-
-              (exit) =>
-                exit.call((exit) =>
-                  exit
-                    .transition()
-                    .duration(10)
-                    .style('opacity', 1e-5)
-                    .remove(),
-                ),
-            );
-          }
-        }
-
-        let lineSelector;
-        if (
-          [
-            'confirmed_numIncrease',
-            'confirmed_numIncrease_per_100k',
-            'dead_numIncrease',
-            'dead_numIncrease_per_100k',
-            'recovered_numIncrease',
-            'recovered_numIncrease_per_100k',
-          ].includes(this.variable)
-        ) {
-          const averageData = this.isLogY
-            ? this.plottedData.filter(
-                (d) =>
-                  d[this.variable.replace('_numIncrease', '_rolling')] >= 1,
-              )
-            : this.plottedData.filter(
-                (d) => d[this.variable.replace('_numIncrease', '_rolling')],
-              );
-          lineSelector = this.average
-            .selectAll('.rolling-average')
-            .data([averageData], (d) => d._id);
-        } else {
-          lineSelector = this.average
-            .selectAll('.rolling-average')
-            .data([], (d) => d._id);
-        }
-
-        lineSelector.join(
-          (enter) => {
+        dateSelector.join(
+          (enter) =>
             enter
+              .append('rect')
+              .attr(
+                'class',
+                (d) => `.date-annotation_${variable.value} annotation-date1`,
+              )
+              .style('fill', '#D13B62')
+              .style('fill-opacity', 0.1)
+              .attr('x', (d) => x.value(timeDay.offset(endDate, -14)))
+              .attr(
+                'width',
+                (d) => x.value(d) - x.value(timeDay.offset(d, -14)),
+              )
+              .attr('y', 0)
+              .attr('height', props.height),
 
-              .append('path')
-              .attr('class', 'rolling-average')
-              .style('stroke', this.colorAverage)
-              .style('fill', 'none')
-              .style('stroke-width', '2.5')
-              .datum((d) => d)
-              .join('path')
-              .attr('d', this.line)
-              .attr('stroke-dasharray', 0)
-              .attr('stroke-dashoffset', 0);
-          },
-          (update) => {
+          (update) =>
             update
+              .attr('x1', (d) => x.value(d))
+              .attr('x2', (d) => x.value(d))
+              .attr('y1', (d) => 0)
+              .attr('y2', (d) => props.height),
 
-              .style('stroke', this.colorAverage)
-              .attr('d', this.line)
-              .attr('stroke-dasharray', 0)
-              .attr('stroke-dashoffset', 0);
-          },
           (exit) =>
             exit.call((exit) =>
               exit.transition().duration(10).style('opacity', 1e-5).remove(),
             ),
         );
       }
-    },
-    drawBarchart() {
-      // this.pixiApp.renderer.resize(this.width, this.height)
-      if (this.pixiApp) {
-        if (this.pixiApp.stage.children.length > 0) {
-          this.pixiApp.stage.removeChildren();
-        }
+    }
 
-        let hoverLine = new SmoothGraphics();
-        hoverLine.beginFill(0x000000);
-        hoverLine.drawRect(0, 0, this.x.bandwidth() * 2, 40);
-        hoverLine.endFill();
-        hoverLine.alpha = 0;
-        this.pixiApp.stage.addChild(hoverLine);
+    let lineSelector;
+    if (
+      [
+        'confirmed_numIncrease',
+        'confirmed_numIncrease_per_100k',
+        'dead_numIncrease',
+        'dead_numIncrease_per_100k',
+        'recovered_numIncrease',
+        'recovered_numIncrease_per_100k',
+      ].includes(variable.value)
+    ) {
+      const averageData = isLogY.value
+        ? plottedData.value.filter(
+            (d) => d[variable.value.replace('_numIncrease', '_rolling')] >= 1,
+          )
+        : plottedData.value.filter(
+            (d) => d[variable.value.replace('_numIncrease', '_rolling')],
+          );
+      lineSelector = average.value
+        .selectAll('.rolling-average')
+        .data([averageData], (d) => d._id);
+    } else {
+      lineSelector = average.value
+        .selectAll('.rolling-average')
+        .data([], (d) => d._id);
+    }
 
-        let hoverCircle = new SmoothGraphics();
-        hoverCircle.beginFill(0x000000, 1);
-        hoverCircle
-          .lineStyle(2, 0x000000, 1.0)
-          .drawCircle(0, 0, this.x.bandwidth() * 4);
-        hoverCircle.endFill();
-        hoverCircle.alpha = 0;
-        this.pixiApp.stage.addChild(hoverCircle);
+    lineSelector.join(
+      (enter) => {
+        enter
 
-        this.plottedData
+          .append('path')
+          .attr('class', 'rolling-average')
+          .style('stroke', props.colorAverage)
+          .style('fill', 'none')
+          .style('stroke-width', '2.5')
+          .datum((d) => d)
+          .join('path')
+          .attr('d', lineMethod.value)
+          .attr('stroke-dasharray', 0)
+          .attr('stroke-dashoffset', 0);
+      },
+      (update) => {
+        update
 
-          .filter((t) => t[this.variable])
-          .forEach((d) => {
-            let barchart = new SmoothGraphics();
-            if (d.confirmed_numIncrease > d.confirmed_rolling) {
-              barchart.hitArea = new PIXI.Rectangle(
-                this.x(d.date),
-
-                this.y(d[this.variable.replace('_numIncrease', '_rolling')]) -
-                  100,
-                this.x.bandwidth(),
-                this.y(this.yMin) -
-                  (this.y(
-                    d[this.variable.replace('_numIncrease', '_rolling')],
-                  ) -
-                    100),
-              );
-            } else {
-              barchart.hitArea = new PIXI.Rectangle(
-                this.x(d.date),
-
-                this.y(d[this.variable.replace('_numIncrease', '_rolling')]) -
-                  100,
-                this.x.bandwidth(),
-                this.y(this.yMin) -
-                  (this.y(
-                    d[this.variable.replace('_numIncrease', '_rolling')],
-                  ) -
-                    100),
-              );
-            }
-            barchart.beginFill(0x507ea3, 0.55);
-            let bar = barchart.lineStyle(0.9, 0x507ea3, 0, 0.5).drawRect(
-              this.x(d.date),
-              this.y(d[this.variable]),
-              this.x.bandwidth(),
-
-              this.y(this.yMin) - this.y(d[this.variable]),
-            );
-
-            barchart.endFill();
-            if (this.includeTooltips) {
-              bar.interactive = true;
-
-              bar.on('pointerover', (event) => {
-                const ttip = selectAll(`.${this.tooltipIdx}`)
-                  .selectAll('.tooltip')
-                  .style(
-                    'top',
-                    this.y(
-                      d[this.variable.replace('_numIncrease', '_rolling')],
-                    ) + 'px',
-                  )
-                  .style('left', event.data.global.x + 'px')
-                  .style('opacity', 1);
-
-                ttip.select('.country-name').text(d.name);
-                ttip.select('.date').text(timeFormat('%d %b %Y')(d.date));
-                ttip
-                  .select('.count')
-                  .text(
-                    `${format(',.1f')(d[this.variable])} ${
-                      this.variableObj.ttip
-                    }`,
-                  );
-                if (this.noRollingAvg) {
-                  ttip.select('.count-avg').text('');
-                } else {
-                  ttip
-                    .select('.count-avg')
-                    .text(
-                      `7 day average: ${format(',.1f')(
-                        d[this.variable.replace('_numIncrease', '_rolling')],
-                      )}`,
-                    );
-                }
-
-                hoverLine.alpha = 1;
-                hoverLine.position.set(
-                  this.x(d.date),
-
-                  this.y(d[this.variable.replace('_numIncrease', '_rolling')]),
-                );
-                hoverLine.height =
-                  this.y(this.yMin) -
-                  this.y(d[this.variable.replace('_numIncrease', '_rolling')]);
-
-                hoverCircle.alpha = 1;
-                let circ_x = this.x(d.date) + this.x.bandwidth() / 2;
-                hoverCircle.position.set(
-                  circ_x,
-
-                  this.y(d[this.variable.replace('_numIncrease', '_rolling')]),
-                );
-              });
-              bar.on('pointerout', (event) => {
-                selectAll('.tooltip').style('opacity', 0);
-
-                hoverLine.alpha = 0;
-                hoverCircle.alpha = 0;
-              });
-            }
-            this.pixiApp.stage.addChild(barchart);
-          });
-      }
-    },
-
-    changeScale() {
-      this.isLogY = !this.isLogY;
-      this.$router.replace({
-        path: 'epidemiology',
-        name: 'Epidemiology',
-        meta: {
-          disableScroll: true,
-        },
-        query: {
-          location: this.location,
-          log: String(this.isLogY),
-          variable: this.variable.replace('_per_100k', ''),
-          fixedY: String(!!this.fixedYMax),
-          percapita: String(this.percapita),
-        },
-      });
-
-      this.updatePlot();
-      this.drawBarchart();
-    },
-  },
+          .style('stroke', props.colorAverage)
+          .attr('d', lineMethod.value)
+          .attr('stroke-dasharray', 0)
+          .attr('stroke-dashoffset', 0);
+      },
+      (exit) =>
+        exit.call((exit) =>
+          exit.transition().duration(10).style('opacity', 1e-5).remove(),
+        ),
+    );
+  }
 };
+
+const drawBarchart = () => {
+  // this.pixiApp.renderer.resize(this.width, this.height)
+  if (pixiApp.value) {
+    if (pixiApp.value.stage.children.length > 0) {
+      pixiApp.value.stage.removeChildren();
+    }
+
+    let hoverLine = new SmoothGraphics();
+    hoverLine.beginFill(0x000000);
+    hoverLine.drawRect(0, 0, x.value.bandwidth() * 2, 40);
+    hoverLine.endFill();
+    hoverLine.alpha = 0;
+    pixiApp.value.stage.addChild(hoverLine);
+
+    let hoverCircle = new SmoothGraphics();
+    hoverCircle.beginFill(0x000000, 1);
+    hoverCircle
+      .lineStyle(2, 0x000000, 1.0)
+      .drawCircle(0, 0, x.value.bandwidth() * 4);
+    hoverCircle.endFill();
+    hoverCircle.alpha = 0;
+    pixiApp.value.stage.addChild(hoverCircle);
+
+    plottedData.value
+      .filter((t) => t[variable.value])
+      .forEach((d) => {
+        let barchart = new SmoothGraphics();
+        if (d.confirmed_numIncrease > d.confirmed_rolling) {
+          barchart.hitArea = new PIXI.Rectangle(
+            x.value(d.date),
+
+            y.value(d[variable.value.replace('_numIncrease', '_rolling')]) -
+              100,
+            x.value.bandwidth(),
+            y.value(yMin.value) -
+              (y.value(d[variable.value.replace('_numIncrease', '_rolling')]) -
+                100),
+          );
+        } else {
+          barchart.hitArea = new PIXI.Rectangle(
+            x.value(d.date),
+
+            y.value(d[variable.value.replace('_numIncrease', '_rolling')]) -
+              100,
+            x.value.bandwidth(),
+            y.value(yMin.value) -
+              (y.value(d[variable.value.replace('_numIncrease', '_rolling')]) -
+                100),
+          );
+        }
+        barchart.beginFill(0x507ea3, 0.55);
+        let bar = barchart.lineStyle(0.9, 0x507ea3, 0, 0.5).drawRect(
+          x.value(d.date),
+          y.value(d[variable.value]),
+          x.value.bandwidth(),
+
+          y.value(yMin.value) - y.value(d[variable.value]),
+        );
+
+        barchart.endFill();
+        if (props.includeTooltips) {
+          bar.interactive = true;
+
+          bar.on('pointerover', (event) => {
+            const ttip = selectAll(`.${props.tooltipIdx}`)
+              .selectAll('.tooltip')
+              .style(
+                'top',
+                y.value(d[variable.value.replace('_numIncrease', '_rolling')]) +
+                  'px',
+              )
+              .style('left', event.data.global.x + 'px')
+              .style('opacity', 1);
+
+            ttip.select('.country-name').text(d.name);
+            ttip.select('.date').text(timeFormat('%d %b %Y')(d.date));
+            ttip
+              .select('.count')
+              .text(
+                `${format(',.1f')(d[variable.value])} ${
+                  props.variableObj.ttip
+                }`,
+              );
+            if (noRollingAvg.value) {
+              ttip.select('.count-avg').text('');
+            } else {
+              ttip
+                .select('.count-avg')
+                .text(
+                  `7 day average: ${format(',.1f')(
+                    d[variable.value.replace('_numIncrease', '_rolling')],
+                  )}`,
+                );
+            }
+
+            hoverLine.alpha = 1;
+            hoverLine.position.set(
+              x.value(d.date),
+              y.value(d[variable.value.replace('_numIncrease', '_rolling')]),
+            );
+            hoverLine.height =
+              y.value(yMin.value) -
+              y.value(d[variable.value.replace('_numIncrease', '_rolling')]);
+
+            hoverCircle.alpha = 1;
+            let circ_x = x.value(d.date) + x.value.bandwidth() / 2;
+            hoverCircle.position.set(
+              circ_x,
+              y.value(d[variable.value.replace('_numIncrease', '_rolling')]),
+            );
+          });
+          bar.on('pointerout', (event) => {
+            selectAll('.tooltip').style('opacity', 0);
+
+            hoverLine.alpha = 0;
+            hoverCircle.alpha = 0;
+          });
+        }
+        pixiApp.value.stage.addChild(barchart);
+      });
+  }
+};
+
+const changeScale = () => {
+  isLogY.value = !isLogY.value;
+  router.replace({
+    path: 'epidemiology',
+    name: 'Epidemiology',
+    meta: {
+      disableScroll: true,
+    },
+    query: {
+      location: props.location,
+      log: String(isLogY.value),
+      variable: variable.value.replace('_per_100k', ''),
+      fixedY: String(!!props.fixedYMax),
+      percapita: String(props.percapita),
+    },
+  });
+
+  updatePlot();
+  drawBarchart();
+};
+
+watch(
+  () => props.data,
+  () => {
+    updatePlot();
+    drawBarchart();
+  },
+);
+
+watch(
+  () => props.variableObj,
+  (newObj, oldObj) => {
+    variable.value = newObj.value;
+    noRollingAvg.value =
+      ![
+        'confirmed_numIncrease',
+        'dead_numIncrease',
+        'recovered_numIncrease',
+      ].includes(variable.value) || !props.animate;
+    updatePlot();
+    drawBarchart();
+  },
+  { deep: true },
+);
+
+//TODO: should check why it was commented before
+watch(variable, () => {
+  updatePlot();
+});
+
+watch(
+  () => props.fixedYMax,
+  () => {
+    updatePlot();
+    drawBarchart();
+  },
+);
+
+watch(
+  () => props.log,
+  (newVal, oldVal) => {
+    isLogY.value = newVal;
+    updatePlot();
+    drawBarchart();
+  },
+  { immediate: true },
+);
+
+watch(
+  () => props.percapita,
+  (newVal, oldVal) => {
+    if (newVal !== oldVal) {
+      updatePlot();
+      drawBarchart();
+    }
+  },
+  { immediate: true },
+);
+
+watch(
+  () => props.width,
+  () => {
+    updatePlot();
+    drawBarchart();
+  },
+);
+
+watch(
+  () => props.height,
+  () => {
+    updatePlot();
+    drawBarchart();
+  },
+);
+
+onMounted(() => {
+  if (!props.includeAxis) {
+    margin.value = {
+      top: 0,
+      bottom: 0,
+      left: 0,
+      right: 0,
+    };
+  }
+
+  setupPlot();
+  setupBarChart();
+  updatePlot();
+});
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
