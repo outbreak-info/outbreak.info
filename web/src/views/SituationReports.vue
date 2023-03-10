@@ -1331,9 +1331,12 @@ const props = defineProps({
   name: String,
 });
 
+// instead of this.$route
 const route = useRoute();
+// instead of this.$router
 const router = useRouter();
 
+// global variable - equivalent with this.$genomicsurl
 const genomicsUrl = inject('genomicsUrl');
 
 const store = adminStore();

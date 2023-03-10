@@ -107,8 +107,11 @@ import { adminStore } from '@/stores/adminStore';
 const SourceDescription = lazyLoad('SourceDescription');
 const DownloadData = lazyLoad('DownloadData');
 
+// global variable - equivalent with this.$apiurl
 const apiUrl = inject('apiUrl');
+// global variable - equivalent with this.$genomicsurl
 const genomicsUrl = inject('genomicsUrl');
+// global variable - equivalent with this.$resourceurl
 const resourceUrl = inject('resourceUrl');
 
 const metadataSubscription = ref(null);

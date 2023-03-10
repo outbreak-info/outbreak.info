@@ -161,7 +161,9 @@ const props = defineProps({
   },
 });
 
+// instead of this.$router
 const router = useRouter();
+// instead of this.$route
 const route = useRoute();
 
 const numXTicks = ref(4);

@@ -235,6 +235,7 @@ const Bargraph = lazyLoad('Bargraph');
 const CountryBarGraph = lazyLoad('CountryBarGraph');
 const DataSource = lazyLoad('DataSource');
 
+// global variable - equivalent with this.$apiurl
 const apiUrl = inject('apiUrl');
 
 const storeAdmin = adminStore();

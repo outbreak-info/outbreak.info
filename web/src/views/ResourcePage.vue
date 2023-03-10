@@ -401,11 +401,13 @@ const ResourceSidebar = lazyLoad('ResourceSidebar');
 const ClinicalTrialDescription = lazyLoad('ClinicalTrialDescription');
 const ResourceCitation = lazyLoad('ResourceCitation');
 
+// global variable - equivalent with this.$resourceurl
 const resourceUrl = inject('resourceUrl');
 
 const store = adminStore();
 const { loading } = storeToRefs(store);
 
+// instead of this.$route
 const route = useRoute();
 
 const type = ref(null);

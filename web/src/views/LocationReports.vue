@@ -105,6 +105,7 @@ const curated = ref(null);
 const store = adminStore();
 const { reportloading } = storeToRefs(store);
 
+// global variable - equivalent with this.$genomicsurl
 const genomicsUrl = inject('genomicsUrl');
 
 onMounted(() => {

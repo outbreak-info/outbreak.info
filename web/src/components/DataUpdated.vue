@@ -9,6 +9,7 @@
 import { inject, onMounted, onUnmounted, ref } from 'vue';
 import { getDateUpdated } from '@/api/biothings.js';
 
+// global variable - equivalent with this.$apiurl
 const apiUrl = inject('apiUrl');
 
 const lastUpdated = ref(null);

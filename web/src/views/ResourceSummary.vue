@@ -115,7 +115,10 @@ import { lazyLoad } from '@/js/lazy-load';
 const WhatsNew = lazyLoad('WhatsNew');
 const CirclePacking = lazyLoad('CirclePacking');
 
+// global variable - equivalent with this.$resourceurl
 const resourceUrl = inject('resourceUrl');
+
+// instead of this.$router
 const router = useRouter();
 
 const demos = ref([]);

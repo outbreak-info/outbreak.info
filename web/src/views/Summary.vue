@@ -43,7 +43,9 @@ const props = defineProps({
   location: String,
 });
 
+// global variable - equivalent with this.$apiurl
 const apiUrl = inject('apiUrl');
+// global variable - equivalent with this.$genomicsurl
 const genomicsUrl = inject('genomicsUrl');
 
 const glanceSummaries = ref([]);

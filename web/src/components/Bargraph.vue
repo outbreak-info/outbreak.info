@@ -201,6 +201,7 @@ const props = defineProps({
   },
 });
 
+// instead of this.$router
 const router = useRouter();
 
 const margin = ref({

@@ -44,7 +44,18 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import {
+  ref,
+  inject,
+  computed,
+  watch,
+  onMounted,
+  nextTick,
+  onBeforeUnmount,
+  onUnmounted,
+} from 'vue';
+import { useRouter } from 'vue-router';
 import { axisRight } from 'd3-axis';
 import { max, extent } from 'd3-array';
 import { scaleLinear, scaleBand, scaleTime } from 'd3-scale';
@@ -53,387 +64,410 @@ import { area } from 'd3-shape';
 import { transition } from 'd3-transition';
 
 import { getCountryData } from '@/api/region-summary.js';
-import { mapState } from 'pinia';
 import { colorsStore } from '@/stores/colorsStore';
 
-const width = 250;
-const sparkWidth = 75;
-const newCasesWidth = 45;
-const innerPadding = 0.25;
-const margin = {
+const props = defineProps({
+  region: String,
+  variable: String,
+  id: Number,
+});
+
+// define emits - same as this.$emit
+const emit = defineEmits(['regionSelected']);
+
+// global variable - equivalent with this.$apiurl
+const apiUrl = inject('apiUrl');
+
+// global router variable - equivalent with this.$router
+const router = useRouter();
+
+const store = colorsStore();
+
+const width = ref(250);
+const sparkWidth = ref(75);
+const newCasesWidth = ref(45);
+const margin = ref({
   top: 20,
   right: 100,
   bottom: 10,
   left: 100,
   gap: 10,
+});
+const innerPadding = ref(0.25);
+const transitionDuration = ref(3500);
+const height = ref(0);
+const data = ref(null);
+const barHeight = ref(15);
+const isOverflow = ref(false);
+//axes
+const x = ref(scaleLinear().range([250, 0]));
+const y = ref(scaleBand().paddingInner(0.25));
+const xSpark = ref(scaleTime().range([0, 75]));
+const xAxis = ref(null);
+const yAxis = ref(null);
+// refs
+const svg = ref(null);
+const chart = ref(null);
+// methods
+const lineF = ref(null);
+// missing variables in previous version
+const changeDataSubscription = ref(null);
+const dataSubscription = ref(null);
+
+const lightColor = computed(() => {
+  const scale = store.getRegionColor;
+  return scale(this.region, 0.85);
+});
+
+dataSubscription.value = getCountryData(
+  apiUrl,
+  props.region,
+  props.variable,
+).subscribe((response) => {
+  data.value = response;
+});
+
+const colorScale = (idx) => {
+  const scale = store.getRegionColorPalette;
+  return scale(props.region, data.value.length, idx);
 };
-const transitionDuration = 3500;
 
-export default {
-  name: 'CountryBarGraph',
-  components: {},
-  props: {
-    region: String,
-    variable: String,
-    id: Number,
-  },
-  data() {
-    return {
-      width,
-      sparkWidth,
-      newCasesWidth,
-      margin,
-      innerPadding,
-      transitionDuration,
-      height: 0,
-      data: null,
-      barHeight: 15,
-      isOverflow: false,
+const handleClick = () => {
+  emit('regionSelected', {
+    region: 'all',
+  });
 
-      // axes
-      x: scaleLinear().range([width, 0]),
-      y: scaleBand().paddingInner(innerPadding),
-      xSpark: scaleTime().range([0, sparkWidth]),
-      xAxis: null,
-      yAxis: null,
-      // refs
-      svg: null,
-      chart: null,
-      // methods
-      line: null,
-    };
-  },
-  computed: {
-    ...mapState(colorsStore, ['getRegionColor', 'getRegionColorPalette']),
-    lightColor() {
-      const scale = this.getRegionColor;
-      return scale(this.region, 0.85);
+  router.push({
+    path: 'epidemiology',
+    query: {
+      location: data.value.map((d) => d.location_id).join(';'),
     },
-  },
-  watch: {
-    data() {
-      this.updatePlot();
-    },
-    variable() {
-      this.updateData();
-    },
-  },
-  created() {
-    this.dataSubscription = getCountryData(
-      this.$apiurl,
-      this.region,
-      this.variable,
-    ).subscribe((data) => {
-      this.data = data;
-    });
-  },
-  beforeUnmount() {
-    this.dataSubscription.unsubscribe();
-    if (this.changeDataSubscription) {
-      this.changeDataSubscription.unsubscribe();
-    }
-  },
-  mounted() {
-    this.setupPlot();
-    this.$nextTick(() => {
-      window.addEventListener('click', this.clickClose), { passive: true };
-
-      document.addEventListener(
-        'keyup',
-        (evt) => {
-          if (evt.keyCode === 27) {
-            this.closeWindow();
-          }
-        },
-        { passive: true },
-      );
-    });
-  },
-  unmounted() {
-    window.removeEventListener('click', this.clickClose);
-    document.removeEventListener('keyup', this.closeWindow);
-  },
-  methods: {
-    colorScale(idx) {
-      const scale = this.getRegionColorPalette;
-      return scale(this.region, this.data.length, idx);
-    },
-    handleClick() {
-      this.$emit('regionSelected', {
-        region: 'all',
-      });
-
-      this.$router.push({
-        path: 'epidemiology',
-        query: {
-          location: this.data.map((d) => d.location_id).join(';'),
-        },
-      });
-    },
-    routeToLoc(location_name) {
-      const location = this.data.filter((d) => d.name === location_name);
-      const location_id = location ? location[0].location_id : null;
-
-      if (location_id) {
-        this.$emit('regionSelected', {
-          region: 'all',
-        });
-
-        this.$router.push({
-          path: 'epidemiology',
-          query: {
-            location: location_id,
-          },
-        });
-      }
-    },
-    clickClose(evt) {
-      const classID = evt.target.className.baseVal;
-      if (
-        !classID ||
-        (classID !== 'region-country-counts' &&
-          classID !== 'legend-name' &&
-          !classID.includes('stacked-area-chart'))
-      ) {
-        this.closeWindow();
-      }
-    },
-    closeWindow() {
-      this.$emit('regionSelected', {
-        region: this.region,
-        display: false,
-        displayMore: false,
-      });
-    },
-    updateData() {
-      this.changeDataSubscription = getCountryData(
-        this.$apiurl,
-        this.region,
-        this.variable,
-      ).subscribe((data) => {
-        this.data = data;
-      });
-    },
-    updatePlot() {
-      if (this.data) {
-        this.getHeight();
-        this.updateScales();
-        this.prepData();
-        this.drawPlot();
-      }
-    },
-    getHeight() {
-      const idealHeight =
-        this.barHeight * this.data.length +
-        (this.data.length - 2) * this.innerPadding;
-      if (idealHeight > window.innerHeight * 0.8) {
-        this.height = window.innerHeight * 0.8;
-        const num2Plot = Math.floor(
-          (this.height - 2 * this.innerPadding) /
-            (this.barHeight + this.innerPadding),
-        );
-        this.data = this.data.slice(-num2Plot);
-        this.isOverflow = true;
-      } else {
-        this.height = idealHeight;
-      }
-    },
-    setupPlot() {
-      this.svg = select(`#region-graphs-${this.id}`).select(
-        'svg.region-country-counts',
-      );
-      this.chart = this.svg.select('#case-counts');
-
-      this.svg
-        .append('g')
-        .attr('class', 'bar-axis axis--y')
-        .attr(
-          'transform',
-          `translate(${
-            this.margin.left + this.width + this.margin.right - 10
-          }, ${this.margin.top})`,
-        );
-
-      this.line = area()
-        .x((d) => this.xSpark(d.date))
-        .y0((d) => d.y0)
-        .y1((d) => d.y);
-    },
-    prepData() {
-      this.data.forEach((d) => {
-        const y = scaleLinear()
-          .range([this.y.bandwidth() * 0.8, 0])
-          .domain([0, max(d.data.map((d) => d[this.variable]))]);
-
-        d.data.forEach((datum) => {
-          datum['y'] = y(datum[this.variable]);
-          datum['y0'] = y(0);
-        });
-      });
-    },
-    updateScales() {
-      this.x = this.x.domain([0, max(this.data, (d) => d[this.variable])]);
-
-      this.y = this.y
-        .range([this.height, 0])
-        .domain(this.data.map((d) => d.name));
-
-      this.xSpark = this.xSpark.domain(
-        extent(this.data.flatMap((d) => d.data).map((d) => d.date)),
-      );
-
-      this.yAxis = axisRight(this.y);
-
-      this.svg.select('.axis--y').call(this.yAxis);
-      this.svg
-        .select('.axis--y')
-        .selectAll('text')
-        .on('click', (d) => this.routeToLoc(d));
-    },
-    drawPlot() {
-      const t1 = transition().duration(1000);
-
-      // --- group ---
-      const grpSelector = this.chart
-        .selectAll('.country-count-group')
-        .data(this.data);
-
-      // exit
-      grpSelector.exit().remove();
-
-      // enter
-      const grpEnter = grpSelector
-        .enter()
-        .append('g')
-        .attr('class', 'country-count-group');
-
-      // merge
-      grpSelector
-        .merge(grpEnter)
-        .attr('id', (d) => `${d.name}`)
-        // .attr("class", d => `${this.region}`)
-        .style('fill', (d, i) => this.colorScale(i))
-        .style('stroke', (d, i) => this.colorScale(i));
-
-      // --- bars ---
-      const barSelector = grpSelector.select('.country-count');
-      barSelector.exit().remove();
-
-      const barEnter = grpEnter.append('rect').attr('class', 'country-count');
-
-      // merge
-      barSelector
-        .merge(barEnter)
-        // .attr("width", 0)
-        .attr('height', this.y.bandwidth())
-        .attr('y', (d) => this.y(d.name))
-        .style('fill', (d, i) => this.colorScale(i))
-        // .attr("x", d => this.x(0))
-        // .transition(t1)
-        .attr('width', (d) => this.x(0) - this.x(d[this.variable]))
-        .attr('x', (d) => this.x(d[this.variable]));
-
-      // --- text ---
-      const textSelector = grpSelector.select('.annotation--country-count');
-
-      textSelector.exit().remove();
-
-      const textEnter = grpEnter
-        .append('text')
-        .attr('class', 'annotation--country-count');
-
-      // merge
-      textSelector
-        .merge(textEnter)
-        .attr('x', (d) => this.x(d[this.variable]))
-        .attr('dx', '-0.5em')
-        .attr('y', (d) => this.y(d.name) + this.y.bandwidth() / 2)
-        .style('font-size', this.y.bandwidth())
-        .text((d) =>
-          d[this.variable] ? d[this.variable].toLocaleString() : '',
-        );
-
-      // --- sparklines ---
-      this.chart
-        .append('text')
-        .attr('class', 'subtitle')
-        .attr(
-          'x',
-          this.width +
-            this.margin.gap +
-            this.margin.right +
-            this.sparkWidth / 2,
-        )
-        .attr('y', -5)
-        .text('over time');
-
-      const sparkSelector = grpSelector.select('.sparkline');
-
-      const sparkEnter = grpEnter
-        .append('path')
-        .attr(
-          'transform',
-          (d) =>
-            `translate(${
-              this.width + this.margin.gap + this.margin.right
-            }, ${this.y(d.name)})`,
-        )
-        .attr('class', 'sparkline');
-
-      // merge
-      sparkSelector
-        .merge(sparkEnter)
-        .datum((d) => d.data)
-        .join('path')
-        .attr('d', this.line);
-
-      // --- number of new cases ---
-      this.chart
-        .append('text')
-        .attr('class', 'subtitle')
-        .attr(
-          'x',
-          this.width +
-            this.margin.gap * 3 +
-            this.margin.right +
-            this.sparkWidth +
-            this.newCasesWidth / 2,
-        )
-        .attr('y', -5)
-        .text('new today');
-
-      const newCasesSelector = grpSelector.select('.new-cases');
-
-      newCasesSelector.exit().remove();
-
-      const newCasesEnter = grpEnter
-        .append('text')
-        .attr(
-          'transform',
-          (d) =>
-            `translate(${
-              this.width +
-              this.margin.gap * 3 +
-              this.margin.right +
-              this.sparkWidth
-            }, ${0})`,
-        )
-        .attr('x', 5)
-        .attr('y', (d) => this.y(d.name) + this.y.bandwidth() / 2)
-        .attr('class', 'new-cases')
-        .style('font-size', this.y.bandwidth());
-
-      // merge
-      newCasesSelector
-        .merge(newCasesEnter)
-        .text((d) =>
-          d[`${this.variable}_numIncrease`]
-            ? d[`${this.variable}_numIncrease`].toLocaleString()
-            : '',
-        );
-    },
-  },
+  });
 };
+
+const routeToLoc = (location_name) => {
+  const location = data.value.filter((d) => d.name === location_name);
+  const location_id = location ? location[0].location_id : null;
+
+  if (location_id) {
+    emit('regionSelected', {
+      region: 'all',
+    });
+
+    router.push({
+      path: 'epidemiology',
+      query: {
+        location: location_id,
+      },
+    });
+  }
+};
+
+const clickClose = (evt) => {
+  const classID = evt.target.className.baseVal;
+  if (
+    !classID ||
+    (classID !== 'region-country-counts' &&
+      classID !== 'legend-name' &&
+      !classID.includes('stacked-area-chart'))
+  ) {
+    closeWindow();
+  }
+};
+
+const closeWindow = () => {
+  emit('regionSelected', {
+    region: this.region,
+    display: false,
+    displayMore: false,
+  });
+};
+
+const updateData = () => {
+  changeDataSubscription.value = getCountryData(
+    apiUrl,
+    props.region,
+    props.variable,
+  ).subscribe((response) => {
+    data.value = response;
+  });
+};
+
+const getHeight = () => {
+  const idealHeight =
+    barHeight.value * data.value.length +
+    (data.value.length - 2) * innerPadding.value;
+  if (idealHeight > window.innerHeight * 0.8) {
+    height.value = window.innerHeight * 0.8;
+    const num2Plot = Math.floor(
+      (height.value - 2 * innerPadding.value) /
+        (barHeight.value + innerPadding.value),
+    );
+    data.value = data.value.slice(-num2Plot);
+    isOverflow.value = true;
+  } else {
+    height.value = idealHeight;
+  }
+};
+
+const updatePlot = () => {
+  if (data.value) {
+    getHeight();
+    updateScales();
+    prepData();
+    drawPlot();
+  }
+};
+
+const setupPlot = () => {
+  svg.value = select(`#region-graphs-${props.id}`).select(
+    'svg.region-country-counts',
+  );
+  chart.value = svg.value.select('#case-counts');
+
+  svg.value
+    .append('g')
+    .attr('class', 'bar-axis axis--y')
+    .attr(
+      'transform',
+      `translate(${
+        margin.value.left + width.value + margin.value.right - 10
+      }, ${margin.value.top})`,
+    );
+
+  lineF.value = area()
+    .x((d) => xSpark.value(d.date))
+    .y0((d) => d.y0)
+    .y1((d) => d.y);
+};
+
+const prepData = () => {
+  data.value.forEach((d) => {
+    // renamed as yV since y is already declared
+    const yV = scaleLinear()
+      .range([y.value.bandwidth() * 0.8, 0])
+      .domain([0, max(d.data.map((d) => d[props.variable]))]);
+
+    d.data.forEach((datum) => {
+      datum['y'] = yV(datum[props.variable]);
+      datum['y0'] = yV(0);
+    });
+  });
+};
+
+const updateScales = () => {
+  x.value = x.value.domain([0, max(data.value, (d) => d[props.variable])]);
+
+  y.value = y.value
+    .range([height.value, 0])
+    .domain(data.value.map((d) => d.name));
+
+  xSpark.value = xSpark.value.domain(
+    extent(data.value.flatMap((d) => d.data).map((d) => d.date)),
+  );
+
+  yAxis.value = axisRight(y.value);
+
+  svg.value.select('.axis--y').call(yAxis.value);
+  svg.value
+    .select('.axis--y')
+    .selectAll('text')
+    .on('click', (d) => routeToLoc(d));
+};
+
+const drawPlot = () => {
+  const t1 = transition().duration(1000);
+
+  // --- group ---
+  const grpSelector = chart.value
+    .selectAll('.country-count-group')
+    .data(data.value);
+
+  // exit
+  grpSelector.exit().remove();
+
+  // enter
+  const grpEnter = grpSelector
+    .enter()
+    .append('g')
+    .attr('class', 'country-count-group');
+
+  // merge
+  grpSelector
+    .merge(grpEnter)
+    .attr('id', (d) => `${d.name}`)
+    // .attr("class", d => `${this.region}`)
+    .style('fill', (d, i) => colorScale(i))
+    .style('stroke', (d, i) => colorScale(i));
+
+  // --- bars ---
+  const barSelector = grpSelector.select('.country-count');
+  barSelector.exit().remove();
+
+  const barEnter = grpEnter.append('rect').attr('class', 'country-count');
+
+  // merge
+  barSelector
+    .merge(barEnter)
+    // .attr("width", 0)
+    .attr('height', y.value.bandwidth())
+    .attr('y', (d) => y.value(d.name))
+    .style('fill', (d, i) => colorScale(i))
+    // .attr("x", d => this.x(0))
+    // .transition(t1)
+    .attr('width', (d) => x.value(0) - x.value(d[props.variable]))
+    .attr('x', (d) => x.value(d[props.variable]));
+
+  // --- text ---
+  const textSelector = grpSelector.select('.annotation--country-count');
+
+  textSelector.exit().remove();
+
+  const textEnter = grpEnter
+    .append('text')
+    .attr('class', 'annotation--country-count');
+
+  // merge
+  textSelector
+    .merge(textEnter)
+    .attr('x', (d) => x.value(d[props.variable]))
+    .attr('dx', '-0.5em')
+    .attr('y', (d) => y.value(d.name) + y.value.bandwidth() / 2)
+    .style('font-size', y.value.bandwidth())
+    .text((d) => (d[props.variable] ? d[props.variable].toLocaleString() : ''));
+
+  // --- sparklines ---
+  chart.value
+    .append('text')
+    .attr('class', 'subtitle')
+    .attr(
+      'x',
+      width.value +
+        margin.value.gap +
+        margin.value.right +
+        sparkWidth.value / 2,
+    )
+    .attr('y', -5)
+    .text('over time');
+
+  const sparkSelector = grpSelector.select('.sparkline');
+
+  const sparkEnter = grpEnter
+    .append('path')
+    .attr(
+      'transform',
+      (d) =>
+        `translate(${
+          width.value + margin.value.gap + margin.value.right
+        }, ${y.value(d.name)})`,
+    )
+    .attr('class', 'sparkline');
+
+  // merge
+  sparkSelector
+    .merge(sparkEnter)
+    .datum((d) => d.data)
+    .join('path')
+    .attr('d', lineF.value);
+
+  // --- number of new cases ---
+  chart.value
+    .append('text')
+    .attr('class', 'subtitle')
+    .attr(
+      'x',
+      width.value +
+        margin.value.gap * 3 +
+        margin.value.right +
+        sparkWidth.value +
+        newCasesWidth.value / 2,
+    )
+    .attr('y', -5)
+    .text('new today');
+
+  const newCasesSelector = grpSelector.select('.new-cases');
+
+  newCasesSelector.exit().remove();
+
+  const newCasesEnter = grpEnter
+    .append('text')
+    .attr(
+      'transform',
+      (d) =>
+        `translate(${
+          width.value +
+          margin.value.gap * 3 +
+          margin.value.right +
+          sparkWidth.value
+        }, ${0})`,
+    )
+    .attr('x', 5)
+    .attr('y', (d) => y.value(d.name) + y.value.bandwidth() / 2)
+    .attr('class', 'new-cases')
+    .style('font-size', y.value.bandwidth());
+
+  // merge
+  newCasesSelector
+    .merge(newCasesEnter)
+    .text((d) =>
+      d[`${props.variable}_numIncrease`]
+        ? d[`${props.variable}_numIncrease`].toLocaleString()
+        : '',
+    );
+};
+
+watch(
+  () => props.data,
+  () => {
+    updatePlot();
+  },
+  { deep: true },
+);
+
+watch(
+  () => props.variable,
+  () => {
+    updateData();
+  },
+);
+
+onMounted(() => {
+  setupPlot();
+  nextTick(() => {
+    window.addEventListener(
+      'click',
+      () => {
+        clickClose();
+      },
+      { passive: true },
+    );
+
+    document.addEventListener(
+      'keyup',
+      (evt) => {
+        if (evt.keyCode === 27) {
+          closeWindow();
+        }
+      },
+      { passive: true },
+    );
+  });
+});
+
+onBeforeUnmount(() => {
+  if (dataSubscription.value) {
+    dataSubscription.value.unsubscribe();
+  }
+
+  if (changeDataSubscription.value) {
+    changeDataSubscription.value.unsubscribe();
+  }
+});
+
+onUnmounted(() => {
+  window.removeEventListener('click', clickClose);
+  document.removeEventListener('keyup', closeWindow);
+});
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

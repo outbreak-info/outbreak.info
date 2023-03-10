@@ -220,8 +220,10 @@ const props = defineProps({
   animate: Boolean,
 });
 
+// global variable - equivalent with this.$apiurl
 const apiUrl = inject('apiUrl');
 
+// instead of this.$router
 const router = useRouter();
 
 const store = adminStore();

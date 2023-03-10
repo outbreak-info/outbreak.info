@@ -112,6 +112,7 @@ const props = defineProps({
   data: Object,
 });
 
+// global variable - equivalent with this.$resourceurl
 const resourceUrl = inject('resourceUrl');
 
 const citations = ref(null);

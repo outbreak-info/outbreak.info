@@ -1134,10 +1134,14 @@ const props = defineProps({
   },
 });
 
+// global variable - equivalent with this.$genomicsurl
 const genomicsUrl = inject('genomicsUrl');
+// global variable - equivalent with this.$filters
 const filters = inject('filters');
 
+// instead of this.$route
 const route = useRoute();
+// instead of this.$router
 const router = useRouter();
 
 const store = adminStore();

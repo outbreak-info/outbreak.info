@@ -300,9 +300,12 @@ const props = defineProps({
   xmax: String,
 });
 
+// global variable - equivalent with this.$apiurl
 const apiUrl = inject('apiUrl');
 
+// instead of this.$route
 const route = useRoute();
+// instead of this.$router
 const router = useRouter();
 
 const selectedPlaces = ref([]);

@@ -82,10 +82,12 @@ const props = defineProps({
 
 const emit = defineEmits(['location', 'input']);
 
+// global variable - equivalent with this.$apiurl
 const apiUrl = inject('apiUrl');
 
 const store = geoStore();
 
+// instead of this.$router
 const router = useRouter();
 
 const isOpen = ref(false);

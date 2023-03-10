@@ -298,7 +298,9 @@ const props = defineProps({
   },
 });
 
+// instead of this.$route
 const route = useRoute();
+// instead of this.$router
 const router = useRouter();
 
 const queryPangolin = ref(null);

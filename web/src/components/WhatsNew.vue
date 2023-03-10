@@ -117,6 +117,7 @@ const props = defineProps({
   },
 });
 
+// global variable - equivalent with this.$resourceurl
 const resourceUrl = inject('resourceUrl');
 
 const newPubs = ref([]);

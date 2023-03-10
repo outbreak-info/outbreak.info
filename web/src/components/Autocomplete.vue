@@ -85,6 +85,7 @@ const props = defineProps({
 
 const emit = defineEmits(['selected']);
 
+// global variable - equivalent with this.$apiurl
 const apiUrl = inject('apiUrl');
 
 const store = colorsStore();

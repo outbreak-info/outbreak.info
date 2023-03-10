@@ -259,7 +259,9 @@ const gisaidCount = ref(null);
 const resourceSubscription = ref(null);
 const genomicsSubscription = ref(null);
 
+// global variable - equivalent with this.$resourceurl
 const resourceUrl = inject('resourceUrl');
+// global variable - equivalent with this.$genomicsurl
 const genomicsUrl = inject('genomicsUrl');
 
 const store = adminStore();

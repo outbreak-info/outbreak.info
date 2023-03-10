@@ -106,8 +106,12 @@ import { getSourcesUpdated } from '@/api/metadata.js';
 import { adminStore } from '@/stores/adminStore';
 
 const store = adminStore();
+
+// global variable - equivalent with this.$apiurl
 const apiUrl = inject('apiUrl');
+// global variable - equivalent with this.$genomicsurl
 const genomicsUrl = inject('genomicsUrl');
+// global variable - equivalent with this.$resourceurl
 const resourceUrl = inject('resourceUrl');
 
 const updateSubscription = ref(null);

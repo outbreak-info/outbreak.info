@@ -710,12 +710,15 @@ const props = defineProps({
   dateMax: String,
 });
 
+// global variable - equivalent with this.$resourceurl
 const resourceUrl = inject('resourceUrl');
 
 const store = adminStore();
 const { loading } = storeToRefs(store);
 
+// instead of this.$route
 const route = useRoute();
+// instead of this.$router
 const router = useRouter();
 
 const resultsSubscription = ref(null);

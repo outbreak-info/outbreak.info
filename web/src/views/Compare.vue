@@ -185,6 +185,7 @@ const props = defineProps({
   similarity: String,
 });
 
+// global variable - equivalent with this.$apiurl
 const apiUrl = inject('apiUrl');
 
 const lat = ref(10);
@@ -257,7 +258,9 @@ const storeColor = colorsStore();
 const { dataloading } = storeToRefs(storeAdmin);
 const { colors } = storeToRefs(storeColor);
 
+// instead of this.$route
 const route = useRoute();
+// instead of this.$router
 const router = useRouter();
 
 const getSimilar = () => {

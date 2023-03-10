@@ -77,6 +77,7 @@ const CirclePacking = lazyLoad('CirclePacking');
 const HorizontalBargraph = lazyLoad('HorizontalBargraph');
 const ResourceTimeline = lazyLoad('ResourceTimeline');
 
+// global variable - equivalent with this.$resourceurl
 const resourceUrl = inject('resourceUrl');
 
 const resultSubscription = ref(null);

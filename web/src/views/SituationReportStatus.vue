@@ -298,9 +298,12 @@ const props = defineProps({
   var: String,
 });
 
+// global variable - equivalent with this.$apiurl
 const apiUrl = inject('apiUrl');
+// global variable - equivalent with this.$genomicsurl
 const genomicsUrl = inject('genomicsUrl');
 
+// instead of this.$router
 const router = useRouter();
 
 const store = genomicsStore();

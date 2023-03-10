@@ -13,7 +13,9 @@
               class="w-20"
             />
             <p class="text-light my-1 mx-3">
-              Tools to explore COVID-19 and SARS-CoV-2 data with variant surveillance reports, data on cases and deaths, and a standardized, searchable research library
+              Tools to explore COVID-19 and SARS-CoV-2 data with variant
+              surveillance reports, data on cases and deaths, and a
+              standardized, searchable research library
             </p>
           </div>
         </div>
@@ -842,6 +844,7 @@ const TypeaheadSelect = lazyLoad('TypeaheadSelect');
 const store = adminStore();
 const { loading } = storeToRefs(store);
 
+// instead of this.$router
 const router = useRouter();
 
 const searchQuery = ref('');

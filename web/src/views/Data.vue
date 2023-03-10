@@ -28,6 +28,7 @@ import { colorsStore } from '@/stores/colorsStore';
 const DataSource = lazyLoad('DataSource');
 const EpiTable = lazyLoad('EpiTable');
 
+// global variable - equivalent with this.$apiurl
 const apiUrl = inject('apiUrl');
 
 const stackedWidth = ref(500);
