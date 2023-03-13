@@ -99,10 +99,12 @@
   </div>
 </template>
 
-<script>
-import { mapState } from 'pinia';
+<script setup>
+import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue';
+import { mapState, storeToRefs } from 'pinia';
 import { format } from 'd3-format';
 import { timeFormat } from 'd3-time-format';
+import { event } from 'vue-gtag';
 import cloneDeep from 'lodash/cloneDeep';
 import uniq from 'lodash/uniq';
 
@@ -110,185 +112,201 @@ import { getAll, progressState$ } from '@/api/biothings.js';
 import { getPng, getSvg } from '@/js/get_svg.js';
 import { lazyLoad } from '@/js/lazy-load';
 import { adminStore } from '@/stores/adminStore';
+import { useRoute, useRouter } from 'vue-router';
 
-export default {
-  name: 'DownloadData',
-  components: {
-    DataUsage: lazyLoad('DataUsage'),
-    CiteUs: lazyLoad('CiteUs'),
-  },
-  props: {
-    data: Array,
+const DataUsage = lazyLoad('DataUsage');
+const CiteUs = lazyLoad('CiteUs');
+
+const props = defineProps({
+  data: Array,
+  type: String,
+  figureRef: String,
+  query: String,
+  api: String,
+  downloadLabel: {
     type: String,
-    figureRef: String,
-    query: String,
-    api: String,
-    downloadLabel: {
-      type: String,
-      default: 'vis & data',
-    },
-    isVertical: {
-      type: Boolean,
-      default: false,
-    },
-    darkMode: {
-      type: Boolean,
-      default: false,
-    },
-    sourceString: {
-      type: String,
-      default:
-        'Johns Hopkins University Center for Systems Science and Engineering;The COVID Tracking Project (testing data), updated daily.',
-    },
+    default: 'vis & data',
   },
-  data() {
-    return {
-      showDialog: false,
-      showLoading: false,
-      downloadable: null,
-      dataSubscription: null,
-      progress: 0,
-      progressBarWidth: 225,
-    };
+  isVertical: {
+    type: Boolean,
+    default: false,
   },
-  computed: {
-    ...mapState(adminStore, [
-      'loading',
-      'genomicsCitation',
-      'resourcesCitation',
-      'sources',
-      'resources',
-    ]),
-    today() {
-      return new Date();
-    },
-    todayFormatted() {
-      return this.formatDate(this.today);
-    },
-    todayFormattedLong() {
-      return this.formatDate(this.today, '%d %b %Y');
-    },
-    filename() {
-      if (this.data && this.data.length === 1 && this.type === 'epidemiology') {
-        return `${this.data[0].key}_outbreakinfo_epidemiology_data_${this.todayFormatted}`;
-      } else if (this.type === 'resources') {
-        return `outbreakinfo_resources_metadata_${this.todayFormatted}`;
-      } else if (this.type === 'report') {
-        return `outbreakinfo_mutation_report_data_${this.todayFormatted}`;
-      } else {
-        return `outbreakinfo_epidemiology_data_${this.todayFormatted}`;
-      }
-    },
+  darkMode: {
+    type: Boolean,
+    default: false,
   },
-  mounted() {
-    this.progressSubscription = progressState$.subscribe((progress) => {
-      this.progress = progress;
+  sourceString: {
+    type: String,
+    default:
+      'Johns Hopkins University Center for Systems Science and Engineering;The COVID Tracking Project (testing data), updated daily.',
+  },
+});
+
+const showDialog = ref(false);
+const showLoading = ref(false);
+const downloadable = ref(null);
+const dataSubscription = ref(null);
+const progress = ref(0);
+const progressBarWidth = ref(225);
+// missing variable in previous version
+const progressSubscription = ref(null);
+// this.$refs
+const download_link = ref(null);
+
+// this.$route
+const route = useRoute();
+// this.$router
+const router = useRouter();
+
+const store = adminStore();
+const { loading, genomicsCitation, resourcesCitation, sources, resources } =
+  storeToRefs(store);
+
+const today = computed(() => {
+  return new Date();
+});
+
+const todayFormatted = computed(() => {
+  return formatDate(today.value);
+});
+
+const todayFormattedLong = computed(() => {
+  return formatDate(today.value, '%d %b %Y');
+});
+
+const filename = computed(() => {
+  if (props.data && props.data.length === 1 && props.type === 'epidemiology') {
+    return `${props.data[0].key}_outbreakinfo_epidemiology_data_${todayFormatted.value}`;
+  } else if (props.type === 'resources') {
+    return `outbreakinfo_resources_metadata_${todayFormatted.value}`;
+  } else if (props.type === 'report') {
+    return `outbreakinfo_mutation_report_data_${todayFormatted.value}`;
+  } else {
+    return `outbreakinfo_epidemiology_data_${todayFormatted.value}`;
+  }
+});
+
+onMounted(() => {
+  progressSubscription.value = progressState$.subscribe((progressRes) => {
+    progress.value = progressRes;
+  });
+
+  nextTick(() => {
+    // window.addEventListener("click", this.closeDialogBox), { passive: true };
+    // Close on escape
+    document.addEventListener(
+      'keyup',
+      (evt) => {
+        if (evt.keyCode === 27) {
+          closeDialogBox();
+        }
+      },
+      {
+        passive: true,
+      },
+    );
+  });
+});
+
+onUnmounted(() => {
+  if (dataSubscription.value) {
+    dataSubscription.value.unsubscribe();
+  }
+  if (progressSubscription.value) {
+    progressSubscription.value.unsubscribe();
+  }
+  // window.removeEventListener("click", this.closeDialogBox);
+  document.removeEventListener('keyup', closeDialogBox);
+});
+
+const formatDate = (dateString, formatString = '%Y-%m-%d') => {
+  const formatDate = timeFormat(formatString);
+  return formatDate(dateString);
+};
+
+const formatPercent = (value) => {
+  return format('.0%')(value);
+};
+
+const closeDialogBox = () => {
+  showDialog.value = false;
+};
+
+const showDialogBox = () => {
+  showDialog.value = true;
+};
+
+const downloadAll = (dwnld_data, encodingFormat, filename) => {
+  downloadData(dwnld_data, encodingFormat, filename);
+  downloadData(
+    [getMetadata(filename)],
+    'text/plain',
+    `${filename.value}_README.txt`,
+    true,
+  );
+};
+
+const downloadData = (
+  dwnld_data,
+  encodingFormat,
+  filename,
+  isReadme = false,
+) => {
+  // Send GA event
+  // https://matteo-gabriele.gitbook.io/vue-gtag/methods/events
+  if (isReadme) {
+    event('download', {
+      event_category: `${props.type}_${props.figureRef}_${props.downloadLabel}_README`,
+      event_label: `downloading |${props.figureRef}| {${props.downloadLabel} README} data from [${route.fullPath}] as (${encodingFormat})`,
     });
-
-    this.$nextTick(() => {
-      // window.addEventListener("click", this.closeDialogBox), { passive: true };
-      // Close on escape
-      document.addEventListener(
-        'keyup',
-        (evt) => {
-          if (evt.keyCode === 27) {
-            this.closeDialogBox();
-          }
-        },
-        {
-          passive: true,
-        },
-      );
+  } else {
+    event('download', {
+      event_category: `${props.type}_${props.figureRef}_${props.downloadLabel}`,
+      event_label: `downloading |${props.figureRef}| {${props.downloadLabel}} data from [${props.$route.fullPath}] as (${encodingFormat})`,
     });
-  },
-  unmounted() {
-    if (this.dataSubscription) {
-      this.dataSubscription.unsubscribe();
-    }
-    if (this.progressSubscription) {
-      this.progressSubscription.unsubscribe();
-    }
-    // window.removeEventListener("click", this.closeDialogBox);
-    document.removeEventListener('keyup', this.closeDialogBox);
-  },
-  methods: {
-    formatDate(dateString, formatString = '%Y-%m-%d') {
-      const formatDate = timeFormat(formatString);
-      return formatDate(dateString);
-    },
-    formatPercent(value) {
-      return format('.0%')(value);
-    },
-    closeDialogBox() {
-      this.showDialog = false;
-    },
-    showDialogBox() {
-      this.showDialog = true;
-    },
-    downloadAll(dwnld_data, encodingFormat, filename) {
-      this.downloadData(dwnld_data, encodingFormat, filename);
-      this.downloadData(
-        [this.getMetadata(filename)],
-        'text/plain',
-        `${this.filename}_README.txt`,
-        true,
-      );
-    },
-    downloadData(dwnld_data, encodingFormat, filename, isReadme = false) {
-      // Send GA event
-      // https://matteo-gabriele.gitbook.io/vue-gtag/methods/events
-      if (isReadme) {
-        this.$gtag.event('download', {
-          event_category: `${this.type}_${this.figureRef}_${this.downloadLabel}_README`,
-          event_label: `downloading |${this.figureRef}| {${this.downloadLabel} README} data from [${this.$route.fullPath}] as (${encodingFormat})`,
-        });
-      } else {
-        this.$gtag.event('download', {
-          event_category: `${this.type}_${this.figureRef}_${this.downloadLabel}`,
-          event_label: `downloading |${this.figureRef}| {${this.downloadLabel}} data from [${this.$route.fullPath}] as (${encodingFormat})`,
-        });
-      }
+  }
 
-      // code adapted from CViSB
-      const blob = new Blob(dwnld_data, {
-        type: encodingFormat,
-      });
+  // code adapted from CViSB
+  const blob = new Blob(dwnld_data, {
+    type: encodingFormat,
+  });
 
-      const hiddenElement = this.$refs.download_link;
-      hiddenElement.href = window.URL.createObjectURL(blob);
-      hiddenElement.target = '_blank';
-      hiddenElement.download = filename;
-      hiddenElement.click();
-      this.showDialog = false;
+  const hiddenElement = download_link.value;
+  hiddenElement.href = window.URL.createObjectURL(blob);
+  hiddenElement.target = '_blank';
+  hiddenElement.download = filename;
+  hiddenElement.click();
+  showDialog.value = false;
 
-      setTimeout(() => {
-        window.URL.revokeObjectURL(hiddenElement.href);
-      }, 10);
-    },
-    getMetadata(filename) {
-      const sourceText = this.query
-        ? `${window.location.origin}/${this.$route.fullPath}\nQuery: ${this.query}`
-        : `${window.location.origin}/${this.$route.fullPath}`;
+  setTimeout(() => {
+    window.URL.revokeObjectURL(hiddenElement.href);
+  }, 10);
+};
 
-      const epiString = this.sources
-        .map((d) => `${d.scope}: ${d.citation}`)
-        .join('\n\n');
-      const resourcesString = this.resources
-        .flatMap((d) => d.sources)
-        .map((d) => `${d.name}: ${d.citation}`)
-        .join('\n\n');
+const getMetadata = (filename) => {
+  const sourceText = props.query
+    ? `${window.location.origin}/${route.fullPath}\nQuery: ${props.query}`
+    : `${window.location.origin}/${route.fullPath}`;
 
-      return `${filename}
+  const epiString = store.$state.sources
+    .map((d) => `${d.scope}: ${d.citation}`)
+    .join('\n\n');
+  const resourcesString = store.$state.resources
+    .flatMap((d) => d.sources)
+    .map((d) => `${d.name}: ${d.citation}`)
+    .join('\n\n');
 
-Downloaded: ${this.today}
+  return `${filename}
+
+Downloaded: ${today.value}
 Source: ${sourceText}
 
 \n\n\nPlease cite the data sources, as appropriate, and follow the terms of their licenses:
 \n\n${'-'.repeat(75)}
 outbreak.info
 ${'-'.repeat(75)}
-${this.genomicsCitation}\n
-${this.resourcesCitation}
+${store.$state.genomicsCitation}\n
+${store.$state.resourcesCitation}
 \n\n${'-'.repeat(75)}
 epidemiology
 ${'-'.repeat(75)}
@@ -299,173 +317,178 @@ ${'-'.repeat(75)}
 ${resourcesString}
 \n\n${'-'.repeat(75)}
 `;
-    },
-    downloadSvg() {
-      const svgObject = getSvg(
-        this.figureRef,
-        this.sourceString,
-        this.todayFormattedLong,
-        this.darkMode,
-      );
+};
 
-      const filenames = svgObject
-        .map((svg) => this.filename + '_' + svg.name + '.svg')
-        .join(', ');
+const downloadSvg = () => {
+  const svgObject = getSvg(
+    props.figureRef,
+    props.sourceString,
+    todayFormattedLong.value,
+    props.darkMode,
+  );
 
-      this.downloadData(
-        [this.getMetadata(this.getMetadata(filenames))],
-        'text/plain',
-        `${this.filename}_README.txt`,
-        true,
-      );
-      svgObject.forEach((svg) =>
-        this.downloadData(
-          svg.source,
-          'text/xml',
-          this.filename + '_' + svg.name + '.svg',
-        ),
-      );
-    },
-    downloadPng() {
-      this.$gtag.event('download', {
-        event_category: `${this.type}_${this.figureRef}_${this.downloadLabel}`,
-        event_label: `downloading |${this.figureRef}| {${this.downloadLabel}} data from [${this.$route.fullPath}] as (.png)`,
+  const filenames = svgObject
+    .map((svg) => filename.value + '_' + svg.name + '.svg')
+    .join(', ');
+
+  downloadData(
+    [getMetadata(getMetadata(filenames))],
+    'text/plain',
+    `${filename.value}_README.txt`,
+    true,
+  );
+  svgObject.forEach((svg) =>
+    downloadData(
+      svg.source,
+      'text/xml',
+      filename.value + '_' + svg.name + '.svg',
+    ),
+  );
+};
+
+const downloadPng = () => {
+  event('download', {
+    event_category: `${props.type}_${props.figureRef}_${props.downloadLabel}`,
+    event_label: `downloading |${props.figureRef}| {${props.downloadLabel}} data from [${route.fullPath}] as (.png)`,
+  });
+  getPng(
+    `svg.${props.figureRef}`,
+    props.sourceString,
+    todayFormattedLong.value,
+    props.isVertical,
+    props.darkMode,
+    true,
+    `${filename.value}.png`,
+  );
+  downloadData(
+    [getMetadata(filename.value)],
+    'text/plain',
+    `${filename.value}_README.txt`,
+    true,
+  );
+};
+
+const prepData = (fileType) => {
+  if (!downloadable.value && props.query && props.api) {
+    showDialog.value = false;
+    showLoading.value = true;
+    dataSubscription.value = getAll(props.api, props.query).subscribe(
+      (results) => {
+        downloadable.value = cleanData(results, fileType);
+        showLoading.value = false;
+      },
+    );
+  } else {
+    cleanData(props.data, fileType);
+  }
+};
+
+const cleanData = (data, fileType) => {
+  if (data) {
+    // create a copy so the real stuff isn't mutated
+    downloadable.value = cloneDeep(data);
+
+    // clean up based on the type of data being exported
+    if (props.type === 'epidemiology') {
+      downloadable.value = downloadable.value
+        .flatMap((location) => location.value)
+        .filter((d) => !d.calculated);
+
+      downloadable.value.forEach((d) => {
+        d['source'] =
+          d.country_name === 'United States of America' ||
+          d.iso3 === 'USA' ||
+          d.location_id === 'USA'
+            ? 'The New York Times, The COVID Tracking Project'
+            : 'JHU COVID-19 Data Repository';
+        d['date'] = formatDate(d.date);
+        delete d._score;
+        delete d.color;
       });
-      getPng(
-        `svg.${this.figureRef}`,
-        this.sourceString,
-        this.todayFormattedLong,
-        this.isVertical,
-        this.darkMode,
-        true,
-        `${this.filename}.png`,
-      );
-      this.downloadData(
-        [this.getMetadata(this.filename)],
-        'text/plain',
-        `${this.filename}_README.txt`,
-        true,
-      );
-    },
-    prepData(fileType) {
-      if (!this.downloadable && this.query && this.api) {
-        this.showDialog = false;
-        this.showLoading = true;
-        this.dataSubscription = getAll(this.api, this.query).subscribe(
-          (results) => {
-            this.downloadable = this.cleanData(results, fileType);
-            this.showLoading = false;
-          },
-        );
-      } else {
-        this.cleanData(this.data, fileType);
-      }
-    },
-    cleanData(data, fileType) {
-      if (data) {
-        // create a copy so the real stuff isn't mutated
-        this.downloadable = cloneDeep(data);
-
-        // clean up based on the type of data being exported
-        if (this.type === 'epidemiology') {
-          this.downloadable = this.downloadable
-            .flatMap((location) => location.value)
-            .filter((d) => !d.calculated);
-
-          this.downloadable.forEach((d) => {
-            d['source'] =
-              d.country_name === 'United States of America' ||
-              d.iso3 === 'USA' ||
-              d.location_id === 'USA'
-                ? 'The New York Times, The COVID Tracking Project'
-                : 'JHU COVID-19 Data Repository';
-            d['date'] = this.formatDate(d.date);
-            delete d._score;
-            delete d.color;
-          });
-        } else if (this.type === 'maps') {
-          this.downloadable.forEach((d) => {
-            d['source'] =
-              d.country_name === 'United States of America' ||
-              d.iso3 === 'USA' ||
-              d.location_id === 'USA'
-                ? 'The New York Times'
-                : 'JHU COVID-19 Data Repository';
-            delete d._score;
-            delete d.datetime;
-            delete d.fill;
-          });
-        } else if (this.type === 'regions') {
-          this.downloadable.forEach((d) => {
-            d['source'] = 'JHU COVID-19 Data Repository, The New York Times';
-            d['date'] = this.formatDate(d.date);
-            delete d._score;
-          });
-        } else if (this.type === 'resources') {
-          this.downloadable.forEach((d) => {
-            d['source'] = d.curatedBy ? d.curatedBy.name : null;
-            delete d._score;
-            delete d.color;
-          });
-        } else {
-          this.downloadable.forEach((d) => {
-            d['source'] = d.curatedBy ? d.curatedBy.name : null;
-            delete d._score;
-            delete d.color;
-          });
-        }
-
-        if (fileType === 'tsv') {
-          this.downloadTsv();
-        } else {
-          this.downloadJson();
-        }
-      }
-    },
-    data2Str(data, columnDelimiter = '\t') {
-      const lineDelimiter = '\n';
-
-      let colnames = uniq(data.flatMap((d) => Object.keys(d)));
-
-      let dwnld_data = '';
-      dwnld_data += colnames.join(columnDelimiter);
-      dwnld_data += lineDelimiter;
-
-      data.forEach(function (item) {
-        let counter = 0;
-        colnames.forEach(function (key) {
-          if (counter > 0) dwnld_data += columnDelimiter;
-
-          // For null values, return empty string.
-          // Make sure the values are encased in quotes, in case the item[key] includes html like `\n` which will break the parsing
-          dwnld_data +=
-            item[key] || item[key] === 0 || item[key] === false
-              ? `${JSON.stringify(item[key])}`
-              : '';
-          counter++;
-        });
-        dwnld_data += lineDelimiter;
+    } else if (props.type === 'maps') {
+      downloadable.value.forEach((d) => {
+        d['source'] =
+          d.country_name === 'United States of America' ||
+          d.iso3 === 'USA' ||
+          d.location_id === 'USA'
+            ? 'The New York Times'
+            : 'JHU COVID-19 Data Repository';
+        delete d._score;
+        delete d.datetime;
+        delete d.fill;
       });
+    } else if (props.type === 'regions') {
+      downloadable.value.forEach((d) => {
+        d['source'] = 'JHU COVID-19 Data Repository, The New York Times';
+        d['date'] = formatDate(d.date);
+        delete d._score;
+      });
+    } else if (this.type === 'resources') {
+      downloadable.value.forEach((d) => {
+        d['source'] = d.curatedBy ? d.curatedBy.name : null;
+        delete d._score;
+        delete d.color;
+      });
+    } else {
+      downloadable.value.forEach((d) => {
+        d['source'] = d.curatedBy ? d.curatedBy.name : null;
+        delete d._score;
+        delete d.color;
+      });
+    }
 
-      return dwnld_data;
-    },
-    downloadJson() {
-      const dataString = JSON.stringify(this.downloadable);
-      this.downloadAll(
-        [dataString],
-        'text/json;charset=utf-8',
-        this.filename + '.json',
-      );
-    },
-    downloadTsv() {
-      const dataString = this.data2Str(this.downloadable);
-      this.downloadAll(
-        [dataString],
-        'text/tab-separated-values;charset=utf-8',
-        this.filename + '.tsv',
-      );
-    },
-  },
+    if (fileType === 'tsv') {
+      downloadTsv();
+    } else {
+      downloadJson();
+    }
+  }
+};
+
+const data2Str = (data, columnDelimiter = '\t') => {
+  const lineDelimiter = '\n';
+
+  let colnames = uniq(data.flatMap((d) => Object.keys(d)));
+
+  let dwnld_data = '';
+  dwnld_data += colnames.join(columnDelimiter);
+  dwnld_data += lineDelimiter;
+
+  data.forEach(function (item) {
+    let counter = 0;
+    colnames.forEach(function (key) {
+      if (counter > 0) dwnld_data += columnDelimiter;
+
+      // For null values, return empty string.
+      // Make sure the values are encased in quotes, in case the item[key] includes html like `\n` which will break the parsing
+      dwnld_data +=
+        item[key] || item[key] === 0 || item[key] === false
+          ? `${JSON.stringify(item[key])}`
+          : '';
+      counter++;
+    });
+    dwnld_data += lineDelimiter;
+  });
+
+  return dwnld_data;
+};
+
+const downloadJson = () => {
+  const dataString = JSON.stringify(downloadable.value);
+  downloadAll(
+    [dataString],
+    'text/json;charset=utf-8',
+    filename.value + '.json',
+  );
+};
+
+const downloadTsv = () => {
+  const dataString = data2Str(downloadable.value);
+  downloadAll(
+    [dataString],
+    'text/tab-separated-values;charset=utf-8',
+    filename.value + '.tsv',
+  );
 };
 </script>
 
