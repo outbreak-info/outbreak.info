@@ -112,7 +112,7 @@ const searchResource = (d) => {
 };
 
 const setupPlot = () => {
-  svg.value = select(circle_packing);
+  svg.value = select(circle_packing.value);
 
   svgDefs.value = svg.value.select('defs');
 
