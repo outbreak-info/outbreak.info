@@ -101,7 +101,8 @@
 
 <script setup>
 import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue';
-import { mapState, storeToRefs } from 'pinia';
+import { useRoute, useRouter } from 'vue-router';
+import { storeToRefs } from 'pinia';
 import { format } from 'd3-format';
 import { timeFormat } from 'd3-time-format';
 import { event } from 'vue-gtag';
@@ -112,7 +113,6 @@ import { getAll, progressState$ } from '@/api/biothings.js';
 import { getPng, getSvg } from '@/js/get_svg.js';
 import { lazyLoad } from '@/js/lazy-load';
 import { adminStore } from '@/stores/adminStore';
-import { useRoute, useRouter } from 'vue-router';
 
 const DataUsage = lazyLoad('DataUsage');
 const CiteUs = lazyLoad('CiteUs');
@@ -184,39 +184,6 @@ const filename = computed(() => {
   } else {
     return `outbreakinfo_epidemiology_data_${todayFormatted.value}`;
   }
-});
-
-onMounted(() => {
-  progressSubscription.value = progressState$.subscribe((progressRes) => {
-    progress.value = progressRes;
-  });
-
-  nextTick(() => {
-    // window.addEventListener("click", this.closeDialogBox), { passive: true };
-    // Close on escape
-    document.addEventListener(
-      'keyup',
-      (evt) => {
-        if (evt.keyCode === 27) {
-          closeDialogBox();
-        }
-      },
-      {
-        passive: true,
-      },
-    );
-  });
-});
-
-onUnmounted(() => {
-  if (dataSubscription.value) {
-    dataSubscription.value.unsubscribe();
-  }
-  if (progressSubscription.value) {
-    progressSubscription.value.unsubscribe();
-  }
-  // window.removeEventListener("click", this.closeDialogBox);
-  document.removeEventListener('keyup', closeDialogBox);
 });
 
 const formatDate = (dateString, formatString = '%Y-%m-%d') => {
@@ -490,6 +457,39 @@ const downloadTsv = () => {
     filename.value + '.tsv',
   );
 };
+
+onMounted(() => {
+  progressSubscription.value = progressState$.subscribe((progressRes) => {
+    progress.value = progressRes;
+  });
+
+  nextTick(() => {
+    // window.addEventListener("click", this.closeDialogBox), { passive: true };
+    // Close on escape
+    document.addEventListener(
+      'keyup',
+      (evt) => {
+        if (evt.keyCode === 27) {
+          closeDialogBox();
+        }
+      },
+      {
+        passive: true,
+      },
+    );
+  });
+});
+
+onUnmounted(() => {
+  if (dataSubscription.value) {
+    dataSubscription.value.unsubscribe();
+  }
+  if (progressSubscription.value) {
+    progressSubscription.value.unsubscribe();
+  }
+  // window.removeEventListener("click", this.closeDialogBox);
+  document.removeEventListener('keyup', closeDialogBox);
+});
 </script>
 
 <style lang="scss">
