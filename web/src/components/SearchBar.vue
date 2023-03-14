@@ -106,6 +106,7 @@ watch(
       isLoading.value = false;
     }
   },
+  { deep: true },
 );
 
 const filterResults = () => {

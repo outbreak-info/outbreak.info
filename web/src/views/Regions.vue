@@ -294,14 +294,6 @@ const selectedVariableLabel = computed(() => {
     (d) => d.value === selectedVariable.value,
   )[0]['label'];
 });
-// computed: {
-//   ...mapState(adminStore, ['loading']),
-//   ...mapState(genomicsStore, ['regionDict']),
-//   ...mapState(colorsStore, ['getRegionColorFromLocation', 'getRegionColor']),
-//   selectedVariableLabel() {
-//
-//   },
-// },
 
 const changeVariable = () => {
   nestedData.value = data.value[selectedVariable.value];

@@ -186,6 +186,7 @@ import { adminStore } from '@/stores/adminStore';
 
 const store = adminStore();
 const { resources } = storeToRefs(store);
+
 const types = ref([
   {
     label: 'Clinical Trials',

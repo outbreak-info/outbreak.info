@@ -76,13 +76,6 @@ const setupPlot = () => {
   svg.value = select(horizontal_bargraph.value);
 };
 
-const updatePlot = () => {
-  if (filtered.value) {
-    updateAxes();
-    drawBars();
-  }
-};
-
 const updateAxes = () => {
   x.value = scaleLinear()
     .range([props.width - margin.value.left - margin.value.right, 0])
@@ -110,6 +103,13 @@ const drawBars = () => {
       .attr('height', (d) => y.value.bandwidth())
       .style('fill', props.fill);
   });
+};
+
+const updatePlot = () => {
+  if (filtered.value) {
+    updateAxes();
+    drawBars();
+  }
 };
 
 onMounted(() => {

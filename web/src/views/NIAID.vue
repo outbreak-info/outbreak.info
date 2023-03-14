@@ -111,9 +111,9 @@ onMounted(() => {
   resultSubscription.value = getQuerySummaries(
     query.value,
     resourceUrl,
-  ).subscribe((results) => {
-    results.value = results;
-    dates.value = results[0].facets.date.terms;
+  ).subscribe((resultsRes) => {
+    results.value = resultsRes;
+    dates.value = resultsRes[0].facets.date.terms;
 
     // const keys = results[0]["hits"].flatMap(d => d.keywords)
     // const keywords = nest()
@@ -154,9 +154,9 @@ onMounted(() => {
 
   countSubscription.value = getSourceSummary(
     resourceUrl,
-    queryString,
-  ).subscribe((results) => {
-    counts.value = results;
+    queryString.value,
+  ).subscribe((resultsRes) => {
+    counts.value = resultsRes;
   });
 });
 

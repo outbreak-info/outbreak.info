@@ -65,30 +65,28 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'HorizontalCategoricalLegend',
-  props: {
-    values: Array,
-    colorScale: Function,
-    legendRectWidth: {
-      type: Number,
-      default: 15,
-    },
+<script setup>
+import { computed } from 'vue';
+
+const props = defineProps({
+  values: Array,
+  colorScale: Function,
+  legendRectWidth: {
+    type: Number,
+    default: 15,
   },
-  computed: {
-    legendValues() {
-      if (this.colorScale) {
-        return this.values.map((d) => {
-          return {
-            fill: this.colorScale(d),
-            label: d,
-          };
-        });
-      } else {
-        return null;
-      }
-    },
-  },
-};
+});
+
+const legendValues = computed(() => {
+  if (props.colorScale) {
+    return props.values.map((d) => {
+      return {
+        fill: props.colorScale(d),
+        label: d,
+      };
+    });
+  } else {
+    return null;
+  }
+});
 </script>

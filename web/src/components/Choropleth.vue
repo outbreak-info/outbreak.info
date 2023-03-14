@@ -589,6 +589,7 @@ watch(
   () => {
     drawMap();
   },
+  { deep: true },
 );
 
 const debounceMouseon = debounce(mouseOn, 250);

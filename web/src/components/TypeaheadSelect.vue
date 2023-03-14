@@ -86,6 +86,7 @@ watch(
         : props.selectedValue[props.labelVariable]
       : null;
   },
+  { deep: true },
 );
 
 const enter = () => {

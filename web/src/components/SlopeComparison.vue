@@ -19,7 +19,7 @@
         </marker>
       </defs>
       <g
-        ref="xAxis"
+        ref="xAxisRef"
         :transform="`translate(${margin.left}, ${height - margin.bottom})`"
         class="epi-axis axis--x"
       />
@@ -59,6 +59,9 @@ const yMax = ref(0.5);
 const svg = ref(null);
 const chart = ref(null);
 const line = ref(null);
+// variables to replace this.$refs
+const xAxisRef = ref(null);
+
 const updateScales = () => {
   x.value = x.value
     .range([0, width.value - margin.value.left - margin.value.right])
@@ -70,7 +73,7 @@ const updateScales = () => {
 
   xAxis.value = axisBottom(x.value).ticks(0).tickSizeOuter(0);
 
-  select(xAxis.value).call(xAxis.value);
+  select(xAxisRef.value).call(xAxis.value);
 
   // this.yAxis = axisLeft(this.y).ticks(this.numYTicks);
 
@@ -185,7 +188,7 @@ const drawSlopes = () => {
       (exit) => exit.call((exit) => exit.remove()),
     );
 
-  this.chart
+  chart.value
     .selectAll('.penultimate-slope')
     .data(props.slope1 ? [props.slope1] : [])
     .join(
@@ -207,7 +210,7 @@ const drawSlopes = () => {
     );
 
   // --- circles ---
-  this.chart
+  chart.value
     .selectAll('.recent-slope-end')
     .data(props.slope2 ? [props.slope2] : [])
     .join(
@@ -222,7 +225,7 @@ const drawSlopes = () => {
       (exit) => exit.call((exit) => exit.remove()),
     );
 
-  this.chart
+  chart.value
     .selectAll('.penultimate-slope-end')
     .data(props.slope1 ? [props.slope1] : [])
     .join(

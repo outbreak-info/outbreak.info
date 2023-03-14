@@ -394,7 +394,7 @@ const noData = computed(() => {
   if (data$.value) {
     return !data$.value[0]
       .flatMap((d) => d.value)
-      .map((d) => d[this.variable])
+      .map((d) => d[props.variable])
       .some((d) => d);
   } else {
     return false;
@@ -524,7 +524,7 @@ const changeVariable = () => {
     },
     query: {
       location: props.location,
-      log: String(isLogY),
+      log: String(isLogY.value),
       variable: newVariable,
       xmin: props.xmin,
       xmax: props.xmax,
@@ -590,7 +590,7 @@ watch(selectedPlaces, (newValue, oldValue) => {
       },
       query: {
         location: newLocation,
-        log: String(isLogY),
+        log: String(isLogY.value),
         variable: props.variable,
         fixedY: String(isFixedY.value),
         percapita: String(isPerCapita.value),
@@ -663,7 +663,7 @@ watch(isOverlay, (newValue, oldValue) => {
       },
       query: {
         location: props.location,
-        log: String(isLogY),
+        log: String(isLogY.value),
         variable: newVariable,
         fixedY: String(isFixedY.value),
         percapita: String(isPerCapita.value),

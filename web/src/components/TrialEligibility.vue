@@ -116,7 +116,7 @@ const props = defineProps({
   data: Object,
 });
 
-const showCriteria = ref(false);
+let showCriteria = ref(false);
 
 const inclMale = computed(() => {
   return props.data.gender

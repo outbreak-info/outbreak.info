@@ -691,6 +691,7 @@ watch(
     updatePlot();
     drawBarchart();
   },
+  { deep: true },
 );
 
 watch(
