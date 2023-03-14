@@ -7,7 +7,7 @@
       <g
         :transform="`translate(${margin.left}, ${height - margin.bottom + 1})`"
         class="prevalence-axis total-axis axis--x"
-        ref="xAxis"
+        ref="xAxisRef"
       ></g>
       <g
         :transform="`translate(${margin.left}, ${margin.top})`"
@@ -18,209 +18,207 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { nextTick, onMounted, ref, watch } from 'vue';
 import { max, min } from 'd3-array';
 import { axisBottom, axisLeft } from 'd3-axis';
 import { select } from 'd3-selection';
 import { scaleLinear } from 'd3-scale';
 import { transition } from 'd3-transition';
 
-export default {
-  name: 'SequencingHistogram',
-  props: {
-    data: Array,
-    median: Number,
-    title: String,
-    setWidth: {
-      type: Number,
-      default: 500,
-    },
-    height: {
-      type: Number,
-      default: 400,
-    },
-    margin: {
-      type: Object,
-      default: () => {
-        return {
-          top: 10,
-          bottom: 30,
-          left: 50,
-          right: 10,
-        };
-      },
-    },
-    fillColor: {
-      type: String,
-      default: '#9edae5',
-    },
-    medianColor: {
-      type: String,
-      default: '#114068',
+const props = defineProps({
+  data: Array,
+  median: Number,
+  title: String,
+  setWidth: {
+    type: Number,
+    default: 500,
+  },
+  height: {
+    type: Number,
+    default: 400,
+  },
+  margin: {
+    type: Object,
+    default: () => {
+      return {
+        top: 10,
+        bottom: 30,
+        left: 50,
+        right: 10,
+      };
     },
   },
-  data() {
-    return {
-      // dims
-      width: 500,
-      // height: 400,
-      // margin: {
-      //   top: 10,
-      //   bottom: 30,
-      //   left: 10,
-      //   right: 10
-      // },
-      // axes
-      x: null,
-      y: null,
-      xAxis: null,
-      yAxis: null,
-      numXTicks: 5,
-      numYTicks: 5,
-      // refs
-      chart: null,
-    };
+  fillColor: {
+    type: String,
+    default: '#9edae5',
   },
-  watch: {
-    data() {
-      this.updatePlot();
-    },
+  medianColor: {
+    type: String,
+    default: '#114068',
   },
-  mounted() {
-    this.setupPlot();
-    this.updatePlot();
-  },
-  methods: {
-    updatePlot() {
-      if (this.data) {
-        this.updateAxes();
-        this.drawPlot();
-      }
-    },
-    setupPlot() {
-      this.$nextTick(() => {
-        window.addEventListener('resize', this.setDims);
+});
 
-        // set initial dimensions for the plots.
-        this.setDims();
-      });
+//dims
+const width = ref(500);
+// axes
+const x = ref(null);
+const y = ref(null);
+const xAxis = ref(null);
+const yAxis = ref(null);
+const numXTicks = ref(5);
+const numYTicks = ref(5);
+// refs
+const chart = ref(null);
+// variables to replace this.$refs
+const hist = ref(null);
+const xAxisRef = ref(null);
+const yAxisLeft = ref(null);
 
-      this.chart = select(this.$refs.hist);
-    },
-    setDims() {
-      if (this.setWidth) {
-        this.width = this.setWidth;
-      }
-    },
-    updateAxes() {
-      const minVal = min(this.data, (d) => d.x0);
-      const maxVal = max(this.data, (d) => d.x1);
+const setupPlot = () => {
+  nextTick(() => {
+    window.addEventListener('resize', setDims);
 
-      this.x = scaleLinear()
-        .range([0, this.width - this.margin.left - this.margin.right])
-        .domain([minVal, maxVal]);
+    // set initial dimensions for the plots.
+    setDims();
+  });
 
-      const maxCounts = max(this.data.map((d) => d.length));
-      this.y = scaleLinear()
-        .range([this.height - this.margin.top - this.margin.bottom, 0])
-        .domain([0, maxCounts]);
-
-      this.xAxis = axisBottom(this.x).ticks(this.numXTicks).tickSizeOuter(0);
-      select(this.$refs.xAxis).call(this.xAxis);
-
-      this.yAxis = axisLeft(this.y).ticks(this.numYTicks).tickSizeOuter(0);
-      select(this.$refs.yAxisLeft).call(this.yAxis);
-    },
-    drawPlot() {
-      const t1 = transition().duration(1500);
-      const xGap = 1;
-
-      if (this.median) {
-        const medianSelector = this.chart
-          .selectAll('.median')
-          .data([this.median]);
-
-        medianSelector.join(
-          (enter) => {
-            const grp = enter.append('g').attr('class', 'median');
-
-            grp
-              .append('line')
-              .attr('class', 'median-line')
-              .attr('x1', (d) => this.x(d))
-              .attr('x2', (d) => this.x(d))
-              .attr('y1', 0)
-              .attr('y2', this.height - this.margin.top - this.margin.bottom)
-              .style('stroke', this.medianColor)
-              .style('stroke-width', 1)
-              .style('stroke-dasharray', '4,4');
-
-            grp
-              .append('text')
-              .attr('class', 'median-annotation')
-              .attr('x', (d) => this.x(d))
-              .attr('dx', 10)
-              .attr('y', this.margin.top)
-              .attr('dy', 5)
-              .text((d) => `median: ${d} days`)
-              .style('fill', this.medianColor)
-              .style('font-size', 18)
-              .style(
-                'font-family',
-                "'DM Sans', Avenir, Helvetica, Arial, sans-serif",
-              );
-          },
-          (update) => {
-            update
-              .select('.median-line')
-              .attr('y2', this.height - this.margin.top - this.margin.bottom)
-              .transition(t1)
-              .attr('x1', (d) => this.x(d))
-              .attr('x2', (d) => this.x(d));
-
-            update
-              .select('.median-annotation')
-              .attr('y', this.margin.top)
-              .text((d) => `median: ${d} days`)
-              .transition(t1)
-              .attr('x', (d) => this.x(d));
-          },
-          (exit) =>
-            exit.call((exit) =>
-              exit.transition().duration(10).style('opacity', 1e-5).remove(),
-            ),
-        );
-      }
-
-      const histSelector = this.chart.selectAll('.hist').data(this.data);
-
-      histSelector.join(
-        (enter) => {
-          enter
-            .append('rect')
-            .attr('class', 'hist')
-            .attr('x', (d) => this.x(d.x0) - xGap)
-            .attr('width', (d) => this.x(d.x1) - this.x(d.x0) - xGap * 2)
-            .attr('y', (d) => this.y(d.length))
-            .attr('height', (d) => this.y(0) - this.y(d.length))
-            .style('fill', this.fillColor);
-        },
-        (update) => {
-          update
-            .transition(t1)
-            .attr('x', (d) => this.x(d.x0) - xGap)
-            .attr('width', (d) => this.x(d.x1) - this.x(d.x0) - xGap * 2)
-            .attr('y', (d) => this.y(d.length))
-            .attr('height', (d) => this.y(0) - this.y(d.length));
-        },
-        (exit) =>
-          exit.call((exit) =>
-            exit.transition().duration(10).style('opacity', 1e-5).remove(),
-          ),
-      );
-    },
-  },
+  chart.value = select(hist.value);
 };
+
+const setDims = () => {
+  if (props.setWidth) {
+    width.value = props.setWidth;
+  }
+};
+
+const updateAxes = () => {
+  const minVal = min(props.data, (d) => d.x0);
+  const maxVal = max(props.data, (d) => d.x1);
+
+  x.value = scaleLinear()
+    .range([0, width.value - props.margin.left - props.margin.right])
+    .domain([minVal, maxVal]);
+
+  const maxCounts = max(props.data.map((d) => d.length));
+  y.value = scaleLinear()
+    .range([props.height - props.margin.top - props.margin.bottom, 0])
+    .domain([0, maxCounts]);
+
+  xAxis.value = axisBottom(x.value).ticks(numXTicks.value).tickSizeOuter(0);
+  select(xAxisRef.value).call(xAxis.value);
+
+  yAxis.value = axisLeft(y.value).ticks(numYTicks.value).tickSizeOuter(0);
+  select(yAxisLeft.value).call(yAxis.value);
+};
+
+const drawPlot = () => {
+  const t1 = transition().duration(1500);
+  const xGap = 1;
+
+  if (props.median) {
+    const medianSelector = chart.value
+      .selectAll('.median')
+      .data([props.median]);
+
+    medianSelector.join(
+      (enter) => {
+        const grp = enter.append('g').attr('class', 'median');
+
+        grp
+          .append('line')
+          .attr('class', 'median-line')
+          .attr('x1', (d) => x.value(d))
+          .attr('x2', (d) => x.value(d))
+          .attr('y1', 0)
+          .attr('y2', props.height - props.margin.top - props.margin.bottom)
+          .style('stroke', props.medianColor)
+          .style('stroke-width', 1)
+          .style('stroke-dasharray', '4,4');
+
+        grp
+          .append('text')
+          .attr('class', 'median-annotation')
+          .attr('x', (d) => x.value(d))
+          .attr('dx', 10)
+          .attr('y', props.margin.top)
+          .attr('dy', 5)
+          .text((d) => `median: ${d} days`)
+          .style('fill', props.medianColor)
+          .style('font-size', 18)
+          .style(
+            'font-family',
+            "'DM Sans', Avenir, Helvetica, Arial, sans-serif",
+          );
+      },
+      (update) => {
+        update
+          .select('.median-line')
+          .attr('y2', props.height - props.margin.top - props.margin.bottom)
+          .transition(t1)
+          .attr('x1', (d) => x.value(d))
+          .attr('x2', (d) => x.value(d));
+
+        update
+          .select('.median-annotation')
+          .attr('y', props.margin.top)
+          .text((d) => `median: ${d} days`)
+          .transition(t1)
+          .attr('x', (d) => x.value(d));
+      },
+      (exit) =>
+        exit.call((exit) =>
+          exit.transition().duration(10).style('opacity', 1e-5).remove(),
+        ),
+    );
+  }
+
+  const histSelector = chart.value.selectAll('.hist').data(props.data);
+
+  histSelector.join(
+    (enter) => {
+      enter
+        .append('rect')
+        .attr('class', 'hist')
+        .attr('x', (d) => x.value(d.x0) - xGap)
+        .attr('width', (d) => x.value(d.x1) - x.value(d.x0) - xGap * 2)
+        .attr('y', (d) => y.value(d.length))
+        .attr('height', (d) => y.value(0) - y.value(d.length))
+        .style('fill', props.fillColor);
+    },
+    (update) => {
+      update
+        .transition(t1)
+        .attr('x', (d) => x.value(d.x0) - xGap)
+        .attr('width', (d) => x.value(d.x1) - x.value(d.x0) - xGap * 2)
+        .attr('y', (d) => y.value(d.length))
+        .attr('height', (d) => y.value(0) - y.value(d.length));
+    },
+    (exit) =>
+      exit.call((exit) =>
+        exit.transition().duration(10).style('opacity', 1e-5).remove(),
+      ),
+  );
+};
+
+const updatePlot = () => {
+  if (props.data) {
+    updateAxes();
+    drawPlot();
+  }
+};
+
+watch(
+  () => props.data,
+  () => {
+    updatePlot();
+  },
+);
+
+onMounted(() => {
+  setupPlot();
+  updatePlot();
+});
 </script>
 
 <style lang="scss">

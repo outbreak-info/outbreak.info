@@ -24,20 +24,16 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { lazyLoad } from '@/js/lazy-load';
 
-export default {
-  name: 'GenomicsCitation',
-  components: {
-    ShareReport: lazyLoad('ShareReport'),
-  },
-  props: {
-    title: String,
-    mutationAuthors: String,
-    genomicsCitation: String,
-    url: String,
-    today: String,
-  },
-};
+const ShareReport = lazyLoad('ShareReport');
+
+const props = defineProps({
+  title: String,
+  mutationAuthors: String,
+  genomicsCitation: String,
+  url: String,
+  today: String,
+});
 </script>

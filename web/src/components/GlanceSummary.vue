@@ -274,81 +274,83 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { computed } from 'vue';
 import { format } from 'd3-format';
 
 import { lazyLoad } from '@/js/lazy-load';
 
-export default {
-  name: 'GlanceSummary',
-  components: {
-    Sparkline: lazyLoad('Sparkline'),
-    Bargraph: lazyLoad('Bargraph'),
-  },
-  props: {
-    data: Object,
-    idx: String,
-    deletable: Boolean,
-  },
-  data() {
-    return {};
-  },
-  computed: {
-    updatedDate() {
-      return this.data.date;
-    },
-    cases() {
-      return this.data.confirmed.toLocaleString();
-    },
-    casesIncrease() {
-      return this.data.confirmed_numIncrease.toLocaleString();
-    },
-    casesPct() {
-      return this.formatPct(this.data.confirmed_pctIncrease);
-    },
-    casesYesterday() {
-      return (
-        this.data.confirmed - this.data.confirmed_numIncrease
-      ).toLocaleString();
-    },
-    deaths() {
-      return this.data.dead.toLocaleString();
-    },
-    deadIncrease() {
-      return this.data.dead_numIncrease.toLocaleString();
-    },
-    deadPct() {
-      return this.formatPct(this.data.dead_pctIncrease);
-    },
-    deadYesterday() {
-      return (this.data.dead - this.data.dead_numIncrease).toLocaleString();
-    },
-  },
-  watch: {},
-  methods: {
-    formatPct(pct) {
-      if (!pct) {
-        return null;
-      }
+const Sparkline = lazyLoad('Sparkline');
+const Bargraph = lazyLoad('Bargraph');
 
-      if (pct < 0) {
-        return 'count corrected';
-      }
+const props = defineProps({
+  data: Object,
+  idx: String,
+  deletable: Boolean,
+});
 
-      if (pct < 0.005) {
-        return '< 1%';
-      }
+const emit = defineEmits(['removed']);
 
-      if (!isFinite(pct)) {
-        return '* first reported *';
-      }
+const updatedDate = computed(() => {
+  return props.data.date;
+});
 
-      return format('.0%')(pct);
-    },
-    removeSummary() {
-      this.$emit('removed', this.idx);
-    },
-  },
+const cases = computed(() => {
+  return props.data.confirmed.toLocaleString();
+});
+
+const casesIncrease = computed(() => {
+  return props.data.confirmed_numIncrease.toLocaleString();
+});
+
+const casesPct = computed(() => {
+  return formatPct(props.data.confirmed_pctIncrease);
+});
+
+const casesYesterday = computed(() => {
+  return (
+    props.data.confirmed - props.data.confirmed_numIncrease
+  ).toLocaleString();
+});
+
+const deaths = computed(() => {
+  return props.data.dead.toLocaleString();
+});
+
+const deadIncrease = computed(() => {
+  return props.data.dead_numIncrease.toLocaleString();
+});
+
+const deadPct = computed(() => {
+  return formatPct(props.data.dead_pctIncrease);
+});
+
+const deadYesterday = computed(() => {
+  return (props.data.dead - props.data.dead_numIncrease).toLocaleString();
+});
+
+const formatPct = (pct) => {
+  if (!pct) {
+    return null;
+  }
+
+  if (pct < 0) {
+    return 'count corrected';
+  }
+
+  if (pct < 0.005) {
+    return '< 1%';
+  }
+
+  if (!isFinite(pct)) {
+    return '* first reported *';
+  }
+
+  return format('.0%')(pct);
+};
+
+const removeSummary = () => {
+  emit('removed', props.idx);
 };
 </script>
 
