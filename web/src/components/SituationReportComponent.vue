@@ -1306,9 +1306,13 @@ export default {
         this.newPangolin = null;
         this.lineageName = null;
         this.reportMetadata = null;
+        this.minDate = newVal.query.xmin;
+        this.maxDate = newVal.query.xmax;
         this.setupReport();
       } else {
-        this.updateLocations();
+        this.minDate = newVal.query.xmin;
+        this.maxDate = newVal.query.xmax;
+        this.setupReport();
       }
     },
   },
@@ -1510,7 +1514,6 @@ export default {
 
           // sublineagePrev
           this.sublineagePrev = results.sublineagePrev;
-
           // location prevalence
           this.locationTotals = results.locPrev;
 
@@ -1836,8 +1839,6 @@ export default {
     updateDateRange(event) {
       this.maxDate = event.newMax;
       this.minDate = event.newMin;
-      this.setupReport();
-      this.updateLocations();
     },
   },
 };

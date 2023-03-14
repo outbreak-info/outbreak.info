@@ -1353,11 +1353,17 @@ export default {
     },
   },
   watch: {
-    '$route.query': function (newVal, oldVal) {
-      if (newVal.loc !== oldVal.loc) {
+    $route: function (newVal, oldVal) {
+      if (newVal.query.loc !== oldVal.query.loc) {
+        this.minDate = newVal.query.xmin;
+        this.maxDate = newVal.query.xmax;
         this.newLocation = null;
         this.createReport();
         this.customMutations = this.grabCustomMutations();
+      } else {
+        this.minDate = newVal.query.xmin;
+        this.maxDate = newVal.query.xmax;
+        this.createReport();
       }
     },
     recentWindow() {
@@ -1760,9 +1766,6 @@ export default {
       this.maxDate = event.newMax;
       this.minDate = event.newMin;
       this.month = event.month;
-      this.setupReport();
-      this.updateMaps();
-      this.updateTable();
     },
     updateMapDateRange(month) {
       this.month = month;
@@ -1788,9 +1791,6 @@ export default {
           selected: queryParams.selected,
         },
       });
-      this.setupReport();
-      this.updateMaps();
-      this.updateTable();
     },
     getDateRangeText() {
       if (this.xmin && this.xmax) {
