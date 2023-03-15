@@ -1007,7 +1007,7 @@ export const getCharacteristicMutations = (
   prevalenceThreshold = store.state.genomics.characteristicThreshold,
   returnFlat = true,
   includeSublineages = false,
-  genes = ["S"],
+  genes = ["5UTR", "ORF1a", "ORF1b", "S", "ORF3a", "E", "M", "ORF6", "ORF7a", "ORF7b", "ORF8", "N", "ORF10", "3UTR"],
 ) => {
   if (!lineage) return of([]);
 
