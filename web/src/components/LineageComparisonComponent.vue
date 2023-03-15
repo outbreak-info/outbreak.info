@@ -814,8 +814,18 @@
   </div>
 </template>
 
-<script>
-import { mapState } from 'pinia';
+<script setup>
+import {
+  computed,
+  inject,
+  nextTick,
+  onMounted,
+  onUnmounted,
+  ref,
+  watch,
+} from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import { mapState, storeToRefs } from 'pinia';
 import { scaleSequential } from 'd3-scale';
 import { interpolateRdPu } from 'd3-scale-chromatic';
 import { timeFormat } from 'd3-time-format';
@@ -839,638 +849,663 @@ import 'tippy.js/themes/light.css';
 import { adminStore } from '@/stores/adminStore';
 import { genomicsStore } from '@/stores/genomicsStore';
 
-export default {
-  name: 'LineageComparisonComponent',
-  components: {
-    TypeaheadSelect: lazyLoad('TypeaheadSelect'),
-    ReportMethodology: lazyLoad('ReportMethodology'),
-    Warning: lazyLoad('Warning'),
-    ReportAcknowledgements: lazyLoad('ReportAcknowledgements'),
-    ShareReport: lazyLoad('ShareReport'),
-    MutationHeatmap: lazyLoad('MutationHeatmap'),
-    GradientLegend: lazyLoad('GradientLegend'),
-    DownloadReportData: lazyLoad('DownloadReportData'),
-    GenomicsCitation: lazyLoad('GenomicsCitation'),
+const TypeaheadSelect = lazyLoad('TypeaheadSelect');
+const ReportMethodology = lazyLoad('ReportMethodology');
+const Warning = lazyLoad('Warning');
+const ReportAcknowledgements = lazyLoad('ReportAcknowledgements');
+const ShareReport = lazyLoad('ShareReport');
+const MutationHeatmap = lazyLoad('MutationHeatmap');
+const GradientLegend = lazyLoad('GradientLegend');
+const DownloadReportData = lazyLoad('DownloadReportData');
+const GenomicsCitation = lazyLoad('GenomicsCitation');
+
+const props = defineProps({
+  embedded: {
+    type: Boolean,
+    default: false,
   },
-  props: {
-    embedded: {
-      type: Boolean,
-      default: false,
+  routeTo: {
+    type: String,
+    default: 'SituationReportComparison',
+  },
+  pango: [Array, String],
+  threshold: {
+    type: [Number, String],
+    default: 75,
+  },
+  nthresh: {
+    type: [Number, String],
+    default: 1,
+  },
+  dark: {
+    type: [String, Boolean],
+    default: false,
+  },
+  gene: {
+    type: [Array, String],
+    default() {
+      return ['ORF1a', 'ORF1b', 'S'];
     },
-    routeTo: {
-      type: String,
-      default: 'SituationReportComparison',
-    },
-    pango: [Array, String],
-    threshold: {
-      type: [Number, String],
-      default: 75,
-    },
-    nthresh: {
-      type: [Number, String],
-      default: 1,
-    },
-    dark: {
-      type: [String, Boolean],
-      default: false,
-    },
-    gene: {
-      type: [Array, String],
-      default() {
-        return ['ORF1a', 'ORF1b', 'S'];
+  },
+});
+
+// equivalent to this.$genomicsurl
+const genomicsUrl = inject('genomicsUrl');
+
+// instead of this.$route
+const route = useRoute();
+// instead of this.$router
+const router = useRouter();
+
+const today = ref(null);
+const url = ref(null);
+const darkMode = ref(null);
+const disclaimer = ref(
+  `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the mutations but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`,
+);
+const title = ref('Lineage Comparison');
+const queryPangolin = ref(null);
+const mutationHeatmap = ref(null);
+const filteredMutationHeatmap = ref(null);
+const downloadableHeatmap = ref(null);
+const selectedGenes = ref([]);
+const selectedPango = ref([]);
+const selectedMutationQuery = ref(null);
+const selectedMutationThreshold = ref(50);
+const colorScale = ref(null);
+const prevalenceThreshold = ref(null);
+const heatmapSubscription = ref(null);
+const basicSubscription = ref(null);
+const lineageByMutationsSubscription = ref(null);
+const lineageByLocationSubscription = ref(null);
+const totalSequences = ref(null);
+const lastUpdated = ref(null);
+const showSnackbar = ref(false);
+const snackbarText = ref(null);
+const selectedLocation = ref(null);
+const selectedOtherThreshold = ref(3);
+const selectedNdayThreshold = ref(5);
+// const selectedNdays = ref(60);
+const selectedWindow = ref(60);
+const queryLocation = ref(null);
+const previous_voc = ref(null); // list of previously designated VOCs
+const curated = ref(null); // list of currently designated VOCs -- curated lineages listed on our reports
+const voc = ref([]); // full list of all VOCs, former and current, including sublineages also designated as VOCss
+const voi = ref([]); // VOIs. as of 2022, not really used...
+const moi = ref(null);
+const moc = ref(null);
+const countThreshold = ref(null);
+const selectedWHO = ref(null);
+const whoLineages = ref([]);
+const geneOpts = ref([
+  'ORF1a',
+  'ORF1b',
+  'S',
+  'ORF3a',
+  'E',
+  'M',
+  'ORF6',
+  'ORF7a',
+  'ORF7b',
+  'ORF8',
+  'N',
+  'ORF10',
+]);
+const smallScreen = ref(false);
+const mediumScreen = ref(false);
+const largeScreen = ref(false);
+
+const storeAdmin = adminStore();
+const { mutationAuthors, genomicsCitation } = storeToRefs(storeAdmin);
+const storeGenomics = genomicsStore();
+
+const loading = computed(() => {
+  return (
+    storeGenomics.$state.locationLoading1 ||
+    storeGenomics.$state.locationLoading2
+  );
+});
+
+const locationValid = computed(() => {
+  return !!(
+    selectedLocation.value &&
+    selectedOtherThreshold.value &&
+    selectedOtherThreshold.value >= 0 &&
+    selectedWindow.value > 0
+  );
+});
+
+const mutationValid = computed(() => {
+  return (
+    /\w+:[A-z]\d+[A-z]/.test(selectedMutationQuery.value) ||
+    /\w+:DEL\d+/.test(selectedMutationQuery.value.toUpperCase())
+  );
+});
+
+const darkModeHelper = computed(() => {
+  return props.darkMode
+    ? 'Switch to <b>light mode</b> to focus on similarities between lineages'
+    : 'Switch to <b>dark mode</b> to emphasize mutations with low prevalence';
+});
+
+const checkPango = computed(() => {
+  const pangos = CURATED.filter((d) => d.who_name === 'Omicron');
+  if (selectedPango.value && selectedPango.value.length > 0) {
+    return pangos[0].pango_descendants.some((item) =>
+      selectedPango.value.includes(item),
+    );
+  } else {
+    return false;
+  }
+});
+
+// methods functions
+const setDims = () => {
+  mediumScreen.value = window.innerWidth < 1000;
+  smallScreen.value = window.innerWidth < 500;
+  largeScreen.value = window.innerWidth < 1920;
+};
+
+const scrollToTop = () => {
+  window.scrollTo(0, 0);
+};
+
+const updateGenes = () => {
+  if (props.routeTo === 'GenomicsEmbed') {
+    router.push({
+      name: props.routeTo,
+      meta: {
+        disableScroll: true,
       },
-    },
-  },
-  data() {
-    return {
-      today: null,
-      url: null,
-      darkMode: null,
-      disclaimer: `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the mutations but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`,
-      title: 'Lineage Comparison',
-      queryPangolin: null,
-      mutationHeatmap: null,
-      filteredMutationHeatmap: null,
-      downloadableHeatmap: null,
-      selectedGenes: [],
-      selectedPango: [],
-      selectedMutationQuery: null,
-      selectedMutationThreshold: 50,
-      colorScale: null,
-      prevalenceThreshold: null,
-      heatmapSubscription: null,
-      basicSubscription: null,
-      lineageByMutationsSubscription: null,
-      lineageByLocationSubscription: null,
-      totalSequences: null,
-      lastUpdated: null,
-      showSnackbar: false,
-      snackbarText: null,
-      selectedLocation: null,
-      selectedOtherThreshold: 3,
-      selectedNdayThreshold: 5,
-      // selectedNdays: 60,
-      selectedWindow: 60,
-      queryLocation: null,
-      previous_voc: null, // list of previously designated VOCs
-      curated: null, // list of currently designated VOCs -- curated lineages listed on our reports
-      voc: [], // full list of all VOCs, former and current, including sublineages also designated as VOCss
-      voi: [], // VOIs. as of 2022, not really used...
-      moi: null,
-      moc: null,
-      countThreshold: null,
-      selectedWHO: null,
-      whoLineages: [],
-      geneOpts: [
-        'ORF1a',
-        'ORF1b',
-        'S',
-        'ORF3a',
-        'E',
-        'M',
-        'ORF6',
-        'ORF7a',
-        'ORF7b',
-        'ORF8',
-        'N',
-        'ORF10',
-      ],
-      smallScreen: false,
-      mediumScreen: false,
-      largeScreen: false,
-    };
-  },
-  computed: {
-    ...mapState(adminStore, ['mutationAuthors', 'genomicsCitation']),
-    ...mapState(genomicsStore, ['locationLoading1', 'locationLoading2']),
-    loading() {
-      return this.locationLoading1 || this.locationLoading2;
-    },
-    locationValid() {
-      return !!(
-        this.selectedLocation &&
-        this.selectedOtherThreshold &&
-        this.selectedOtherThreshold >= 0 &&
-        this.selectedWindow > 0
-      );
-    },
-    mutationValid() {
-      return (
-        /\w+:[A-z]\d+[A-z]/.test(this.selectedMutationQuery) ||
-        /\w+:DEL\d+/.test(this.selectedMutationQuery.toUpperCase())
-      );
-    },
-    darkModeHelper() {
-      return this.darkMode
-        ? 'Switch to <b>light mode</b> to focus on similarities between lineages'
-        : 'Switch to <b>dark mode</b> to emphasize mutations with low prevalence';
-    },
-    checkPango() {
-      const pangos = CURATED.filter((d) => d.who_name === 'Omicron');
-      if (this.selectedPango && this.selectedPango.length > 0) {
-        return pangos[0].pango_descendants.some((item) =>
-          this.selectedPango.includes(item),
-        );
-      } else {
-        return false;
-      }
-    },
-  },
-  watch: {
-    countThreshold(newVal, oldVal) {
-      if (oldVal && newVal !== oldVal) {
-        this.debounceCountThreshold();
-      }
-    },
-    prevalenceThreshold(newVal, oldVal) {
-      if (oldVal && newVal !== oldVal) {
-        this.debounceThreshold();
-      }
-    },
-  },
-  mounted() {
-    const formatDate = timeFormat('%e %B %Y');
-    this.currentTime = new Date();
-    this.today = formatDate(this.currentTime);
+      query: {
+        type: 'comp',
+        pango: props.pango,
+        gene: selectedGenes.value,
+        threshold: prevalenceThreshold.value,
+        nthresh: countThreshold.value,
+        dark: darkMode.value,
+      },
+    });
+  } else {
+    router.push({
+      name: props.routeTo,
+      meta: {
+        disableScroll: true,
+      },
+      query: {
+        pango: props.pango,
+        gene: selectedGenes.value,
+        threshold: prevalenceThreshold.value,
+        nthresh: countThreshold.value,
+        dark: darkMode.value,
+      },
+    });
+  }
+  getData();
+};
 
-    this.darkMode =
-      this.dark === 'true' || (!!this.dark && this.dark !== 'false');
-
-    this.prevalenceThreshold = +this.threshold;
-    this.countThreshold = +this.nthresh;
-
-    this.colorScale = scaleSequential(interpolateRdPu);
-    this.selectedGenes =
-      typeof this.gene === 'string' ? [this.gene] : this.gene;
-
-    if (this.pango) {
-      this.selectedPango =
-        typeof this.pango === 'string' ? [this.pango] : this.pango;
-    }
-
-    this.$nextTick(() => {
-      // set URL for sharing, etc.
-      window.addEventListener('resize', this.setDims);
-      this.setDims();
-      const location = window.location;
-      this.url =
-        location.search !== ''
-          ? `${location.origin}${location.pathname}${location.search}`
-          : `${location.origin}${location.pathname}`;
-
-      tippy('.dark-mode-helper', {
-        content: 'Loading...',
-        maxWidth: '200px',
-        placement: 'right',
-        animation: 'fade',
-        theme: 'light',
-        allowHTML: true,
-        onShow(instance) {
-          let info = instance.reference.dataset.tippyInfo;
-          instance.setContent(info);
+const changeThreshold = () => {
+  if (prevalenceThreshold.value) {
+    if (props.routeTo === 'GenomicsEmbed') {
+      router.push({
+        name: props.routeTo,
+        meta: {
+          disableScroll: true,
+        },
+        query: {
+          type: 'comp',
+          pango: props.pango,
+          gene: selectedGenes.value,
+          threshold: prevalenceThreshold.value,
+          nthresh: countThreshold.value,
+          dark: darkMode.value,
         },
       });
-    });
-
-    this.queryPangolin = findPangolin;
-    this.queryLocation = findLocation;
-
-    this.basicSubscription = getBasicComparisonReportData(
-      this.$genomicsurl,
-    ).subscribe((results) => {
-      this.totalSequences = results.total;
-      this.lastUpdated = results.dateUpdated.lastUpdated;
-      this.whoLineages = results.who;
-      this.voc = results.voc;
-      this.curated = results.current_voc;
-      this.previous_voc = results.previous_voc;
-    });
-
-    // only load data if lineages have been selected
-    if (this.selectedPango.length) {
-      this.getData();
-    }
-  },
-  created() {
-    this.debounceThreshold = debounce(this.changeThreshold, 250);
-    this.debounceCountThreshold = debounce(this.changeCountThreshold, 250);
-    this.debounceGenes = debounce(this.updateGenes, 250);
-  },
-  unmounted() {
-    if (this.basicSubscription) {
-      this.basicSubscription.unsubscribe();
-    }
-    if (this.heatmapSubscription) {
-      this.heatmapSubscription.unsubscribe();
-    }
-    if (this.lineageByMutationsSubscription) {
-      this.lineageByMutationsSubscription.unsubscribe();
-    }
-    if (this.lineageByLocationSubscription) {
-      this.lineageByLocationSubscription.unsubscribe();
-    }
-  },
-  methods: {
-    setDims() {
-      this.mediumScreen = window.innerWidth < 1000;
-      this.smallScreen = window.innerWidth < 500;
-      this.largeScreen = window.innerWidth < 1920;
-    },
-    scrollToTop() {
-      window.scrollTo(0, 0);
-    },
-    updateGenes() {
-      if (this.routeTo === 'GenomicsEmbed') {
-        this.$router.push({
-          name: this.routeTo,
-          meta: {
-            disableScroll: true,
-          },
-          query: {
-            type: 'comp',
-            pango: this.pango,
-            gene: this.selectedGenes,
-            threshold: this.prevalenceThreshold,
-            nthresh: this.countThreshold,
-            dark: this.darkMode,
-          },
-        });
-      } else {
-        this.$router.push({
-          name: this.routeTo,
-          meta: {
-            disableScroll: true,
-          },
-          query: {
-            pango: this.pango,
-            gene: this.selectedGenes,
-            threshold: this.prevalenceThreshold,
-            nthresh: this.countThreshold,
-            dark: this.darkMode,
-          },
-        });
-      }
-      this.getData();
-    },
-    changeThreshold() {
-      if (this.prevalenceThreshold) {
-        if (this.routeTo === 'GenomicsEmbed') {
-          this.$router.push({
-            name: this.routeTo,
-            meta: {
-              disableScroll: true,
-            },
-            query: {
-              type: 'comp',
-              pango: this.pango,
-              gene: this.selectedGenes,
-              threshold: this.prevalenceThreshold,
-              nthresh: this.countThreshold,
-              dark: this.darkMode,
-            },
-          });
-        } else {
-          this.$router.push({
-            name: this.routeTo,
-            meta: {
-              disableScroll: true,
-            },
-            query: {
-              pango: this.pango,
-              gene: this.selectedGenes,
-              threshold: this.prevalenceThreshold,
-              nthresh: this.countThreshold,
-              dark: this.darkMode,
-            },
-          });
-        }
-
-        this.getData();
-      }
-    },
-    addVOC(lineage) {
-      if (!this.selectedPango.includes(lineage))
-        this.selectedPango.push(lineage);
-    },
-    changeCountThreshold() {
-      if (this.countThreshold) {
-        if (this.routeTo === 'GenomicsEmbed') {
-          this.$router.push({
-            name: this.routeTo,
-            meta: {
-              disableScroll: true,
-            },
-            query: {
-              type: 'comp',
-              pango: this.pango,
-              gene: this.selectedGenes,
-              threshold: this.prevalenceThreshold,
-              nthresh: this.countThreshold,
-              dark: this.darkMode,
-            },
-          });
-        } else {
-          this.$router.push({
-            name: this.routeTo,
-            meta: {
-              disableScroll: true,
-            },
-            query: {
-              pango: this.pango,
-              gene: this.selectedGenes,
-              threshold: this.prevalenceThreshold,
-              nthresh: this.countThreshold,
-              dark: this.darkMode,
-            },
-          });
-        }
-        // reapply the filter
-        this.filteredMutationHeatmap = this.mutationHeatmap.map((gene) => {
-          return {
-            key: gene.key,
-            values: gene.values.filter(
-              (d) => d.lineage_count >= this.countThreshold,
-            ),
-          };
-        });
-        this.selectedPango = uniq(
-          this.filteredMutationHeatmap
-            .flatMap((d) => d.values)
-            .map((d) => d.pangolin_lineage),
-        );
-      }
-    },
-    updateLocation(location) {
-      this.selectedLocation = location;
-    },
-    getData() {
-      const ofInterest = getBadMutations(true);
-      this.moc = ofInterest.moc;
-      this.moi = ofInterest.moi;
-
-      this.heatmapSubscription = getLineagesComparison(
-        this.$genomicsurl,
-        this.selectedPango,
-        this.prevalenceThreshold / 100,
-        false,
-        this.selectedGenes,
-      ).subscribe((results) => {
-        this.prepResults(results);
+    } else {
+      router.push({
+        name: props.routeTo,
+        meta: {
+          disableScroll: true,
+        },
+        query: {
+          pango: props.pango,
+          gene: selectedGenes.value,
+          threshold: prevalenceThreshold.value,
+          nthresh: countThreshold.value,
+          dark: darkMode.value,
+        },
       });
-    },
-    routeDark() {
-      if (this.routeTo === 'GenomicsEmbed') {
-        this.$router.push({
-          name: this.routeTo,
-          meta: {
-            disableScroll: true,
-          },
-          query: {
-            type: 'comp',
-            pango: this.pango,
-            gene: this.selectedGenes,
-            threshold: this.prevalenceThreshold,
-            nthresh: this.countThreshold,
-            dark: this.darkMode,
-          },
-        });
-      } else {
-        this.$router.push({
-          name: this.routeTo,
-          meta: {
-            disableScroll: true,
-          },
-          query: {
-            pango: this.pango,
-            gene: this.selectedGenes,
-            threshold: this.prevalenceThreshold,
-            nthresh: this.countThreshold,
-            dark: this.darkMode,
-          },
-        });
-      }
-    },
-    prepResults(results) {
-      this.mutationHeatmap = results.data;
-      this.filteredMutationHeatmap = results.data.map((gene) => {
-        return {
-          key: gene.key,
-          values: gene.values.filter(
-            (d) => d.lineage_count >= this.countThreshold,
-          ),
-        };
-      });
+    }
 
-      this.downloadableHeatmap = results.dataFlat;
-    },
-    addMutations() {
-      const selMutation = this.selectedMutationQuery
-        .replace(/\s/g, '')
-        .split(',');
-      this.lineageByMutationsSubscription = getComparisonByMutations(
-        this.$genomicsurl,
-        this.selectedPango,
-        this.prevalenceThreshold / 100,
-        selMutation,
-        this.selectedMutationThreshold / 100,
-      ).subscribe((results) => {
-        this.showSnackbar = true;
-        this.snackbarText = `${results.data.length} lineages added`;
-        setTimeout(() => {
-          this.showSnackbar = false;
-        }, 5000);
-        const filteredMutation = results.data.filter(
-          (gene) => gene.lineage_count >= this.countThreshold,
-        );
-
-        this.selectedPango = uniq(
-          filteredMutation.map((d) => d.pangolin_lineage),
-        );
-
-        // reset / clear
-        this.selectedMutationQuery = null;
-      });
-    },
-    addLocationLineages() {
-      this.lineageByLocationSubscription = getComparisonByLocation(
-        this.$genomicsurl,
-        this.selectedPango,
-        this.prevalenceThreshold / 100,
-        this.selectedLocation.id,
-        this.selectedOtherThreshold / 100,
-        this.selectedNdayThreshold,
-        this.selectedWindow,
-        this.selectedWindow,
-      ).subscribe((results) => {
-        this.showSnackbar = true;
-        this.snackbarText = `${results.data.length} lineages added`;
-        setTimeout(() => {
-          this.showSnackbar = false;
-        }, 5000);
-        // update lineages to be the "fixed" names, to account for WHO / grouped names.
-        this.selectedPango = uniq(results.data);
-
-        // reset / clear
-        this.selectedLocation = null;
-      });
-    },
-    clearAddMutations() {
-      this.selectedPango = [];
-      this.addMutations();
-    },
-    clearAddLocationLineages() {
-      this.selectedPango = [];
-      this.addLocationLineages();
-    },
-    addWHO(clearPrevious = false) {
-      // set new values
-      if (clearPrevious) {
-        this.selectedPango = [this.selectedWHO];
-      } else {
-        this.selectedPango.push(this.selectedWHO);
-      }
-
-      this.showSnackbar = true;
-      this.snackbarText = `${this.selectedWHO} lineages added`;
-      setTimeout(() => {
-        this.showSnackbar = false;
-      }, 5000);
-
-      if (this.routeTo === 'GenomicsEmbed') {
-        this.$router.push({
-          name: this.routeTo,
-          meta: {
-            disableScroll: true,
-          },
-          query: {
-            type: 'comp',
-            pango: this.selectedPango,
-            gene: this.selectedGenes,
-            threshold: this.prevalenceThreshold,
-            dark: this.darkMode,
-          },
-        });
-      } else {
-        this.$router.push({
-          name: this.routeTo,
-          meta: {
-            disableScroll: true,
-          },
-          query: {
-            pango: this.selectedPango,
-            gene: this.selectedGenes,
-            threshold: this.prevalenceThreshold,
-            dark: this.darkMode,
-          },
-        });
-      }
-      // reset / clear
-      this.selectedWHO = null;
-      this.getData();
-    },
-    submitNewData() {
-      if (this.routeTo === 'GenomicsEmbed') {
-        this.$router.push({
-          name: this.routeTo,
-          meta: {
-            disableScroll: true,
-          },
-          query: {
-            type: 'comp',
-            pango: this.selectedPango,
-            gene: this.selectedGenes,
-            threshold: this.prevalenceThreshold,
-            dark: this.darkMode,
-          },
-        });
-      } else {
-        this.$router.push({
-          name: this.routeTo,
-          meta: {
-            disableScroll: true,
-          },
-          query: {
-            pango: this.selectedPango,
-            gene: this.selectedGenes,
-            threshold: this.prevalenceThreshold,
-            dark: this.darkMode,
-          },
-        });
-      }
-      // reset / clear
-      this.selectedWHO = null;
-      this.getData();
-    },
-    addPango(selected) {
-      this.selectedPango.push(selected.name);
-    },
-    clearPango() {
-      this.selectedPango = [];
-      this.filteredMutationHeatmap = null;
-      this.downloadableHeatmap = null;
-      if (this.routeTo === 'GenomicsEmbed') {
-        this.$router.push({
-          name: this.routeTo,
-          query: {
-            type: 'comp',
-            pango: [],
-            gene: this.selectedGenes,
-            threshold: this.prevalenceThreshold,
-            nthresh: this.countThreshold,
-            dark: this.darkMode,
-          },
-        });
-      } else {
-        this.$router.push({
-          name: this.routeTo,
-          query: {
-            pango: [],
-            gene: this.selectedGenes,
-            threshold: this.prevalenceThreshold,
-            nthresh: this.countThreshold,
-            dark: this.darkMode,
-          },
-        });
-      }
-
-      this.mutationHeatmap = null;
-    },
-    deletePango(idx) {
-      this.selectedPango.splice(idx, 1);
-
-      if (this.routeTo === 'GenomicsEmbed') {
-        this.$router.push({
-          name: this.routeTo,
-          meta: {
-            disableScroll: true,
-          },
-          query: {
-            type: 'comp',
-            pango: this.selectedPango,
-            gene: this.selectedGenes,
-            threshold: this.prevalenceThreshold,
-            nthresh: this.countThreshold,
-            dark: this.darkMode,
-          },
-        });
-      } else {
-        this.$router.push({
-          name: this.routeTo,
-          meta: {
-            disableScroll: true,
-          },
-          query: {
-            pango: this.selectedPango,
-            gene: this.selectedGenes,
-            threshold: this.prevalenceThreshold,
-            nthresh: this.countThreshold,
-            dark: this.darkMode,
-          },
-        });
-      }
-    },
-  },
+    getData();
+  }
 };
+
+const addVOC = (lineage) => {
+  if (!selectedPango.value.includes(lineage)) selectedPango.value.push(lineage);
+};
+
+const changeCountThreshold = () => {
+  if (countThreshold.value) {
+    if (props.routeTo === 'GenomicsEmbed') {
+      router.push({
+        name: props.routeTo,
+        meta: {
+          disableScroll: true,
+        },
+        query: {
+          type: 'comp',
+          pango: props.pango,
+          gene: selectedGenes.value,
+          threshold: prevalenceThreshold.value,
+          nthresh: countThreshold.value,
+          dark: darkMode.value,
+        },
+      });
+    } else {
+      router.push({
+        name: props.routeTo,
+        meta: {
+          disableScroll: true,
+        },
+        query: {
+          pango: props.pango,
+          gene: selectedGenes.value,
+          threshold: prevalenceThreshold.value,
+          nthresh: countThreshold.value,
+          dark: darkMode.value,
+        },
+      });
+    }
+    // reapply the filter
+    filteredMutationHeatmap.value = mutationHeatmap.value.map((gene) => {
+      return {
+        key: gene.key,
+        values: gene.values.filter(
+          (d) => d.lineage_count >= countThreshold.value,
+        ),
+      };
+    });
+    selectedPango.value = uniq(
+      filteredMutationHeatmap.value
+        .flatMap((d) => d.values)
+        .map((d) => d.pangolin_lineage),
+    );
+  }
+};
+
+const updateLocation = (location) => {
+  selectedLocation.value = location;
+};
+
+const getData = () => {
+  const ofInterest = getBadMutations(true);
+  moc.value = ofInterest.moc;
+  moi.value = ofInterest.moi;
+
+  heatmapSubscription.value = getLineagesComparison(
+    genomicsUrl,
+    selectedPango.value,
+    prevalenceThreshold.value / 100,
+    false,
+    selectedGenes.value,
+  ).subscribe((results) => {
+    prepResults(results);
+  });
+};
+
+const routeDark = () => {
+  if (props.routeTo === 'GenomicsEmbed') {
+    router.push({
+      name: props.routeTo,
+      meta: {
+        disableScroll: true,
+      },
+      query: {
+        type: 'comp',
+        pango: props.pango,
+        gene: selectedGenes.value,
+        threshold: prevalenceThreshold.value,
+        nthresh: countThreshold.value,
+        dark: darkMode.value,
+      },
+    });
+  } else {
+    router.push({
+      name: props.routeTo,
+      meta: {
+        disableScroll: true,
+      },
+      query: {
+        pango: props.pango,
+        gene: selectedGenes.value,
+        threshold: prevalenceThreshold.value,
+        nthresh: countThreshold.value,
+        dark: darkMode.value,
+      },
+    });
+  }
+};
+
+const prepResults = (results) => {
+  mutationHeatmap.value = results.data;
+  filteredMutationHeatmap.value = results.data.map((gene) => {
+    return {
+      key: gene.key,
+      values: gene.values.filter(
+        (d) => d.lineage_count >= countThreshold.value,
+      ),
+    };
+  });
+
+  downloadableHeatmap.value = results.dataFlat;
+};
+
+const addMutations = () => {
+  const selMutation = selectedMutationQuery.value.replace(/\s/g, '').split(',');
+  lineageByMutationsSubscription.value = getComparisonByMutations(
+    genomicsUrl,
+    selectedPango.value,
+    prevalenceThreshold.value / 100,
+    selMutation,
+    selectedMutationThreshold.value / 100,
+  ).subscribe((results) => {
+    showSnackbar.value = true;
+    snackbarText.value = `${results.data.length} lineages added`;
+    setTimeout(() => {
+      showSnackbar.value = false;
+    }, 5000);
+    const filteredMutation = results.data.filter(
+      (gene) => gene.lineage_count >= countThreshold.value,
+    );
+
+    selectedPango.value = uniq(filteredMutation.map((d) => d.pangolin_lineage));
+
+    // reset / clear
+    selectedMutationQuery.value = null;
+  });
+};
+
+const addLocationLineages = () => {
+  lineageByLocationSubscription.value = getComparisonByLocation(
+    genomicsUrl,
+    selectedPango.value,
+    prevalenceThreshold.value / 100,
+    selectedLocation.value.id,
+    selectedOtherThreshold.value / 100,
+    selectedNdayThreshold.value,
+    selectedWindow.value,
+    selectedWindow.value,
+  ).subscribe((results) => {
+    showSnackbar.value = true;
+    snackbarText.value = `${results.data.length} lineages added`;
+    setTimeout(() => {
+      showSnackbar.value = false;
+    }, 5000);
+    // update lineages to be the "fixed" names, to account for WHO / grouped names.
+    selectedPango.value = uniq(results.data);
+
+    // reset / clear
+    selectedLocation.value = null;
+  });
+};
+
+const clearAddMutations = () => {
+  selectedPango.value = [];
+  addMutations();
+};
+
+const clearAddLocationLineages = () => {
+  selectedPango.value = [];
+  addLocationLineages();
+};
+
+const addWHO = (clearPrevious = false) => {
+  // set new values
+  if (clearPrevious) {
+    selectedPango.value = [selectedWHO.value];
+  } else {
+    selectedPango.value.push(selectedWHO.value);
+  }
+
+  showSnackbar.value = true;
+  snackbarText.value = `${selectedWHO.value} lineages added`;
+  setTimeout(() => {
+    showSnackbar.value = false;
+  }, 5000);
+
+  if (props.routeTo === 'GenomicsEmbed') {
+    router.push({
+      name: props.routeTo,
+      meta: {
+        disableScroll: true,
+      },
+      query: {
+        type: 'comp',
+        pango: selectedPango.value,
+        gene: selectedGenes.value,
+        threshold: prevalenceThreshold.value,
+        dark: darkMode.value,
+      },
+    });
+  } else {
+    router.push({
+      name: props.routeTo,
+      meta: {
+        disableScroll: true,
+      },
+      query: {
+        pango: selectedPango.value,
+        gene: selectedGenes.value,
+        threshold: prevalenceThreshold.value,
+        dark: darkMode.value,
+      },
+    });
+  }
+  // reset / clear
+  selectedWHO.value = null;
+  getData();
+};
+
+const submitNewData = () => {
+  if (props.routeTo === 'GenomicsEmbed') {
+    router.push({
+      name: props.routeTo,
+      meta: {
+        disableScroll: true,
+      },
+      query: {
+        type: 'comp',
+        pango: selectedPango.value,
+        gene: selectedGenes.value,
+        threshold: prevalenceThreshold.value,
+        dark: darkMode.value,
+      },
+    });
+  } else {
+    router.push({
+      name: props.routeTo,
+      meta: {
+        disableScroll: true,
+      },
+      query: {
+        pango: selectedPango.value,
+        gene: selectedGenes.value,
+        threshold: prevalenceThreshold.value,
+        dark: darkMode.value,
+      },
+    });
+  }
+  // reset / clear
+  selectedWHO.value = null;
+  getData();
+};
+
+const addPango = (selected) => {
+  selectedPango.value.push(selected.name);
+};
+
+const clearPango = () => {
+  selectedPango.value = [];
+  filteredMutationHeatmap.value = null;
+  downloadableHeatmap.value = null;
+  if (props.routeTo === 'GenomicsEmbed') {
+    router.push({
+      name: props.routeTo,
+      query: {
+        type: 'comp',
+        pango: [],
+        gene: selectedGenes.value,
+        threshold: prevalenceThreshold.value,
+        nthresh: countThreshold.value,
+        dark: darkMode.value,
+      },
+    });
+  } else {
+    router.push({
+      name: props.routeTo,
+      query: {
+        pango: [],
+        gene: selectedGenes.value,
+        threshold: prevalenceThreshold.value,
+        nthresh: countThreshold.value,
+        dark: darkMode.value,
+      },
+    });
+  }
+
+  mutationHeatmap.value = null;
+};
+
+const deletePango = (idx) => {
+  selectedPango.value.splice(idx, 1);
+
+  if (props.routeTo === 'GenomicsEmbed') {
+    router.push({
+      name: props.routeTo,
+      meta: {
+        disableScroll: true,
+      },
+      query: {
+        type: 'comp',
+        pango: selectedPango.value,
+        gene: selectedGenes.value,
+        threshold: prevalenceThreshold.value,
+        nthresh: countThreshold.value,
+        dark: darkMode.value,
+      },
+    });
+  } else {
+    router.push({
+      name: props.routeTo,
+      meta: {
+        disableScroll: true,
+      },
+      query: {
+        pango: selectedPango.value,
+        gene: selectedGenes.value,
+        threshold: prevalenceThreshold.value,
+        nthresh: countThreshold.value,
+        dark: darkMode.value,
+      },
+    });
+  }
+};
+
+const debounceThreshold = debounce(changeThreshold, 250);
+const debounceCountThreshold = debounce(changeCountThreshold, 250);
+const debounceGenes = debounce(updateGenes, 250);
+
+watch(countThreshold, (newVal, oldVal) => {
+  if (oldVal && newVal !== oldVal) {
+    debounceCountThreshold();
+  }
+});
+
+watch(prevalenceThreshold, (newVal, oldVal) => {
+  if (oldVal && newVal !== oldVal) {
+    debounceThreshold();
+  }
+});
+
+onMounted(() => {
+  const formatDate = timeFormat('%e %B %Y');
+  const currentTime = new Date();
+  today.value = formatDate(currentTime);
+
+  darkMode.value =
+    props.dark === 'true' || (!!props.dark && props.dark !== 'false');
+
+  prevalenceThreshold.value = +props.threshold;
+  countThreshold.value = +props.nthresh;
+
+  colorScale.value = scaleSequential(interpolateRdPu);
+  selectedGenes.value =
+    typeof props.gene === 'string' ? [props.gene] : props.gene;
+
+  if (props.pango) {
+    selectedPango.value =
+      typeof props.pango === 'string' ? [props.pango] : props.pango;
+  }
+
+  nextTick(() => {
+    // set URL for sharing, etc.
+    window.addEventListener('resize', setDims);
+    setDims();
+    const location = window.location;
+    url.value =
+      location.search !== ''
+        ? `${location.origin}${location.pathname}${location.search}`
+        : `${location.origin}${location.pathname}`;
+
+    tippy('.dark-mode-helper', {
+      content: 'Loading...',
+      maxWidth: '200px',
+      placement: 'right',
+      animation: 'fade',
+      theme: 'light',
+      allowHTML: true,
+      onShow(instance) {
+        let info = instance.reference.dataset.tippyInfo;
+        instance.setContent(info);
+      },
+    });
+  });
+
+  queryPangolin.value = findPangolin;
+  queryLocation.value = findLocation;
+
+  basicSubscription.value = getBasicComparisonReportData(genomicsUrl).subscribe(
+    (results) => {
+      totalSequences.value = results.total;
+      lastUpdated.value = results.dateUpdated.lastUpdated;
+      whoLineages.value = results.who;
+      voc.value = results.voc;
+      curated.value = results.current_voc;
+      previous_voc.value = results.previous_voc;
+    },
+  );
+
+  // only load data if lineages have been selected
+  if (selectedPango.value.length) {
+    getData();
+  }
+});
+
+onUnmounted(() => {
+  if (basicSubscription.value) {
+    basicSubscription.value.unsubscribe();
+  }
+  if (heatmapSubscription.value) {
+    heatmapSubscription.value.unsubscribe();
+  }
+  if (lineageByMutationsSubscription.value) {
+    lineageByMutationsSubscription.value.unsubscribe();
+  }
+  if (lineageByLocationSubscription.value) {
+    lineageByLocationSubscription.value.unsubscribe();
+  }
+});
 </script>
 
 <style lang="scss" scoped>

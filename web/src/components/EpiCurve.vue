@@ -481,20 +481,20 @@ const prepData = () => {
           ? d.value.filter(
               (x) =>
                 x[selectedVariable.value] >= 1 &&
-                x[props.xVariable] >= x.value.domain()[0] &&
-                x[props.xVariable] <= x.value.domain()[1] &&
-                (x[props.xVariable] || x[props.xVariable] === 0),
+                x[xVariable.value] >= x.value.domain()[0] &&
+                x[xVariable.value] <= x.value.domain()[1] &&
+                (x[xVariable.value] || x[xVariable.value] === 0),
             )
           : d.value.filter(
               (x) =>
                 x[selectedVariable.value] &&
-                x[props.xVariable] >= x.value.domain()[0] &&
-                x[props.xVariable] <= x.value.domain()[1] &&
-                (x[props.xVariable] || x[props.xVariable] === 0),
+                x[xVariable.value] >= x.value.domain()[0] &&
+                x[xVariable.value] <= x.value.domain()[1] &&
+                (x[xVariable.value] || x[xVariable.value] === 0),
             );
 
       // ensure dates are sorted
-      d.value.sort((a, b) => a[props.xVariable] - b[props.xVariable]);
+      d.value.sort((a, b) => a[xVariable.value] - b[xVariable.value]);
     });
   }
 };
@@ -514,7 +514,7 @@ const setupPlot = () => {
   chart.value = select(epi_curve.value);
 
   lineF.value = line()
-    .x((d) => x.value(d[props.xVariable]))
+    .x((d) => x.value(d[xVariable.value]))
     .y((d) => y.value(d[selectedVariable.value]));
 
   brushRef.value = select(brushFRef.value);
@@ -528,7 +528,7 @@ const setXScale = () => {
     xDomain = [xMin.value, xMax.value];
   } else {
     xDomain = extent(
-      props.data.flatMap((d) => d.value).map((d) => d[props.xVariable]),
+      props.data.flatMap((d) => d.value).map((d) => d[xVariable.value]),
     );
 
     if (xMin.value && xMin.value < xDomain[1]) {
@@ -566,7 +566,7 @@ const updateScales = () => {
       .domain([
         0,
         max(
-          this.plottedData
+          plottedData.value
             .flatMap((d) => d.value)
             .map((d) => d[selectedVariable.value]),
         ),
@@ -593,7 +593,7 @@ const updateScales = () => {
     yAxis.value.tickFormat(format('.0%'));
   }
 
-  select(yAxis.value).call(yAxis.value);
+  select(yAxisRef.value).call(yAxis.value);
 
   // --- update y-scale switch button --
   const xSwoop = 30;
@@ -846,11 +846,12 @@ watch(
 );
 
 watch(
-  () => props.variable,
+  () => props.variableObj,
   () => {
     setXScale();
     updatePlot();
   },
+  { deep: true },
 );
 
 watch(width, () => {
@@ -859,7 +860,6 @@ watch(width, () => {
 });
 
 onMounted(() => {
-  isLoggable.value = props.loggable;
   setupPlot();
   updateBrush();
   updatePlot();
