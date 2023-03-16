@@ -127,11 +127,7 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'Logos',
-};
-</script>
+<script setup></script>
 
 <style>
 .picBox {
