@@ -104,29 +104,24 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { timeFormat, timeParse } from 'd3-time-format';
 
 import { lazyLoad } from '@/js/lazy-load';
 
-export default {
-  name: 'Citation',
-  components: {
-    StripeAccent: lazyLoad('StripeAccent'),
-  },
-  props: {
-    data: Object,
-  },
-  methods: {
-    formatDate(dateStr) {
-      const parseDate = timeParse('%Y-%m-%d');
-      const formatDate = timeFormat('%d %B %Y');
-      if (dateStr) {
-        const parsed = parseDate(dateStr);
-        return parsed ? formatDate(parsed) : dateStr;
-      }
-      return null;
-    },
-  },
+const StripeAccent = lazyLoad('StripeAccent');
+
+const props = defineProps({
+  data: Object,
+});
+
+const formatDate = (dateStr) => {
+  const parseDate = timeParse('%Y-%m-%d');
+  const formatDate = timeFormat('%d %B %Y');
+  if (dateStr) {
+    const parsed = parseDate(dateStr);
+    return parsed ? formatDate(parsed) : dateStr;
+  }
+  return null;
 };
 </script>

@@ -460,8 +460,10 @@
   </div>
 </template>
 
-<script>
-import { mapState } from 'pinia';
+<script setup>
+import { computed, onMounted, ref } from 'vue';
+import { useRoute } from 'vue-router';
+import { storeToRefs } from 'pinia';
 import { timeFormat, timeParse } from 'd3-time-format';
 import tippy from 'tippy.js';
 
@@ -470,122 +472,121 @@ import { lazyLoad } from '@/js/lazy-load';
 import 'tippy.js/themes/light.css';
 import { adminStore } from '@/stores/adminStore';
 
-export default {
-  name: 'ResourceDescription',
-  components: {
-    ClinicalTrialSummary: lazyLoad('ClinicalTrialSummary'),
-    Warning: lazyLoad('Warning'),
-  },
-  props: {
-    data: Object,
-    type: String,
-  },
-  data() {
-    return {
-      showAffiliation: false,
-    };
-  },
-  computed: {
-    ...mapState(adminStore, ['loading', 'resources']),
-    datePublished() {
-      return this.formatDate(this.data.dateModified);
-    },
-    retractionText() {
-      if (
-        this.data.correction &&
-        this.data.correction.some((d) => d.correctionType === 'retraction in')
-      ) {
-        const retraction = this.data.correction.filter(
-          (d) => d.correctionType === 'retraction in',
-        );
-        const retractionLink = retraction.map(
-          (d) =>
-            `<a class="text-white" href="${d.url}" target="_blank">Retraction Notice </a>`,
-        );
-        return `This ${this.data['@type']} has been retracted. <span class="ml-3">View ${retractionLink}</span>`;
-      }
-      if (
-        this.data.correction &&
-        this.data.correction.some((d) => d.correctionType === 'retraction of')
-      ) {
-        const retraction = this.data.correction.filter(
-          (d) => d.correctionType === 'retraction of',
-        );
-        const retractionLink = retraction.map(
-          (d) =>
-            `<a class="text-white" href="${
-              d.url
-            }" target="_blank">${d.identifier.toUpperCase()} </a>`,
-        );
-        return `Retraction of ${retractionLink}`;
-      }
-      if (
-        this.data.publicationType &&
-        this.data.publicationType.includes('Retracted Publication')
-      ) {
-        return `This ${this.data['@type']} has been retracted.`;
-      } else {
-        return null;
-      }
-    },
-  },
-  mounted() {
-    const id = this.$route.params.id;
+const ClinicalTrialSummary = lazyLoad('ClinicalTrialSummary');
+const Warning = lazyLoad('Warning');
 
-    // console.log(this.data)
+const props = defineProps({
+  data: Object,
+  type: String,
+});
 
-    tippy('.topic', {
-      content: 'Loading...',
-      maxWidth: '200px',
-      placement: 'bottom',
-      animation: 'fade',
-      theme: 'light',
-      onShow(instance) {
-        let info = instance.reference.dataset.tippyInfo;
-        instance.setContent(info);
-      },
-    });
+// this.$route
+const route = useRoute();
 
-    tippy('.keyword', {
-      content: 'Loading...',
-      maxWidth: '200px',
-      placement: 'bottom',
-      animation: 'fade',
-      theme: 'light',
-      onShow(instance) {
-        let info = instance.reference.dataset.tippyInfo;
-        instance.setContent(info);
-      },
-    });
-  },
-  methods: {
-    getLogo(curator) {
-      const source = this.resources
-        .flatMap((d) => d.sources)
-        .filter(
-          (d) =>
-            d.id === curator.toLowerCase() ||
-            d.name.toLowerCase() === curator.toLowerCase(),
-        );
-      return source.length === 1 ? source[0].img : null;
+const store = adminStore();
+const { loading, resources } = storeToRefs(store);
+
+let showAffiliation = ref(false);
+
+const datePublished = computed(() => {
+  return formatDate(props.data.dateModified);
+});
+
+const retractionText = computed(() => {
+  if (
+    props.data.correction &&
+    props.data.correction.some((d) => d.correctionType === 'retraction in')
+  ) {
+    const retraction = props.data.correction.filter(
+      (d) => d.correctionType === 'retraction in',
+    );
+    const retractionLink = retraction.map(
+      (d) =>
+        `<a class="text-white" href="${d.url}" target="_blank">Retraction Notice </a>`,
+    );
+    return `This ${props.data['@type']} has been retracted. <span class="ml-3">View ${retractionLink}</span>`;
+  }
+  if (
+    props.data.correction &&
+    props.data.correction.some((d) => d.correctionType === 'retraction of')
+  ) {
+    const retraction = props.data.correction.filter(
+      (d) => d.correctionType === 'retraction of',
+    );
+    const retractionLink = retraction.map(
+      (d) =>
+        `<a class="text-white" href="${
+          d.url
+        }" target="_blank">${d.identifier.toUpperCase()} </a>`,
+    );
+    return `Retraction of ${retractionLink}`;
+  }
+  if (
+    props.data.publicationType &&
+    props.data.publicationType.includes('Retracted Publication')
+  ) {
+    return `This ${props.data['@type']} has been retracted.`;
+  } else {
+    return null;
+  }
+});
+
+onMounted(() => {
+  const id = route.params.id;
+
+  // console.log(this.data)
+
+  tippy('.topic', {
+    content: 'Loading...',
+    maxWidth: '200px',
+    placement: 'bottom',
+    animation: 'fade',
+    theme: 'light',
+    onShow(instance) {
+      let info = instance.reference.dataset.tippyInfo;
+      instance.setContent(info);
     },
-    formatDate(dateStr) {
-      const parseDate = timeParse('%Y-%m-%d');
-      const strictIsoParse = timeParse('%Y-%m-%dT%H:%M:%S.%f');
-      const formatDate = timeFormat('%d %B %Y');
-      if (dateStr) {
-        let parsed = parseDate(dateStr);
-        if (parsed) {
-          return formatDate(parsed);
-        } else {
-          parsed = strictIsoParse(dateStr);
-          return parsed ? formatDate(parsed) : null;
-        }
-      } else {
-        return null;
-      }
+  });
+
+  tippy('.keyword', {
+    content: 'Loading...',
+    maxWidth: '200px',
+    placement: 'bottom',
+    animation: 'fade',
+    theme: 'light',
+    onShow(instance) {
+      let info = instance.reference.dataset.tippyInfo;
+      instance.setContent(info);
     },
-  },
+  });
+});
+
+const getLogo = (curator) => {
+  const source = resources
+    .flatMap((d) => d.sources)
+    .filter(
+      (d) =>
+        d.id === curator.toLowerCase() ||
+        d.name.toLowerCase() === curator.toLowerCase(),
+    );
+  return source.length === 1 ? source[0].img : null;
+};
+
+const formatDate = (dateStr) => {
+  const parseDate = timeParse('%Y-%m-%d');
+  const strictIsoParse = timeParse('%Y-%m-%dT%H:%M:%S.%f');
+  const formatDate = timeFormat('%d %B %Y');
+  if (dateStr) {
+    let parsed = parseDate(dateStr);
+    if (parsed) {
+      return formatDate(parsed);
+    } else {
+      parsed = strictIsoParse(dateStr);
+      return parsed ? formatDate(parsed) : null;
+    }
+  } else {
+    return null;
+  }
 };
 </script>
 
