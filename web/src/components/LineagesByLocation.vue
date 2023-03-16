@@ -74,7 +74,10 @@
         </pattern>
       </defs>
 
-      <g ref="chart" :transform="`translate(${margin.left},${margin.top})`" />
+      <g
+        ref="chartRef"
+        :transform="`translate(${margin.left},${margin.top})`"
+      />
 
       <g
         ref="xAxisRef"
@@ -137,7 +140,7 @@
 </template>
 
 <script setup>
-import { computed, inject, nextTick, onMounted, ref, watch } from 'vue';
+import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { max, min, extent } from 'd3-array';
 import { axisLeft, axisBottom } from 'd3-axis';
@@ -158,6 +161,7 @@ import {
 import { timeParse, timeFormat } from 'd3-time-format';
 import { transition } from 'd3-transition';
 import cloneDeep from 'lodash/cloneDeep';
+import debounce from 'lodash/debounce';
 
 import { lazyLoad } from '@/js/lazy-load';
 
@@ -231,7 +235,7 @@ const maxDate = ref(null);
 const numXTicks = ref(5);
 const numYTicks = ref(5);
 // methods
-const areaF = ref(null);
+const areaF = ref(null); // renamed as areaF; already exist area function in d3 -> avoid duplicated name
 const brushF = ref(null);
 // data
 const series = ref(null);
@@ -530,7 +534,7 @@ const tooltipOff = () => {
 const zoom = (evt) => {
   isZooming.value = true;
   // reset domain to new coords
-  const selection = event.selection;
+  const selection = evt.selection;
 
   if (selection) {
     const newMin = x.value.invert(selection[0]);
@@ -894,21 +898,22 @@ const route2Mutation = (d) => {
   }
 };
 
-const debounce = (fn, delay) => {
-  let timer = null;
-  return () => {
-    const context = this,
-      args = arguments,
-      evt = event;
-    //we get the D3 event here
-    clearTimeout(timer);
-    timer = setTimeout(() => {
-      context.event = evt;
-      //and use the reference here
-      fn.apply(context, args);
-    }, delay);
-  };
-};
+// TODO: should confirm why custom debounce should be defined
+// const debounce = (fn, delay) => {
+//   let timer = null;
+//   return () => {
+//     const context = this,
+//       args = arguments,
+//       evt = event;
+//     //we get the D3 event here
+//     clearTimeout(timer);
+//     timer = setTimeout(() => {
+//       context.event = evt;
+//       //and use the reference here
+//       fn.apply(context, args);
+//     }, delay);
+//   };
+// };
 
 watch(width, () => {
   setXScale();

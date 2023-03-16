@@ -825,7 +825,7 @@ import {
   watch,
 } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { mapState, storeToRefs } from 'pinia';
+import { storeToRefs } from 'pinia';
 import { scaleSequential } from 'd3-scale';
 import { interpolateRdPu } from 'd3-scale-chromatic';
 import { timeFormat } from 'd3-time-format';
