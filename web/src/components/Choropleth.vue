@@ -194,6 +194,7 @@ import { format } from 'd3-format';
 import { select, selectAll, event } from 'd3-selection';
 import { timeFormat, timeParse } from 'd3-time-format';
 import cloneDeep from 'lodash/cloneDeep';
+import debounce from 'lodash/debounce';
 
 import { getSparklineTraces } from '@/api/epi-traces.js';
 import { lazyLoad } from '@/js/lazy-load';
@@ -507,21 +508,6 @@ const handleClick = (d) => {
 };
 // https://stackoverflow.com/questions/43407947/how-to-throttle-function-call-on-mouse-event-with-d3-js/43448820
 // modified to save the d3. event to vue::this
-const debounce = (fn, delay) => {
-  let timer = null;
-  return () => {
-    const context = this,
-      args = arguments,
-      evt = event;
-    //we get the D3 event here
-    clearTimeout(timer);
-    timer = setTimeout(() => {
-      context.event = evt;
-      //and use the reference here
-      fn.apply(context, args);
-    }, delay);
-  };
-};
 
 const mouseOn = (d) => {
   timeTrace.value = null; // reset to avoid seeing old data

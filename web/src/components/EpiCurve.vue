@@ -133,6 +133,7 @@ import { line } from 'd3-shape';
 import { timeParse, timeFormat } from 'd3-time-format';
 import { transition } from 'd3-transition';
 import cloneDeep from 'lodash/cloneDeep';
+import debounce from 'lodash/debounce';
 import { colorsStore } from '@/stores/colorsStore';
 
 const props = defineProps({
@@ -379,22 +380,6 @@ const resetZoom = () => {
 
 const enableZoom = () => {
   zoomAllowed.value = true;
-};
-
-const debounce = (fn, delay) => {
-  let timer = null;
-  return () => {
-    const context = this,
-      args = arguments,
-      evt = event;
-    //we get the D3 event here
-    clearTimeout(timer);
-    timer = setTimeout(() => {
-      context.event = evt;
-      //and use the reference here
-      fn.apply(context, args);
-    }, delay);
-  };
 };
 
 const tooltipOn = (d, location_id) => {
