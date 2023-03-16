@@ -172,62 +172,58 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { onMounted } from 'vue';
 import tippy from 'tippy.js';
 import 'tippy.js/themes/light.css';
 
-export default {
-  name: 'LocationTable',
-  components: {
-    // FontAwesomeIcon
+const props = defineProps({
+  data: Array,
+  locationID: String,
+  locationName: String,
+  routeTo: {
+    type: String,
+    default: 'MutationReport',
   },
-  props: {
-    data: Array,
-    locationID: String,
-    locationName: String,
-    routeTo: {
-      type: String,
-      default: 'MutationReport',
+});
+
+onMounted(() => {
+  tippy('.variant-table', {
+    content: 'Loading...',
+    maxWidth: '200px',
+    placement: 'bottom',
+    animation: 'fade',
+    theme: 'light',
+    onShow(instance) {
+      let info = instance.reference.dataset.tippyInfo;
+      instance.setContent(info);
     },
-  },
-  mounted() {
-    tippy('.variant-table', {
-      content: 'Loading...',
-      maxWidth: '200px',
-      placement: 'bottom',
-      animation: 'fade',
-      theme: 'light',
-      onShow(instance) {
-        let info = instance.reference.dataset.tippyInfo;
-        instance.setContent(info);
-      },
-    });
+  });
 
-    tippy('.variant-expand', {
-      content: 'Loading...',
-      maxWidth: '200px',
-      placement: 'bottom',
-      animation: 'fade',
-      theme: 'light',
-      onShow(instance) {
-        let info = instance.reference.dataset.tippyInfo;
-        instance.setContent(info);
-      },
-    });
+  tippy('.variant-expand', {
+    content: 'Loading...',
+    maxWidth: '200px',
+    placement: 'bottom',
+    animation: 'fade',
+    theme: 'light',
+    onShow(instance) {
+      let info = instance.reference.dataset.tippyInfo;
+      instance.setContent(info);
+    },
+  });
 
-    tippy('.no-estimate', {
-      content: 'Loading...',
-      maxWidth: '200px',
-      placement: 'bottom',
-      animation: 'fade',
-      theme: 'light',
-      onShow(instance) {
-        let info = instance.reference.dataset.tippyInfo;
-        instance.setContent(info);
-      },
-    });
-  },
-};
+  tippy('.no-estimate', {
+    content: 'Loading...',
+    maxWidth: '200px',
+    placement: 'bottom',
+    animation: 'fade',
+    theme: 'light',
+    onShow(instance) {
+      let info = instance.reference.dataset.tippyInfo;
+      instance.setContent(info);
+    },
+  });
+});
 </script>
 
 <style lang="scss" scoped>
