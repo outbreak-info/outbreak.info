@@ -255,8 +255,8 @@ const dataSubscription = ref(null);
 const storeAdmin = adminStore();
 const storeColor = colorsStore();
 
-const { dataloading } = storeToRefs(storeAdmin);
-const { colors } = storeToRefs(storeColor);
+const { dataloading } = storeToRefs(storeAdmin); // admin store state variable
+const { colors } = storeToRefs(storeColor); // color store state variable
 
 // instead of this.$route
 const route = useRoute();

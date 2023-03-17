@@ -156,6 +156,7 @@ onMounted(() => {
   newThreshold.value = props.countThreshold;
   updateAxes();
 
+  // this.$nextTick in optionsAPI
   nextTick(() => {
     // set up drag for threshold filter
     setupDrag();

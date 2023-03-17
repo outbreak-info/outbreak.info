@@ -1659,7 +1659,7 @@ const createReport = () => {
 const debounceWindowChange = debounce(updateWindow, 700);
 
 watch(
-  route.query,
+  () => route.query,
   (newVal, oldVal) => {
     if (newVal.loc !== oldVal.loc) {
       newLocation.value = null;
@@ -1705,6 +1705,7 @@ onMounted(() => {
   currentTime.value = new Date();
   today.value = formatDate(currentTime.value);
 
+  // this.$nextTick in optionsAPI
   nextTick(() => {
     // resize listener
     window.addEventListener('resize', setDims);

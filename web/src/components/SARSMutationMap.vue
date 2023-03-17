@@ -152,6 +152,7 @@ const setupMutationArr = () => {
 };
 
 const setupPlot = () => {
+  // this.$nextTick in optionsAPI
   nextTick(() => {
     window.addEventListener('resize', setDims);
 

@@ -386,6 +386,7 @@ const colorScaleFunc = (location) => {
   return store.getColor(location);
 };
 
+// computed properties
 const colorScale = computed(() => {
   return store.getColor;
 });
@@ -447,6 +448,7 @@ const xLim = computed(() => {
   }
 });
 
+// methods functions
 const clearLocations = () => {
   selectedPlaces.value = [];
   epiDataSubject.next([]);
@@ -564,7 +566,7 @@ const setDims = () => {
 };
 
 const lookupLocation = () => {
-  storeAdmin.$patch({ loading: true });
+  storeAdmin.$patch({ loading: true }); // store state variable update directly with $patch method
   getLocation(apiUrl).subscribe((nearestPlace) => {
     storeAdmin.$patch({ loading: false });
     if (nearestPlace !== 'none') {
@@ -580,24 +582,28 @@ const lookupLocation = () => {
   });
 };
 
-watch(selectedPlaces, (newValue, oldValue) => {
-  const newLocation = newValue ? newValue.join(';') : '';
-  if (route.query.location !== newLocation) {
-    router.push({
-      name: 'Epidemiology',
-      meta: {
-        disableScroll: true,
-      },
-      query: {
-        location: newLocation,
-        log: String(isLogY.value),
-        variable: props.variable,
-        fixedY: String(isFixedY.value),
-        percapita: String(isPerCapita.value),
-      },
-    });
-  }
-});
+watch(
+  selectedPlaces,
+  (newValue, oldValue) => {
+    const newLocation = newValue ? newValue.join(';') : '';
+    if (route.query.location !== newLocation) {
+      router.push({
+        name: 'Epidemiology',
+        meta: {
+          disableScroll: true,
+        },
+        query: {
+          location: newLocation,
+          log: String(isLogY.value),
+          variable: props.variable,
+          fixedY: String(isFixedY.value),
+          percapita: String(isPerCapita.value),
+        },
+      });
+    }
+  },
+  { deep: true }, // object, array variable watching, should add deep: true as options
+);
 
 watch(
   () => props.location,
@@ -606,6 +612,7 @@ watch(
       setLocation(newLocation);
     }
   },
+  { deep: true },
 );
 
 watch(
@@ -690,6 +697,7 @@ onUnmounted(() => {
 
 onMounted(() => {
   setLocation(props.location);
+  // this.$nextTick in optionsAPI
   nextTick(function () {
     window.addEventListener('resize', setDims);
     // set initial dimensions for the stacked area plots.

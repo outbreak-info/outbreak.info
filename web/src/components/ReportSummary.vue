@@ -249,6 +249,7 @@ const setDims = () => {
 onMounted(() => {
   setDims();
 
+  // this.$nextTick in optionsAPI
   nextTick(() => {
     window.addEventListener('resize', setDims);
   });

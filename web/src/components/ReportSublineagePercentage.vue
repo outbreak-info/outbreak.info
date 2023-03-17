@@ -456,6 +456,7 @@ const debounceSetDims = debounce(setDims, 150);
 const debounceZoom = debounce(zoom, 150);
 
 onMounted(() => {
+  // this.$nextTick in optionsAPI
   nextTick(() => {
     window.addEventListener('resize', debounceSetDims);
 

@@ -433,6 +433,7 @@ watch(
 
 onMounted(() => {
   setupPlot();
+  // this.$nextTick in optionsAPI
   nextTick(() => {
     window.addEventListener(
       'click',

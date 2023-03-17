@@ -364,6 +364,7 @@ onMounted(() => {
 
   // Event listener for mobile responsiveness
   // $nextTick waits till DOM rendered
+  // this.$nextTick in optionsAPI
   nextTick(() => {
     window.addEventListener('resize', setDims);
     // set initial dimensions for the stacked area plots.

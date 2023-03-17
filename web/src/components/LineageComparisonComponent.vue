@@ -1448,6 +1448,7 @@ onMounted(() => {
       typeof props.pango === 'string' ? [props.pango] : props.pango;
   }
 
+  // this.$nextTick in optionsAPI
   nextTick(() => {
     // set URL for sharing, etc.
     window.addEventListener('resize', setDims);

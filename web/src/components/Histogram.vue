@@ -76,6 +76,7 @@ const xAxisRef = ref(null);
 const yAxisLeft = ref(null);
 
 const setupPlot = () => {
+  // this.$nextTick in optionsAPI
   nextTick(() => {
     window.addEventListener('resize', setDims);
 

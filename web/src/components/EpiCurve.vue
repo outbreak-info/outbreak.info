@@ -487,6 +487,7 @@ const prepData = () => {
 const setupPlot = () => {
   // Event listener for mobile responsiveness
   // $nextTick waits till DOM rendered
+  // this.$nextTick in optionsAPI
   nextTick(() => {
     window.addEventListener('resize', setPlotDims);
     // set initial dimensions for the stacked area plots.

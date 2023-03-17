@@ -317,6 +317,7 @@ onMounted(() => {
   updatePlot();
   if (props.filterable) {
     setSliders();
+    // this.$nextTick in optionsAPI
     nextTick(() => setupDrag());
   }
 });

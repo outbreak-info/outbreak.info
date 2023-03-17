@@ -264,8 +264,8 @@ const resourceUrl = inject('resourceUrl');
 // global variable - equivalent with this.$genomicsurl
 const genomicsUrl = inject('genomicsUrl');
 
-const store = adminStore();
-const { funding, team, formerTeam } = storeToRefs(store);
+const store = adminStore(); // importing only required store
+const { funding, team, formerTeam } = storeToRefs(store); // admin store state variables needed in this component
 
 onMounted(() => {
   let twitterScript = document.createElement('script');

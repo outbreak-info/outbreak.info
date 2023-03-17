@@ -857,6 +857,7 @@ watch(
 onMounted(() => {
   setupPlot();
   updatePlot();
+  // this.$nextTick in optionsAPI
   nextTick(() => {
     tippy(svg.value.selectAll('.low-count').nodes(), {
       content: 'Loading...',

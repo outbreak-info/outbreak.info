@@ -463,6 +463,7 @@ watch(
 onMounted(() => {
   setupPlot();
   updatePlot();
+  // this.$nextTick in optionsAPI
   nextTick(() => setupDrag());
 });
 </script>

@@ -463,6 +463,7 @@ onMounted(() => {
     progress.value = progressRes;
   });
 
+  // this.$nextTick in optionsAPI
   nextTick(() => {
     // window.addEventListener("click", this.closeDialogBox), { passive: true };
     // Close on escape

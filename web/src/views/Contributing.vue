@@ -185,7 +185,7 @@ import { storeToRefs } from 'pinia';
 import { adminStore } from '@/stores/adminStore';
 
 const store = adminStore();
-const { resources } = storeToRefs(store);
+const { resources } = storeToRefs(store); // extract admin store state variables
 
 const types = ref([
   {
