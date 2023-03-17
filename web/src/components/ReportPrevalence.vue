@@ -4,10 +4,7 @@
     class="d-flex flex-column align-items-center w-100"
   >
     <!-- zoom btns -->
-    <div
-      class="d-flex justify-content-start"
-      :style="{ width: width + 'px' }"
-    >
+    <div class="d-flex justify-content-start" :style="{ width: width + 'px' }">
       <button
         class="btn btn-accent-flat text-highlight d-flex align-items-center m-0 p-2 mr-2"
         @click="enableZoom"
@@ -240,10 +237,19 @@ import { format } from 'd3-format';
 import { select, selectAll, event } from 'd3-selection';
 import { scaleLinear, scaleTime } from 'd3-scale';
 import { line, area } from 'd3-shape';
-import { timeSecond, timeMinute, timeHour, timeDay, timeWeek, timeMonth, timeYear  } from 'd3-time';
+import {
+  timeSecond,
+  timeMinute,
+  timeHour,
+  timeDay,
+  timeWeek,
+  timeMonth,
+  timeYear,
+} from 'd3-time';
 import { timeFormat, timeParse } from 'd3-time-format';
 import { transition } from 'd3-transition';
 import cloneDeep from 'lodash/cloneDeep';
+import debounce from 'lodash/debounce';
 
 import { lazyLoad } from '@/js/lazy-load';
 
@@ -374,8 +380,8 @@ export default {
     }
   },
   created() {
-    this.debounceSetDims = this.debounce(this.setDims, 150);
-    this.debounceZoom = this.debounce(this.zoom, 150);
+    this.debounceSetDims = debounce(this.setDims, 150);
+    this.debounceZoom = debounce(this.zoom, 150);
   },
   methods: {
     setDims() {
@@ -455,14 +461,24 @@ export default {
       // reset the axis
       this.xAxis = axisBottom(this.x)
         .ticks(this.numXTicks)
-        .tickFormat(function(date){
-          return (timeSecond(date) < date ? timeFormat('.%L')
-            : timeMinute(date) < date ? timeFormat(':%S')
-            : timeHour(date) < date ? timeFormat('%I:%M')
-            : timeDay(date) < date ? timeFormat('%I %p')
-            : timeMonth(date) < date ? timeWeek(date) < date ? timeFormat('%a %d') : timeFormat('%b %d')
-            : timeYear(date) < date ? timeFormat('%b')
-            : timeFormat('%Y'))(date)
+        .tickFormat(function (date) {
+          return (
+            timeSecond(date) < date
+              ? timeFormat('.%L')
+              : timeMinute(date) < date
+              ? timeFormat(':%S')
+              : timeHour(date) < date
+              ? timeFormat('%I:%M')
+              : timeDay(date) < date
+              ? timeFormat('%I %p')
+              : timeMonth(date) < date
+              ? timeWeek(date) < date
+                ? timeFormat('%a %d')
+                : timeFormat('%b %d')
+              : timeYear(date) < date
+              ? timeFormat('%b')
+              : timeFormat('%Y')
+          )(date);
         });
 
       select(this.$refs.xAxis).call(this.xAxis);
@@ -522,14 +538,24 @@ export default {
 
       this.xAxis = axisBottom(this.x)
         .ticks(this.numXTicks)
-        .tickFormat(function(date){
-          return (timeSecond(date) < date ? timeFormat('.%L')
-            : timeMinute(date) < date ? timeFormat(':%S')
-            : timeHour(date) < date ? timeFormat('%I:%M')
-            : timeDay(date) < date ? timeFormat('%I %p')
-            : timeMonth(date) < date ? timeWeek(date) < date ? timeFormat('%a %d') : timeFormat('%b %d')
-            : timeYear(date) < date ? timeFormat('%b')
-            : timeFormat('%Y'))(date)
+        .tickFormat(function (date) {
+          return (
+            timeSecond(date) < date
+              ? timeFormat('.%L')
+              : timeMinute(date) < date
+              ? timeFormat(':%S')
+              : timeHour(date) < date
+              ? timeFormat('%I:%M')
+              : timeDay(date) < date
+              ? timeFormat('%I %p')
+              : timeMonth(date) < date
+              ? timeWeek(date) < date
+                ? timeFormat('%a %d')
+                : timeFormat('%b %d')
+              : timeYear(date) < date
+              ? timeFormat('%b')
+              : timeFormat('%Y')
+          )(date);
         });
 
       select(this.$refs.xAxis).call(this.xAxis);
@@ -845,21 +871,6 @@ export default {
     },
     enableZoom() {
       this.zoomAllowed = true;
-    },
-    debounce(fn, delay) {
-      let timer = null;
-      return () => {
-        const context = this,
-          args = arguments,
-          evt = event;
-        //we get the D3 event here
-        clearTimeout(timer);
-        timer = setTimeout(() => {
-          context.event = evt;
-          //and use the reference here
-          fn.apply(context, args);
-        }, delay);
-      };
     },
   },
 };

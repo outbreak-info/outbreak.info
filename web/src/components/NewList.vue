@@ -32,19 +32,15 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { timeFormat, timeParse } from 'd3-time-format';
 
-export default {
-  name: 'NewList',
-  props: {
-    data: Array,
-  },
-  methods: {
-    format: function (dateStr) {
-      const parsed = timeParse('%Y-%m-%d')(dateStr);
-      return parsed ? timeFormat('%d %B %Y')(parsed) : null;
-    },
-  },
-};
+const props = defineProps({
+  data: Array,
+});
+
+function format(dateStr) {
+  const parsed = timeParse('%Y-%m-%d')(dateStr);
+  return parsed ? timeFormat('%d %B %Y')(parsed) : null;
+}
 </script>

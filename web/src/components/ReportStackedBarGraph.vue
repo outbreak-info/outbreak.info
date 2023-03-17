@@ -44,6 +44,7 @@ import { forceY, forceCollide, forceSimulation } from 'd3-force';
 import { scaleLinear, scaleTime } from 'd3-scale';
 import { select, event } from 'd3-selection';
 import { stack, stackOrderAscending } from 'd3-shape';
+import debounce from 'lodash/debounce';
 
 import { lazyLoad } from '@/js/lazy-load';
 
@@ -132,7 +133,7 @@ export default {
     this.updatePlot();
   },
   created() {
-    this.debounceSetDims = this.debounce(this.setDims, 150);
+    this.debounceSetDims = debounce(this.setDims, 150);
   },
   methods: {
     setDims() {},
@@ -311,21 +312,6 @@ export default {
           });
         }
       }
-    },
-    debounce(fn, delay) {
-      let timer = null;
-      return () => {
-        const context = this,
-          args = arguments,
-          evt = event;
-        //we get the D3 event here
-        clearTimeout(timer);
-        timer = setTimeout(() => {
-          context.event = evt;
-          //and use the reference here
-          fn.apply(context, args);
-        }, delay);
-      };
     },
   },
 };

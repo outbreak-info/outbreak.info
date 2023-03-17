@@ -99,6 +99,7 @@ import { scaleLinear, scaleTime } from 'd3-scale';
 import { select, selectAll, event } from 'd3-selection';
 import { area, stack, stackOrderInsideOut } from 'd3-shape';
 import { transition } from 'd3-transition';
+import debounce from 'lodash/debounce';
 
 import { lazyLoad } from '@/js/lazy-load';
 
@@ -184,8 +185,8 @@ export default {
     this.updatePlot();
   },
   created() {
-    this.debounceSetDims = this.debounce(this.setDims, 150);
-    this.debounceZoom = this.debounce(this.zoom, 150);
+    this.debounceSetDims = debounce(this.setDims, 150);
+    this.debounceZoom = debounce(this.zoom, 150);
   },
   methods: {
     updateBrush() {
@@ -450,21 +451,6 @@ export default {
         .selectAll('.stacked-area-chart')
         .on('mousemove', ({ key }) => this.tooltipOn(key))
         .on('mouseleave', this.tooltipOff);
-    },
-    debounce(fn, delay) {
-      let timer = null;
-      return () => {
-        const context = this,
-          args = arguments,
-          evt = event;
-        //we get the D3 event here
-        clearTimeout(timer);
-        timer = setTimeout(() => {
-          context.event = evt;
-          //and use the reference here
-          fn.apply(context, args);
-        }, delay);
-      };
     },
   },
 };

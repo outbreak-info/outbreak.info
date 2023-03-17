@@ -229,6 +229,7 @@ import { select, event } from 'd3-selection';
 import { scaleLinear, scaleLog, scaleBand } from 'd3-scale';
 import { transition } from 'd3-transition';
 import cloneDeep from 'lodash/cloneDeep';
+import debounce from 'lodash/debounce';
 
 import { lazyLoad } from '@/js/lazy-load';
 
@@ -319,7 +320,7 @@ export default {
     },
   },
   created() {
-    this.debounceSetDims = this.debounce(this.setDims, 150);
+    this.debounceSetDims = debounce(this.setDims, 150);
   },
   mounted() {
     this.$nextTick(() => {
@@ -809,21 +810,6 @@ export default {
           .on('mousemove', (d) => this.tooltipOn(d))
           .on('mouseleave', () => this.tooltipOff());
       }
-    },
-    debounce(fn, delay) {
-      let timer = null;
-      return () => {
-        const context = this,
-          args = arguments,
-          evt = event;
-        //we get the D3 event here
-        clearTimeout(timer);
-        timer = setTimeout(() => {
-          context.event = evt;
-          //and use the reference here
-          fn.apply(context, args);
-        }, delay);
-      };
     },
   },
 };

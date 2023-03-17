@@ -73,6 +73,7 @@ import {
 } from 'd3-geo';
 import { select, event } from 'd3-selection';
 import cloneDeep from 'lodash/cloneDeep';
+import debounce from 'lodash/debounce';
 
 import ADMIN0_SIMPLE from '@/assets/geo/gadm_adm0_simplified.json';
 import ADMIN0 from '@/assets/geo/gadm_adm0.json';
@@ -192,8 +193,8 @@ export default {
     },
   },
   created() {
-    this.debounceMouseon = this.debounce(this.mouseOn, 250);
-    this.debounceSetDims = this.debounce(this.setDims, 150);
+    this.debounceMouseon = debounce(this.mouseOn, 250);
+    this.debounceSetDims = debounce(this.setDims, 150);
   },
   mounted() {
     this.$nextTick(function () {
@@ -671,23 +672,6 @@ export default {
           },
         });
       }
-    },
-    // https://stackoverflow.com/questions/43407947/how-to-throttle-function-call-on-mouse-event-with-d3-js/43448820
-    // modified to save the d3. event to vue::this
-    debounce(fn, delay) {
-      let timer = null;
-      return function () {
-        const context = this,
-          args = arguments,
-          evt = event;
-        //we get the D3 event here
-        clearTimeout(timer);
-        timer = setTimeout(function () {
-          context.event = evt;
-          //and use the reference here
-          fn.apply(context, args);
-        }, delay);
-      };
     },
   },
 };
