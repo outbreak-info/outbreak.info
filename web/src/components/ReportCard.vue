@@ -2,40 +2,39 @@
   <div></div>
 </template>
 
-<script>
+<script setup>
 import tippy from 'tippy.js';
 import 'tippy.js/themes/light.css';
+import { onMounted } from 'vue';
 
-export default {
-  name: 'ReportCard',
-  props: {
-    report: Object,
-  },
-  mounted() {
-    tippy('.voc-logo', {
-      content: 'Loading...',
-      maxWidth: '200px',
-      placement: 'bottom',
-      animation: 'fade',
-      theme: 'light',
-      onShow(instance) {
-        let info = instance.reference.dataset.tippyInfo;
-        instance.setContent(info);
-      },
-    });
-    tippy('.voi-logo', {
-      content: 'Loading...',
-      maxWidth: '200px',
-      placement: 'bottom',
-      animation: 'fade',
-      theme: 'light',
-      onShow(instance) {
-        let info = instance.reference.dataset.tippyInfo;
-        instance.setContent(info);
-      },
-    });
-  },
-};
+const props = defineProps({
+  report: Object,
+});
+
+onMounted(() => {
+  tippy('.voc-logo', {
+    content: 'Loading...',
+    maxWidth: '200px',
+    placement: 'bottom',
+    animation: 'fade',
+    theme: 'light',
+    onShow(instance) {
+      let info = instance.reference.dataset.tippyInfo;
+      instance.setContent(info);
+    },
+  });
+  tippy('.voi-logo', {
+    content: 'Loading...',
+    maxWidth: '200px',
+    placement: 'bottom',
+    animation: 'fade',
+    theme: 'light',
+    onShow(instance) {
+      let info = instance.reference.dataset.tippyInfo;
+      instance.setContent(info);
+    },
+  });
+});
 </script>
 
 <style lang="scss" scoped>

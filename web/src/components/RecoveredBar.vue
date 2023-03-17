@@ -35,56 +35,50 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { computed, onMounted, ref, watch } from 'vue';
 import { scaleLinear } from 'd3-scale';
 
-const width = 50;
-const height = 15;
+const props = defineProps({
+  data: Object,
+  color: String,
+});
 
-export default {
-  name: 'RecoveredBar',
-  components: {},
-  props: {
-    data: Object,
-    color: String,
-  },
-  data() {
-    return {
-      width,
-      height,
-      x: null,
-    };
-  },
-  computed: {
-    recoveredWidth() {
-      if (this.x) {
-        return this.x(this.data.recovered);
-      }
-      return null;
-    },
-    deadWidth() {
-      if (this.x) {
-        return this.x(this.data.dead);
-      }
-      return null;
-    },
-  },
-  watch: {
-    data() {
-      this.updateAxes();
-    },
-  },
-  mounted() {
-    this.updateAxes();
-  },
-  methods: {
-    updateAxes() {
-      this.x = scaleLinear()
-        .range([0, this.width])
-        .domain([0, this.data.confirmed]);
-    },
-  },
+const width = ref(50);
+const height = ref(15);
+const x = ref(null);
+
+const recoveredWidth = computed(() => {
+  if (x.value) {
+    return x.value(props.data.recovered);
+  }
+  return null;
+});
+
+const deadWidth = computed(() => {
+  if (x.value) {
+    return x.value(props.data.dead);
+  }
+  return null;
+});
+
+const updateAxes = () => {
+  x.value = scaleLinear()
+    .range([0, width.value])
+    .domain([0, props.data.confirmed]);
 };
+
+watch(
+  () => props.data,
+  () => {
+    updateAxes();
+  },
+  { deep: true },
+);
+
+onMounted(() => {
+  updateAxes();
+});
 </script>
 
 <style lang="scss">

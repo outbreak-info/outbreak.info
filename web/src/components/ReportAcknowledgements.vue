@@ -50,14 +50,10 @@
   </div>
 </template>
 
-<script>
-import { mapState } from 'pinia';
+<script setup>
+import { storeToRefs } from 'pinia';
 import { adminStore } from '@/stores/adminStore';
 
-export default {
-  name: 'ReportAcknowledgements',
-  computed: {
-    ...mapState(adminStore, ['funding']),
-  },
-};
+const store = adminStore();
+const { funding } = storeToRefs(store);
 </script>
