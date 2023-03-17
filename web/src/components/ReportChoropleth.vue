@@ -31,10 +31,10 @@
           />
         </pattern>
       </defs>
-      <g ref="basemap" class="basemap-group" />
-      <g ref="regions" class="region-group" />
+      <g ref="basemapRef" class="basemap-group" />
+      <g ref="regionsRef" class="region-group" />
       <g ref="zero_data" class="zero-group" />
-      <g ref="overlay" class="overlay-group" />
+      <g ref="overlayRef" class="overlay-group" />
     </svg>
 
     <div
@@ -61,7 +61,9 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref, inject, computed, watch, onMounted, nextTick } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 import { max, min } from 'd3-array';
 import { format } from 'd3-format';
 import {
@@ -81,598 +83,622 @@ import USADATA from '@/assets/geo/US_states.json';
 import ADMIN1 from '@/assets/geo/gadm_adm1_simplified.json';
 import { lazyLoad } from '@/js/lazy-load';
 
-export default {
-  name: 'ReportChoropleth',
-  components: {
-    DownloadReportData: lazyLoad('DownloadReportData'),
-  },
-  props: {
-    data: Array,
-    mutationName: String,
-    report: String,
-    fillMax: Number,
-    location: {
-      type: String,
-      default: 'Worldwide',
-    },
-    showLegend: {
-      type: Boolean,
-      default: true,
-    },
-    showCopy: {
-      type: Boolean,
-      default: true,
-    },
-    smallMultiples: {
-      type: Boolean,
-      default: false,
-    },
-    countThreshold: Number,
-    recentWindow: String,
-    colorScale: Function,
-  },
-  data() {
-    return {
-      width: 800,
-      height: 400,
-      margin: {
-        top: 2,
-        right: 2,
-        bottom: 2,
-        left: 2,
-      },
-      // variables
-      variable: 'proportion',
-      thresholdVar: 'cum_total_count',
-      filteredColor: '#A5A5A5',
-      nullColor: '#EFEFEF',
-      strokeColor: '#2c3e50',
-      // data
-      filteredData: null,
-      // map data
-      locationMap: null,
-      projection: null,
-      hwRatio: 0.45,
-      // refs
-      svg: null,
-      regions: null,
-      zeros: null,
-      basemap: null,
-      overlay: null,
-      ttips: null,
-      // methods
-      path: geoPath(),
-      transition1: 500,
-      noMap: true,
-    };
-  },
-  computed: {
-    maxVal() {
-      return this.data
-        ? this.fillMax
-          ? this.fillMax
-          : max(this.data, (d) => d[this.variable])
-        : null;
-    },
-    maxFormatted() {
-      return format('.0%')(this.maxVal);
-    },
-    minVal() {
-      return this.data ? min(this.data, (d) => d[this.variable]) : null;
-    },
-    varMax() {
-      return Math.max(Math.abs(this.minVal), this.maxVal);
-    },
-    title() {
-      if (this.smallMultiples) {
-        return this.recentWindow
-          ? `Prevalence over the last ${this.recentWindow} days in ${this.location}`
-          : 'Estimated prevalence';
-      }
-      return this.location === 'Worldwide'
-        ? `${this.mutationName} cumulative prevalence by country`
-        : `${this.mutationName} cumulative prevalence in ${this.location}`;
-    },
-    subtitle() {
-      if (this.smallMultiples) {
-        return this.mutationName;
-      }
-      return null;
-    },
-  },
-  watch: {
-    data() {
-      this.chooseMap();
-      this.drawMap();
-    },
-    countThreshold() {
-      this.drawMap();
-    },
-    width() {
-      this.drawMap();
-    },
-  },
-  created() {
-    this.debounceMouseon = debounce(this.mouseOn, 250);
-    this.debounceSetDims = debounce(this.setDims, 150);
-  },
-  mounted() {
-    this.$nextTick(function () {
-      window.addEventListener('resize', this.debounceSetDims);
+const DownloadReportData = lazyLoad('DownloadReportData');
 
-      // this.$root.$on('update:countThreshold', (newThreshold) => {
-      //   // this.countThreshold = newThreshold;
-      //   // this.drawMap();
-      // });
+const props = defineProps({
+  data: Array,
+  mutationName: String,
+  report: String,
+  fillMax: Number,
+  location: {
+    type: String,
+    default: 'Worldwide',
+  },
+  showLegend: {
+    type: Boolean,
+    default: true,
+  },
+  showCopy: {
+    type: Boolean,
+    default: true,
+  },
+  smallMultiples: {
+    type: Boolean,
+    default: false,
+  },
+  countThreshold: Number,
+  recentWindow: String,
+  colorScale: Function,
+});
 
-      // event listener to hide tooltips
-      document.addEventListener(
-        'mousemove',
-        (evt) => {
-          if (
-            !evt.target.className ||
-            !evt.target.className.baseVal ||
-            !evt.target.className.baseVal.includes('region')
-          ) {
-            this.mouseOff();
-          }
-        },
-        {
-          passive: true,
-        },
+// instead of this.$route
+const route = useRoute();
+// instead of this.$router
+const router = useRouter();
+
+const width = ref(800);
+const height = ref(400);
+const margin = ref({
+  top: 2,
+  right: 2,
+  bottom: 2,
+  left: 2,
+});
+// variables
+const variable = ref('proportion');
+const thresholdVar = ref('cum_total_count');
+const filteredColor = ref('#A5A5A5');
+const nullColor = ref('#EFEFEF');
+const strokeColor = ref('#2c3e50');
+// data
+const filteredData = ref(null);
+// map data
+const locationMap = ref(null);
+const projection = ref(null);
+const hwRatio = ref(0.45);
+// refs
+const svg = ref(null);
+const regions = ref(null);
+const zeros = ref(null);
+const basemap = ref(null);
+const overlay = ref(null);
+const ttips = ref(null);
+// methods
+const path = ref(geoPath());
+const transition1 = ref(500);
+const noMap = ref(true);
+// variables instead of this.$refs
+const tooltip_choro = ref(null);
+const choropleth = ref(null);
+const basemapRef = ref(null);
+const regionsRef = ref(null);
+const zero_data = ref(null);
+const overlayRef = ref(null);
+const choropleth_tooltip = ref(null);
+
+// computed variables
+const maxVal = computed(() => {
+  return props.data
+    ? props.fillMax
+      ? props.fillMax
+      : max(props.data, (d) => d[variable.value])
+    : null;
+});
+
+const maxFormatted = computed(() => {
+  return format('.0%')(maxVal.value);
+});
+
+const minVal = computed(() => {
+  return props.data ? min(props.data, (d) => d[variable.value]) : null;
+});
+
+const varMax = computed(() => {
+  return Math.max(Math.abs(minVal.value), maxVal.value);
+});
+
+const title = computed(() => {
+  if (props.smallMultiples) {
+    return props.recentWindow
+      ? `Prevalence over the last ${props.recentWindow} days in ${props.location}`
+      : 'Estimated prevalence';
+  }
+  return props.location === 'Worldwide'
+    ? `${props.mutationName} cumulative prevalence by country`
+    : `${props.mutationName} cumulative prevalence in ${props.location}`;
+});
+
+const subtitle = computed(() => {
+  if (props.smallMultiples) {
+    return props.mutationName;
+  }
+  return null;
+});
+
+const setDims = () => {
+  const mx = 0.8;
+  const my = 0.85;
+  const svgContainer = document.getElementById('report-choropleth');
+
+  let maxSvgWidth = svgContainer ? svgContainer.offsetWidth * mx : 800;
+  const maxWidth = window.innerWidth;
+  const maxHeight = window.innerHeight * my;
+
+  if (maxSvgWidth > maxWidth) {
+    maxSvgWidth = maxWidth - 20;
+  }
+
+  const idealHeight = hwRatio.value * maxSvgWidth;
+  if (idealHeight <= maxHeight) {
+    height.value = idealHeight;
+    width.value = maxSvgWidth;
+  } else {
+    height.value = maxHeight;
+    width.value = height.value / hwRatio.value;
+  }
+};
+
+const chooseMap = () => {
+  if (props.location === 'Worldwide') {
+    projection.value = geoEqualEarth()
+      .center([11.05125, 7.528635]) // so this should be calcuable from the bounds of the geojson, but it's being weird, and it's constant for the ADMIN1 anyway...
+      .scale(1)
+      .translate([width.value / 2, height.value / 2]);
+
+    locationMap.value = cloneDeep(ADMIN0_SIMPLE);
+    // this.hwRatio = 0.45;
+    // this.setDims();
+  } else if (props.location === 'United States' || props.location === 'USA') {
+    projection.value = geoAlbersUsa()
+      .scale(1)
+      .translate([width.value / 2, height.value / 2]);
+
+    locationMap.value = cloneDeep(USADATA);
+    // this.hwRatio = 0.45;
+    // this.setDims();
+  } else {
+    locationMap.value = cloneDeep(ADMIN1[props.location]);
+    const mapBounds = geoBounds(locationMap.value);
+
+    projection.value = geoAzimuthalEqualArea()
+      .center([0, 0])
+      .rotate([
+        (mapBounds[0][0] + mapBounds[1][0]) * -0.5,
+        (mapBounds[0][1] + mapBounds[1][1]) * -0.5,
+      ])
+      .scale(1)
+      .translate([width.value / 2, height.value / 2]);
+
+    // const mapRatio = Math.abs(mapBounds[0][1] - mapBounds[1][1]) / Math.abs(mapBounds[0][0] - mapBounds[1][0]);
+    // this.hwRatio = mapRatio;
+    // this.setDims();
+  }
+};
+
+const setupChoro = () => {
+  svg.value = select(choropleth.value);
+  basemap.value = select(basemapRef.value);
+  regions.value = select(regionsRef.value);
+  zeros.value = select(zero_data.value);
+  overlay.value = select(overlayRef.value);
+  ttips.value = select(choropleth_tooltip.value); // can't find choropleth_tooltip ref
+};
+
+const formatPct = (pct) => {
+  return format('.0%')(pct);
+};
+
+const updateProjection = () => {
+  projection.value = projection.value
+    .scale(1)
+    .translate([width.value / 2, height.value / 2]);
+
+  path.value = path.value.projection(projection.value);
+  // calc and set scale
+  // from zoom to bounds: https://bl.ocks.org/mbostock/4699541
+  const bounds = path.value.bounds(locationMap.value),
+    dx = bounds[1][0] - bounds[0][0],
+    dy = bounds[1][1] - bounds[0][1],
+    xscale = (width.value / dx) * 0.98,
+    yscale = (height.value / dy) * 0.98,
+    scale = min([xscale, yscale]);
+
+  projection.value = projection.value.scale(scale);
+
+  filteredData.value = locationMap.value.features;
+};
+
+const prepData = () => {
+  if (props.data && locationMap.value) {
+    // Update projection / scales
+    updateProjection();
+
+    filteredData.value.forEach((d) => {
+      const filtered = props.data.filter(
+        (seq) => seq.name.toLowerCase() === d.properties.NAME.toLowerCase(),
       );
-      document.addEventListener(
-        'mouseleave',
-        (evt) => {
-          if (
-            !evt.target.className ||
-            !evt.target.className.baseVal ||
-            !evt.target.className.baseVal.includes('region')
-          ) {
-            this.mouseOff();
-          }
-        },
-        {
-          passive: true,
-        },
-      );
+      if (filtered.length > 0) {
+        filtered.sort((a, b) => b.cum_total_count - a.cum_total_count);
+        const seq = filtered[0];
+        d[variable.value] = seq[variable.value];
+        // filter values with too few values
+        d['fill'] =
+          seq.cum_total_count >= props.countThreshold
+            ? props.colorScale(d[variable.value])
+            : filteredColor.value;
+        d['id'] = seq.id;
+        d['lower'] = seq.proportion_ci_lower;
+        d['upper'] = seq.proportion_ci_upper;
+        d['cum_lineage_count'] = seq['cum_lineage_count'];
+        d['cum_total_count'] = seq['cum_total_count'];
+        d['proportion_formatted'] = seq.proportion_formatted;
+      } else {
+        d['id'] = null;
+        d['fill'] = null;
+        d['lower'] = null;
+        d['upper'] = null;
+        d['cum_lineage_count'] = null;
+        d['cum_total_count'] = null;
+        d['proportion_formatted'] = null;
+      }
     });
 
-    this.chooseMap();
-    // set initial dimensions for the choropleth plots.
-    this.setDims();
-    this.setupChoro(); // svg handles, etc.
-  },
-  methods: {
-    setDims() {
-      const mx = 0.8;
-      const my = 0.85;
-      const svgContainer = document.getElementById('report-choropleth');
-
-      let maxSvgWidth = svgContainer ? svgContainer.offsetWidth * mx : 800;
-      const maxWidth = window.innerWidth;
-      const maxHeight = window.innerHeight * my;
-
-      if (maxSvgWidth > maxWidth) {
-        maxSvgWidth = maxWidth - 20;
-      }
-
-      const idealHeight = this.hwRatio * maxSvgWidth;
-      if (idealHeight <= maxHeight) {
-        this.height = idealHeight;
-        this.width = maxSvgWidth;
-      } else {
-        this.height = maxHeight;
-        this.width = this.height / this.hwRatio;
-      }
-    },
-    chooseMap() {
-      if (this.location === 'Worldwide') {
-        this.projection = geoEqualEarth()
-          .center([11.05125, 7.528635]) // so this should be calcuable from the bounds of the geojson, but it's being weird, and it's constant for the ADMIN1 anyway...
-          .scale(1)
-          .translate([this.width / 2, this.height / 2]);
-
-        this.locationMap = cloneDeep(ADMIN0_SIMPLE);
-        // this.hwRatio = 0.45;
-        // this.setDims();
-      } else if (this.location === 'United States' || this.location === 'USA') {
-        this.projection = geoAlbersUsa()
-          .scale(1)
-          .translate([this.width / 2, this.height / 2]);
-
-        this.locationMap = cloneDeep(USADATA);
-        // this.hwRatio = 0.45;
-        // this.setDims();
-      } else {
-        this.locationMap = cloneDeep(ADMIN1[this.location]);
-        const mapBounds = geoBounds(this.locationMap);
-
-        this.projection = geoAzimuthalEqualArea()
-          .center([0, 0])
-          .rotate([
-            (mapBounds[0][0] + mapBounds[1][0]) * -0.5,
-            (mapBounds[0][1] + mapBounds[1][1]) * -0.5,
-          ])
-          .scale(1)
-          .translate([this.width / 2, this.height / 2]);
-
-        // const mapRatio = Math.abs(mapBounds[0][1] - mapBounds[1][1]) / Math.abs(mapBounds[0][0] - mapBounds[1][0]);
-        // this.hwRatio = mapRatio;
-        // this.setDims();
-      }
-    },
-    setupChoro() {
-      this.svg = select(this.$refs.svg);
-      this.basemap = select(this.$refs.basemap);
-      this.regions = select(this.$refs.regions);
-      this.zeros = select(this.$refs.zero_data);
-      this.overlay = select(this.$refs.overlay);
-      this.ttips = select(this.$refs.choropleth_tooltip);
-    },
-    formatPct(pct) {
-      return format('.0%')(pct);
-    },
-    updateProjection() {
-      this.projection = this.projection
-        .scale(1)
-        .translate([this.width / 2, this.height / 2]);
-
-      this.path = this.path.projection(this.projection);
-      // calc and set scale
-      // from zoom to bounds: https://bl.ocks.org/mbostock/4699541
-      const bounds = this.path.bounds(this.locationMap),
-        dx = bounds[1][0] - bounds[0][0],
-        dy = bounds[1][1] - bounds[0][1],
-        xscale = (this.width / dx) * 0.98,
-        yscale = (this.height / dy) * 0.98,
-        scale = min([xscale, yscale]);
-
-      this.projection = this.projection.scale(scale);
-
-      this.filteredData = this.locationMap.features;
-    },
-    prepData() {
-      if (this.data && this.locationMap) {
-        // Update projection / scales
-        this.updateProjection();
-
-        this.filteredData.forEach((d) => {
-          const filtered = this.data.filter(
-            (seq) => seq.name.toLowerCase() === d.properties.NAME.toLowerCase(),
-          );
-          if (filtered.length > 0) {
-            filtered.sort((a, b) => b.cum_total_count - a.cum_total_count);
-            const seq = filtered[0];
-            d[this.variable] = seq[this.variable];
-            // filter values with too few values
-            d['fill'] =
-              seq.cum_total_count >= this.countThreshold
-                ? this.colorScale(d[this.variable])
-                : this.filteredColor;
-            d['id'] = seq.id;
-            d['lower'] = seq.proportion_ci_lower;
-            d['upper'] = seq.proportion_ci_upper;
-            d['cum_lineage_count'] = seq['cum_lineage_count'];
-            d['cum_total_count'] = seq['cum_total_count'];
-            d['proportion_formatted'] = seq.proportion_formatted;
-          } else {
-            d['id'] = null;
-            d['fill'] = null;
-            d['lower'] = null;
-            d['upper'] = null;
-            d['cum_lineage_count'] = null;
-            d['cum_total_count'] = null;
-            d['proportion_formatted'] = null;
-          }
-        });
-
-        this.noMap = false;
-      } else {
-        this.filteredData = null;
-        this.noMap = true;
-      }
-    },
-    drawMap() {
-      this.prepData();
-
-      if (this.filteredData) {
-        const basemapData =
-          this.location === 'Worldwide' || this.location === 'United States'
-            ? []
-            : ADMIN0.features.filter(
-                (d) => d.properties.NAME !== this.location,
-              );
-
-        this.basemap
-          .selectAll('.basemap')
-          .data(basemapData, (d) => d.properties.location_id)
-          .join(
-            (enter) => {
-              enter
-                .append('path')
-                .attr('class', 'basemap')
-                .attr('id', (d) => d.properties.location_id)
-                // draw each region
-                .attr('d', this.path.projection(this.projection))
-                .style('fill', '#FDFDFD')
-                .style('stroke', '#444444')
-                .style('stroke-width', 0.25);
-            },
-            (update) =>
-              update
-                .attr('id', (d) => d.properties.location_id)
-                // draw each region
-                .attr('d', this.path.projection(this.projection)),
-            (exit) =>
-              exit.call((exit) =>
-                exit.transition().duration(10).style('opacity', 1e-5).remove(),
-              ),
-          );
-
-        this.regions
-          .selectAll('.region-fill')
-          .data(this.filteredData, (d) => d.properties.location_id)
-          .join(
-            (enter) => {
-              enter
-                .append('path')
-                .attr(
-                  'class',
-                  (d) => `${d.properties.location_id} region region-fill`,
-                )
-                .attr('id', (d) => d.properties.location_id)
-                // draw each region
-                .attr('d', this.path.projection(this.projection))
-                .classed('pointer', true)
-                .on('click', (d) => this.route2Location(d.id))
-                .style('fill', (d) => (d.fill ? d.fill : this.nullColor))
-                .style('stroke', this.strokeColor)
-                .style('stroke-width', 0.5);
-            },
-            (update) =>
-              update
-                .attr(
-                  'class',
-                  (d) => `${d.properties.location_id} region region-fill`,
-                )
-                .attr('id', (d) => d.properties.location_id)
-                .on('click', (d) => this.route2Location(d.id))
-                // draw each region
-                .attr('d', this.path.projection(this.projection))
-                .transition()
-                .duration(250)
-                .style('fill', (d) => (d.fill ? d.fill : this.nullColor)),
-            (exit) =>
-              exit.call((exit) =>
-                exit.transition().duration(10).style('opacity', 1e-5).remove(),
-              ),
-          );
-
-        // highlight where the data is 0.
-        this.regions
-
-          .selectAll('.zero-data')
-          .data(
-            this.filteredData.filter((d) => d.proportion === 0),
-            (d) => d.properties.location_id,
-          )
-          .join(
-            (enter) => {
-              enter
-                .append('path')
-                .attr(
-                  'class',
-                  (d) => `${d.properties.location_id} region zero-data`,
-                )
-                .attr('id', (d) => `${d.properties.location_id}_zero`)
-                // draw each region
-                .attr('d', this.path.projection(this.projection))
-                .style('fill', 'url(#diagonalHatch)')
-                .style('stroke', this.strokeColor)
-                .style('stroke-width', 0.5);
-            },
-            (update) =>
-              update
-                .attr(
-                  'class',
-                  (d) => `${d.properties.location_id} region zero-data`,
-                )
-                .attr('id', (d) => `${d.properties.location_id}_zero`)
-                // draw each region
-                .attr('d', this.path.projection(this.projection)),
-            (exit) =>
-              exit.call((exit) =>
-                exit.transition().duration(10).style('opacity', 1e-5).remove(),
-              ),
-          );
-
-        this.overlay
-          .selectAll('.overlay')
-          .data(
-            ADMIN0.features.filter(
-              (d) =>
-                d.properties.NAME === this.location &&
-                d.properties.NAME !== 'United States',
-            ),
-            (d) => d.properties.location_id,
-          )
-          .join(
-            (enter) => {
-              enter
-                .append('path')
-                .attr('class', 'overlay')
-                .attr('id', (d) => d.properties.location_id)
-                // draw each region
-                .attr('d', this.path.projection(this.projection))
-                .style('fill', 'none')
-                .style('stroke', this.strokeColor)
-                .style('stroke-width', 1.25);
-            },
-            (update) =>
-              update
-                .attr('id', (d) => d.properties.location_id)
-                // draw each region
-                .attr('d', this.path.projection(this.projection)),
-            (exit) =>
-              exit.call((exit) =>
-                exit.transition().duration(10).style('opacity', 1e-5).remove(),
-              ),
-          );
-
-        this.regions
-          .selectAll('path.region')
-          .on('mouseenter', (d) => this.debounceMouseon(d))
-          .on('mouseleave', this.mouseOff);
-
-        this.regions
-          .selectAll('path.region')
-          .on('mouseenter', (d) => this.debounceMouseon(d))
-          .on('mouseleave', this.mouseOff);
-      }
-    },
-    mouseOn(d) {
-      const ttipShift = 15;
-
-      // dim everything
-      this.regions
-        .selectAll('.region')
-        .style('opacity', 0.2)
-        .style('stroke-opacity', 0.5);
-
-      // turn on the location
-      this.regions
-        .select(`.${d.properties.location_id}`)
-        .style('opacity', 1)
-        .style('stroke-opacity', 1);
-
-      const ttip = select(this.$refs.tooltip_choro);
-
-      // edit text
-      ttip.select('h5').text(d.properties.NAME);
-      if (d.proportion || d.proportion === 0) {
-        ttip.select('#no-sequencing').classed('hidden', true);
-        ttip
-          .select('#proportion')
-          .text(`${d.proportion_formatted} ${this.mutationName}`)
-          .classed('hidden', false);
-
-        ttip
-
-          .select('#confidence-interval')
-          .text(`(95% CI: ${format('.0%')(d.lower)}-${format('.0%')(d.upper)})`)
-          .classed('hidden', false);
-
-        ttip
-          .select('#sequencing-count')
-          .text(
-            `Number of total ${this.mutationName} cases: ${format(',')(
-              d.cum_lineage_count,
-            )}/${format(',')(d.cum_total_count)}`,
-          )
-          .classed('hidden', false);
-      } else {
-        ttip.select('#no-sequencing').classed('hidden', false);
-        ttip.select('#proportion').classed('hidden', true);
-        ttip.select('#confidence-interval').classed('hidden', true);
-        ttip.select('#sequencing-count').classed('hidden', true);
-      }
-
-      // fix location
-      ttip
-        .style('left', `${this.event.clientX + ttipShift}px`)
-        .style('top', `${this.event.clientY + ttipShift}px`)
-        .style('display', 'block');
-    },
-    mouseOff() {
-      select(this.$refs.tooltip_choro).style('display', 'none');
-
-      this.regions.selectAll('.zero-data').style('opacity', 1);
-
-      this.regions
-        .selectAll('.region')
-        .style('opacity', 1)
-        .style('stroke-opacity', 1);
-    },
-    route2Location(id) {
-      if (this.report === 'MutationReport') {
-        const query = this.$route.query;
-        const params = this.$route.params;
-        let locs = query.loc
-          ? typeof query.loc == 'string'
-            ? [query.loc]
-            : query.loc
-          : [];
-        locs.push(id);
-        this.$router.push({
-          name: 'MutationReport',
-          meta: {
-            disableScroll: true,
-          },
-          params: { alias: params.alias },
-          query: {
-            pango: query.pango,
-            muts: query.muts,
-            selected: id,
-            loc: locs,
-          },
-        });
-      } else if (this.report === 'GenomicsEmbedVariant') {
-        const query = this.$route.query;
-        let locs = query.loc
-          ? typeof query.loc == 'string'
-            ? [query.loc]
-            : query.loc
-          : [];
-        this.$router.push({
-          name: 'GenomicsEmbed',
-          meta: {
-            disableScroll: true,
-          },
-          query: {
-            type: 'var',
-            alias: query.alias,
-            pango: query.pango,
-            muts: query.muts,
-            selected: id,
-            loc: locs,
-          },
-        });
-      } else if (this.report === 'LocationReport') {
-        const query = this.$route.query;
-        this.$router.push({
-          name: 'LocationReport',
-          query: {
-            loc: id,
-            muts: query.muts,
-            alias: query.alias,
-            pango: query.pango,
-            variant: query.variant,
-            selected: query.selected,
-            dark: query.dark,
-            xmax: query.xmax,
-            xmin: query.xmin,
-          },
-        });
-      } else if (this.report === 'GenomicsEmbedLocation') {
-        const query = this.$route.query;
-        this.$router.push({
-          name: 'GenomicsEmbed',
-          query: {
-            type: 'loc',
-            loc: id,
-            muts: query.muts,
-            alias: query.alias,
-            pango: query.pango,
-            variant: query.variant,
-            selected: query.selected,
-            dark: query.dark,
-            xmax: query.xmax,
-            xmin: query.xmin,
-          },
-        });
-      }
-    },
-  },
+    noMap.value = false;
+  } else {
+    filteredData.value = null;
+    noMap.value = true;
+  }
 };
+
+const drawMap = () => {
+  prepData();
+
+  if (filteredData.value) {
+    const basemapData =
+      props.location === 'Worldwide' || props.location === 'United States'
+        ? []
+        : ADMIN0.features.filter((d) => d.properties.NAME !== props.location);
+
+    basemap.value
+      .selectAll('.basemap')
+      .data(basemapData, (d) => d.properties.location_id)
+      .join(
+        (enter) => {
+          enter
+            .append('path')
+            .attr('class', 'basemap')
+            .attr('id', (d) => d.properties.location_id)
+            // draw each region
+            .attr('d', path.value.projection(projection.value))
+            .style('fill', '#FDFDFD')
+            .style('stroke', '#444444')
+            .style('stroke-width', 0.25);
+        },
+        (update) =>
+          update
+            .attr('id', (d) => d.properties.location_id)
+            // draw each region
+            .attr('d', path.value.projection(projection.value)),
+        (exit) =>
+          exit.call((exit) =>
+            exit.transition().duration(10).style('opacity', 1e-5).remove(),
+          ),
+      );
+
+    regions.value
+      .selectAll('.region-fill')
+      .data(filteredData.value, (d) => d.properties.location_id)
+      .join(
+        (enter) => {
+          enter
+            .append('path')
+            .attr(
+              'class',
+              (d) => `${d.properties.location_id} region region-fill`,
+            )
+            .attr('id', (d) => d.properties.location_id)
+            // draw each region
+            .attr('d', path.value.projection(projection.value))
+            .classed('pointer', true)
+            .on('click', (d) => route2Location(d.id))
+            .style('fill', (d) => (d.fill ? d.fill : nullColor.value))
+            .style('stroke', strokeColor.value)
+            .style('stroke-width', 0.5);
+        },
+        (update) =>
+          update
+            .attr(
+              'class',
+              (d) => `${d.properties.location_id} region region-fill`,
+            )
+            .attr('id', (d) => d.properties.location_id)
+            .on('click', (d) => route2Location(d.id))
+            // draw each region
+            .attr('d', path.value.projection(projection.value))
+            .transition()
+            .duration(250)
+            .style('fill', (d) => (d.fill ? d.fill : nullColor.value)),
+        (exit) =>
+          exit.call((exit) =>
+            exit.transition().duration(10).style('opacity', 1e-5).remove(),
+          ),
+      );
+
+    // highlight where the data is 0.
+    regions.value
+      .selectAll('.zero-data')
+      .data(
+        filteredData.value.filter((d) => d.proportion === 0),
+        (d) => d.properties.location_id,
+      )
+      .join(
+        (enter) => {
+          enter
+            .append('path')
+            .attr(
+              'class',
+              (d) => `${d.properties.location_id} region zero-data`,
+            )
+            .attr('id', (d) => `${d.properties.location_id}_zero`)
+            // draw each region
+            .attr('d', path.value.projection(projection.value))
+            .style('fill', 'url(#diagonalHatch)')
+            .style('stroke', strokeColor.value)
+            .style('stroke-width', 0.5);
+        },
+        (update) =>
+          update
+            .attr(
+              'class',
+              (d) => `${d.properties.location_id} region zero-data`,
+            )
+            .attr('id', (d) => `${d.properties.location_id}_zero`)
+            // draw each region
+            .attr('d', path.value.projection(projection.value)),
+        (exit) =>
+          exit.call((exit) =>
+            exit.transition().duration(10).style('opacity', 1e-5).remove(),
+          ),
+      );
+
+    overlay.value
+      .selectAll('.overlay')
+      .data(
+        ADMIN0.features.filter(
+          (d) =>
+            d.properties.NAME === props.location &&
+            d.properties.NAME !== 'United States',
+        ),
+        (d) => d.properties.location_id,
+      )
+      .join(
+        (enter) => {
+          enter
+            .append('path')
+            .attr('class', 'overlay')
+            .attr('id', (d) => d.properties.location_id)
+            // draw each region
+            .attr('d', path.value.projection(projection.value))
+            .style('fill', 'none')
+            .style('stroke', strokeColor.value)
+            .style('stroke-width', 1.25);
+        },
+        (update) =>
+          update
+            .attr('id', (d) => d.properties.location_id)
+            // draw each region
+            .attr('d', path.value.projection(projection.value)),
+        (exit) =>
+          exit.call((exit) =>
+            exit.transition().duration(10).style('opacity', 1e-5).remove(),
+          ),
+      );
+
+    regions.value
+      .selectAll('path.region')
+      .on('mouseenter', (d) => debounceMouseon(d))
+      .on('mouseleave', mouseOff);
+
+    regions.value
+      .selectAll('path.region')
+      .on('mouseenter', (d) => debounceMouseon(d))
+      .on('mouseleave', mouseOff);
+  }
+};
+
+const mouseOn = (d) => {
+  const ttipShift = 15;
+
+  // dim everything
+  regions.value
+    .selectAll('.region')
+    .style('opacity', 0.2)
+    .style('stroke-opacity', 0.5);
+
+  // turn on the location
+  regions.value
+    .select(`.${d.properties.location_id}`)
+    .style('opacity', 1)
+    .style('stroke-opacity', 1);
+
+  const ttip = select(tooltip_choro.value);
+
+  // edit text
+  ttip.select('h5').text(d.properties.NAME);
+  if (d.proportion || d.proportion === 0) {
+    ttip.select('#no-sequencing').classed('hidden', true);
+    ttip
+      .select('#proportion')
+      .text(`${d.proportion_formatted} ${props.mutationName}`)
+      .classed('hidden', false);
+
+    ttip
+
+      .select('#confidence-interval')
+      .text(`(95% CI: ${format('.0%')(d.lower)}-${format('.0%')(d.upper)})`)
+      .classed('hidden', false);
+
+    ttip
+      .select('#sequencing-count')
+      .text(
+        `Number of total ${props.mutationName} cases: ${format(',')(
+          d.cum_lineage_count,
+        )}/${format(',')(d.cum_total_count)}`,
+      )
+      .classed('hidden', false);
+  } else {
+    ttip.select('#no-sequencing').classed('hidden', false);
+    ttip.select('#proportion').classed('hidden', true);
+    ttip.select('#confidence-interval').classed('hidden', true);
+    ttip.select('#sequencing-count').classed('hidden', true);
+  }
+
+  // fix location
+  ttip
+    .style('left', `${event.clientX + ttipShift}px`)
+    .style('top', `${event.clientY + ttipShift}px`)
+    .style('display', 'block');
+};
+
+const mouseOff = () => {
+  select(tooltip_choro.value).style('display', 'none');
+
+  regions.value.selectAll('.zero-data').style('opacity', 1);
+
+  regions.value
+    .selectAll('.region')
+    .style('opacity', 1)
+    .style('stroke-opacity', 1);
+};
+
+const route2Location = (id) => {
+  if (props.report === 'MutationReport') {
+    const query = route.query;
+    const params = route.params;
+    let locs = query.loc
+      ? typeof query.loc == 'string'
+        ? [query.loc]
+        : query.loc
+      : [];
+    locs.push(id);
+    router.push({
+      name: 'MutationReport',
+      meta: {
+        disableScroll: true,
+      },
+      params: { alias: params.alias },
+      query: {
+        pango: query.pango,
+        muts: query.muts,
+        selected: id,
+        loc: locs,
+      },
+    });
+  } else if (props.report === 'GenomicsEmbedVariant') {
+    const query = route.query;
+    let locs = query.loc
+      ? typeof query.loc == 'string'
+        ? [query.loc]
+        : query.loc
+      : [];
+    router.push({
+      name: 'GenomicsEmbed',
+      meta: {
+        disableScroll: true,
+      },
+      query: {
+        type: 'var',
+        alias: query.alias,
+        pango: query.pango,
+        muts: query.muts,
+        selected: id,
+        loc: locs,
+      },
+    });
+  } else if (props.report === 'LocationReport') {
+    const query = route.query;
+    router.push({
+      name: 'LocationReport',
+      query: {
+        loc: id,
+        muts: query.muts,
+        alias: query.alias,
+        pango: query.pango,
+        variant: query.variant,
+        selected: query.selected,
+        dark: query.dark,
+        xmax: query.xmax,
+        xmin: query.xmin,
+      },
+    });
+  } else if (props.report === 'GenomicsEmbedLocation') {
+    const query = route.query;
+    router.push({
+      name: 'GenomicsEmbed',
+      query: {
+        type: 'loc',
+        loc: id,
+        muts: query.muts,
+        alias: query.alias,
+        pango: query.pango,
+        variant: query.variant,
+        selected: query.selected,
+        dark: query.dark,
+        xmax: query.xmax,
+        xmin: query.xmin,
+      },
+    });
+  }
+};
+
+watch(
+  () => props.data,
+  () => {
+    chooseMap();
+    drawMap();
+  },
+  { deep: true },
+); // deep option is required since props.data is array
+
+watch(
+  () => props.countThreshold,
+  () => {
+    drawMap();
+  },
+);
+
+watch(width, () => {
+  drawMap();
+});
+
+const debounceMouseon = debounce(mouseOn, 250);
+const debounceSetDims = debounce(setDims, 150);
+
+onMounted(() => {
+  nextTick(function () {
+    window.addEventListener('resize', debounceSetDims);
+
+    // this.$root.$on('update:countThreshold', (newThreshold) => {
+    //   // this.countThreshold = newThreshold;
+    //   // this.drawMap();
+    // });
+
+    // event listener to hide tooltips
+    document.addEventListener(
+      'mousemove',
+      (evt) => {
+        if (
+          !evt.target.className ||
+          !evt.target.className.baseVal ||
+          !evt.target.className.baseVal.includes('region')
+        ) {
+          mouseOff();
+        }
+      },
+      {
+        passive: true,
+      },
+    );
+    document.addEventListener(
+      'mouseleave',
+      (evt) => {
+        if (
+          !evt.target.className ||
+          !evt.target.className.baseVal ||
+          !evt.target.className.baseVal.includes('region')
+        ) {
+          mouseOff();
+        }
+      },
+      {
+        passive: true,
+      },
+    );
+  });
+
+  chooseMap();
+  // set initial dimensions for the choropleth plots.
+  setDims();
+  setupChoro(); // svg handles, etc.
+});
 </script>
