@@ -88,7 +88,7 @@
           Sequencing techniques can heavily bias this sampling. For instance,
           the majority of
           <router-link
-            :to="{ name: 'MutationReport', params: { mutation: 'B.1.1.7' } }"
+            :to="{ name: 'MutationReport', meta: { mutation: 'B.1.1.7' } }"
           >
             B.1.1.7 genomes
           </router-link>

@@ -65,7 +65,7 @@
 
           <div class="update-container">
             <div
-              v-for="(update, idx) in updates"
+              v-for="(update, idx) in updatesData"
               :key="idx"
               class="d-flex mb-4"
             >
@@ -99,7 +99,6 @@
 
 <script setup>
 import { onMounted, ref, inject, onUnmounted } from 'vue';
-import { storeToRefs } from 'pinia';
 import { timeFormat } from 'd3-time-format';
 
 import { getSourcesUpdated } from '@/api/metadata.js';
@@ -116,8 +115,7 @@ const resourceUrl = inject('resourceUrl');
 
 const updateSubscription = ref(null);
 const lastUpdated = ref(null);
-
-const { updates } = storeToRefs(store);
+const updatesData = ref(null);
 
 onMounted(() => {
   updateSubscription.value = getSourcesUpdated(
@@ -127,8 +125,9 @@ onMounted(() => {
   ).subscribe((results) => {
     lastUpdated.value = results;
   });
+  updatesData.value = store.$state.updates;
 
-  updates.sort((a, b) => b.date - a.date);
+  updatesData.value.sort((a, b) => b.date - a.date);
 });
 
 onUnmounted(() => {

@@ -116,7 +116,7 @@ const updateAxes = () => {
     .range([0, props.width - margin.value.left - margin.value.right])
     .domain(domain.value);
 
-  this.y = scaleBand()
+  y.value = scaleBand()
     .range([0, height.value - margin.value.top - margin.value.bottom])
     .domain(plottedData.value.map((d) => d.location_id));
 };
