@@ -3,9 +3,9 @@
 </template>
 
 <script setup>
+import { onMounted } from 'vue';
 import tippy from 'tippy.js';
 import 'tippy.js/themes/light.css';
-import { onMounted } from 'vue';
 
 const props = defineProps({
   report: Object,
