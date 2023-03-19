@@ -2545,6 +2545,7 @@
       - DT.3
       - DU.1
       - DV.1
+      - DV.1.1
       - DV.2
       - DV.3
       - DV.3.1
@@ -4931,6 +4932,7 @@
       - DT.3
       - DU.1
       - DV.1
+      - DV.1.1
       - DV.2
       - DV.3
       - DV.3.1
@@ -6380,6 +6382,7 @@
       - DT.3
       - DU.1
       - DV.1
+      - DV.1.1
       - DV.2
       - DV.3
       - DV.3.1
@@ -10303,6 +10306,7 @@
       - DT.3
       - DU.1
       - DV.1
+      - DV.1.1
       - DV.2
       - DV.3
       - DV.3.1
@@ -11013,6 +11017,7 @@
       - DS.2
       - DS.3
       - DV.1
+      - DV.1.1
       - DV.2
       - DV.3
       - DV.3.1
@@ -12043,6 +12048,7 @@
       - DS.2
       - DS.3
       - DV.1
+      - DV.1.1
       - DV.2
       - DV.3
       - DV.3.1
@@ -12228,6 +12234,7 @@
       - CV.1
       - CV.2
       - DV.1
+      - DV.1.1
       - DV.2
       - DV.3
       - DV.3.1
@@ -12385,6 +12392,7 @@
       - CH.3
       - CH.3.1
       - DV.1
+      - DV.1.1
       - DV.2
       - DV.3
       - DV.3.1
@@ -12416,6 +12424,7 @@
       - CH.3
       - CH.3.1
       - DV.1
+      - DV.1.1
       - DV.2
       - DV.3
       - DV.3.1
@@ -12446,6 +12455,7 @@
       - CH.3
       - CH.3.1
       - DV.1
+      - DV.1.1
       - DV.2
       - DV.3
       - DV.3.1
@@ -12472,6 +12482,7 @@
       - CH.1.1.14
       - CH.1.1.15
       - DV.1
+      - DV.1.1
       - DV.2
       - DV.3
       - DV.3.1
@@ -12497,6 +12508,7 @@
       - CH.1.1.14
       - CH.1.1.15
       - DV.1
+      - DV.1.1
       - DV.2
       - DV.3
       - DV.3.1
@@ -12507,6 +12519,7 @@
   children:
       - CH.1.1.1
       - DV.1
+      - DV.1.1
       - DV.2
       - DV.3
       - DV.3.1
@@ -12516,7 +12529,13 @@
   alias: B.1.1.529.2.75.3.4.1.1.1.1.1.1
   children:
       - DV.1
+      - DV.1.1
   parent: CH.1.1.1
+- name: DV.1.1
+  alias: B.1.1.529.2.75.3.4.1.1.1.1.1.1.1
+  children:
+      - DV.1.1
+  parent: DV.1
 - name: DV.2
   alias: B.1.1.529.2.75.3.4.1.1.1.1.1.2
   children:
@@ -24336,6 +24355,9 @@
       - XBB.1.17.2
       - XBB.1.18
       - XBB.1.18.1
+      - XBB.1.19
+      - XBB.1.19.1
+      - XBB.1.20
       - XBB.2
       - XBB.2.1
       - XBB.2.2
@@ -24415,6 +24437,9 @@
       - XBB.1.17.2
       - XBB.1.18
       - XBB.1.18.1
+      - XBB.1.19
+      - XBB.1.19.1
+      - XBB.1.20
   parent: XBB
 - name: XBB.1.1
   alias: XBB.1.1
@@ -24739,6 +24764,22 @@
   children:
       - XBB.1.18.1
   parent: XBB.1.18
+- name: XBB.1.19
+  alias: XBB.1.19
+  children:
+      - XBB.1.19
+      - XBB.1.19.1
+  parent: XBB.1
+- name: XBB.1.19.1
+  alias: XBB.1.19.1
+  children:
+      - XBB.1.19.1
+  parent: XBB.1.19
+- name: XBB.1.20
+  alias: XBB.1.20
+  children:
+      - XBB.1.20
+  parent: XBB.1
 - name: XBB.2
   alias: XBB.2
   children:
@@ -25051,3 +25092,13 @@
   children:
       - XBT
   recombinant_parents: BA.5.2.34,BA.2.75,BA.5.2.34
+- name: XBU
+  alias: XBU
+  children:
+      - XBU
+  recombinant_parents: BA.2.75.3,BQ.1,BA.2.75.3
+- name: XBV
+  alias: XBV
+  children:
+      - XBV
+  recombinant_parents: CR.1,XBB.1
