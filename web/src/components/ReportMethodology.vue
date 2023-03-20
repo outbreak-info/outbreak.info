@@ -212,58 +212,59 @@
   </div>
 </template>
 
-<script>
-import { mapState } from 'pinia';
+<script setup>
+import { computed, inject, onMounted, onUnmounted, ref } from 'vue';
+import { storeToRefs } from 'pinia';
 import { format } from 'd3-format';
 
 import { getDateUpdated } from '@/api/genomics.js';
 import { lazyLoad } from '@/js/lazy-load';
 import { genomicsStore } from '@/stores/genomicsStore';
 
-export default {
-  name: 'ReportMethodology',
-  components: {
-    Warning: lazyLoad('Warning'),
+const Warning = lazyLoad('Warning');
+
+const props = defineProps({
+  dateUpdated: String,
+  summary: {
+    type: Boolean,
+    default: false,
   },
-  props: {
-    dateUpdated: String,
-    summary: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  data() {
-    return {
-      lastUpdated: '15 March 2021',
-      disclaimer:
-        "SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the mutations but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>",
-      updated: null,
-      updatedSubscription: null,
-    };
-  },
-  computed: {
-    ...mapState(genomicsStore, ['refSeq', 'characteristicThreshold']),
-    charMutThreshold() {
-      return format('.0%')(this.characteristicThreshold);
-    },
-  },
-  mounted() {
-    if (this.dateUpdated) {
-      this.updated = this.dateUpdated;
-    } else {
-      this.updatedSubscription = getDateUpdated(this.$genomicsurl).subscribe(
-        (result) => {
-          this.updated = result.dateUpdated;
-        },
-      );
-    }
-  },
-  unmounted() {
-    if (this.updatedSubscription) {
-      this.updatedSubscription.unsubscribe();
-    }
-  },
-};
+});
+
+// global variable - equivalent with this.$genomicsurl
+const genomicsUrl = inject('genomicsUrl');
+
+const store = genomicsStore();
+const { refSeq } = storeToRefs(store);
+
+const lastUpdated = ref('15 March 2021');
+const disclaimer = ref(
+  "SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the mutations but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>",
+);
+const updated = ref(null);
+const updatedSubscription = ref(null);
+
+const charMutThreshold = computed(() => {
+  return format('.0%')(store.$state.characteristicThreshold);
+});
+
+onMounted(() => {
+  if (props.dateUpdated) {
+    updated.value = props.dateUpdated;
+  } else {
+    updatedSubscription.value = getDateUpdated(genomicsUrl).subscribe(
+      (result) => {
+        updated.value = result.dateUpdated;
+      },
+    );
+  }
+});
+
+onUnmounted(() => {
+  if (updatedSubscription.value) {
+    updatedSubscription.value.unsubscribe();
+  }
+});
 </script>
 
 <style lang="scss">

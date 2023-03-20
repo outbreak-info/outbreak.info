@@ -159,7 +159,6 @@ const legend = ref(null);
 // controls
 const zoomAllowed = ref(false);
 // variables to replace this.$refs
-const svgRef = ref(null);
 const chartRef = ref(null);
 const legendRef = ref(null);
 const brush_ref = ref(null); // to avoid duplication name like this;

@@ -58,8 +58,8 @@
         :transform="`translate(${margin.left}, ${margin.top})`"
       />
       <g
-        id="heatmapRef"
-        ref="heatmap"
+        id="heatmap"
+        ref="heatmapRef"
         :transform="`translate(${margin.left}, ${margin.top})`"
       />
     </svg>

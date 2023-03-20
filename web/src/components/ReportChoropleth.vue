@@ -62,7 +62,7 @@
 </template>
 
 <script setup>
-import { ref, inject, computed, watch, onMounted, nextTick } from 'vue';
+import { ref, computed, watch, onMounted, nextTick } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { max, min } from 'd3-array';
 import { format } from 'd3-format';
@@ -479,10 +479,11 @@ const drawMap = () => {
       .on('mouseenter', (d) => debounceMouseon(d))
       .on('mouseleave', mouseOff);
 
-    regions.value
-      .selectAll('path.region')
-      .on('mouseenter', (d) => debounceMouseon(d))
-      .on('mouseleave', mouseOff);
+    // TODO: why repeating above code?
+    // regions.value
+    //   .selectAll('path.region')
+    //   .on('mouseenter', (d) => debounceMouseon(d))
+    //   .on('mouseleave', mouseOff);
   }
 };
 

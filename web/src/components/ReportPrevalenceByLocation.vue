@@ -103,14 +103,14 @@
             </defs>
             <g
               id="dot-axis-top"
-              ref="xAxis"
+              ref="xAxisRef"
               :transform="`translate(${margin.left}, ${25})`"
               class="prevalence-axis axis--x"
               :hidden="!data.length"
             />
             <g
               id="dot-axis-bottom"
-              ref="xAxis2"
+              ref="xAxis2Ref"
               :transform="`translate(${margin.left}, ${
                 height + margin.top + 5
               })`"
@@ -118,13 +118,13 @@
               :hidden="!data.length"
             />
             <g
-              ref="yAxis"
+              ref="yAxisRef"
               :transform="`translate(${margin.left}, ${margin.top})`"
               class="prevalence-location-axis prevalence-axis axis--y"
             />
             <g
               id="dotplot"
-              ref="dotplot"
+              ref="dotplotRef"
               :transform="`translate(${margin.left}, ${margin.top})`"
             />
           </svg>
@@ -169,14 +169,14 @@
           >
             <g
               id="bar-axis-top"
-              ref="xAxisBar"
+              ref="xAxisBarRef"
               :transform="`translate(${margin.left}, ${25})`"
               class="count-axis axis--x"
               :hidden="!data.length"
             />
             <g
               id="bar-axis-top"
-              ref="xAxisBar2"
+              ref="xAxisBar2Ref"
               :transform="`translate(${margin.left}, ${
                 height + margin.top + 5
               })`"
@@ -184,13 +184,13 @@
               :hidden="!data.length"
             />
             <g
-              ref="yAxisBar"
+              ref="yAxisBarRef"
               :transform="`translate(${margin.left}, ${margin.top})`"
               class="prevalence-location-axis count-axis axis--y"
             />
             <g
               id="bargraph"
-              ref="bargraph"
+              ref="bargraphRef"
               :transform="`translate(${margin.left}, ${margin.top})`"
             />
           </svg>
@@ -221,7 +221,8 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref, computed, watch, onMounted, nextTick, onUnmounted } from 'vue';
 import { max } from 'd3-array';
 import { axisTop, axisBottom, axisLeft } from 'd3-axis';
 import { format } from 'd3-format';
@@ -233,586 +234,602 @@ import debounce from 'lodash/debounce';
 
 import { lazyLoad } from '@/js/lazy-load';
 
-export default {
-  name: 'ReportPrevalenceByLocation',
-  components: {
-    ClassedLegend: lazyLoad('ClassedLegend'),
-    DownloadReportData: lazyLoad('DownloadReportData'),
-  },
-  props: {
-    data: Array,
-    mutationName: String,
-    label: String,
-    location: String,
-    locationName: String,
-    colorScale: Function,
-  },
-  data() {
-    return {
-      margin: {
-        top: 35,
-        right: 15,
-        rightBar: 25,
-        bottom: 30,
-        left: 270,
-      },
-      maxWidth: 1100,
-      width: 600,
-      height: 100,
-      bandHeight: 18,
-      barWidth: 500,
-      circleR: 8,
-      ciStrokeWidth: 7,
-      accentColor: '#df4ab7',
-      baseColor: '#f6cceb',
-      stacked: false,
-      includeNotDetected: false,
-      // data
-      plottedData: null,
-      // refs
-      dotplot: null,
-      bargraph: null,
-      // variables
-      yVariable: 'name',
-      yIdentifier: 'location_id',
-      sortVar: 'proportion',
-      maxEst: null,
-      // scales
-      xDot: null,
-      xBar: null,
-      y: null,
-      xDotAxis: null,
-      xDotAxis2: null,
-      xBarAxis: null,
-      xBarAxis2: null,
-      yAxis: null,
-      numXTicks: 4,
-    };
-  },
-  computed: {
-    title() {
-      return this.location === 'Worldwide'
-        ? `Cumulative ${this.mutationName} prevalence by country`
-        : `Cumulative ${this.mutationName} prevalence in ${this.location}`;
-    },
-    subtitle() {
-      return this.location === 'Worldwide'
-        ? `Since ${this.mutationName} identification`
-        : `Since ${this.mutationName} identification in ${this.location}`;
-    },
-    maxEstFormatted() {
-      const formatter = format('.0%');
-      return this.maxEst ? formatter(this.maxEst) : null;
-    },
-  },
-  watch: {
-    width() {
-      this.updatePlot();
-    },
-    data() {
-      this.updatePlot();
-    },
-    sortVar() {
-      this.updatePlot();
-    },
-    includeNotDetected() {
-      this.updatePlot();
-    },
-  },
-  created() {
-    this.debounceSetDims = debounce(this.setDims, 150);
-  },
-  mounted() {
-    this.$nextTick(() => {
-      window.addEventListener('resize', this.setDims);
-    });
+const ClassedLegend = lazyLoad('ClassedLegend');
+const DownloadReportData = lazyLoad('DownloadReportData');
 
-    // set initial dimensions for the plots.
-    this.setDims();
+const props = defineProps({
+  data: Array,
+  mutationName: String,
+  label: String,
+  location: String,
+  locationName: String,
+  colorScale: Function,
+});
 
-    this.setupPlot();
-    this.updatePlot();
-  },
-  unmounted() {
-    window.removeEventListener('resize', this.setDims);
-  },
-  methods: {
-    setDims() {
-      const mx = 0.9;
-      const svgContainer = document.getElementById('report-cum-totals');
-      const barRatio = 0.4;
-      const minBarWidth = 350;
+const margin = ref({
+  top: 35,
+  right: 15,
+  rightBar: 25,
+  bottom: 30,
+  left: 270,
+});
+const maxWidth = ref(1100);
+const width = ref(600);
+const height = ref(100);
+const bandHeight = ref(18);
+const barWidth = ref(500);
+const circleR = ref(8);
+const ciStrokeWidth = ref(7);
+const accentColor = ref('#df4ab7');
+const baseColor = ref('#f6cceb');
+const stacked = ref(false);
+const includeNotDetected = ref(false);
+// data
+const plottedData = ref(null);
+// refs
+const dotplot = ref(null);
+const bargraph = ref(null);
+// variables
+const yVariable = ref('name');
+const yIdentifier = ref('location_id');
+const sortVar = ref('proportion');
+const maxEst = ref(null);
+// scales
+const xDot = ref(null);
+const xBar = ref(null);
+const y = ref(null);
+const xDotAxis = ref(null);
+const xDotAxis2 = ref(null);
+const xBarAxis = ref(null);
+const xBarAxis2 = ref(null);
+const yAxis = ref(null);
+const numXTicks = ref(4);
+// this.$refs
+const tooltip_chart = ref(null);
+const dotplotRef = ref(null);
+const bargraphRef = ref(null);
+const xAxisRef = ref(null);
+const xAxis2Ref = ref(null);
+const xAxisBarRef = ref(null);
+const xAxisBar2Ref = ref(null);
+const yAxisRef = ref(null);
+const yAxisBarRef = ref(null);
 
-      const maxScreenWidth = window.innerWidth;
-      this.maxWidth = svgContainer ? svgContainer.offsetWidth * mx : 800;
-      if (this.maxWidth > maxScreenWidth) {
-        this.maxWidth = maxScreenWidth - 20;
-        this.numXTicks = 2;
-      }
-      this.barWidth = barRatio * this.maxWidth;
-      if (this.barWidth <= minBarWidth) {
-        this.barWidth = this.maxWidth;
-        this.width = this.maxWidth;
-        this.stacked = true;
-      } else {
-        this.width = this.maxWidth * (1 - barRatio) * 0.9;
-        this.stacked = false;
-      }
-      // this.numXTicks = this.width > minBarWidth ? 4 : 2;
-    },
-    tooltipOn(d) {
-      const ttipShift = 15;
+// computed variables
+const title = computed(() => {
+  return props.location === 'Worldwide'
+    ? `Cumulative ${props.mutationName} prevalence by country`
+    : `Cumulative ${props.mutationName} prevalence in ${props.location}`;
+});
 
-      // dim everything
-      this.dotplot.selectAll('.dot-group').style('opacity', 0.2);
+const subTitle = computed(() => {
+  return props.location === 'Worldwide'
+    ? `Since ${props.mutationName} identification`
+    : `Since ${props.mutationName} identification in ${props.location}`;
+});
 
-      this.bargraph.selectAll('.bar-group').style('opacity', 0.2);
+const maxEstFormatted = computed(() => {
+  const formatter = format('.0%');
+  return maxEst.value ? formatter(maxEst.value) : null;
+});
 
-      // turn on the location
-      this.dotplot.select(`.${d.location_id}`).style('opacity', 1);
+const setDims = () => {
+  const mx = 0.9;
+  const svgContainer = document.getElementById('report-cum-totals');
+  const barRatio = 0.4;
+  const minBarWidth = 350;
 
-      this.bargraph.select(`.${d.location_id}`).style('opacity', 1);
-
-      const ttip = select(this.$refs.tooltip_chart);
-
-      // edit text
-      ttip.select('h5').text(d.name);
-      ttip.select('#no-sequencing').classed('hidden', true);
-      ttip
-        .select('#proportion')
-        .text(d.proportion_formatted)
-        .classed('hidden', false);
-
-      ttip
-        .select('#confidence-interval')
-        .text(
-          `(95% CI: ${format('.0%')(d.proportion_ci_lower)}-${format('.0%')(
-            d.proportion_ci_upper,
-          )})`,
-        )
-        .classed('hidden', false);
-
-      ttip
-        .select('#sequencing-count')
-        .text(
-          `Number of total cases: ${format(',')(d.cum_lineage_count)}/${format(
-            ',',
-          )(d.cum_total_count)}`,
-        );
-
-      // fix location
-      ttip
-        .style('left', `${event.clientX + ttipShift}px`)
-        .style('top', `${event.clientY + ttipShift}px`)
-        .style('display', 'block');
-    },
-    tooltipOff() {
-      select(this.$refs.tooltip_chart).style('display', 'none');
-
-      this.dotplot.selectAll('.dot-group').style('opacity', 1);
-
-      this.bargraph.selectAll('.bar-group').style('opacity', 1);
-    },
-    setupPlot() {
-      this.dotplot = select(this.$refs.dotplot);
-      this.bargraph = select(this.$refs.bargraph);
-
-      this.y = scaleBand().paddingInner(0.25).paddingOuter(0.15);
-    },
-    updateScales() {
-      // resize the canvas to cover the length of the data.
-      this.height =
-        this.plottedData.length * this.bandHeight * (1 + this.y.paddingInner());
-
-      this.xDot = scaleLinear()
-        .range([0, this.width - this.margin.left - this.margin.right])
-        .domain([0, max(this.plottedData, (d) => d.proportion_ci_upper)]);
-
-      this.xBar = scaleLog()
-        .range([0, this.barWidth - this.margin.left - this.margin.rightBar])
-        .domain([1, max(this.plottedData, (d) => d.cum_total_count)]);
-
-      this.y = this.y
-        .range([0, this.height])
-        .domain(this.plottedData.map((d) => d[this.yVariable]));
-
-      this.xDotAxis = axisTop(this.xDot)
-        .ticks(this.numXTicks)
-        .tickFormat(format('.0%'));
-
-      this.xDotAxis2 = axisBottom(this.xDot)
-        .ticks(this.numXTicks)
-        .tickFormat(format('.0%'));
-
-      select(this.$refs.xAxis).call(this.xDotAxis);
-      select(this.$refs.xAxis2).call(this.xDotAxis2);
-
-      this.xBarAxis = axisTop(this.xBar)
-        .tickFormat((d, i) => {
-          const log = Math.log10(d);
-          return Math.abs(Math.round(log) - log) < 1e-6 ? format('.0s')(d) : '';
-        })
-        .ticks(2)
-        .tickSizeOuter(0);
-
-      this.xBarAxis2 = axisBottom(this.xBar)
-        .tickFormat((d, i) => {
-          const log = Math.log10(d);
-          return Math.abs(Math.round(log) - log) < 1e-6 ? format('.0s')(d) : '';
-        })
-        .ticks(2)
-        .tickSizeOuter(0);
-
-      select(this.$refs.xAxisBar).call(this.xBarAxis);
-      select(this.$refs.xAxisBar2).call(this.xBarAxis2);
-
-      this.yAxis = axisLeft(this.y);
-
-      select(this.$refs.yAxis).call(this.yAxis);
-      select(this.$refs.yAxisBar).call(this.yAxis);
-
-      // color scale
-      this.maxEst = max(this.plottedData, (d) => d.proportion);
-    },
-    updatePlot() {
-      if (this.data) {
-        // ensure the data is sorted in the proper order
-        // Create a copy so Vue doesn't flip out.
-        this.plottedData = cloneDeep(this.data);
-
-        if (!this.includeNotDetected) {
-          this.plottedData = this.plottedData.filter((d) => d.proportion);
-        }
-
-        if (this.sortVar === 'country') {
-          // asc
-          this.plottedData.sort((a, b) =>
-            a[this.sortVar] < b[this.sortVar] ? -1 : 1,
-          );
-        } else {
-          // desc
-          this.plottedData.sort((a, b) =>
-            b[this.sortVar] < a[this.sortVar] ? -1 : 1,
-          );
-        }
-
-        this.updateScales();
-
-        const t1 = transition().duration(1500);
-        const annotThresh = 0.15;
-
-        const barSelector = this.bargraph
-          .selectAll('.bar-group')
-          .data(this.plottedData, (d) => d.location_id);
-
-        barSelector.join(
-          (enter) => {
-            const grp = enter
-              .append('g')
-              .attr(
-                'class',
-                (d, i) => `bar-group bar-group${i} ${d[this.yIdentifier]}`,
-              );
-
-            grp
-              .append('rect')
-              .attr('class', 'seq-count')
-              .attr('x', this.xBar(1))
-              .attr('width', (d) => this.xBar(d.cum_total_count) - this.xBar(1))
-              .attr('y', (d) => this.y(d[this.yVariable]))
-              .attr('height', this.y.bandwidth())
-              .style('fill', this.baseColor);
-
-            grp
-              .append('rect')
-              .attr('class', 'mutation-count')
-              .attr('x', this.xBar(1))
-              .attr(
-                'width',
-                (d) =>
-                  (this.xBar(d.cum_total_count) - this.xBar(1)) * d.proportion,
-              )
-              .attr('y', (d) => this.y(d[this.yVariable]))
-              .attr('height', this.y.bandwidth())
-              .style('fill', this.accentColor);
-
-            grp
-              .append('text')
-              .attr('class', 'count-annotation')
-              .attr('x', (d) => this.xBar(d.cum_total_count))
-              .attr('dx', (d) =>
-                this.xBar(d.cum_total_count) < this.barWidth * annotThresh
-                  ? 4
-                  : -4,
-              )
-              .attr(
-                'y',
-                (d) => this.y(d[this.yVariable]) + this.y.bandwidth() / 2,
-              )
-              .style(
-                'font-family',
-                "'DM Sans', Avenir, Helvetica, Arial, sans-serif",
-              )
-              .style('fill', '#777')
-              .style('font-size', '9pt')
-              .style('dominant-baseline', 'central')
-              .style('text-anchor', (d) =>
-                this.xBar(d.cum_total_count) < this.barWidth * annotThresh
-                  ? 'start'
-                  : 'end',
-              )
-              .text(
-                (d) =>
-                  `${format(',')(d.cum_lineage_count)}/${format(',')(
-                    d.cum_total_count,
-                  )}`,
-              );
-          },
-          (update) => {
-            update.attr('class', (d) => `bar-group ${d[this.yIdentifier]}`);
-            // !!!!! UPDATES MUST BE SELECT, NOT SELECT ALL
-            // h/t to https://observablehq.com/@thetylerwolf/day-18-join-enter-update-exit for pointing me in right direction
-            update
-              .select('.seq-count')
-              .attr('x', this.xBar(1))
-              .attr('width', (d) => this.xBar(d.cum_total_count) - this.xBar(1))
-              .attr('height', this.y.bandwidth())
-              .transition(t1)
-              .attr('y', (d) => this.y(d[this.yVariable]));
-
-            update
-              .select('.mutation-count')
-              .attr('x', this.xBar(1))
-              .attr(
-                'width',
-                (d) =>
-                  (this.xBar(d.cum_total_count) - this.xBar(1)) * d.proportion,
-              )
-              .attr('height', this.y.bandwidth())
-              .transition(t1)
-              .attr('y', (d) => this.y(d[this.yVariable]));
-
-            update
-              .select('.count-annotation')
-              .attr('x', (d) => this.xBar(d.cum_total_count))
-              .attr('dx', (d) =>
-                this.xBar(d.cum_total_count) < this.barWidth * annotThresh
-                  ? 4
-                  : -4,
-              )
-              .style('text-anchor', (d) =>
-                this.xBar(d.cum_total_count) < this.barWidth * annotThresh
-                  ? 'start'
-                  : 'end',
-              )
-              .text(
-                (d) =>
-                  `${format(',')(d.cum_lineage_count)}/${format(',')(
-                    d.cum_total_count,
-                  )}`,
-              )
-              .transition(t1)
-              .attr(
-                'y',
-                (d) => this.y(d[this.yVariable]) + this.y.bandwidth() / 2,
-              );
-          },
-        );
-
-        const checkbookSpacing = 5;
-        // CHECKBOOK DIVISIONS FOR ORIENTATION
-        if (this.data.length > checkbookSpacing * 1.5) {
-          const checkbookSelector = this.dotplot
-            .selectAll('.checkbook')
-            .data(this.plottedData.filter((d, i) => !(i % checkbookSpacing)));
-
-          const checkbookSelector2 = this.bargraph
-            .selectAll('.checkbook')
-            .data(this.plottedData.filter((d, i) => !(i % checkbookSpacing)));
-
-          checkbookSelector.join(
-            (enter) => {
-              enter
-                .append('line')
-                .attr('class', 'checkbook')
-                .style('stroke', '#222')
-                .style('stroke-width', 0.35)
-                .attr('transform', `translate(${-1 * this.margin.left},${0})`)
-                .attr('x1', 0)
-                .attr('x2', this.width)
-                .attr(
-                  'y1',
-                  (d) =>
-                    this.y(d[this.yVariable]) -
-                    this.y.paddingInner() * this.y.step() * 0.5,
-                )
-                .attr(
-                  'y2',
-                  (d) =>
-                    this.y(d[this.yVariable]) -
-                    this.y.paddingInner() * this.y.step() * 0.5,
-                );
-            },
-            (update) =>
-              update
-                .attr('x2', this.width)
-                .attr('transform', `translate(${-1 * this.margin.left},${0})`)
-                .attr(
-                  'y1',
-                  (d) =>
-                    this.y(d[this.yVariable]) -
-                    this.y.paddingInner() * this.y.step() * 0.5,
-                )
-                .attr(
-                  'y2',
-                  (d) =>
-                    this.y(d[this.yVariable]) -
-                    this.y.paddingInner() * this.y.step() * 0.5,
-                ),
-            (exit) =>
-              exit.call((exit) =>
-                exit.transition().duration(10).style('opacity', 1e-5).remove(),
-              ),
-          );
-
-          checkbookSelector2.join(
-            (enter) => {
-              enter
-                .append('line')
-                .attr('class', 'checkbook')
-                .style('stroke', '#222')
-                .style('stroke-width', 0.35)
-                .attr('transform', `translate(${-1 * this.margin.left},${0})`)
-                .attr('x1', 0)
-                .attr('x2', this.barWidth)
-                .attr(
-                  'y1',
-                  (d) =>
-                    this.y(d[this.yVariable]) -
-                    this.y.paddingInner() * this.y.step() * 0.5,
-                )
-                .attr(
-                  'y2',
-                  (d) =>
-                    this.y(d[this.yVariable]) -
-                    this.y.paddingInner() * this.y.step() * 0.5,
-                );
-            },
-            (update) =>
-              update
-                .attr('transform', `translate(${-1 * this.margin.left},${0})`)
-                .attr('x1', 0)
-                .attr('x2', this.barWidth)
-                .attr(
-                  'y1',
-                  (d) =>
-                    this.y(d[this.yVariable]) -
-                    this.y.paddingInner() * this.y.step() * 0.5,
-                )
-                .attr(
-                  'y2',
-                  (d) =>
-                    this.y(d[this.yVariable]) -
-                    this.y.paddingInner() * this.y.step() * 0.5,
-                ),
-            (exit) =>
-              exit.call((exit) =>
-                exit.transition().duration(10).style('opacity', 1e-5).remove(),
-              ),
-          );
-        }
-
-        const dotSelector = this.dotplot
-          .selectAll('.dot-group')
-          .data(this.plottedData, (d) => d.location_id);
-
-        dotSelector.join(
-          (enter) => {
-            const grp = enter
-              .append('g')
-              .attr('class', (d) => `dot-group ${d[this.yIdentifier]}`);
-
-            grp
-              .append('line')
-              .attr('class', 'dot-ci confidence-interval')
-              .attr('x1', (d) => this.xDot(d.proportion_ci_lower))
-              .attr('x2', (d) => this.xDot(d.proportion_ci_upper))
-              .attr(
-                'y1',
-                (d) => this.y(d[this.yVariable]) + this.y.bandwidth() / 2,
-              )
-              .attr(
-                'y2',
-                (d) => this.y(d[this.yVariable]) + this.y.bandwidth() / 2,
-              )
-              .style('stroke', '#CCCCCC')
-              .style('stroke-width', this.ciStrokeWidth)
-              // .style("opacity", 0)
-              // .transition(t1)
-              // .delay(400)
-              .style('opacity', 0.5);
-
-            grp
-              .append('circle')
-              .attr('class', 'dot-circle point-estimate')
-              .attr(
-                'cy',
-                (d) => this.y(d[this.yVariable]) + this.y.bandwidth() / 2,
-              )
-              .attr('r', this.circleR)
-              .style('stroke', '#2c3e50')
-              .style('stroke-width', 0.25)
-              // .style("filter", "url(#dropshadow)")
-              .style('fill', (d) => this.colorScale(d.proportion))
-              .transition(t1)
-              .attr('cx', (d) => this.xDot(d.proportion));
-          },
-          (update) => {
-            update.attr('class', (d) => `dot-group ${d[this.yIdentifier]}`);
-
-            update
-              .select('.dot-circle')
-              .transition(t1)
-              .attr('cx', (d) => this.xDot(d.proportion))
-              .style('fill', (d) => this.colorScale(d.proportion))
-              .attr(
-                'cy',
-                (d) => this.y(d[this.yVariable]) + this.y.bandwidth() / 2,
-              );
-
-            update
-              .select('.dot-ci')
-              .attr('x1', (d) => this.xDot(d.proportion_ci_lower))
-              .attr('x2', (d) => this.xDot(d.proportion_ci_upper))
-              .transition(t1)
-              .attr(
-                'y1',
-                (d) => this.y(d[this.yVariable]) + this.y.bandwidth() / 2,
-              )
-              .attr(
-                'y2',
-                (d) => this.y(d[this.yVariable]) + this.y.bandwidth() / 2,
-              );
-          },
-          (exit) =>
-            exit.call((exit) =>
-              exit.transition().duration(10).style('opacity', 1e-5).remove(),
-            ),
-        );
-
-        this.bargraph
-          .selectAll('.bar-group')
-          .on('mousemove', (d) => this.tooltipOn(d))
-          .on('mouseleave', () => this.tooltipOff());
-
-        this.dotplot
-          .selectAll('.dot-group')
-          .on('mousemove', (d) => this.tooltipOn(d))
-          .on('mouseleave', () => this.tooltipOff());
-      }
-    },
-  },
+  const maxScreenWidth = window.innerWidth;
+  maxWidth.value = svgContainer ? svgContainer.offsetWidth * mx : 800;
+  if (maxWidth.value > maxScreenWidth) {
+    maxWidth.value = maxScreenWidth - 20;
+    numXTicks.value = 2;
+  }
+  barWidth.value = barRatio * maxWidth.value;
+  if (barWidth.value <= minBarWidth) {
+    barWidth.value = maxWidth.value;
+    width.value = maxWidth.value;
+    stacked.value = true;
+  } else {
+    width.value = maxWidth.value * (1 - barRatio) * 0.9;
+    stacked.value = false;
+  }
+  // this.numXTicks = this.width > minBarWidth ? 4 : 2;
 };
+
+const tooltipOn = (d) => {
+  const ttipShift = 15;
+
+  // dim everything
+  dotplot.value.selectAll('.dot-group').style('opacity', 0.2);
+
+  bargraph.value.selectAll('.bar-group').style('opacity', 0.2);
+
+  // turn on the location
+  dotplot.value.select(`.${d.location_id}`).style('opacity', 1);
+
+  bargraph.value.select(`.${d.location_id}`).style('opacity', 1);
+
+  const ttip = select(tooltip_chart.value);
+
+  // edit text
+  ttip.select('h5').text(d.name);
+  ttip.select('#no-sequencing').classed('hidden', true);
+  ttip
+    .select('#proportion')
+    .text(d.proportion_formatted)
+    .classed('hidden', false);
+
+  ttip
+    .select('#confidence-interval')
+    .text(
+      `(95% CI: ${format('.0%')(d.proportion_ci_lower)}-${format('.0%')(
+        d.proportion_ci_upper,
+      )})`,
+    )
+    .classed('hidden', false);
+
+  ttip
+    .select('#sequencing-count')
+    .text(
+      `Number of total cases: ${format(',')(d.cum_lineage_count)}/${format(',')(
+        d.cum_total_count,
+      )}`,
+    );
+
+  // fix location
+  ttip
+    .style('left', `${event.clientX + ttipShift}px`)
+    .style('top', `${event.clientY + ttipShift}px`)
+    .style('display', 'block');
+};
+
+const tooltipOff = () => {
+  select(tooltip_chart.value).style('display', 'none');
+
+  dotplot.value.selectAll('.dot-group').style('opacity', 1);
+
+  bargraph.value.selectAll('.bar-group').style('opacity', 1);
+};
+
+const setupPlot = () => {
+  dotplot.value = select(dotplotRef.value);
+  bargraph.value = select(bargraphRef.value);
+
+  y.value = scaleBand().paddingInner(0.25).paddingOuter(0.15);
+};
+
+const updateScales = () => {
+  // resize the canvas to cover the length of the data.
+  height.value =
+    plottedData.value.length * bandHeight.value * (1 + y.value.paddingInner());
+
+  xDot.value = scaleLinear()
+    .range([0, width.value - margin.value.left - margin.value.right])
+    .domain([0, max(plottedData.value, (d) => d.proportion_ci_upper)]);
+
+  xBar.value = scaleLog()
+    .range([0, barWidth.value - margin.value.left - margin.value.rightBar])
+    .domain([1, max(plottedData.value, (d) => d.cum_total_count)]);
+
+  y.value = y.value
+    .range([0, height.value])
+    .domain(plottedData.value.map((d) => d[yVariable.value]));
+
+  xDotAxis.value = axisTop(xDot.value)
+    .ticks(numXTicks.value)
+    .tickFormat(format('.0%'));
+
+  xDotAxis2.value = axisBottom(xDot.value)
+    .ticks(numXTicks.value)
+    .tickFormat(format('.0%'));
+
+  select(xAxisRef.value).call(xDotAxis.value);
+  select(xAxis2Ref.value).call(xDotAxis2.value);
+
+  xBarAxis.value = axisTop(xBar.value)
+    .tickFormat((d, i) => {
+      const log = Math.log10(d);
+      return Math.abs(Math.round(log) - log) < 1e-6 ? format('.0s')(d) : '';
+    })
+    .ticks(2)
+    .tickSizeOuter(0);
+
+  xBarAxis2.value = axisBottom(xBar.value)
+    .tickFormat((d, i) => {
+      const log = Math.log10(d);
+      return Math.abs(Math.round(log) - log) < 1e-6 ? format('.0s')(d) : '';
+    })
+    .ticks(2)
+    .tickSizeOuter(0);
+
+  select(xAxisBarRef).call(xBarAxis.value);
+  select(xAxisBar2Ref).call(xBarAxis2.value);
+
+  yAxis.value = axisLeft(y.value);
+
+  select(yAxisRef.value).call(yAxis.value);
+  select(yAxisBarRef.value).call(yAxis.value);
+
+  // color scale
+  maxEst.value = max(plottedData.value, (d) => d.proportion);
+};
+
+const updatePlot = () => {
+  if (props.data) {
+    // ensure the data is sorted in the proper order
+    // Create a copy so Vue doesn't flip out.
+    plottedData.value = cloneDeep(props.data);
+
+    if (!includeNotDetected.value) {
+      plottedData.value = plottedData.value.filter((d) => d.proportion);
+    }
+
+    if (sortVar.value === 'country') {
+      // asc
+      plottedData.value.sort((a, b) =>
+        a[sortVar.value] < b[sortVar.value] ? -1 : 1,
+      );
+    } else {
+      // desc
+      plottedData.value.sort((a, b) =>
+        b[sortVar.value] < a[sortVar.value] ? -1 : 1,
+      );
+    }
+
+    updateScales();
+
+    const t1 = transition().duration(1500);
+    const annotThresh = 0.15;
+
+    const barSelector = bargraph.value
+      .selectAll('.bar-group')
+      .data(plottedData.value, (d) => d.location_id);
+
+    barSelector.join(
+      (enter) => {
+        const grp = enter
+          .append('g')
+          .attr(
+            'class',
+            (d, i) => `bar-group bar-group${i} ${d[yIdentifier.value]}`,
+          );
+
+        grp
+          .append('rect')
+          .attr('class', 'seq-count')
+          .attr('x', xBar.value(1))
+          .attr('width', (d) => xBar.value(d.cum_total_count) - xBar.value(1))
+          .attr('y', (d) => y.value(d[yVariable.value]))
+          .attr('height', y.value.bandwidth())
+          .style('fill', baseColor.value);
+
+        grp
+          .append('rect')
+          .attr('class', 'mutation-count')
+          .attr('x', xBar.value(1))
+          .attr(
+            'width',
+            (d) =>
+              (xBar.value(d.cum_total_count) - xBar.value(1)) * d.proportion,
+          )
+          .attr('y', (d) => y.value(d[yVariable.value]))
+          .attr('height', y.value.bandwidth())
+          .style('fill', accentColor.value);
+
+        grp
+          .append('text')
+          .attr('class', 'count-annotation')
+          .attr('x', (d) => xBar.value(d.cum_total_count))
+          .attr('dx', (d) =>
+            xBar.value(d.cum_total_count) < barWidth.value * annotThresh
+              ? 4
+              : -4,
+          )
+          .attr(
+            'y',
+            (d) => y.value(d[yVariable.value]) + y.value.bandwidth() / 2,
+          )
+          .style(
+            'font-family',
+            "'DM Sans', Avenir, Helvetica, Arial, sans-serif",
+          )
+          .style('fill', '#777')
+          .style('font-size', '9pt')
+          .style('dominant-baseline', 'central')
+          .style('text-anchor', (d) =>
+            xBar.value(d.cum_total_count) < barWidth.value * annotThresh
+              ? 'start'
+              : 'end',
+          )
+          .text(
+            (d) =>
+              `${format(',')(d.cum_lineage_count)}/${format(',')(
+                d.cum_total_count,
+              )}`,
+          );
+      },
+      (update) => {
+        update.attr('class', (d) => `bar-group ${d[yIdentifier.value]}`);
+        // !!!!! UPDATES MUST BE SELECT, NOT SELECT ALL
+        // h/t to https://observablehq.com/@thetylerwolf/day-18-join-enter-update-exit for pointing me in right direction
+        update
+          .select('.seq-count')
+          .attr('x', xBar.value(1))
+          .attr('width', (d) => xBar.value(d.cum_total_count) - xBar.value(1))
+          .attr('height', y.value.bandwidth())
+          .transition(t1)
+          .attr('y', (d) => y.value(d[yVariable.value]));
+
+        update
+          .select('.mutation-count')
+          .attr('x', xBar.value(1))
+          .attr(
+            'width',
+            (d) =>
+              (xBar.value(d.cum_total_count) - xBar.value(1)) * d.proportion,
+          )
+          .attr('height', y.value.bandwidth())
+          .transition(t1)
+          .attr('y', (d) => y.value(d[yVariable.value]));
+
+        update
+          .select('.count-annotation')
+          .attr('x', (d) => xBar.value(d.cum_total_count))
+          .attr('dx', (d) =>
+            xBar.value(d.cum_total_count) < barWidth.value * annotThresh
+              ? 4
+              : -4,
+          )
+          .style('text-anchor', (d) =>
+            xBar.value(d.cum_total_count) < barWidth.value * annotThresh
+              ? 'start'
+              : 'end',
+          )
+          .text(
+            (d) =>
+              `${format(',')(d.cum_lineage_count)}/${format(',')(
+                d.cum_total_count,
+              )}`,
+          )
+          .transition(t1)
+          .attr(
+            'y',
+            (d) => y.value(d[yVariable.value]) + y.value.bandwidth() / 2,
+          );
+      },
+    );
+
+    const checkbookSpacing = 5;
+    // CHECKBOOK DIVISIONS FOR ORIENTATION
+    if (props.data.length > checkbookSpacing * 1.5) {
+      const checkbookSelector = dotplot.value
+        .selectAll('.checkbook')
+        .data(plottedData.value.filter((d, i) => !(i % checkbookSpacing)));
+
+      const checkbookSelector2 = bargraph.value
+        .selectAll('.checkbook')
+        .data(plottedData.value.filter((d, i) => !(i % checkbookSpacing)));
+
+      checkbookSelector.join(
+        (enter) => {
+          enter
+            .append('line')
+            .attr('class', 'checkbook')
+            .style('stroke', '#222')
+            .style('stroke-width', 0.35)
+            .attr('transform', `translate(${-1 * margin.value.left},${0})`)
+            .attr('x1', 0)
+            .attr('x2', width.value)
+            .attr(
+              'y1',
+              (d) =>
+                y.value(d[yVariable.value]) -
+                y.value.paddingInner() * y.value.step() * 0.5,
+            )
+            .attr(
+              'y2',
+              (d) =>
+                y.value(d[yVariable.value]) -
+                y.value.paddingInner() * y.value.step() * 0.5,
+            );
+        },
+        (update) =>
+          update
+            .attr('x2', width.value)
+            .attr('transform', `translate(${-1 * margin.value.left},${0})`)
+            .attr(
+              'y1',
+              (d) =>
+                y.value(d[yVariable.value]) -
+                y.value.paddingInner() * y.value.step() * 0.5,
+            )
+            .attr(
+              'y2',
+              (d) =>
+                y.value(d[yVariable.value]) -
+                y.value.paddingInner() * y.value.step() * 0.5,
+            ),
+        (exit) =>
+          exit.call((exit) =>
+            exit.transition().duration(10).style('opacity', 1e-5).remove(),
+          ),
+      );
+
+      checkbookSelector2.join(
+        (enter) => {
+          enter
+            .append('line')
+            .attr('class', 'checkbook')
+            .style('stroke', '#222')
+            .style('stroke-width', 0.35)
+            .attr('transform', `translate(${-1 * margin.value.left},${0})`)
+            .attr('x1', 0)
+            .attr('x2', barWidth.value)
+            .attr(
+              'y1',
+              (d) =>
+                y.value(d[yVariable.value]) -
+                y.value.paddingInner() * y.value.step() * 0.5,
+            )
+            .attr(
+              'y2',
+              (d) =>
+                y.value(d[yVariable.value]) -
+                y.value.paddingInner() * y.value.step() * 0.5,
+            );
+        },
+        (update) =>
+          update
+            .attr('transform', `translate(${-1 * margin.value.left},${0})`)
+            .attr('x1', 0)
+            .attr('x2', barWidth.value)
+            .attr(
+              'y1',
+              (d) =>
+                y.value(d[yVariable.value]) -
+                y.value.paddingInner() * y.value.step() * 0.5,
+            )
+            .attr(
+              'y2',
+              (d) =>
+                y.value(d[yVariable.value]) -
+                y.value.paddingInner() * y.value.step() * 0.5,
+            ),
+        (exit) =>
+          exit.call((exit) =>
+            exit.transition().duration(10).style('opacity', 1e-5).remove(),
+          ),
+      );
+    }
+
+    const dotSelector = dotplot.value
+      .selectAll('.dot-group')
+      .data(plottedData.value, (d) => d.location_id);
+
+    dotSelector.join(
+      (enter) => {
+        const grp = enter
+          .append('g')
+          .attr('class', (d) => `dot-group ${d[yIdentifier.value]}`);
+
+        grp
+          .append('line')
+          .attr('class', 'dot-ci confidence-interval')
+          .attr('x1', (d) => xDot.value(d.proportion_ci_lower))
+          .attr('x2', (d) => xDot.value(d.proportion_ci_upper))
+          .attr(
+            'y1',
+            (d) => y.value(d[yVariable.value]) + y.value.bandwidth() / 2,
+          )
+          .attr(
+            'y2',
+            (d) => y.value(d[yVariable.value]) + y.value.bandwidth() / 2,
+          )
+          .style('stroke', '#CCCCCC')
+          .style('stroke-width', ciStrokeWidth.value)
+          // .style("opacity", 0)
+          // .transition(t1)
+          // .delay(400)
+          .style('opacity', 0.5);
+
+        grp
+          .append('circle')
+          .attr('class', 'dot-circle point-estimate')
+          .attr(
+            'cy',
+            (d) => y.value(d[yVariable.value]) + y.value.bandwidth() / 2,
+          )
+          .attr('r', circleR.value)
+          .style('stroke', '#2c3e50')
+          .style('stroke-width', 0.25)
+          // .style("filter", "url(#dropshadow)")
+          .style('fill', (d) => props.colorScale(d.proportion))
+          .transition(t1)
+          .attr('cx', (d) => xDot.value(d.proportion));
+      },
+      (update) => {
+        update.attr('class', (d) => `dot-group ${d[yIdentifier.value]}`);
+
+        update
+          .select('.dot-circle')
+          .transition(t1)
+          .attr('cx', (d) => xDot.value(d.proportion))
+          .style('fill', (d) => props.colorScale(d.proportion))
+          .attr(
+            'cy',
+            (d) => y.value(d[yVariable.value]) + y.value.bandwidth() / 2,
+          );
+
+        update
+          .select('.dot-ci')
+          .attr('x1', (d) => xDot.value(d.proportion_ci_lower))
+          .attr('x2', (d) => xDot.value(d.proportion_ci_upper))
+          .transition(t1)
+          .attr(
+            'y1',
+            (d) => y.value(d[yVariable.value]) + y.value.bandwidth() / 2,
+          )
+          .attr(
+            'y2',
+            (d) => y.value(d[yVariable.value]) + y.value.bandwidth() / 2,
+          );
+      },
+      (exit) =>
+        exit.call((exit) =>
+          exit.transition().duration(10).style('opacity', 1e-5).remove(),
+        ),
+    );
+
+    bargraph.value
+      .selectAll('.bar-group')
+      .on('mousemove', (d) => tooltipOn(d))
+      .on('mouseleave', () => tooltipOff());
+
+    dotplot.value
+      .selectAll('.dot-group')
+      .on('mousemove', (d) => tooltipOn(d))
+      .on('mouseleave', () => tooltipOff());
+  }
+};
+
+watch(width, () => {
+  updatePlot();
+});
+
+watch(
+  () => props.data,
+  () => {
+    updatePlot();
+  },
+  { deep: true },
+);
+
+watch(sortVar, () => {
+  updatePlot();
+});
+
+watch(includeNotDetected, () => {
+  updatePlot();
+});
+
+const debounceSetDims = debounce(setDims, 150);
+
+onMounted(() => {
+  nextTick(() => {
+    window.addEventListener('resize', setDims);
+  });
+
+  // set initial dimensions for the plots.
+  setDims();
+
+  setupPlot();
+  updatePlot();
+});
+
+onUnmounted(() => {
+  window.removeEventListener('resize', setDims);
+});
 </script>
 
 <style lang="scss">

@@ -241,7 +241,7 @@ const summaryWidth = ref(400);
 
 const setDims = () => {
   const summaryFraction = 0.95;
-  this.summaryWidth = document.getElementById('geo-summary')
+  summaryWidth.value = document.getElementById('geo-summary')
     ? document.getElementById('geo-summary').offsetWidth * summaryFraction
     : 400;
 };
