@@ -179,7 +179,7 @@
           :percent="variable === 'testing_positivity'"
           :xmin="xmin"
           :xmax="xmax"
-          :show-all="showAll"
+          :showAll="showAll"
         />
 
         <!-- source / download data -->
@@ -221,7 +221,6 @@
                       location: loc.location_id,
                       log: log,
                       variable: variable,
-                      xVariable: xVariable,
                       percapita: percapita,
                     },
                   }"
@@ -239,7 +238,7 @@
       <EpiTable
         class="row overflow-auto mx-5"
         :locations="selectedPlaces"
-        :colorScale="colorScaleFunc"
+        :colorScale="colorScale"
         colorVar="location_id"
       />
     </div>
@@ -325,6 +324,7 @@ const bargraphTransform = ref(1);
 const yMax = ref(null);
 const variableObj = ref({
   label: 'cumulative cases',
+  ttip: 'cases',
   value: 'confirmed',
   sources: ['NYT', 'JHU'],
 });
@@ -333,12 +333,6 @@ const variableOptions = ref([
     label: 'cumulative cases',
     ttip: 'cases',
     value: 'confirmed',
-    sources: ['NYT', 'JHU'],
-  },
-  {
-    label: 'cumulative recoveries',
-    ttip: 'recoveries',
-    value: 'recovered',
     sources: ['NYT', 'JHU'],
   },
   {

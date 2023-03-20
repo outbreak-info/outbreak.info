@@ -85,7 +85,7 @@
       class="swoopy-arrow-group position-absolute"
     >
       <g
-        v-if="isLoggable"
+        v-if="loggable"
         ref="switchY"
         class="switch-y-button-group"
         transform="translate(5,0)"
@@ -191,7 +191,7 @@ const isLoggable = ref(true);
 // missing variables in previous version
 const xMin = ref(null);
 const xMax = ref(null);
-const isLogY = ref(false);
+let isLogY = ref(false);
 // this.$refs
 const switchY = ref(null);
 const svgRef = ref(null);
@@ -230,6 +230,39 @@ const title = computed(() => {
       : `Number of COVID-19 ${props.variableObj.label}`;
   }
 });
+
+const prepData = () => {
+  isLoggable.value = selectedVariable.value !== 'testing_positivity';
+  isLogY.value = isLoggable.value && props.log;
+
+  if (props.data) {
+    plottedData.value = cloneDeep(props.data);
+
+    plottedData.value.forEach((d) => {
+      d['value'] =
+        isLogY.value && isLoggable.value
+          ? d.value.filter(
+              (
+                _x, // renamed as _x: giving error with previous name because we declared x as reactive variable
+              ) =>
+                _x[selectedVariable.value] >= 1 &&
+                _x[xVariable.value] >= x.value.domain()[0] &&
+                _x[xVariable.value] <= x.value.domain()[1] &&
+                (_x[xVariable.value] || _x[xVariable.value] === 0),
+            )
+          : d.value.filter(
+              (_x) =>
+                _x[selectedVariable.value] &&
+                _x[xVariable.value] >= x.value.domain()[0] &&
+                _x[xVariable.value] <= x.value.domain()[1] &&
+                (_x[xVariable.value] || _x[xVariable.value] === 0),
+            );
+
+      // ensure dates are sorted
+      d.value.sort((a, b) => a[xVariable.value] - b[xVariable.value]);
+    });
+  }
+};
 
 const setPlotDims = () => {
   // let idealWidth = 750;
@@ -314,7 +347,7 @@ const zoom = (evt, ref) => {
   selectAll('.tooltip').style('opacity', 0);
   selectAll('.mouse-line').style('opacity', 0);
   // reset domain to new coords
-  const selection = event.selection;
+  const selection = evt.selection;
 
   if (selection) {
     const newMin = x.value.invert(selection[0]);
@@ -453,37 +486,6 @@ const updatePlot = () => {
   }
 };
 
-const prepData = () => {
-  isLoggable.value = selectedVariable.value !== 'testing_positivity';
-  isLogY.value = isLoggable.value && props.log;
-
-  if (props.data) {
-    plottedData.value = cloneDeep(props.data);
-
-    plottedData.value.forEach((d) => {
-      d['value'] =
-        isLogY.value && isLoggable.value
-          ? d.value.filter(
-              (x) =>
-                x[selectedVariable.value] >= 1 &&
-                x[xVariable.value] >= x.value.domain()[0] &&
-                x[xVariable.value] <= x.value.domain()[1] &&
-                (x[xVariable.value] || x[xVariable.value] === 0),
-            )
-          : d.value.filter(
-              (x) =>
-                x[selectedVariable.value] &&
-                x[xVariable.value] >= x.value.domain()[0] &&
-                x[xVariable.value] <= x.value.domain()[1] &&
-                (x[xVariable.value] || x[xVariable.value] === 0),
-            );
-
-      // ensure dates are sorted
-      d.value.sort((a, b) => a[xVariable.value] - b[xVariable.value]);
-    });
-  }
-};
-
 const setupPlot = () => {
   // Event listener for mobile responsiveness
   // $nextTick waits till DOM rendered
@@ -561,7 +563,7 @@ const updateScales = () => {
 
   xAxis.value = axisBottom(x.value).ticks(numXTicks.value);
 
-  select(xAxisRef).call(xAxis.value);
+  select(xAxisRef.value).call(xAxis.value);
 
   if (isLogY.value && isLoggable.value) {
     yAxis.value = axisLeft(y.value)

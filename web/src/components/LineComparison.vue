@@ -19,6 +19,7 @@ import { forceY, forceCollide, forceSimulation } from 'd3-force';
 import { scaleTime, scaleLinear } from 'd3-scale';
 import { select } from 'd3-selection';
 import { line } from 'd3-shape';
+import debounce from 'lodash/debounce';
 
 const props = defineProps({
   data: Array,
@@ -281,10 +282,12 @@ const updatePlot = () => {
   );
 };
 
+const debounceUpdatePlot = debounce(updatePlot, 500);
+
 watch(
   () => props.data,
   () => {
-    updatePlot();
+    debounceUpdatePlot();
   },
   { deep: true },
 );

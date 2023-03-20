@@ -14,7 +14,7 @@
       <select
         v-model="selectedSimilarity"
         class="select-dropdown mr-2"
-        @change="changeSimilarity"
+        @change="debounceChangeSimilarity"
       >
         <option
           v-for="option in similarOptions"
@@ -185,6 +185,11 @@ const props = defineProps({
   similarity: String,
 });
 
+// instead of this.$route
+const route = useRoute();
+// instead of this.$router
+const router = useRouter();
+
 // global variable - equivalent with this.$apiurl
 const apiUrl = inject('apiUrl');
 
@@ -256,12 +261,6 @@ const storeAdmin = adminStore();
 const storeColor = colorsStore();
 
 const { dataloading } = storeToRefs(storeAdmin); // admin store state variable
-const { colors } = storeToRefs(storeColor); // color store state variable
-
-// instead of this.$route
-const route = useRoute();
-// instead of this.$router
-const router = useRouter();
 
 const getSimilar = () => {
   if (props.location && props.similarity) {
@@ -278,13 +277,11 @@ const getSimilar = () => {
       yMaxC.value = results.yMaxC;
       yMaxD.value = results.yMaxD;
       colorScale.value = scaleOrdinal()
-        .range(colors)
+        .range(storeColor.$state.colors)
         .domain(similar.value.map((d) => d.key));
     });
   }
 };
-
-const debounceGetSimilar = debounce(getSimilar, 500);
 
 const changeSimilarity = () => {
   router.push({
@@ -330,14 +327,16 @@ const formatValue = (val) => {
     : format(',.0f')(val);
 };
 
+const debounceChangeSimilarity = debounce(changeSimilarity, 250);
+
 watch(
-  route,
+  () => route,
   (to, from) => {
     selectedSimilarity.value = props.similarity;
     selectedAdminLevels.value = props.admin_levels
       ? props.admin_levels.split(';')
       : [];
-    debounceGetSimilar();
+    getSimilar();
   },
   { immediate: true },
 );
