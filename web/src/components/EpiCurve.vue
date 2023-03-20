@@ -187,7 +187,7 @@ const brushRef = ref(null);
 // methods
 const lineF = ref(null);
 const brushF = ref(null);
-const isLoggable = ref(false);
+const isLoggable = ref(true);
 // missing variables in previous version
 const xMin = ref(null);
 const xMax = ref(null);
@@ -846,6 +846,7 @@ watch(width, () => {
 });
 
 onMounted(() => {
+  isLoggable.value = props.loggable;
   setupPlot();
   updateBrush();
   updatePlot();

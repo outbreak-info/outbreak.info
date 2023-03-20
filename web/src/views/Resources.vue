@@ -568,8 +568,10 @@
                         }"
                       >
                         <img
-                          :src="`${imgUrl(getLogo(item.curatedBy.name))}`"
-                          alt="item.curatedBy.name"
+                          :src="`./src/assets/resources/${getLogo(
+                            item.curatedBy.name,
+                          )}`"
+                          :alt="item.curatedBy.name"
                           width="auto"
                           height="25"
                           class="ml-2"
@@ -925,7 +927,7 @@ const filters2String = () => {
 };
 
 const getLogo = (curator) => {
-  const source = resources.value
+  const source = store.$state.resources
     .flatMap((d) => d.sources)
     .filter(
       (d) =>

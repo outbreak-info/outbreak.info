@@ -562,7 +562,7 @@ onMounted(() => {
 });
 
 const getLogo = (curator) => {
-  const source = resources
+  const source = store.$state.resources
     .flatMap((d) => d.sources)
     .filter(
       (d) =>
