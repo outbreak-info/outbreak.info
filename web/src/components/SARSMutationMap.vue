@@ -866,7 +866,7 @@ const drawPlot = () => {
 };
 
 watch(
-  () => width,
+  () => width.value,
   () => {
     updatePlot();
   },
