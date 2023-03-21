@@ -17,7 +17,7 @@
 
     <!-- SEQUENCING HISTOGRAM -->
     <svg
-      ref="svgRef"
+      ref="svg-counts"
       :width="width"
       :height="height"
       :class="className"
@@ -31,7 +31,7 @@
         ref="xAxisRef"
         :transform="`translate(${margin.left}, ${height - margin.bottom + 1})`"
         class="prevalence-axis total-axis axis--x"
-        :hidden="false"
+        :class="{ hidden: !includeXAxis }"
       />
       <g
         ref="yAxisLeftRef"
@@ -39,7 +39,7 @@
           margin.top
         })`"
         class="prevalence-axis total-axis axis--y"
-        :hidden="!data.length"
+        :class="{ hidden: !data.length }"
       />
       <g
         ref="yAxisRightRef"
@@ -47,7 +47,7 @@
           margin.top
         })`"
         class="prevalence-axis total-axis axis--y"
-        :hidden="!data.length"
+        :class="{ hidden: !data.length }"
       />
     </svg>
 
@@ -170,7 +170,6 @@ const yAxisLeft = ref(null);
 const yAxisRight = ref(null);
 const numXTicks = ref(2);
 const counts = ref(null);
-const svg = ref(null);
 const countsRef = ref(null);
 const xAxisRef = ref(null);
 const yAxisLeftRef = ref(null);
@@ -178,7 +177,7 @@ const yAxisRightRef = ref(null);
 const tooltip_prevalence = ref(null);
 
 const setupPlot = () => {
-  svg.value = select(countsRef.value);
+  counts.value = select(countsRef.value);
 };
 
 const updateScales = () => {
@@ -297,7 +296,7 @@ const updatePlot = () => {
     if (!showDetected.value) {
       detected = [];
     }
-    const detectedSelector = svg.value.selectAll('.detected').data(detected);
+    const detectedSelector = counts.value.selectAll('.detected').data(detected);
 
     detectedSelector.join(
       (enter) => {
@@ -323,7 +322,9 @@ const updatePlot = () => {
         exit.call((exit) => exit.transition().style('opacity', 1e-5).remove()),
     );
 
-    const countSelector = svg.value.selectAll('.raw-counts').data(props.data);
+    const countSelector = counts.value
+      .selectAll('.raw-counts')
+      .data(props.data);
     countSelector.join(
       (enter) => {
         enter
@@ -369,7 +370,7 @@ const updatePlot = () => {
     );
 
     // tooltip event listener
-    svg.value
+    counts.value
       .selectAll('.raw-counts')
       .on('mousemove', () => tooltipOn())
       .on('mouseleave', () => tooltipOff());
@@ -381,6 +382,7 @@ watch(
   () => {
     updatePlot();
   },
+  { deep: true },
 );
 
 watch(

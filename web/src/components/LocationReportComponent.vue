@@ -414,7 +414,7 @@
                   <small>days</small>
                 </div>
 
-                Histogram of sequencing counts
+                <!-- Histogram of sequencing counts -->
                 <SequencingHistogram
                   v-if="seqCountsWindowed && !noRecentData"
                   :data="seqCountsWindowed"
@@ -1353,6 +1353,18 @@ const setupReport = () => {
     voi.value = results.voi;
     selectedLocation.value = results.location;
   });
+
+  console.log(
+    'params:$$$$$$$$$$',
+    genomicsUrl,
+    props.loc,
+    props.muts,
+    props.pango,
+    otherThresh.value,
+    ndayThresh.value,
+    dayThresh.value,
+    recentWindow.value,
+  );
 
   reportSubscription.value = getLocationReportData(
     genomicsUrl,
