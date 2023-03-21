@@ -1354,18 +1354,6 @@ const setupReport = () => {
     selectedLocation.value = results.location;
   });
 
-  console.log(
-    'params:$$$$$$$$$$',
-    genomicsUrl,
-    props.loc,
-    props.muts,
-    props.pango,
-    otherThresh.value,
-    ndayThresh.value,
-    dayThresh.value,
-    recentWindow.value,
-  );
-
   reportSubscription.value = getLocationReportData(
     genomicsUrl,
     props.loc,
