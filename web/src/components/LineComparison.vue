@@ -282,7 +282,7 @@ const updatePlot = () => {
   );
 };
 
-const debounceUpdatePlot = debounce(updatePlot, 500);
+const debounceUpdatePlot = debounce(updatePlot, 250);
 
 watch(
   () => props.data,

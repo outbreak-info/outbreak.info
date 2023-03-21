@@ -157,7 +157,6 @@
 
 <script setup>
 import { computed, onMounted, ref } from 'vue';
-import { storeToRefs } from 'pinia';
 import { format } from 'd3-format';
 import { scaleOrdinal } from 'd3-scale';
 
@@ -183,7 +182,6 @@ const props = defineProps({
 });
 
 const store = genomicsStore();
-const { characteristicThreshold } = storeToRefs(store);
 
 const colorScale = ref(null);
 const moi = ref(null);
@@ -206,7 +204,7 @@ const colorDomain = ref([
 ]);
 
 const charMutThreshold = computed(() => {
-  return format('.0%')(characteristicThreshold);
+  return format('.0%')(store.$state.characteristicThreshold);
 });
 
 onMounted(() => {

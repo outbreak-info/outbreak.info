@@ -1797,6 +1797,7 @@ watch(
       debounceUpdateLocations();
     }
   },
+  { deep: true },
 );
 
 const debounceSetDims = debounce(setDims, 150);

@@ -139,7 +139,7 @@
                     :data="nestedData"
                     :includeChinaAnnot="true"
                     :title="`${selectedVariableLabel} Worldwide`"
-                    @regionSelected="handleTooltip"
+                    @region-selected="handleTooltip"
                   />
                 </div>
               </div>

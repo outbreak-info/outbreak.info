@@ -240,7 +240,9 @@ export default [
           name: 'MutationReport',
           query: to.query,
         });
-      } else next();
+      } else {
+        next();
+      }
     },
   },
   // {

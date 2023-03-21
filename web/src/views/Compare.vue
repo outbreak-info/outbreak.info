@@ -328,17 +328,19 @@ const formatValue = (val) => {
 };
 
 const debounceChangeSimilarity = debounce(changeSimilarity, 250);
+const debounceGetSimilar = debounce(getSimilar, 500);
 
 watch(
-  () => route,
+  route,
   (to, from) => {
     selectedSimilarity.value = props.similarity;
     selectedAdminLevels.value = props.admin_levels
       ? props.admin_levels.split(';')
       : [];
-    getSimilar();
+
+    debounceGetSimilar();
   },
-  { immediate: true },
+  { immediate: true, deep: true },
 );
 
 onBeforeUnmount(() => {

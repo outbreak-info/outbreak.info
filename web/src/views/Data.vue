@@ -31,28 +31,9 @@ const EpiTable = lazyLoad('EpiTable');
 // global variable - equivalent with this.$apiurl
 const apiUrl = inject('apiUrl');
 
-const stackedWidth = ref(500);
-const stackedHeight = ref(250);
 const data = ref(null);
 const dataSubscription = ref(null);
 const tableSubscription = ref(null);
-const nestedData = ref(null);
-const selectedVariable = ref('confirmed');
-const variableOptions = ref([
-  {
-    label: 'Cases',
-    value: 'confirmed',
-  },
-  {
-    label: 'Recoveries',
-    value: 'recovered',
-  },
-  {
-    label: 'Deaths',
-    value: 'dead',
-  },
-]);
-const searchQuery = ref('');
 
 const storeAdmin = adminStore();
 const storeColor = colorsStore();

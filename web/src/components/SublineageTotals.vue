@@ -259,7 +259,7 @@ const preprocessData = () => {
 };
 
 const setupPlot = () => {
-  svgRef.value = horizontal_bargraph.value;
+  svg.value = select(horizontal_bargraph.value);
   preprocessData();
 };
 
@@ -290,7 +290,7 @@ const updateAxes = () => {
 
 const tooltipOn = (d) => {
   if (d) {
-    select(svgRef.value).selectAll('.lineage-group').style('opacity', 0.3);
+    svg.value.selectAll('.lineage-group').style('opacity', 0.3);
 
     select(yAxisRef.value).selectAll('text').style('opacity', 0.3);
 
@@ -300,18 +300,18 @@ const tooltipOn = (d) => {
         .filter((axis_label) => axis_label === d[yVar.value])
         .style('opacity', 1);
     }
-    select(svgRef.value).select(`#${d.id}`).style('opacity', 1);
+    svg.value.select(`#${d.id}`).style('opacity', 1);
   }
 };
 
 const tooltipOff = () => {
-  select(svgRef.value).selectAll('.lineage-group').style('opacity', 1);
+  svg.value.selectAll('.lineage-group').style('opacity', 1);
 
   select(yAxisRef.value).selectAll('text').style('opacity', 1);
 };
 
 const drawBars = () => {
-  const rectSelector = select(svgRef.value)
+  const rectSelector = svg.value
     .selectAll('.lineage-group')
     .data(processedData.value, (d) => d[yVar.value]);
 

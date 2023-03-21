@@ -443,8 +443,8 @@ const updateScales = () => {
     .ticks(2)
     .tickSizeOuter(0);
 
-  select(xAxisBarRef).call(xBarAxis.value);
-  select(xAxisBar2Ref).call(xBarAxis2.value);
+  select(xAxisBarRef.value).call(xBarAxis.value);
+  select(xAxisBar2Ref.value).call(xBarAxis2.value);
 
   yAxis.value = axisLeft(y.value);
 

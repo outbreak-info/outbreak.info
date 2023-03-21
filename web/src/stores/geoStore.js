@@ -68,8 +68,8 @@ export const geoStore = defineStore('geo', {
         this.regionDict[idx]['currentCases'] = payload['currentCases']
           ? payload['currentCases'].toLocaleString()
           : null;
-        this.regionDict[idx]['x'] = payload['x'];
-        this.regionDict[idx]['y'] = payload['y'];
+        this.regionDict[idx]['x'] = payload['x'] ? payload['x'] : null;
+        this.regionDict[idx]['y'] = payload['y'] ? payload['y'] : null;
       } else if (payload['region'] === 'all') {
         // reset everything
         this.regionDict.forEach((d) => {

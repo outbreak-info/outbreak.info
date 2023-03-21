@@ -865,19 +865,30 @@ const drawPlot = () => {
   }
 };
 
-watch(width, () => {
-  updatePlot();
-});
+watch(
+  () => width,
+  () => {
+    updatePlot();
+  },
+);
 
-watch(props.lineageMutations, () => {
-  setupMutationArr();
-  updatePlot();
-});
+watch(
+  () => props.lineageMutations,
+  () => {
+    setupMutationArr();
+    updatePlot();
+  },
+  { deep: true },
+);
 
-watch(props.additionalMutations, () => {
-  setupMutationArr();
-  updatePlot();
-});
+watch(
+  () => props.additionalMutations,
+  () => {
+    setupMutationArr();
+    updatePlot();
+  },
+  { deep: true },
+);
 
 onMounted(() => {
   // convert object of nucleotides into an array

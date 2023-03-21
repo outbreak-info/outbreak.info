@@ -116,7 +116,7 @@ const dataSubscription = ref(null);
 
 const lightColor = computed(() => {
   const scale = store.getRegionColor;
-  return scale(this.region, 0.85);
+  return scale(props.region, 0.85);
 });
 
 dataSubscription.value = getCountryData(
