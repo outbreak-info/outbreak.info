@@ -155,6 +155,9 @@ const regionsRef = ref(null);
 const zero_data = ref(null);
 const overlayRef = ref(null);
 const choropleth_tooltip = ref(null);
+// new variable to get event clientX, clientY
+const x = ref(0);
+const y = ref(0);
 
 // computed variables
 const maxVal = computed(() => {
@@ -476,14 +479,8 @@ const drawMap = () => {
 
     regions.value
       .selectAll('path.region')
-      .on('mouseenter', (d) => debounceMouseon(d))
+      .on('mouseenter', (d) => debounceMouseOn(d))
       .on('mouseleave', mouseOff);
-
-    // TODO: why repeating above code?
-    // regions.value
-    //   .selectAll('path.region')
-    //   .on('mouseenter', (d) => debounceMouseon(d))
-    //   .on('mouseleave', mouseOff);
   }
 };
 
@@ -534,10 +531,10 @@ const mouseOn = (d) => {
     ttip.select('#sequencing-count').classed('hidden', true);
   }
 
-  // fix location
+  // fix location: reimplemented with new variable x, y
   ttip
-    .style('left', `${event.clientX + ttipShift}px`)
-    .style('top', `${event.clientY + ttipShift}px`)
+    .style('left', `${x.value + ttipShift}px`) // event.clientX is not working. event is always null here
+    .style('top', `${y.value + ttipShift}px`) // event.clientY is not working.
     .style('display', 'block');
 };
 
@@ -652,7 +649,7 @@ watch(width, () => {
   drawMap();
 });
 
-const debounceMouseon = debounce(mouseOn, 250);
+const debounceMouseOn = debounce(mouseOn, 250);
 const debounceSetDims = debounce(setDims, 150);
 
 onMounted(() => {
@@ -674,6 +671,16 @@ onMounted(() => {
           !evt.target.className.baseVal.includes('region')
         ) {
           mouseOff();
+        }
+        // we need to get x, y value due to d3 event is always null
+        if (
+          evt.target.className &&
+          evt.target.className.baseVal &&
+          typeof evt.target.className.baseVal === 'string' &&
+          evt.target.className.baseVal.includes('region')
+        ) {
+          x.value = evt.clientX;
+          y.value = evt.clientY;
         }
       },
       {
