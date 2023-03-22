@@ -2290,6 +2290,7 @@
       - BQ.1.1.69
       - BQ.1.1.70
       - BQ.1.1.71
+      - BQ.1.1.72
       - BQ.1.2
       - BQ.1.2.1
       - BQ.1.3
@@ -2604,6 +2605,9 @@
       - EZ.1
       - FA.1
       - FA.2
+      - FB.1
+      - FB.2
+      - FC.1
       - G.1
       - K.1
       - K.2
@@ -4693,6 +4697,7 @@
       - BQ.1.1.69
       - BQ.1.1.70
       - BQ.1.1.71
+      - BQ.1.1.72
       - BQ.1.2
       - BQ.1.2.1
       - BQ.1.3
@@ -5007,6 +5012,9 @@
       - EZ.1
       - FA.1
       - FA.2
+      - FB.1
+      - FB.2
+      - FC.1
       - G.1
       - K.1
       - K.2
@@ -6159,6 +6167,7 @@
       - BQ.1.1.69
       - BQ.1.1.70
       - BQ.1.1.71
+      - BQ.1.1.72
       - BQ.1.2
       - BQ.1.2.1
       - BQ.1.3
@@ -6473,6 +6482,9 @@
       - EZ.1
       - FA.1
       - FA.2
+      - FB.1
+      - FB.2
+      - FC.1
       - K.1
       - K.2
       - K.3
@@ -10150,6 +10162,7 @@
       - BQ.1.1.69
       - BQ.1.1.70
       - BQ.1.1.71
+      - BQ.1.1.72
       - BQ.1.2
       - BQ.1.2.1
       - BQ.1.3
@@ -10413,6 +10426,9 @@
       - EZ.1
       - FA.1
       - FA.2
+      - FB.1
+      - FB.2
+      - FC.1
   parent: B.1.1
 - name: BA.1
   alias: B.1.1.529.1
@@ -13798,6 +13814,7 @@
       - BQ.1.1.69
       - BQ.1.1.70
       - BQ.1.1.71
+      - BQ.1.1.72
       - BQ.1.2
       - BQ.1.2.1
       - BQ.1.3
@@ -13973,6 +13990,9 @@
       - EZ.1
       - FA.1
       - FA.2
+      - FB.1
+      - FB.2
+      - FC.1
   parent: B.1.1.529
 - name: BA.5.1
   alias: B.1.1.529.5.1
@@ -15981,6 +16001,7 @@
       - BQ.1.1.69
       - BQ.1.1.70
       - BQ.1.1.71
+      - BQ.1.1.72
       - BQ.1.2
       - BQ.1.2.1
       - BQ.1.3
@@ -16078,6 +16099,9 @@
       - EZ.1
       - FA.1
       - FA.2
+      - FB.1
+      - FB.2
+      - FC.1
   parent: BA.5
 - name: BA.5.3.1
   alias: B.1.1.529.5.3.1
@@ -16182,6 +16206,7 @@
       - BQ.1.1.69
       - BQ.1.1.70
       - BQ.1.1.71
+      - BQ.1.1.72
       - BQ.1.2
       - BQ.1.2.1
       - BQ.1.3
@@ -16279,6 +16304,9 @@
       - EZ.1
       - FA.1
       - FA.2
+      - FB.1
+      - FB.2
+      - FC.1
   parent: BA.5.3
 - name: BE.1
   alias: B.1.1.529.5.3.1.1
@@ -16367,6 +16395,7 @@
       - BQ.1.1.69
       - BQ.1.1.70
       - BQ.1.1.71
+      - BQ.1.1.72
       - BQ.1.2
       - BQ.1.2.1
       - BQ.1.3
@@ -16461,6 +16490,9 @@
       - EZ.1
       - FA.1
       - FA.2
+      - FB.1
+      - FB.2
+      - FC.1
   parent: BA.5.3.1
 - name: BE.1.1
   alias: B.1.1.529.5.3.1.1.1
@@ -16540,6 +16572,7 @@
       - BQ.1.1.69
       - BQ.1.1.70
       - BQ.1.1.71
+      - BQ.1.1.72
       - BQ.1.2
       - BQ.1.2.1
       - BQ.1.3
@@ -16633,6 +16666,9 @@
       - EZ.1
       - FA.1
       - FA.2
+      - FB.1
+      - FB.2
+      - FC.1
   parent: BE.1
 - name: BE.1.1.1
   alias: B.1.1.529.5.3.1.1.1.1
@@ -16710,6 +16746,7 @@
       - BQ.1.1.69
       - BQ.1.1.70
       - BQ.1.1.71
+      - BQ.1.1.72
       - BQ.1.2
       - BQ.1.2.1
       - BQ.1.3
@@ -16802,6 +16839,9 @@
       - EZ.1
       - FA.1
       - FA.2
+      - FB.1
+      - FB.2
+      - FC.1
   parent: BE.1.1
 - name: BQ.1
   alias: B.1.1.529.5.3.1.1.1.1.1
@@ -16878,6 +16918,7 @@
       - BQ.1.1.69
       - BQ.1.1.70
       - BQ.1.1.71
+      - BQ.1.1.72
       - BQ.1.2
       - BQ.1.2.1
       - BQ.1.3
@@ -16969,6 +17010,9 @@
       - EZ.1
       - FA.1
       - FA.2
+      - FB.1
+      - FB.2
+      - FC.1
   parent: BE.1.1.1
 - name: BQ.1.1
   alias: B.1.1.529.5.3.1.1.1.1.1.1
@@ -17044,6 +17088,7 @@
       - BQ.1.1.69
       - BQ.1.1.70
       - BQ.1.1.71
+      - BQ.1.1.72
       - CW.1
       - CZ.1
       - CZ.2
@@ -17090,6 +17135,7 @@
       - EZ.1
       - FA.1
       - FA.2
+      - FC.1
   parent: BQ.1
 - name: BQ.1.1.1
   alias: B.1.1.529.5.3.1.1.1.1.1.1.1
@@ -17731,17 +17777,42 @@
   children:
       - EV.1
   parent: BQ.1.1.71
+- name: BQ.1.1.72
+  alias: B.1.1.529.5.3.1.1.1.1.1.1.72
+  children:
+      - BQ.1.1.72
+      - FC.1
+  parent: BQ.1.1
+- name: FC.1
+  alias: B.1.1.529.5.3.1.1.1.1.1.1.72.1
+  children:
+      - FC.1
+  parent: BQ.1.1.72
 - name: BQ.1.2
   alias: B.1.1.529.5.3.1.1.1.1.1.2
   children:
       - BQ.1.2
       - BQ.1.2.1
+      - FB.1
+      - FB.2
   parent: BQ.1
 - name: BQ.1.2.1
   alias: B.1.1.529.5.3.1.1.1.1.1.2.1
   children:
       - BQ.1.2.1
+      - FB.1
+      - FB.2
   parent: BQ.1.2
+- name: FB.1
+  alias: B.1.1.529.5.3.1.1.1.1.1.2.1.1
+  children:
+      - FB.1
+  parent: BQ.1.2.1
+- name: FB.2
+  alias: B.1.1.529.5.3.1.1.1.1.1.2.1.2
+  children:
+      - FB.2
+  parent: BQ.1.2.1
 - name: BQ.1.3
   alias: B.1.1.529.5.3.1.1.1.1.1.3
   children:
@@ -24571,6 +24642,9 @@
       - EM.1
       - EU.1
       - EU.1.1
+      - FD.1
+      - FD.1.1
+      - FE.1
       - XBB
       - XBB.1
       - XBB.1.1
@@ -24607,6 +24681,8 @@
       - XBB.1.5.26
       - XBB.1.5.27
       - XBB.1.5.28
+      - XBB.1.5.29
+      - XBB.1.5.30
       - XBB.1.6
       - XBB.1.7
       - XBB.1.8
@@ -24674,6 +24750,9 @@
       - EM.1
       - EU.1
       - EU.1.1
+      - FD.1
+      - FD.1.1
+      - FE.1
       - XBB.1
       - XBB.1.1
       - XBB.1.2
@@ -24709,6 +24788,8 @@
       - XBB.1.5.26
       - XBB.1.5.27
       - XBB.1.5.28
+      - XBB.1.5.29
+      - XBB.1.5.30
       - XBB.1.6
       - XBB.1.7
       - XBB.1.8
@@ -24782,6 +24863,8 @@
       - EM.1
       - EU.1
       - EU.1.1
+      - FD.1
+      - FD.1.1
       - XBB.1.5
       - XBB.1.5.1
       - XBB.1.5.2
@@ -24811,6 +24894,8 @@
       - XBB.1.5.26
       - XBB.1.5.27
       - XBB.1.5.28
+      - XBB.1.5.29
+      - XBB.1.5.30
   parent: XBB.1
 - name: XBB.1.5.1
   alias: XBB.1.5.1
@@ -24922,8 +25007,21 @@
 - name: XBB.1.5.15
   alias: XBB.1.5.15
   children:
+      - FD.1
+      - FD.1.1
       - XBB.1.5.15
   parent: XBB.1.5
+- name: FD.1
+  alias: XBB.1.5.15.1
+  children:
+      - FD.1
+      - FD.1.1
+  parent: XBB.1.5.15
+- name: FD.1.1
+  alias: XBB.1.5.15.1.1
+  children:
+      - FD.1.1
+  parent: FD.1
 - name: XBB.1.5.16
   alias: XBB.1.5.16
   children:
@@ -24990,6 +25088,16 @@
   alias: XBB.1.5.28
   children:
       - XBB.1.5.28
+  parent: XBB.1.5
+- name: XBB.1.5.29
+  alias: XBB.1.5.29
+  children:
+      - XBB.1.5.29
+  parent: XBB.1.5
+- name: XBB.1.5.30
+  alias: XBB.1.5.30
+  children:
+      - XBB.1.5.30
   parent: XBB.1.5
 - name: EU.1
   alias: XBB.1.5.26.1
@@ -25126,14 +25234,21 @@
 - name: XBB.1.18
   alias: XBB.1.18
   children:
+      - FE.1
       - XBB.1.18
       - XBB.1.18.1
   parent: XBB.1
 - name: XBB.1.18.1
   alias: XBB.1.18.1
   children:
+      - FE.1
       - XBB.1.18.1
   parent: XBB.1.18
+- name: FE.1
+  alias: XBB.1.18.1.1
+  children:
+      - FE.1
+  parent: XBB.1.18.1
 - name: XBB.1.19
   alias: XBB.1.19
   children:
