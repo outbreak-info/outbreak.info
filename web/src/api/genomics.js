@@ -1069,7 +1069,22 @@ export const getCharacteristicMutations = (
   prevalenceThreshold = store.state.genomics.characteristicThreshold,
   returnFlat = true,
   includeSublineages = false,
-  genes = ["5UTR", "ORF1a", "ORF1b", "S", "ORF3a", "E", "M", "ORF6", "ORF7a", "ORF7b", "ORF8", "N", "ORF10", "3UTR"],
+  genes = [
+    '5UTR',
+    'ORF1a',
+    'ORF1b',
+    'S',
+    'ORF3a',
+    'E',
+    'M',
+    'ORF6',
+    'ORF7a',
+    'ORF7b',
+    'ORF8',
+    'N',
+    'ORF10',
+    '3UTR',
+  ],
 ) => {
   if (!lineage) return of([]);
 
@@ -1902,8 +1917,10 @@ export const getCumPrevalenceAllLineages = (
   nday_threshold,
   ndays,
   window,
+  minDate,
+  maxDate,
 ) => {
-  let url = `${apiurl}prevalence-by-location-all-lineages?location_id=${location}&other_threshold=${other_threshold}&nday_threshold=${nday_threshold}&ndays=${ndays}&window=${window}&ndays=${ndays}&cumulative=true`;
+  let url = `${apiurl}prevalence-by-location-all-lineages?location_id=${location}&other_threshold=${other_threshold}&nday_threshold=${nday_threshold}&ndays=${ndays}&window=${window}&ndays=${ndays}&cumulative=true&min_date=${minDate}&max_date=${maxDate}`;
 
   return from(
     axios.get(url, {
@@ -2148,6 +2165,8 @@ export const getLocationLineagePrevalences = (
       nday_threshold,
       ndays,
       window,
+      minDate,
+      maxDate,
     ),
   ]).pipe(
     map(([lineagesByDay, mostRecentLineages]) => {
@@ -2385,12 +2404,14 @@ export const getEpiMutationPrevalence = (
   locationID,
   mutations,
   epiFields = 'location_id,date,confirmed,mostRecent,confirmed_numIncrease,confirmed_rolling,dead_numIncrease,dead_rolling',
+  minDate = '',
+  maxDate = '',
 ) => {
   store.state.genomics.locationLoading4 = true;
 
   return forkJoin([
     getEpiTraces(epiurl, [locationID], epiFields),
-    getAllTemporalPrevalences(apiurl, locationID, mutations),
+    getAllTemporalPrevalences(apiurl, locationID, mutations, minDate, maxDate),
   ]).pipe(
     map(([epi, mutationTraces]) => {
       epi = epi.length ? epi[0].value : [];
@@ -2413,11 +2434,25 @@ export const getEpiMutationPrevalence = (
   );
 };
 
-export const getAllTemporalPrevalences = (apiurl, locationID, mutations) => {
+export const getAllTemporalPrevalences = (
+  apiurl,
+  locationID,
+  mutations,
+  minDate = '',
+  maxDate = '',
+) => {
   if (mutations.length) {
     return forkJoin(
       ...mutations.map((mutation) =>
-        getTemporalPrevalence(apiurl, locationID, mutation.query),
+        getTemporalPrevalence(
+          apiurl,
+          locationID,
+          mutation.query,
+          false,
+          true,
+          minDate,
+          maxDate,
+        ),
       ),
     ).pipe(
       map((results) => {

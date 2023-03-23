@@ -1400,8 +1400,13 @@ export default {
     this.currentTime = new Date();
     this.today = formatDate(this.currentTime);
     let newMin = timeMonth.offset(this.currentTime, -6);
-    this.maxDate = format(this.currentTime);
-    this.minDate = format(newMin);
+    if (this.xmax && this.xmin) {
+      this.maxDate = this.xmax;
+      this.minDate = this.xmin;
+    } else {
+      this.maxDate = format(this.currentTime);
+      this.minDate = format(newMin);
+    }
 
     this.$nextTick(() => {
       // resize listener

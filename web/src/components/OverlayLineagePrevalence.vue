@@ -161,6 +161,8 @@ export default {
         this.$genomicsurl,
         this.locationID,
         this.selectedMutations,
+        this.xmin,
+        this.xmax,
       ).subscribe((results) => {
         this.prevalences = results;
       });
@@ -171,6 +173,9 @@ export default {
         this.$apiurl,
         this.locationID,
         this.selectedMutations,
+        'location_id,date,confirmed,mostRecent,confirmed_numIncrease,confirmed_rolling,dead_numIncrease,dead_rolling',
+        this.xmin,
+        this.xmax,
       ).subscribe((results) => {
         this.epi = results.epi;
         this.prevalences = results.mutations;

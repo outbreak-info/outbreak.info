@@ -458,11 +458,6 @@ export default Vue.extend({
       select(this.$refs.xAxis).call(this.xAxis);
 
       this.plottedData = cloneDeep(this.data);
-
-      this.plottedData = this.plottedData.filter(
-        (d) =>
-          d[this.xVariable] >= xDomain[0] && d[this.xVariable] <= xDomain[1],
-      );
     },
     updateScales() {
       this.y = this.y
@@ -606,7 +601,6 @@ export default Vue.extend({
           },
         });
       } else if (this.routeName === 'GenomicsEmbedVariant') {
-        const params = this.$route.params;
         this.$router.push({
           name: 'GenomicsEmbed',
           params: {

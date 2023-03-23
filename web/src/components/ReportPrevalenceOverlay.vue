@@ -634,11 +634,6 @@ export default Vue.extend({
 
         // update plotted data
         this.plottedData = cloneDeep(this.data);
-        this.plottedData.forEach((mutation) => {
-          mutation.data = mutation.data.filter(
-            (d) => d[this.xVariable] >= newMin && d[this.xVariable] <= newMax,
-          );
-        });
 
         this.plottedData = this.plottedData.filter((d) => d.data.length);
         this.plottedEpi = this.epi.filter(
