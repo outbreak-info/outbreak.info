@@ -1396,8 +1396,12 @@ export default {
     this.customMutations = this.grabCustomMutations();
 
     const formatDate = timeFormat('%e %B %Y');
+    const format = timeFormat('%Y-%m-%d');
     this.currentTime = new Date();
     this.today = formatDate(this.currentTime);
+    let newMin = timeMonth.offset(this.currentTime, -6);
+    this.maxDate = format(this.currentTime);
+    this.minDate = format(newMin);
 
     this.$nextTick(() => {
       // resize listener
@@ -1679,6 +1683,8 @@ export default {
             muts: uniq(mutation),
             dark: this.darkMode,
             selected: uniq(selected),
+            xmin: this.xmin,
+            xmax: this.xmax,
           },
         });
       }
