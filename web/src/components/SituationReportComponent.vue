@@ -1781,7 +1781,7 @@ const calcORF1bLink = (mutation) => {
 };
 
 watch(
-  () => route,
+  route,
   (newVal, oldVal) => {
     if (
       !isEqual(newVal.query.pango, oldVal.query.pango) ||
@@ -1794,9 +1794,10 @@ watch(
       reportMetadata.value = null;
       debounceSetupReport();
     } else {
-      debounceUpdateLocations();
+      debounceSetupReport();
     }
   },
+  { deep: true },
 );
 
 const debounceSetDims = debounce(setDims, 150);

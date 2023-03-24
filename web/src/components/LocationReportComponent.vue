@@ -1657,14 +1657,17 @@ const createReport = () => {
 
 // created hook in previous version
 const debounceWindowChange = debounce(updateWindow, 700);
+const debounceSetupReport = debounce(setupReport, 500);
 
 watch(
-  () => route.query,
+  route,
   (newVal, oldVal) => {
-    if (newVal.loc !== oldVal.loc) {
+    if (newVal.query.loc !== oldVal.query.loc) {
       newLocation.value = null;
-      createReport();
+      debounceSetupReport();
       customMutations.value = grabCustomMutations();
+    } else {
+      debounceSetupReport();
     }
   },
   { deep: true },
