@@ -118,7 +118,7 @@
     <div class="d-flex row m-0 content-wrapper">
       <!-- bar graph -->
       <div
-        v-if="data$ && data$[0] && variable.includes('Increase')"
+        v-if="data && data[0] && variable.includes('Increase')"
         class="d-flex flex-column align-items-center"
       >
         <div
@@ -127,7 +127,7 @@
           class="w-100 px-3 d-flex justify-content-center flex-wrap"
         >
           <Bargraph
-            v-for="(countryData, idx) in data$[0]"
+            v-for="(countryData, idx) in data[0]"
             :key="idx"
             class="mr-3 mb-3"
             :data="countryData.value"
@@ -153,13 +153,13 @@
         <!-- source / download data -->
 
         <DataSource
-          v-if="data$"
+          v-if="data"
           class="mx-3"
           :ids="variableObj.sources"
           dataType="epidemiology"
           figureRef="epi-bargraph"
-          :numSvgs="data$[0].length"
-          :data="data$[0]"
+          :numSvgs="data[0].length"
+          :data="data[0]"
         />
       </div>
 
@@ -184,12 +184,12 @@
 
         <!-- source / download data -->
         <DataSource
-          v-if="data$"
+          v-if="data"
           class="col-sm-12"
           :ids="variableObj.sources"
           dataType="epidemiology"
           figureRef="epi-curve"
-          :data="data$[0]"
+          :data="data[0]"
         />
       </template>
 
@@ -309,7 +309,7 @@ const router = useRouter();
 
 const selectedPlaces = ref([]);
 const addable = ref([]);
-const data$ = ref(null);
+const data = ref(null);
 const plottedData = ref([]);
 const showCurves = ref(true);
 const lengthThreshold = ref(8);
@@ -386,8 +386,8 @@ const colorScale = computed(() => {
 });
 
 const noData = computed(() => {
-  if (data$.value) {
-    return !data$.value[0]
+  if (data.value) {
+    return !data.value[0]
       .flatMap((d) => d.value)
       .map((d) => d[props.variable])
       .some((d) => d);
@@ -401,23 +401,23 @@ const isLogY = computed(() => {
 });
 
 const dataLength = computed(() => {
-  return data$.value ? data$.value[0].length : null;
+  return data.value ? data.value[0].length : null;
 });
 
 const locationName = computed(() => {
   if (
-    data$.value &&
-    data$.value[0].length === 1 &&
-    data$.value[0][0].value[0].name
+    data.value &&
+    data.value[0].length === 1 &&
+    data.value[0][0].value[0].name
   ) {
-    return data$.value[0][0].value[0].name;
+    return data.value[0][0].value[0].name;
   }
   return null;
 });
 
 const subParts = computed(() => {
-  if (data$.value) {
-    const parts = data$.value[0].map((d) => {
+  if (data.value) {
+    const parts = data.value[0].map((d) => {
       return {
         key: d.value[0].name,
         parts: d.value[0].sub_parts,
@@ -432,9 +432,9 @@ const subParts = computed(() => {
 });
 
 const xLim = computed(() => {
-  if (data$.value && data$.value[0]) {
+  if (data.value && data.value[0]) {
     return extent(
-      data$.value[0].flatMap((d) => d.value),
+      data.value[0].flatMap((d) => d.value),
       (d) => d.date,
     );
   } else {
@@ -450,14 +450,14 @@ const clearLocations = () => {
 };
 
 const hideExtra = () => {
-  const selectedData = data$.value
-    ? data$.value[0]
+  const selectedData = data.value
+    ? data.value[0]
         .slice()
         .sort((a, b) => b.currentCases - a.currentCases)
         .slice(0, lengthThreshold.value)
     : null;
 
-  addable.value = data$.value[0]
+  addable.value = data.value[0]
     .slice()
     .sort((a, b) => b.currentCases - a.currentCases)
     .slice(lengthThreshold.value)
@@ -478,11 +478,11 @@ const setLocation = (locationString, nullLocationHandler) => {
       10,
       0,
     ).subscribe((d) => {
-      data$.value = d;
+      data.value = d;
       plottedData.value =
-        data$.value[0].length > lengthThreshold.value
+        data.value[0].length > lengthThreshold.value
           ? hideExtra()
-          : data$.value[0];
+          : data.value[0];
       isFixedY.value = props.fixedY === 'true';
       isPerCapita.value = props.percapita === 'true';
       const varUsed = isPerCapita.value
@@ -602,11 +602,11 @@ watch(
 watch(
   () => props.location,
   (newLocation, oldLocation) => {
-    if (newLocation) {
-      setLocation(newLocation);
+    setLocation(newLocation);
+    if (!newLocation) {
+      data.value = null;
     }
   },
-  { deep: true },
 );
 
 watch(
@@ -676,7 +676,7 @@ watch(isOverlay, (newValue, oldValue) => {
 watch(showAll, (newValue, oldValue) => {
   if (newValue) {
     addable.value = [];
-    plottedData.value = data$.value ? data$.value[0] : null;
+    plottedData.value = data.value ? data.value[0] : null;
   } else {
     plottedData.value = hideExtra();
   }
@@ -687,6 +687,7 @@ onUnmounted(() => {
     dataSubscription.value.unsubscribe();
   }
   window.removeEventListener('resize', setDims);
+  clearLocations();
 });
 
 onMounted(() => {
