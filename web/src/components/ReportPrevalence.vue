@@ -600,7 +600,7 @@ const tooltipOff = () => {
 };
 
 const updatePlot = () => {
-  const t1 = transition().duration(2500);
+  // const t1 = transition().duration(2500);
 
   if (plottedData.value) {
     updateScales();
