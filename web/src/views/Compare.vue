@@ -14,7 +14,7 @@
       <select
         v-model="selectedSimilarity"
         class="select-dropdown mr-2"
-        @change="debounceChangeSimilarity"
+        @change="changeSimilarity"
       >
         <option
           v-for="option in similarOptions"
@@ -333,7 +333,6 @@ const debounceGetSimilar = debounce(getSimilar, 500);
 watch(
   route,
   (to, from) => {
-    selectedSimilarity.value = props.similarity;
     selectedAdminLevels.value = props.admin_levels
       ? props.admin_levels.split(';')
       : [];
