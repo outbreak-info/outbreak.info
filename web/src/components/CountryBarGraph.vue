@@ -164,14 +164,16 @@ const routeToLoc = (location_name) => {
 };
 
 const clickClose = (evt) => {
-  const classID = evt.target.className.baseVal;
-  if (
-    !classID ||
-    (classID !== 'region-country-counts' &&
-      classID !== 'legend-name' &&
-      !classID.includes('stacked-area-chart'))
-  ) {
-    closeWindow();
+  if (evt && evt.target) {
+    const classID = evt.target.className.baseVal;
+    if (
+      !classID ||
+      (classID !== 'region-country-counts' &&
+        classID !== 'legend-name' &&
+        !classID.includes('stacked-area-chart'))
+    ) {
+      closeWindow();
+    }
   }
 };
 
