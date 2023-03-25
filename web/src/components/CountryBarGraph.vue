@@ -179,7 +179,7 @@ const clickClose = (evt) => {
 
 const closeWindow = () => {
   emit('regionSelected', {
-    region: this.region,
+    region: props.region,
     display: false,
     displayMore: false,
   });
