@@ -1136,10 +1136,6 @@ const changePageNum = () => {
   });
 };
 
-const imgUrl = (name) => {
-  return new URL(`../assets/resources/${name}`, import.meta.url).href;
-};
-
 watch(searchInput, () => {
   debounceSearchText();
 });
