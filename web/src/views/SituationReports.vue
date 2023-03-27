@@ -1342,7 +1342,6 @@ const genomicsUrl = inject('genomicsUrl');
 const store = adminStore();
 const storeGenomics = genomicsStore();
 const { reportloading } = storeToRefs(store);
-const { characteristicThreshold } = storeToRefs(storeGenomics);
 
 // reminder: must be the raw verison of the file
 const curatedSubscription = ref(null);
@@ -1772,7 +1771,7 @@ const getCuratedMutation = () => {
   store.setReportLoading(true);
   curatedMutationsSubscription.value = getCuratedMutations(
     genomicsUrl,
-    characteristicThreshold,
+    storeGenomics.$state.characteristicThreshold,
   ).subscribe((results) => {
     curatedVOC.value = reports.value
       .filter((d) => d.id === 'voc')[0]

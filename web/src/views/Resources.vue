@@ -568,11 +568,10 @@
                         }"
                       >
                         <img
-                          :src="`./src/assets/resources/${getLogo(
+                          :src="`/src/assets/resources/${getLogo(
                             item.curatedBy.name,
                           )}`"
                           :alt="item.curatedBy.name"
-                          width="auto"
                           height="25"
                           class="ml-2"
                         />

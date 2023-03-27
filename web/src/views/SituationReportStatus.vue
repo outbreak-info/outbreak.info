@@ -349,38 +349,6 @@ const locationTitle = computed(() => {
   }
 });
 
-const debounceSeqSearch = debounce(lookupSequence, 250);
-
-watch(selectedSequence, () => {
-  debounceSeqSearch();
-});
-
-watch(
-  () => props.loc,
-  () => {
-    updateLocationMd();
-    updateSeqCounts();
-    updateGap();
-    updateMap();
-  },
-);
-
-onMounted(() => {
-  queryLocation.value = findLocation;
-  totalSubscription.value = getStatusBasics(genomicsUrl, props.loc).subscribe(
-    (results) => {
-      lastUpdated.value = results.lastUpdated;
-      dateUpdated.value = results.dateUpdated;
-      total.value = results.total;
-    },
-  );
-
-  updateLocationMd();
-  updateSeqCounts();
-  updateGap();
-  updateMap();
-});
-
 const updateLocation = (newLocation) => {
   if (newLocation) {
     router.push({
@@ -450,6 +418,38 @@ const checkID = () => {
     sequenceFound.value = found;
   });
 };
+
+const debounceSeqSearch = debounce(lookupSequence, 250);
+
+watch(selectedSequence, () => {
+  debounceSeqSearch();
+});
+
+watch(
+  () => props.loc,
+  () => {
+    updateLocationMd();
+    updateSeqCounts();
+    updateGap();
+    updateMap();
+  },
+);
+
+onMounted(() => {
+  queryLocation.value = findLocation;
+  totalSubscription.value = getStatusBasics(genomicsUrl, props.loc).subscribe(
+    (results) => {
+      lastUpdated.value = results.lastUpdated;
+      dateUpdated.value = results.dateUpdated;
+      total.value = results.total;
+    },
+  );
+
+  updateLocationMd();
+  updateSeqCounts();
+  updateGap();
+  updateMap();
+});
 
 onBeforeUnmount(() => {
   if (totalSubscription.value) {
