@@ -26077,3 +26077,8 @@
   children:
       - XBY
   recombinant_parents: BR.2.1,XBF
+- name: XBZ
+  alias: XBZ
+  children:
+      - XBZ
+  recombinant_parents: BA.5.2*,EF.1.3
