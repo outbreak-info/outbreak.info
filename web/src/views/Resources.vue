@@ -47,7 +47,7 @@
                   aria-label="search"
                   aria-describedby="sb"
                   type="text"
-                  @keydown.enter.prevent="onEnter"
+                  @keydown.enter.prevent="debounceSearchText"
                 />
               </div>
             </form>
@@ -1136,26 +1136,27 @@ const changePageNum = () => {
   });
 };
 
+const debounceFilterText = debounce(selectFilterText, 500);
+const debounceSearchText = debounce(onEnter, 500);
+const debounceGetResult = debounce(getResults, 500);
+
 watch(searchInput, () => {
   debounceSearchText();
 });
 
 watch(
-  route,
-  () => {
-    searchInput.value = props.q ? props.q : null;
+  () => route,
+  (newVal, oldVal) => {
+    searchInput.value = newVal.query.q ? newVal.query.q : null;
     filterString.value = props.filter ? props.filter : null;
     numPerPage.value = props.size ? Number(props.size) : 10;
     selectedPage.value = props.page ? Number(props.page) : 0;
     sortValue.value = props.sort ? props.sort : '';
 
-    getResults();
+    debounceGetResult();
   },
-  { immediate: true },
+  { immediate: true, deep: true },
 );
-
-const debounceFilterText = debounce(selectFilterText, 500);
-const debounceSearchText = debounce(onEnter, 500);
 </script>
 
 <style lang="scss" scoped>
