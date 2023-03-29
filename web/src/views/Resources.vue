@@ -1148,10 +1148,10 @@ watch(
   () => route,
   (newVal, oldVal) => {
     searchInput.value = newVal.query.q ? newVal.query.q : null;
-    filterString.value = props.filter ? props.filter : null;
-    numPerPage.value = props.size ? Number(props.size) : 10;
-    selectedPage.value = props.page ? Number(props.page) : 0;
-    sortValue.value = props.sort ? props.sort : '';
+    filterString.value = newVal.query.filter ? newVal.query.filter : null;
+    numPerPage.value = newVal.query.size ? Number(newVal.query.size) : 10;
+    selectedPage.value = newVal.query.page ? Number(newVal.query.page) : 0;
+    sortValue.value = newVal.query.sort ? newVal.query.sort : '';
 
     debounceGetResult();
   },
