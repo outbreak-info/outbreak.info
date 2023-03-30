@@ -898,23 +898,6 @@ const route2Mutation = (d) => {
   }
 };
 
-// TODO: should confirm why custom debounce should be defined
-// const debounce = (fn, delay) => {
-//   let timer = null;
-//   return () => {
-//     const context = this,
-//       args = arguments,
-//       evt = event;
-//     //we get the D3 event here
-//     clearTimeout(timer);
-//     timer = setTimeout(() => {
-//       context.event = evt;
-//       //and use the reference here
-//       fn.apply(context, args);
-//     }, delay);
-//   };
-// };
-
 watch(width, () => {
   setXScale();
   updateBrush();
