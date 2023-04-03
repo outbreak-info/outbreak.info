@@ -246,7 +246,7 @@
                 <select
                   v-model="numPerPage"
                   class="select-dropdown mr-4"
-                  @change="changePageNum()"
+                  @change="debounceChangePageNum"
                 >
                   <option
                     v-for="option in pageOpts"
@@ -1140,6 +1140,7 @@ const changePageNum = () => {
 const debounceFilterText = debounce(selectFilterText, 500);
 const debounceSearchText = debounce(onEnter, 500);
 const debounceGetResult = debounce(getResults, 500);
+const debounceChangePageNum = debounce(changePageNum, 500);
 
 watch(searchInput, () => {
   debounceSearchText();
@@ -1150,9 +1151,9 @@ watch(
   (newVal, oldVal) => {
     searchInput.value = newVal.query.q ? newVal.query.q : null;
     filterString.value = newVal.query.filter ? newVal.query.filter : null;
-    numPerPage.value = props.size ? Number(props.size) : 10;
-    selectedPage.value = props.page ? Number(props.page) : 0;
-    sortValue.value = props.sort ? props.sort : '';
+    numPerPage.value = newVal.query.size ? Number(newVal.query.size) : 10;
+    selectedPage.value = newVal.query.page ? Number(newVal.query.page) : 0;
+    sortValue.value = newVal.query.sort ? newVal.query.sort : '';
 
     debounceGetResult();
   },
