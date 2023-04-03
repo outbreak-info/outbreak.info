@@ -14,6 +14,12 @@ const router = createRouter({
         el: to.hash,
       };
     }
+    if (to.meta && !to.meta.disableScroll) {
+      return {
+        left: 0,
+        top: 0,
+      };
+    }
   },
 });
 

@@ -225,7 +225,7 @@ export default [
       name: route.query.name,
     }),
     component: () => import('../views/SituationReports.vue'),
-    // Route to with query params https://stackoverflow.com/questions/50247097/child-route-component-not-rendering-in-vue-js
+    // // Route to with query params https://stackoverflow.com/questions/50247097/child-route-component-not-rendering-in-vue-js
     beforeEnter(to, from, next) {
       if (to.params && to.params.alias) {
         // redirect to route below
@@ -240,9 +240,7 @@ export default [
           name: 'MutationReport',
           query: to.query,
         });
-      } else {
-        next();
-      }
+      } else next();
     },
   },
   // {

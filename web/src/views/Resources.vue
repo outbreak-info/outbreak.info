@@ -681,6 +681,7 @@ import {
   watch,
   onBeforeUnmount,
   onMounted,
+  onUnmounted,
 } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
@@ -1149,14 +1150,20 @@ watch(
   (newVal, oldVal) => {
     searchInput.value = newVal.query.q ? newVal.query.q : null;
     filterString.value = newVal.query.filter ? newVal.query.filter : null;
-    numPerPage.value = newVal.query.size ? Number(newVal.query.size) : 10;
-    selectedPage.value = newVal.query.page ? Number(newVal.query.page) : 0;
-    sortValue.value = newVal.query.sort ? newVal.query.sort : '';
+    numPerPage.value = props.size ? Number(props.size) : 10;
+    selectedPage.value = props.page ? Number(props.page) : 0;
+    sortValue.value = props.sort ? props.sort : '';
 
     debounceGetResult();
   },
   { immediate: true, deep: true },
 );
+
+onUnmounted(() => {
+  if (resultsSubscription.value) {
+    resultsSubscription.value.unsubscribe();
+  }
+});
 </script>
 
 <style lang="scss" scoped>
