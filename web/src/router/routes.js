@@ -404,6 +404,11 @@ export default [
       selected: route.query.selected,
     }),
     component: () => import('../views/SituationReport.vue'),
+    beforeEnter(to, from, next) {
+      if (!to.params.alias) {
+        next({ name: 'SituationReports' });
+      } else next();
+    },
   },
   {
     path: '/situation-reports-demo',
