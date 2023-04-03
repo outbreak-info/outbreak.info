@@ -229,7 +229,7 @@ const downloadData = (
   } else {
     event('download', {
       event_category: `${props.type}_${props.figureRef}_${props.downloadLabel}`,
-      event_label: `downloading |${props.figureRef}| {${props.downloadLabel}} data from [${props.$route.fullPath}] as (${encodingFormat})`,
+      event_label: `downloading |${props.figureRef}| {${props.downloadLabel}} data from [${route.fullPath}] as (${encodingFormat})`,
     });
   }
 
@@ -390,7 +390,7 @@ const cleanData = (data, fileType) => {
         d['date'] = formatDate(d.date);
         delete d._score;
       });
-    } else if (this.type === 'resources') {
+    } else if (props.type === 'resources') {
       downloadable.value.forEach((d) => {
         d['source'] = d.curatedBy ? d.curatedBy.name : null;
         delete d._score;

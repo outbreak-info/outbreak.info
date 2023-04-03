@@ -483,7 +483,6 @@ export default [
   {
     path: '/:catchAll(.*)',
     name: 'NotFound',
-
     component: () => import('../views/PageNotFound.vue'),
   },
 ];
