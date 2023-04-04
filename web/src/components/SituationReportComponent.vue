@@ -1611,7 +1611,7 @@ const switchLocation = (location) => {
         selected: selectedLocation.value,
         overlay: sublineageOverlay.value,
       },
-      meta: {
+      state: {
         disableScroll: true,
       },
       params: { alias: props.alias },
@@ -1628,7 +1628,7 @@ const switchLocation = (location) => {
         selected: selectedLocation.value,
         overlay: sublineageOverlay.value,
       },
-      meta: {
+      state: {
         disableScroll: true,
       },
     });
@@ -1701,7 +1701,7 @@ const changeSublineageOverlay = (selected) => {
         xmax: props.xmax,
         overlay: sublineageOverlay.value,
       },
-      meta: {
+      state: {
         disableScroll: true,
       },
       params: { alias: props.alias },
@@ -1720,7 +1720,7 @@ const changeSublineageOverlay = (selected) => {
         xmax: props.xmax,
         overlay: sublineageOverlay.value,
       },
-      meta: {
+      state: {
         disableScroll: true,
       },
     });

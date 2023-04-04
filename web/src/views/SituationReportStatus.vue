@@ -353,7 +353,7 @@ const updateLocation = (newLocation) => {
   if (newLocation) {
     router.push({
       name: 'SituationReportStatus',
-      meta: {
+      state: {
         disableScroll: true,
       },
       query: {

@@ -184,7 +184,7 @@ const changeDate = (dayShift, animate = true) => {
   router.replace({
     path: 'maps',
     name: 'Maps',
-    meta: {
+    state: {
       disableScroll: true,
     },
     query: {

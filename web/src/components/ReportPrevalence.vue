@@ -762,7 +762,7 @@ const updateUrl = (newMin, newMax) => {
     const params = route.params;
     router.push({
       name: props.routeName,
-      meta: {
+      state: {
         disableScroll: true,
       },
       params: { alias: params.alias },
@@ -779,7 +779,7 @@ const updateUrl = (newMin, newMax) => {
     const params = route.params;
     router.push({
       name: 'GenomicsEmbed',
-      meta: {
+      state: {
         disableScroll: true,
       },
       query: {
@@ -811,7 +811,7 @@ const resetZoom = () => {
   if (props.routeName === 'MutationReport') {
     router.push({
       name: props.routeName,
-      meta: {
+      state: {
         disableScroll: true,
         alias: params.alias,
       },
@@ -826,7 +826,7 @@ const resetZoom = () => {
   } else if (props.routeName === 'GenomicsEmbedVariant') {
     router.push({
       name: 'GenomicsEmbed',
-      meta: {
+      state: {
         disableScroll: true,
       },
       query: {

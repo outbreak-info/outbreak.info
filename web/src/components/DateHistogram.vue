@@ -203,7 +203,7 @@ const changeFilters = () => {
 
   router.push({
     name: 'Resources',
-    meta: {
+    state: {
       disableScroll: true,
     },
     query: {

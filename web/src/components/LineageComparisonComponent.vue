@@ -1014,7 +1014,7 @@ const updateGenes = () => {
   if (props.routeTo === 'GenomicsEmbed') {
     router.push({
       name: props.routeTo,
-      meta: {
+      state: {
         disableScroll: true,
       },
       query: {
@@ -1029,7 +1029,7 @@ const updateGenes = () => {
   } else {
     router.push({
       name: props.routeTo,
-      meta: {
+      state: {
         disableScroll: true,
       },
       query: {
@@ -1049,7 +1049,7 @@ const changeThreshold = () => {
     if (props.routeTo === 'GenomicsEmbed') {
       router.push({
         name: props.routeTo,
-        meta: {
+        state: {
           disableScroll: true,
         },
         query: {
@@ -1064,7 +1064,7 @@ const changeThreshold = () => {
     } else {
       router.push({
         name: props.routeTo,
-        meta: {
+        state: {
           disableScroll: true,
         },
         query: {
@@ -1090,7 +1090,7 @@ const changeCountThreshold = () => {
     if (props.routeTo === 'GenomicsEmbed') {
       router.push({
         name: props.routeTo,
-        meta: {
+        state: {
           disableScroll: true,
         },
         query: {
@@ -1105,7 +1105,7 @@ const changeCountThreshold = () => {
     } else {
       router.push({
         name: props.routeTo,
-        meta: {
+        state: {
           disableScroll: true,
         },
         query: {
@@ -1158,7 +1158,7 @@ const routeDark = () => {
   if (props.routeTo === 'GenomicsEmbed') {
     router.push({
       name: props.routeTo,
-      meta: {
+      state: {
         disableScroll: true,
       },
       query: {
@@ -1173,7 +1173,7 @@ const routeDark = () => {
   } else {
     router.push({
       name: props.routeTo,
-      meta: {
+      state: {
         disableScroll: true,
       },
       query: {
@@ -1277,7 +1277,7 @@ const addWHO = (clearPrevious = false) => {
   if (props.routeTo === 'GenomicsEmbed') {
     router.push({
       name: props.routeTo,
-      meta: {
+      state: {
         disableScroll: true,
       },
       query: {
@@ -1291,7 +1291,7 @@ const addWHO = (clearPrevious = false) => {
   } else {
     router.push({
       name: props.routeTo,
-      meta: {
+      state: {
         disableScroll: true,
       },
       query: {
@@ -1311,7 +1311,7 @@ const submitNewData = () => {
   if (props.routeTo === 'GenomicsEmbed') {
     router.push({
       name: props.routeTo,
-      meta: {
+      state: {
         disableScroll: true,
       },
       query: {
@@ -1325,7 +1325,7 @@ const submitNewData = () => {
   } else {
     router.push({
       name: props.routeTo,
-      meta: {
+      state: {
         disableScroll: true,
       },
       query: {
@@ -1383,7 +1383,7 @@ const deletePango = (idx) => {
   if (props.routeTo === 'GenomicsEmbed') {
     router.push({
       name: props.routeTo,
-      meta: {
+      state: {
         disableScroll: true,
       },
       query: {
@@ -1398,7 +1398,7 @@ const deletePango = (idx) => {
   } else {
     router.push({
       name: props.routeTo,
-      meta: {
+      state: {
         disableScroll: true,
       },
       query: {

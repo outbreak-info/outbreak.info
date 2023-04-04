@@ -1571,7 +1571,7 @@ const routeDark = () => {
   if (props.routeTo === 'GenomicsEmbedLocation') {
     router.push({
       name: 'GenomicsEmbed',
-      meta: {
+      state: {
         disableScroll: true,
       },
       query: {
@@ -1588,7 +1588,7 @@ const routeDark = () => {
   } else {
     router.push({
       name: props.routeTo,
-      meta: {
+      state: {
         disableScroll: true,
       },
       query: {

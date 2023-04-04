@@ -1637,7 +1637,7 @@ const clearFilters = () => {
 
   router.push({
     name: 'SituationReports',
-    meta: {
+    state: {
       disableScroll: true,
     },
     query: {
@@ -1675,7 +1675,7 @@ const filterVOC = (disableScroll = true) => {
 
   router.push({
     name: 'SituationReports',
-    meta: {
+    state: {
       disableScroll: disableScroll,
     },
     query: {
@@ -1701,7 +1701,7 @@ const filterMOC = (disableScroll = true) => {
 
   router.push({
     name: 'SituationReports',
-    meta: {
+    state: {
       disableScroll: disableScroll,
     },
     query: {
@@ -1746,7 +1746,7 @@ const filterName = () => {
 
   router.push({
     name: 'SituationReports',
-    meta: {
+    state: {
       disableScroll: true,
     },
     query: {

@@ -13,7 +13,9 @@ const router = createRouter({
         el: to.hash,
       };
     }
-    if (to.meta && !to.meta.disableScroll) {
+    // we can't pass disableScroll property in router param. so decided to use history state
+    // reference: https://github.com/vuejs/router/blob/main/packages/router/CHANGELOG.md#414-2022-08-22
+    if (!window.history.state.disableScroll) {
       return {
         left: 0,
         top: 0,

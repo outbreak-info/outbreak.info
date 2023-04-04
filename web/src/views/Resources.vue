@@ -952,7 +952,7 @@ const selectFilterText = (facet, idx) => {
   filterString.value = filters2String();
   router.push({
     name: 'Resources',
-    meta: {
+    state: {
       disableScroll: true,
     },
     query: {
@@ -973,7 +973,7 @@ const selectFilter = (facet, option) => {
   filterString.value = filters2String();
   router.push({
     name: 'Resources',
-    meta: {
+    state: {
       disableScroll: true,
     },
     query: {
@@ -992,7 +992,7 @@ const clearFilters = () => {
   filterString.value = null;
   router.push({
     name: 'Resources',
-    meta: {
+    state: {
       disableScroll: true,
     },
     query: {
@@ -1034,7 +1034,7 @@ const removeDateFilter = (type) => {
   if (type === 'min') {
     router.push({
       name: 'Resources',
-      meta: {
+      state: {
         disableScroll: true,
       },
       query: {
@@ -1050,7 +1050,7 @@ const removeDateFilter = (type) => {
   } else {
     router.push({
       name: 'Resources',
-      meta: {
+      state: {
         disableScroll: true,
       },
       query: {
@@ -1082,7 +1082,7 @@ const onEnter = () => {
 const changeSort = () => {
   router.push({
     name: 'Resources',
-    meta: {
+    state: {
       disableScroll: true,
     },
     query: {
@@ -1102,7 +1102,7 @@ const changePage = (step) => {
 
   router.push({
     name: 'Resources',
-    meta: {
+    state: {
       disableScroll: true,
     },
     query: {
@@ -1122,7 +1122,7 @@ const changePageNum = () => {
 
   router.push({
     name: 'Resources',
-    meta: {
+    state: {
       disableScroll: true,
     },
     query: {

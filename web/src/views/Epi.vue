@@ -515,7 +515,7 @@ const changeVariable = () => {
 
   router.push({
     name: 'Epidemiology',
-    meta: {
+    state: {
       disableScroll: true,
     },
     query: {
@@ -583,7 +583,7 @@ watch(
     if (route.query.location !== newLocation) {
       router.push({
         name: 'Epidemiology',
-        meta: {
+        state: {
           disableScroll: true,
         },
         query: {
@@ -659,7 +659,7 @@ watch(isOverlay, (newValue, oldValue) => {
     const newVariable = props.variable.replace('_numIncrease', '_rolling');
     router.push({
       name: 'Epidemiology',
-      meta: {
+      state: {
         disableScroll: true,
       },
       query: {

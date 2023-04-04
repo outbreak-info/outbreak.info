@@ -561,7 +561,7 @@ const route2Location = (id) => {
     locs.push(id);
     router.push({
       name: 'MutationReport',
-      meta: {
+      state: {
         disableScroll: true,
       },
       params: { alias: params.alias },
@@ -581,7 +581,7 @@ const route2Location = (id) => {
       : [];
     router.push({
       name: 'GenomicsEmbed',
-      meta: {
+      state: {
         disableScroll: true,
       },
       query: {

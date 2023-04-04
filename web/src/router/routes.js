@@ -170,7 +170,7 @@ export default [
     props: (route) => ({
       location: route.query.location,
     }),
-    meta: {
+    state: {
       hideNavigation: true,
     },
     component: () => import('../views/Summary.vue'),
@@ -190,7 +190,7 @@ export default [
       xmax: route.query.xmax,
       selected: route.query.selected,
     }),
-    meta: {
+    state: {
       hideNavigation: true,
       includeGISAIDLogo: true,
     },

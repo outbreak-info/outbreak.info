@@ -638,7 +638,7 @@ const resetZoom = () => {
     const params = route.params;
     router.push({
       name: props.routeName,
-      meta: {
+      state: {
         disableScroll: true,
       },
       params: { alias: params.alias },
@@ -653,7 +653,7 @@ const resetZoom = () => {
   if (props.routeName === 'LocationReport') {
     router.push({
       name: 'LocationReport',
-      meta: {
+      state: {
         disableScroll: true,
       },
       query: {
@@ -743,7 +743,7 @@ const updateUrl = (newMin, newMax) => {
     const params = route.params;
     router.push({
       name: props.routeName,
-      meta: {
+      state: {
         disableScroll: true,
       },
       params: { alias: params.alias },
@@ -760,7 +760,7 @@ const updateUrl = (newMin, newMax) => {
     const params = route.params;
     router.push({
       name: 'GenomicsEmbed',
-      meta: {
+      state: {
         disableScroll: true,
       },
       query: {
@@ -777,7 +777,7 @@ const updateUrl = (newMin, newMax) => {
   } else if (props.routeName === 'LocationReport') {
     router.push({
       name: 'LocationReport',
-      meta: {
+      state: {
         disableScroll: true,
       },
       query: {
@@ -794,7 +794,7 @@ const updateUrl = (newMin, newMax) => {
   } else if (props.routeName === 'GenomicsEmbedLocation') {
     router.push({
       name: 'GenomicsEmbed',
-      meta: {
+      state: {
         disableScroll: true,
       },
       query: {

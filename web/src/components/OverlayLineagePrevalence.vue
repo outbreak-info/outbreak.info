@@ -89,7 +89,7 @@ const selectMutation = () => {
   if (props.routeTo === 'GenomicsEmbedLocation')
     router.push({
       name: 'GenomicsEmbed',
-      meta: {
+      state: {
         disableScroll: true,
       },
       query: {
@@ -107,7 +107,8 @@ const selectMutation = () => {
   else {
     router.push({
       name: props.routeTo,
-      meta: {
+      // we can't pass disableScroll in router param. It's not allowed.
+      state: {
         disableScroll: true,
       },
       query: {

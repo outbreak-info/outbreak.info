@@ -669,7 +669,7 @@ const changeScale = () => {
   router.replace({
     path: 'epidemiology',
     name: 'Epidemiology',
-    meta: {
+    state: {
       disableScroll: true,
     },
     query: {

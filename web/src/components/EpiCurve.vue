@@ -312,7 +312,7 @@ const changeScale = () => {
   router.replace({
     path: 'epidemiology',
     name: 'Epidemiology',
-    meta: {
+    state: {
       disableScroll: true,
     },
     query: {
@@ -370,7 +370,7 @@ const zoom = (evt, ref) => {
 
     router.push({
       name: 'Epidemiology',
-      meta: {
+      state: {
         disableScroll: true,
       },
       query: {
@@ -396,7 +396,7 @@ const resetZoom = () => {
 
   router.push({
     name: 'Epidemiology',
-    meta: {
+    state: {
       disableScroll: true,
     },
     query: {
