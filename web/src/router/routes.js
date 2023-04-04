@@ -405,7 +405,7 @@ export default [
     }),
     component: () => import('../views/SituationReport.vue'),
     beforeEnter(to, from, next) {
-      if (!to.params.alias) {
+      if (!to.params.alias && !to.query.pango && !to.query.muts) {
         next({ name: 'SituationReports' });
       } else next();
     },
