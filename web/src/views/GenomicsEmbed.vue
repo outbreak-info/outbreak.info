@@ -51,7 +51,7 @@
               v-for="(example, gIdx) in genomicsExamples"
               :key="gIdx"
             >
-              <div v-if="example.who_name">
+              <template v-if="example.who_name">
                 <router-link
                   :to="{
                     name: 'GenomicsEmbed',
@@ -62,8 +62,8 @@
                   {{ example.short_name }}
                   <font-awesome-icon :icon="['fas', 'angle-double-right']" />
                 </router-link>
-              </div>
-              <div v-else>
+              </template>
+              <template v-else>
                 <router-link
                   :to="{
                     name: 'GenomicsEmbed',
@@ -74,7 +74,7 @@
                   {{ example.short_name }}
                   <font-awesome-icon :icon="['fas', 'angle-double-right']" />
                 </router-link>
-              </div>
+              </template>
             </span>
           </small>
         </div>
@@ -313,7 +313,7 @@ watch(
   () => route.query,
   (newVal, oldVal) => {
     if (!isEqual(newVal, oldVal)) {
-      selectedReportType.value = props.type ? props.type : 'var';
+      selectedReportType.value = newVal.type ? newVal.type : 'var';
     }
   },
   { deep: true },
