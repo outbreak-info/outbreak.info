@@ -332,9 +332,9 @@ const debounceGetSimilar = debounce(getSimilar, 500);
 
 watch(
   route,
-  (to, from) => {
-    selectedAdminLevels.value = props.admin_levels
-      ? props.admin_levels.split(';')
+  (newVal, oldVal) => {
+    selectedAdminLevels.value = newVal.query.admin_levels
+      ? newVal.query.admin_levels.split(';')
       : [];
 
     debounceGetSimilar();

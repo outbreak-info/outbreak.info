@@ -289,7 +289,6 @@ watch(
   () => {
     debounceUpdatePlot();
   },
-  { deep: true },
 );
 
 onMounted(() => {
