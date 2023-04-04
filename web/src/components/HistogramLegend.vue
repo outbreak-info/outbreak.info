@@ -133,6 +133,7 @@ import { drag } from 'd3-drag';
 import { format } from 'd3-format';
 import { select, selectAll, event } from 'd3-selection';
 import { scaleLinear } from 'd3-scale';
+import debounce from 'lodash/debounce';
 
 const props = defineProps({
   data: Array,
@@ -235,15 +236,15 @@ const setupPlot = () => {
   xAxisRef.value = select(x_axis.value);
 };
 
-const updateFilterLimits = () => {
+const updateFilterLimits = (min, max) => {
   selectedMin.value =
-    props.minVal || props.minVal === 0
-      ? props.minVal
+    min || min === 0
+      ? min
       : Math.floor((domain.value[0] + Number.EPSILON) * precision.value) /
         precision.value;
   selectedMax.value =
-    props.maxVal || props.maxVal === 0
-      ? props.maxVal
+    max || max === 0
+      ? max
       : Math.ceil((domain.value[1] + Number.EPSILON) * precision.value) /
         precision.value;
 };
@@ -375,7 +376,10 @@ const changeFilters = () => {
 const updatePlot = () => {
   if (props.data && props.colorScale) {
     updateAxes();
-    updateFilterLimits();
+    updateFilterLimits(
+      selectedMin.value ? selectedMin.value : props.minVal,
+      selectedMax.value ? selectedMax.value : props.maxVal,
+    );
 
     chart.value
       .selectAll('rect')
@@ -442,22 +446,6 @@ watch(
   () => {
     updatePlot();
   },
-);
-
-watch(
-  () => props.minVal,
-  (newMin, oldMin) => {
-    updateFilterLimits();
-  },
-  { immediate: true },
-);
-
-watch(
-  () => props.maxVal,
-  (newMax, oldMax) => {
-    updateFilterLimits();
-  },
-  { immediate: true },
 );
 
 onMounted(() => {
