@@ -13,9 +13,6 @@ const router = createRouter({
         el: to.hash,
       };
     }
-    if (savedPosition) {
-      return savedPosition;
-    }
     if (to.meta && !to.meta.disableScroll) {
       return {
         left: 0,
