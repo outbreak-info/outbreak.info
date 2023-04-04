@@ -266,7 +266,11 @@ const dateRef = ref(null);
 
 // missing variables
 const dataSubscription = ref(null);
+// new variable to get event clientX, clientY
+const x = ref(0);
+const y = ref(0);
 
+// computed variables
 const maxVal = computed(() => {
   return filteredData.value
     ? max(filteredData.value, (d) => d[props.variable])
@@ -489,7 +493,7 @@ const drawMap = () => {
     regions.value
       .selectAll('path.region')
       .on('click', (d) => handleClick(d))
-      .on('mouseenter', (d) => debounceMouseon(d))
+      .on('mouseenter', (d) => debounceMouseOn(d))
       .on('mouseleave', mouseOff);
 
     store.$patch({ dataloading: false });
@@ -520,8 +524,8 @@ const mouseOn = (d) => {
     getTimetrace(d.location_id);
 
     const ttip = ttips.value
-      .style('top', event.value.y + 'px')
-      .style('left', event.value.x + 'px')
+      .style('top', y.value + 'px')
+      .style('left', x.value + 'px')
       .style('opacity', 1);
 
     regions.value.selectAll('path.region').style('opacity', 0.5);
@@ -578,7 +582,7 @@ watch(
   { deep: true },
 );
 
-const debounceMouseon = debounce(mouseOn, 250);
+const debounceMouseOn = debounce(mouseOn, 250);
 
 onMounted(() => {
   // this.$nextTick in optionsAPI
@@ -597,6 +601,15 @@ onMounted(() => {
           !evt.target.className.baseVal.includes('region')
         ) {
           mouseOff();
+        }
+        if (
+          evt.target.className &&
+          evt.target.className.baseVal &&
+          typeof evt.target.className.baseVal === 'string' &&
+          evt.target.className.baseVal.includes('region')
+        ) {
+          x.value = evt.clientX;
+          y.value = evt.clientY;
         }
       },
       {

@@ -8,11 +8,13 @@ const router = createRouter({
   base: import.meta.env.BASE_URL,
   linkExactActiveClass: 'active',
   scrollBehavior(to, from, savedPosition) {
-    if (to.meta && to.meta.disableScroll) return;
     if (to.hash) {
       return {
         el: to.hash,
       };
+    }
+    if (savedPosition) {
+      return savedPosition;
     }
     if (to.meta && !to.meta.disableScroll) {
       return {
