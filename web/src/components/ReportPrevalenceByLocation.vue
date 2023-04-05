@@ -106,7 +106,7 @@
               ref="xAxisRef"
               :transform="`translate(${margin.left}, ${25})`"
               class="prevalence-axis axis--x"
-              :hidden="!data.length"
+              :class="{ hidden: !data.length }"
             />
             <g
               id="dot-axis-bottom"
@@ -115,7 +115,7 @@
                 height + margin.top + 5
               })`"
               class="prevalence-axis axis--x"
-              :hidden="!data.length"
+              :class="{ hidden: !data.length }"
             />
             <g
               ref="yAxisRef"
@@ -172,7 +172,7 @@
               ref="xAxisBarRef"
               :transform="`translate(${margin.left}, ${25})`"
               class="count-axis axis--x"
-              :hidden="!data.length"
+              :class="{ hidden: !data.length }"
             />
             <g
               id="bar-axis-top"
@@ -181,7 +181,7 @@
                 height + margin.top + 5
               })`"
               class="count-axis axis--x"
-              :hidden="!data.length"
+              :class="{ hidden: !data.length }"
             />
             <g
               ref="yAxisBarRef"
