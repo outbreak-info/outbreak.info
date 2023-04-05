@@ -109,7 +109,7 @@
               :to="{
                 name: 'MutationReport',
                 params: lineage.params ? lineage.params : {},
-                query: lineage.route,
+                query: transformQuery(lineage.route),
               }"
               :data-tippy-info="lineage.tooltip"
             >
@@ -176,6 +176,7 @@
 import { onMounted } from 'vue';
 import tippy from 'tippy.js';
 import 'tippy.js/themes/light.css';
+import { isArray } from 'lodash/lang';
 
 const props = defineProps({
   data: Array,
@@ -186,6 +187,16 @@ const props = defineProps({
     default: 'MutationReport',
   },
 });
+
+const transformQuery = (query) => {
+  if (typeof query.pango === 'string') {
+    return query;
+  } else if (isArray(query.pango)) {
+    let tempQuery = query;
+    tempQuery.pango = tempQuery.pango[0];
+    return tempQuery;
+  }
+};
 
 onMounted(() => {
   tippy('.variant-table', {

@@ -162,7 +162,10 @@
               {{ data.length === 1 ? 'date' : 'dates' }} with sequencing data
             </text>
           </g>
-          <g id="weird-last values" :hidden="data.length < lengthThreshold">
+          <g
+            id="weird-last values"
+            :class="{ hidden: data.length < lengthThreshold }"
+          >
             <text
               :x="width - margin.right"
               :y="-1"

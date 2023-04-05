@@ -835,7 +835,7 @@ const setXScale = () => {
       today.value = new Date();
       xDomain = [minDate, today.value];
     } else {
-      xDomain = [minDate, math.Max(maxDate.value, maxEpiDate.value)];
+      xDomain = [minDate, Math.max(maxDate.value, maxEpiDate.value)];
     }
 
     if (xMin.value && xMin.value < xDomain[1]) {
@@ -1017,6 +1017,13 @@ const updatePlot = () => {
 
   if (plottedData.value && plottedEpi.value) {
     updateScales();
+    today.value = new Date();
+    const epiExtent = extent(props.epi.map((d) => d[xEpiVariable.value]));
+    maxEpiDate.value = epiExtent[1];
+    const mutExtent = extent(
+      props.data.flatMap((d) => d.data).map((d) => d[xVariable.value]),
+    );
+    maxDate.value = mutExtent[1];
 
     // EPI DATA
     // hashed area to highlight the gap between today
@@ -1304,8 +1311,8 @@ watch(
 
 watch(
   () => props.xmin,
-  () => {
-    xMin.value = timeParse('%Y-%m-%d')(props.xmin);
+  (newVal, oldVal) => {
+    xMin.value = timeParse('%Y-%m-%d')(newVal);
     xMax.value = timeParse('%Y-%m-%d')(props.xmax);
     setXScale();
     updatePlot();
@@ -1314,9 +1321,9 @@ watch(
 
 watch(
   () => props.xmax,
-  () => {
+  (newVal, oldVal) => {
     xMin.value = timeParse('%Y-%m-%d')(props.xmin);
-    xMax.value = timeParse('%Y-%m-%d')(props.xmax);
+    xMax.value = timeParse('%Y-%m-%d')(newVal);
     setXScale();
     updatePlot();
   },

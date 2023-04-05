@@ -101,6 +101,7 @@
                 </feMerge>
               </filter>
             </defs>
+            <!-- :hidden="!data.length" not working -->
             <g
               id="dot-axis-top"
               ref="xAxisRef"
