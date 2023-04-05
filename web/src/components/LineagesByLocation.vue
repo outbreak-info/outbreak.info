@@ -130,7 +130,7 @@
       </div>
       <div v-else class="d-flex align-items-center">
         Prevalence in the last {{ recentWindow }} days:
-        <b id="proportion" class="ml-1" />
+        <b id="proportion-1" class="ml-1" />
       </div>
     </div>
   </div>
@@ -145,7 +145,15 @@ import { format } from 'd3-format';
 import { scaleLinear, scaleTime } from 'd3-scale';
 import { select, selectAll, event } from 'd3-selection';
 import { stack, area, stackOrderInsideOut } from 'd3-shape';
-import { timeSecond, timeMinute, timeHour, timeDay, timeWeek, timeMonth, timeYear  } from 'd3-time';
+import {
+  timeSecond,
+  timeMinute,
+  timeHour,
+  timeDay,
+  timeWeek,
+  timeMonth,
+  timeYear,
+} from 'd3-time';
 import { timeParse, timeFormat } from 'd3-time-format';
 import { transition } from 'd3-transition';
 import cloneDeep from 'lodash/cloneDeep';
@@ -352,6 +360,12 @@ export default Vue.extend({
       this.isZooming = false;
       const newMax = new Date();
       const newMin = timeMonth.offset(newMax, -month);
+      const format = timeFormat('%Y-%m-%d');
+      this.$emit('update', {
+        newMax: format(newMax),
+        newMin: format(newMin),
+        month: month,
+      });
 
       this.x = scaleTime()
         .range([0, this.width - this.margin.left - this.margin.right])
@@ -359,21 +373,27 @@ export default Vue.extend({
 
       this.plottedData = cloneDeep(this.data);
 
-      this.plottedData = this.plottedData.filter(
-        (d) => d[this.xVariable] >= newMin && d[this.xVariable] <= newMax,
-      );
-
       // reset the axis
       this.xAxis = axisBottom(this.x)
         .ticks(this.numXTicks)
-        .tickFormat(function(date){
-          return (timeSecond(date) < date ? timeFormat('.%L')
-            : timeMinute(date) < date ? timeFormat(':%S')
-            : timeHour(date) < date ? timeFormat('%I:%M')
-            : timeDay(date) < date ? timeFormat('%I %p')
-            : timeMonth(date) < date ? timeWeek(date) < date ? timeFormat('%a %d') : timeFormat('%b %d')
-            : timeYear(date) < date ? timeFormat('%b')
-            : timeFormat('%Y'))(date)
+        .tickFormat(function (date) {
+          return (
+            timeSecond(date) < date
+              ? timeFormat('.%L')
+              : timeMinute(date) < date
+              ? timeFormat(':%S')
+              : timeHour(date) < date
+              ? timeFormat('%I:%M')
+              : timeDay(date) < date
+              ? timeFormat('%I %p')
+              : timeMonth(date) < date
+              ? timeWeek(date) < date
+                ? timeFormat('%a %d')
+                : timeFormat('%b %d')
+              : timeYear(date) < date
+              ? timeFormat('%b')
+              : timeFormat('%Y')
+          )(date);
         });
 
       select(this.$refs.xAxis).call(this.xAxis);
@@ -415,24 +435,29 @@ export default Vue.extend({
       this.xAxis = axisBottom(this.x)
         .tickSizeOuter(0)
         .ticks(this.numXTicks)
-        .tickFormat(function(date){
-          return (timeSecond(date) < date ? timeFormat('.%L')
-            : timeMinute(date) < date ? timeFormat(':%S')
-            : timeHour(date) < date ? timeFormat('%I:%M')
-            : timeDay(date) < date ? timeFormat('%I %p')
-            : timeMonth(date) < date ? timeWeek(date) < date ? timeFormat('%a %d') : timeFormat('%b %d')
-            : timeYear(date) < date ? timeFormat('%b')
-            : timeFormat('%Y'))(date)
+        .tickFormat(function (date) {
+          return (
+            timeSecond(date) < date
+              ? timeFormat('.%L')
+              : timeMinute(date) < date
+              ? timeFormat(':%S')
+              : timeHour(date) < date
+              ? timeFormat('%I:%M')
+              : timeDay(date) < date
+              ? timeFormat('%I %p')
+              : timeMonth(date) < date
+              ? timeWeek(date) < date
+                ? timeFormat('%a %d')
+                : timeFormat('%b %d')
+              : timeYear(date) < date
+              ? timeFormat('%b')
+              : timeFormat('%Y')
+          )(date);
         });
 
       select(this.$refs.xAxis).call(this.xAxis);
 
       this.plottedData = cloneDeep(this.data);
-
-      this.plottedData = this.plottedData.filter(
-        (d) =>
-          d[this.xVariable] >= xDomain[0] && d[this.xVariable] <= xDomain[1],
-      );
     },
     updateScales() {
       this.y = this.y
@@ -529,16 +554,18 @@ export default Vue.extend({
       if (selection) {
         const newMin = this.x.invert(selection[0]);
         const newMax = this.x.invert(selection[1]);
+        const format = timeFormat('%Y-%m-%d');
+        this.$emit('update', {
+          newMax: format(newMax),
+          newMin: format(newMin),
+          month: 0,
+        });
 
         this.x = scaleTime()
           .range([0, this.width - this.margin.left - this.margin.right])
           .domain([newMin, newMax]);
 
         this.plottedData = cloneDeep(this.data);
-
-        this.plottedData = this.plottedData.filter(
-          (d) => d[this.xVariable] >= newMin && d[this.xVariable] <= newMax,
-        );
 
         // reset the axis
         this.xAxis = axisBottom(this.x).ticks(this.numXTicks);
@@ -574,7 +601,6 @@ export default Vue.extend({
           },
         });
       } else if (this.routeName === 'GenomicsEmbedVariant') {
-        const params = this.$route.params;
         this.$router.push({
           name: 'GenomicsEmbed',
           params: {
@@ -635,6 +661,7 @@ export default Vue.extend({
       this.xMin = null;
       this.xMax = null;
       this.month = 0;
+      this.$emit('update', { newMax: '', newMin: '', month: 0 });
       this.isZooming = false;
       this.setXScale();
 
@@ -942,7 +969,7 @@ export default Vue.extend({
   .axis--y text {
     font-size: 12px;
   }
-  
+
   .stream-axis.axis--y text {
     font-size: 16px;
   }

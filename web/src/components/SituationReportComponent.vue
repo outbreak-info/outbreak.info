@@ -17,7 +17,7 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
           <div class="modal-content">
             <div class="modal-header border-secondary">
-              <h5 id="exampleModalLabel" class="modal-title">
+              <h5 id="selectReportLocationModalLabel" class="modal-title">
                 Select report locations
               </h5>
               <button
@@ -65,7 +65,7 @@
                 </div>
 
                 <div
-                  id="select-location"
+                  id="select-location-1"
                   class="d-flex align-items-center justify-content-center my-3"
                 >
                   <TypeaheadSelect
@@ -103,7 +103,7 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
           <div class="modal-content">
             <div class="modal-header border-secondary">
-              <h5 id="exampleModalLabel" class="modal-title">
+              <h5 id="changeSelectedLocationModalLabel" class="modal-title">
                 Change selected location
               </h5>
               <button
@@ -634,6 +634,8 @@
               :countries="countries"
               :states="states"
               :routeTo="routeTo"
+              :xmin="xmin"
+              :xmax="xmax"
             />
           </section>
         </div>
@@ -649,7 +651,7 @@
           <small class="text-muted mb-2">
             Based on reported sample collection date
           </small>
-          <div id="location-buttons" class="d-flex flex-wrap mb-3">
+          <div id="location-buttons-1" class="d-flex flex-wrap mb-3">
             <button
               v-for="(location, lIdx) in selectedLocations"
               :key="lIdx"
@@ -697,7 +699,7 @@
 
           <!-- change location selectors for sublineage prevalences -->
           <div
-            id="location-buttons"
+            id="location-buttons-2"
             class="d-flex flex-wrap align-items-center"
           >
             <button
@@ -793,6 +795,7 @@
               :locationID="selectedLocation.id"
               :locationName="selectedLocation.label"
               :setColorScale="sublineageColorScale"
+              @update="updateDateRange($event)"
             />
           </div>
 
@@ -819,6 +822,7 @@
               :colorScale="sublineageColorScale"
               :tooltipTotal="true"
               :plotTitle="`Percentage of ${reportName} sequences by lineage`"
+              @update="updateDateRange($event)"
             />
           </div>
         </section>
@@ -1075,6 +1079,7 @@ import {
   updateLocationData,
 } from '@/api/genomics.js';
 import { lazyLoad } from '@/js/lazy-load';
+import { timeMonth } from 'd3-time';
 
 export default {
   name: 'SituationReportComponent',
@@ -1215,6 +1220,8 @@ export default {
       totalLineage: null,
       prevalence: [],
       mutationsByLineage: [],
+      maxDate: '',
+      minDate: '',
     };
   },
   computed: {
@@ -1299,9 +1306,13 @@ export default {
         this.newPangolin = null;
         this.lineageName = null;
         this.reportMetadata = null;
+        this.minDate = newVal.query.xmin;
+        this.maxDate = newVal.query.xmax;
         this.setupReport();
       } else {
-        this.updateLocations();
+        this.minDate = newVal.query.xmin;
+        this.maxDate = newVal.query.xmax;
+        this.setupReport();
       }
     },
   },
@@ -1323,8 +1334,12 @@ export default {
 
     // Get date for the citation object
     const formatDate = timeFormat('%e %B %Y');
+    const format = timeFormat('%Y-%m-%d');
     let currentTime = new Date();
     this.today = formatDate(currentTime);
+    let newMin = timeMonth.offset(currentTime, -6);
+    this.maxDate = format(currentTime);
+    this.minDate = format(newMin);
 
     // set URL for sharing, etc.
     this.$nextTick(() => {
@@ -1462,6 +1477,7 @@ export default {
 
       this.setLineageAndMutationStr();
       if (this.lineageName || this.selectedMutationArr || this.alias) {
+        const defaultLocation = ['USA', 'USA_US-CA'];
         this.dataSubscription = getReportData(
           this.$genomicsurl,
           this.alias,
@@ -1471,6 +1487,9 @@ export default {
           this.selected,
           this.totalThresh,
           this.choroNdays,
+          defaultLocation,
+          this.minDate,
+          this.maxDate,
         ).subscribe((results) => {
           this.hasData = true;
 
@@ -1495,7 +1514,6 @@ export default {
 
           // sublineagePrev
           this.sublineagePrev = results.sublineagePrev;
-
           // location prevalence
           this.locationTotals = results.locPrev;
 
@@ -1687,6 +1705,8 @@ export default {
         this.selected,
         this.totalThresh,
         this.choroNdays,
+        this.minDate,
+        this.maxDate,
       ).subscribe((results) => {
         // selected locations
         this.selectedLocations = results.locations;
@@ -1815,6 +1835,10 @@ export default {
       } else if (mutation.type === 'deletion') {
         return `${mutation}`;
       }
+    },
+    updateDateRange(event) {
+      this.maxDate = event.newMax;
+      this.minDate = event.newMin;
     },
   },
 };

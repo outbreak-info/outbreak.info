@@ -17,7 +17,7 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
           <div class="modal-content">
             <div class="modal-header border-secondary">
-              <h5 id="exampleModalLabel" class="modal-title">
+              <h5 id="selectReportModalLabel" class="modal-title">
                 Select report location
               </h5>
               <button
@@ -217,7 +217,7 @@
                 </small>
                 <div
                   v-if="totalSequences"
-                  id="sequence-count"
+                  id="sequence-count-1"
                   class="text-grey font-size-2 ml-3"
                 >
                   with
@@ -436,7 +436,7 @@
             >
               <section
                 v-if="lineagesByDay"
-                id="lineages-over-time"
+                id="lineages-over-time-1"
                 class="flex-grow-1 flex-shrink-1"
               >
                 <LineagesByLocation
@@ -450,6 +450,7 @@
                   :colorScale="colorScale"
                   :xmin="xmin"
                   :xmax="xmax"
+                  @update="updateDateRange($event)"
                 />
               </section>
 
@@ -704,6 +705,7 @@
               :locationID="loc"
               :locationName="selectedLocation.label"
               :selected="selected"
+              @update="updateDateRange($event)"
             />
           </section>
 
@@ -745,7 +747,7 @@
                 <ClassedLegend
                   :colorScale="choroColorScale"
                   :horizontal="false"
-                  :label="`Est. prevalence over the last ${recentWindow} days`"
+                  :label="`Est. prevalence ${getDateRangeText()}`"
                   :countThreshold="choroCountThreshold"
                   :mutationName="null"
                 />
@@ -755,18 +757,33 @@
                     :maxCount="choroMaxCount"
                     class="mr-3"
                   />
-                  <div class="d-flex align-items-center">
-                    <small>Show data from last</small>
-                    <input
-                      v-model="recentWindow"
-                      class="border p-1 mx-2"
-                      :style="{
-                        'border-color': '#bababa !important;',
-                        width: '40px',
+                  <!--                  <div class="d-flex align-items-center">-->
+                  <!--                    <small>Show data from last</small>-->
+                  <!--                    <input-->
+                  <!--                      v-model="recentWindow"-->
+                  <!--                      class="border p-1 mx-2"-->
+                  <!--                      :style="{-->
+                  <!--                        'border-color': '#bababa !important;',-->
+                  <!--                        width: '40px',-->
+                  <!--                      }"-->
+                  <!--                      placeholder="days"-->
+                  <!--                    />-->
+                  <!--                    <small>days</small>-->
+                  <!--                  </div>-->
+                  <div
+                    class="d-flex justify-content-start align-items-start mt-3 mb-3"
+                  >
+                    <button
+                      v-for="(beforeTime, lIdx) in timeOptions"
+                      :key="lIdx"
+                      class="btn btn-accent-outline timeline-btn m-0 px-2 py-1 mr-2"
+                      :class="{
+                        'time-btn-active': beforeTime.value === month,
                       }"
-                      placeholder="days"
-                    />
-                    <small>days</small>
+                      @click="updateMapDateRange(beforeTime.value)"
+                    >
+                      {{ beforeTime.label }}
+                    </button>
                   </div>
                 </div>
 
@@ -780,7 +797,7 @@
                   :margin="marginHist"
                   :mutationName="null"
                   className="sequencing-histogram"
-                  :title="`Samples sequenced per day over last ${recentWindow} days`"
+                  :title="`Samples sequenced per day ${getDateRangeText()}`"
                   :onlyTotals="true"
                   notDetectedColor="#bab0ab"
                 />
@@ -911,6 +928,8 @@
             :data="lineageTable"
             :locationName="selectedLocation.label"
             :locationID="selectedLocation.id"
+            :minDate="xmin"
+            :maxDate="xmax"
           />
         </section>
 
@@ -942,7 +961,7 @@ import { mapState } from 'vuex';
 import { max } from 'd3-array';
 import { format } from 'd3-format';
 import { scaleOrdinal, scaleThreshold, scaleSequential } from 'd3-scale';
-import { timeDay } from 'd3-time';
+import { timeDay, timeMonth } from 'd3-time';
 import { timeFormat } from 'd3-time-format';
 import { schemeYlGnBu, interpolateRdPu } from 'd3-scale-chromatic';
 import debounce from 'lodash/debounce';
@@ -1126,7 +1145,15 @@ export default {
       //   "#bcbd22", // puce
       //   "#79706E", // grey
       //   "#79706E"
-      // ])
+      // ]),
+      minDate: '',
+      maxDate: '',
+      timeOptions: [
+        { label: '3 months', value: 3 },
+        { label: '6 months', value: 6 },
+        { label: '1 year', value: 12 },
+      ],
+      month: 6,
     };
   },
   computed: {
@@ -1326,11 +1353,17 @@ export default {
     },
   },
   watch: {
-    '$route.query': function (newVal, oldVal) {
-      if (newVal.loc !== oldVal.loc) {
+    $route: function (newVal, oldVal) {
+      if (newVal.query.loc !== oldVal.query.loc) {
+        this.minDate = newVal.query.xmin;
+        this.maxDate = newVal.query.xmax;
         this.newLocation = null;
         this.createReport();
         this.customMutations = this.grabCustomMutations();
+      } else {
+        this.minDate = newVal.query.xmin;
+        this.maxDate = newVal.query.xmax;
+        this.createReport();
       }
     },
     recentWindow() {
@@ -1363,8 +1396,17 @@ export default {
     this.customMutations = this.grabCustomMutations();
 
     const formatDate = timeFormat('%e %B %Y');
+    const format = timeFormat('%Y-%m-%d');
     this.currentTime = new Date();
     this.today = formatDate(this.currentTime);
+    let newMin = timeMonth.offset(this.currentTime, -6);
+    if (this.xmax && this.xmin) {
+      this.maxDate = this.xmax;
+      this.minDate = this.xmin;
+    } else {
+      this.maxDate = format(this.currentTime);
+      this.minDate = format(newMin);
+    }
 
     this.$nextTick(() => {
       // resize listener
@@ -1447,6 +1489,8 @@ export default {
         this.ndayThresh,
         this.dayThresh,
         this.recentWindow,
+        this.minDate,
+        this.maxDate,
       ).subscribe((results) => {
         this.lineagesByDay = results.lineagesByDay;
         this.noRecentData = !(
@@ -1644,6 +1688,8 @@ export default {
             muts: uniq(mutation),
             dark: this.darkMode,
             selected: uniq(selected),
+            xmin: this.xmin,
+            xmax: this.xmax,
           },
         });
       }
@@ -1721,9 +1767,48 @@ export default {
         this.loc,
         this.selectedMutations,
         this.totalThresh,
+        this.minDate,
+        this.maxDate,
       ).subscribe((results) => {
         this.lineageTable = results;
       });
+    },
+    updateDateRange(event) {
+      this.maxDate = event.newMax;
+      this.minDate = event.newMin;
+      this.month = event.month;
+    },
+    updateMapDateRange(month) {
+      this.month = month;
+      const newMax = new Date();
+      const newMin = timeMonth.offset(newMax, -month);
+      const format = timeFormat('%Y-%m-%d');
+      this.maxDate = format(newMax);
+      this.minDate = format(newMin);
+      const queryParams = this.$route.query;
+      this.$router.push({
+        name: 'LocationReport',
+        params: {
+          disableScroll: true,
+        },
+        query: {
+          xmin: timeFormat('%Y-%m-%d')(newMin),
+          xmax: timeFormat('%Y-%m-%d')(newMax),
+          loc: queryParams.loc,
+          muts: queryParams.muts,
+          alias: queryParams.alias,
+          pango: queryParams.pango,
+          variant: queryParams.variant,
+          selected: queryParams.selected,
+        },
+      });
+    },
+    getDateRangeText() {
+      if (this.xmin && this.xmax) {
+        return `${this.xmin}  -  ${this.xmax}`;
+      } else {
+        return 'all time';
+      }
     },
   },
 };
