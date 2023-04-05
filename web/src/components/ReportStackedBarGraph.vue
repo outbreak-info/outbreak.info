@@ -13,7 +13,7 @@
       />
       <!-- <g class="epi-axis axis--x" ref="xAxis" :transform="`translate(${margin.left},${height - margin.bottom})`"></g> -->
       <g
-        ref="yAxis"
+        ref="yAxisRef"
         class="epi-axis axis--y"
         :transform="`translate(${margin.left},${margin.top})`"
       />

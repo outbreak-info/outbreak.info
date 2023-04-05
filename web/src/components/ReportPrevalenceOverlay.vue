@@ -170,7 +170,7 @@
         </g> -->
           <g
             id="weird-last values"
-            :hidden="data && data.length < lengthThreshold"
+            :class="{ hidden: data && data.length < lengthThreshold }"
           >
             <text
               :x="width - margin.right"
@@ -294,7 +294,7 @@
               class="epi-axis epi-x axis--x"
             />
             <g
-              ref="yEpiAxis"
+              ref="yEpiAxisRef"
               :transform="`translate(${margin.left}, ${margin.top})`"
               class="epi-axis epi-y axis--y"
             />
@@ -757,7 +757,6 @@ const updateUrl = (newMin, newMax) => {
       },
     });
   } else if (props.routeName === 'GenomicsEmbedVariant') {
-    const params = route.params;
     router.push({
       name: 'GenomicsEmbed',
       state: {
@@ -1326,6 +1325,7 @@ watch(
 // created
 const debounceSetDims = debounce(setDims, 150);
 const debounceZoom = debounce(zoom, 150);
+
 onMounted(() => {
   nextTick(() => {
     if (!props.setWidth) {
