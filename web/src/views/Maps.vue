@@ -301,7 +301,7 @@ watch(
     selectedMin.value = props.min || props.min === 0 ? +props.min : null;
     selectedMax.value = props.max || props.max === 0 ? +props.max : null;
 
-    selectedDate.value = props.date;
+    selectedDate.value = newRoute.query.date ? newRoute.query.date : props.date;
 
     setTimeout(() => {
       getData();
