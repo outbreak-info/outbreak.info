@@ -895,7 +895,7 @@
                 <div class="d-flex flex-column flex-wrap">
                   <!-- Total count filter -->
                   <ThresholdSlider
-                    :countThreshold.sync="choroCountThreshold"
+                    v-model:countThreshold="choroCountThreshold"
                     :maxCount="choroMaxCount"
                   />
 
