@@ -949,7 +949,7 @@ import {
   watch,
 } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { mapState, storeToRefs } from 'pinia';
+import { storeToRefs } from 'pinia';
 import { max } from 'd3-array';
 import { format } from 'd3-format';
 import { scaleOrdinal, scaleThreshold, scaleSequential } from 'd3-scale';
@@ -1165,7 +1165,7 @@ const darkModeHelper = computed(() => {
     ? 'Switch to <b>light mode</b> to focus on similarities between lineages'
     : 'Switch to <b>dark mode</b> to emphasize mutations with low prevalence';
 });
-// object to stores the temporary additions to the custom mutations form BEFORE submission
+// object to store the temporary additions to the custom mutations form BEFORE submission
 // should consist of label + route param (qParam) + type (alias, pango, variant, mutation)
 
 const newVariant = computed(() => {

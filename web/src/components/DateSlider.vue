@@ -268,13 +268,6 @@ const updateAxis = () => {
   xDate.value = x.value(selectedDate.value);
 };
 
-watch(
-  () => props.date,
-  () => {
-    updateAxis();
-  },
-);
-
 onMounted(() => {
   updateAxis();
   setupDrag();

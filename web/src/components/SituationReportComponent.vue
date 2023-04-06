@@ -1077,6 +1077,8 @@ import uniq from 'lodash/uniq';
 import isEqual from 'lodash/isEqual';
 import debounce from 'lodash/debounce';
 import { isArray } from 'lodash/lang';
+import tippy from 'tippy.js';
+import 'tippy.js/themes/material.css';
 
 import {
   findLocation,
