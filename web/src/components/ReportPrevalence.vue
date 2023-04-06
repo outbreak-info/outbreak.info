@@ -603,7 +603,7 @@ const tooltipOff = () => {
 };
 
 const updatePlot = () => {
-  // const t1 = transition().duration(2500);
+  const t1 = transition().duration(2500);
 
   if (plottedData.value) {
     updateScales();
@@ -619,12 +619,10 @@ const updatePlot = () => {
             .attr('x', x.value(maxDate.value))
             .attr(
               'width',
-              width.value
-                ? width.value -
-                    margin.value.left -
-                    margin.value.right -
-                    x.value(maxDate.value)
-                : 0,
+              width.value -
+                margin.value.left -
+                margin.value.right -
+                x.value(maxDate.value),
             )
             .attr(
               'height',
@@ -643,12 +641,10 @@ const updatePlot = () => {
             .attr('x', x.value(maxDate.value))
             .attr(
               'width',
-              width.value
-                ? width.value -
-                    margin.value.left -
-                    margin.value.right -
-                    x.value(maxDate.value)
-                : 0,
+              width.value -
+                margin.value.left -
+                margin.value.right -
+                x.value(maxDate.value),
             );
         },
         (exit) =>

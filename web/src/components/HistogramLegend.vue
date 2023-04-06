@@ -215,15 +215,8 @@ const formatLimit = computed(() => {
 
 const filterString = computed(() => {
   let filter = null;
-  if (
-    (props.minVal || props.minVal === 0) &&
-    (props.maxVal || props.maxVal === 0)
-  ) {
-    filter = `${props.minVal.toLocaleString()} &mdash; ${props.maxVal.toLocaleString()}`;
-  } else if (props.minVal || props.minVal === 0) {
-    filter = `&ge; ${props.minVal.toLocaleString()}`;
-  } else if (props.maxVal || props.maxVal === 0) {
-    filter = `&le; ${props.maxVal.toLocaleString()}`;
+  if (route.query.min && route.query.max) {
+    filter = `${route.query.min.toLocaleString()} &mdash; ${route.query.max.toLocaleString()}`;
   }
 
   return filter
