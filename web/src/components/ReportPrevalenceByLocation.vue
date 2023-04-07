@@ -303,17 +303,6 @@ const title = computed(() => {
     : `Cumulative ${props.mutationName} prevalence in ${props.location}`;
 });
 
-const subTitle = computed(() => {
-  return props.location === 'Worldwide'
-    ? `Since ${props.mutationName} identification`
-    : `Since ${props.mutationName} identification in ${props.location}`;
-});
-
-const maxEstFormatted = computed(() => {
-  const formatter = format('.0%');
-  return maxEst.value ? formatter(maxEst.value) : null;
-});
-
 const setDims = () => {
   const mx = 0.9;
   const svgContainer = document.getElementById('report-cum-totals');

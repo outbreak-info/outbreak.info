@@ -99,10 +99,6 @@ const query = ref([
 const store = adminStore();
 const { loading } = storeToRefs(store);
 
-const types = computed(() => {
-  return results.value ? results.value.flatMap((d) => d.types) : null;
-});
-
 const queryString = computed(() => {
   return query.value.map((d) => `"${d.terms.join('" "')}"`)[0];
 });
@@ -115,20 +111,11 @@ onMounted(() => {
     results.value = resultsRes;
     dates.value = resultsRes[0].facets.date.terms;
 
-    // const keys = results[0]["hits"].flatMap(d => d.keywords)
-    // const keywords = nest()
-    //   .key(d => d ? d.toLowerCase() : "unknown")
-    //   .rollup(values => values.length)
-    //   .entries(keys)
-    //   .sort((a, b) => b.value - a.value);
-    //
-    // console.log(keywords);
-
     authors.value = nest()
       .key((d) => (d ? d : 'unknown'))
       .rollup((values) => values.length)
       .entries(
-        results[0]['hits']
+        resultsRes[0]['hits']
           .flatMap((d) => d.author)
           .flatMap((d) =>
             d.name
@@ -144,7 +131,7 @@ onMounted(() => {
       .key((d) => (d ? d : 'unknown'))
       .rollup((values) => values.length)
       .entries(
-        results[0]['hits']
+        resultsRes[0]['hits']
           .flatMap((d) => d.author)
           .flatMap((d) => (d.affiliation ? d.affiliation : 'unknown'))
           .flatMap((d) => d.name),

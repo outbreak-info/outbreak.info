@@ -47,7 +47,7 @@ import { axisLeft } from 'd3-axis';
 import { format } from 'd3-format';
 import { forceY, forceCollide, forceSimulation } from 'd3-force';
 import { scaleLinear, scaleTime } from 'd3-scale';
-import { select, event } from 'd3-selection';
+import { select } from 'd3-selection';
 import { stack, stackOrderAscending } from 'd3-shape';
 import debounce from 'lodash/debounce';
 
@@ -91,9 +91,6 @@ const marginHist = ref({
 });
 const width = ref(200);
 const height = ref(500);
-const legendHeight = ref(null);
-// variables
-const fillVar = ref('key');
 // axes
 const x = ref(scaleTime());
 const y = ref(scaleLinear());
@@ -101,8 +98,7 @@ const xAxis = ref(null);
 const yAxis = ref(null);
 const numXTicks = ref(5);
 const numYTicks = ref(5);
-// methods
-const areaF = ref(null);
+
 // data
 const series = ref(null);
 const lineages = ref(null);

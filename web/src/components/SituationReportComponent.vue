@@ -1153,7 +1153,6 @@ const url = ref(null);
 const lineageName = ref(null);
 const mutationName = ref(null);
 const reportName = ref(null);
-const mutationVar = ref(null);
 const mutations = ref(null);
 const reportType = ref(null);
 const locationQueryParams = ref(null);
@@ -1169,7 +1168,6 @@ const queryPangolin = ref(null);
 const newPangolin = ref(null);
 const currentLocs = ref(null); // placeholder for current locations
 const loc2Add = ref([]); // array to stores new locations to add
-const newSelectedLocation = ref(null); // stores location data when change the selected value
 // subscriptions
 const dataSubscription = ref(null);
 const curatedSubscription = ref(null);
@@ -1191,7 +1189,6 @@ const selectedLocations = ref(null);
 const selectedLocation = ref(null);
 const dateUpdated = ref(null);
 const reportMetadata = ref(null);
-const choroLocation = ref('country');
 const choroData = ref(null);
 const choroMaxCount = ref(null);
 const countries = ref(null);
@@ -1722,39 +1719,6 @@ const changeSublineageOverlay = (selected) => {
       },
       state: {
         disableScroll: true,
-      },
-    });
-  }
-};
-
-const updatePangolin = (selected) => {
-  newPangolin.value = selected.name;
-};
-
-const selectNewPangolin = () => {
-  // const queryParams = route.query;
-  if (props.routeTo === 'MutationReport') {
-    router.push({
-      name: 'MutationReport',
-      query: {
-        loc: props.loc,
-        pango: newPangolin.value,
-        muts: props.muts,
-        selected: props.selected,
-        overlay: sublineageOverlay.value,
-      },
-    });
-  } else if (props.routeTo === 'GenomicsEmbedVariant') {
-    router.push({
-      name: 'GenomicsEmbed',
-      query: {
-        type: 'var',
-        alias: props.alias,
-        loc: props.loc,
-        pango: newPangolin.value,
-        muts: props.muts,
-        selected: props.selected,
-        overlay: sublineageOverlay.value,
       },
     });
   }

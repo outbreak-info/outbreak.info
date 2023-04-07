@@ -193,11 +193,7 @@
         />
       </template>
 
-      <template
-        v-if="subParts"
-        id="sub_parts"
-        class="container my-4 border-top pt-3"
-      >
+      <template v-if="subParts">
         <div class="row">
           <small
             v-for="(metro, mIdx) in subParts"
@@ -263,7 +259,7 @@ import {
   epiTableSubject,
   getEpiData,
 } from '@/api/epi-traces.js';
-import { getLocation, processLocation } from '@/js/get-location.js';
+import { getLocation } from '@/js/get-location.js';
 import { lazyLoad } from '@/js/lazy-load';
 import { adminStore } from '@/stores/adminStore';
 import { geoStore } from '@/stores/geoStore';
@@ -383,17 +379,6 @@ const colorScaleFunc = (location) => {
 // computed properties
 const colorScale = computed(() => {
   return store.getColor;
-});
-
-const noData = computed(() => {
-  if (data.value) {
-    return !data.value[0]
-      .flatMap((d) => d.value)
-      .map((d) => d[props.variable])
-      .some((d) => d);
-  } else {
-    return false;
-  }
 });
 
 const isLogY = computed(() => {
@@ -534,9 +519,6 @@ const updateSelected = (selected) => {
   selectedPlaces.value = [...new Set(selected)];
 };
 
-const updateAddable = (selected) => {
-  addable.value = selected;
-};
 const setDims = () => {
   const minWidth = 550;
   const hwRatio = 0.75;

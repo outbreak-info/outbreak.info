@@ -1714,33 +1714,6 @@ const filterMOC = (disableScroll = true) => {
   });
 };
 
-const route2Filtered = (org, type) => {
-  if (type === 'VOC') {
-    selectedVOC.value = [org];
-    selectedVOI.value = [];
-    selectedMOC.value = [];
-    selectedMOI.value = [];
-  }
-  if (type === 'VOI' || type === 'VUI') {
-    selectedVOI.value = [org];
-    selectedVOC.value = [];
-    selectedMOC.value = [];
-    selectedMOI.value = [];
-  }
-
-  filterVOC(false);
-};
-
-const route2OutbreakClass = (anchorID) => {
-  // clear anything that's selected
-  clearFilters();
-  router.push({
-    name: 'SituationReports',
-    query: {},
-    hash: `#${anchorID}`,
-  });
-};
-
 const filterName = () => {
   filterReports();
 
@@ -1785,12 +1758,6 @@ const getCuratedMutation = () => {
     store.setReportLoading(false);
     filterReports();
   });
-};
-
-const capitalize = (value) => {
-  if (!value) return '';
-  value = value.toString();
-  return value.charAt(0).toUpperCase() + value.slice(1);
 };
 
 const debounceSearch = debounce(filterName, 250);

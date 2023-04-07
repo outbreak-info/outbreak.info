@@ -193,8 +193,6 @@ const router = useRouter();
 // global variable - equivalent with this.$apiurl
 const apiUrl = inject('apiUrl');
 
-const lat = ref(10);
-const lon = ref(0);
 const locationData = ref(null);
 const similar = ref(null);
 const xDomain = ref(null);
@@ -327,7 +325,6 @@ const formatValue = (val) => {
     : format(',.0f')(val);
 };
 
-const debounceChangeSimilarity = debounce(changeSimilarity, 250);
 const debounceGetSimilar = debounce(getSimilar, 500);
 
 watch(

@@ -766,37 +766,9 @@ const sortOpts = ref([
     label: 'Z-A',
   },
 ]);
-const resourceTypes = ref([
-  {
-    //   label: "What's New",
-    //   id: "whats-new"
-    // }, {
-    //   label: "Topics",
-    //   id: "topics"
-    // }, {
-    label: 'Publications',
-    id: 'Publication',
-  },
-  // {
-  //   label: "Analyses",
-  //   id: "Analysis"
-  // },
-  {
-    label: 'Clinical Trials',
-    id: 'ClinicalTrial',
-  },
-  {
-    label: 'Datasets',
-    id: 'Dataset',
-  },
-  {
-    label: 'Protocols',
-    id: 'Protocol',
-  },
-]);
+
 const resources = ref([]);
 
-const new2Display = ref(3);
 const newData = ref(null);
 const facetSummary = ref(null);
 

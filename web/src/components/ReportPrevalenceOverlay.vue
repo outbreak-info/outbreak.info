@@ -419,10 +419,8 @@ const marginHist = ref({
   left: 85,
   right: 110,
 });
-const heightCounts = ref(80);
+
 const lengthThreshold = ref(1);
-const showDetected = ref(null);
-const detectedDisplayThresh = ref(50);
 const showCI = ref(true);
 const fontFamily = ref("'DM Sans', Avenir, Helvetica, Arial, sans-serif;");
 // variables
@@ -431,12 +429,10 @@ const fillVariable = ref('label');
 const xEpiVariable = ref('date');
 const yVariable = ref('proportion');
 const yEpiVariable = ref('confirmed_rolling');
-const totalVariable = ref('total_count');
 // axes
 const x = ref(scaleTime());
 const y = ref(scaleLinear());
 const yEpi = ref(scaleLinear());
-const yCounts = ref(scaleLinear());
 const colorScale = ref(
   scaleOrdinal([
     '#4E79A7', // dk blue
@@ -461,8 +457,7 @@ const colorScale = ref(
     '#D7B5A6', // lt. brown
   ]),
 );
-const maxCounts = ref(null);
-const xBandwidth = ref(1);
+
 const xMin = ref(null);
 const xMax = ref(null);
 const maxDate = ref(null);
@@ -471,8 +466,6 @@ const today = ref(null);
 const xAxis = ref(null);
 const yAxis = ref(null);
 const yEpiAxis = ref(null);
-const yCountsAxisLeft = ref(null);
-const yCountsAxisRight = ref(null);
 const numXTicks = ref(5);
 const numYTicks = ref(6);
 const zoomAllowed = ref(false);
@@ -519,10 +512,6 @@ const title = computed(() => {
   return props.locationName === 'Worldwide'
     ? `Mutation and case prevalence over time worldwide`
     : `Mutation and case prevalence over time in ${props.locationName}`;
-});
-
-const countTitle = computed(() => {
-  return `Total samples sequenced by collection date in ${props.location}`;
 });
 
 const countMonth = computed(() => {

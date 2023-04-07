@@ -136,8 +136,6 @@ const marginHist = ref({
 const width = ref(null);
 const minWidth = ref(null);
 const height = ref(500);
-// variables
-const fillVar = ref('pangolin_lineage');
 // axes
 const x = ref(null);
 const y = ref(scaleLinear());

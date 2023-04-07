@@ -75,16 +75,6 @@ const prepData = () => {
     return sum(filtered, (d) => d.count) / daySpan;
   };
 
-  const weeklySum = (date, values, N = 3) => {
-    const dateRange = timeDay.range(timeWeek.floor(date), timeWeek.ceil(date));
-    const lowDate = dateRange[0];
-    const highDate = dateRange[1];
-    const filtered = values.filter(
-      (d) => d.date <= highDate && d.date >= lowDate,
-    );
-    return sum(filtered, (d) => d.count);
-  };
-
   const firstDate = min(props.data, (d) => d.date);
   const lastDate = max(props.data, (d) => d.date);
 

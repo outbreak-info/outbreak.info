@@ -133,7 +133,6 @@ onMounted(() => {
     '-date',
     props.numResults,
   ).subscribe((results) => {
-    // console.log(results)
     newPubs.value = results['Publication'];
     newDatasets.value = results['Dataset'];
     newTrials.value = results['ClinicalTrial'];

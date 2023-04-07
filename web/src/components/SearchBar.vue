@@ -20,8 +20,8 @@
         @keydown.up="onArrowUp"
         @keydown.enter.prevent="onEnter"
         @keydown.delete="onBackspace"
-        @keydown.ctrl.65="onSelectAll"
-        @keydown.meta.65="onSelectAll"
+        @keydown.ctrl.a="onSelectAll"
+        @keydown.meta.a="onSelectAll"
       />
       <ul
         v-show="isOpen"
@@ -80,7 +80,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(['location', 'input']);
+const emit = defineEmits(['location', 'input', 'selected']);
 
 // global variable - equivalent with this.$apiurl
 const apiUrl = inject('apiUrl');

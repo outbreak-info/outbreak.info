@@ -487,10 +487,6 @@ const { loading, resources } = storeToRefs(store);
 
 let showAffiliation = ref(false);
 
-const datePublished = computed(() => {
-  return formatDate(props.data.dateModified);
-});
-
 const retractionText = computed(() => {
   if (
     props.data.correction &&

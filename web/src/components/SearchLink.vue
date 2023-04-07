@@ -17,9 +17,10 @@
 </template>
 
 <script setup>
-import tippy from 'tippy.js';
-import 'tippy.js/themes/light.css';
 import { onMounted } from 'vue';
+import tippy from 'tippy.js';
+
+import 'tippy.js/themes/light.css';
 
 const props = defineProps({
   data: Array,

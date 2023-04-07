@@ -197,7 +197,7 @@ const geographicName = computed(() => {
 });
 
 const title = computed(() => {
-  return geographicName
+  return geographicName.value
     ? `${props.lineageName} ${geographicName.value}`
     : props.lineageName;
 });
@@ -294,6 +294,7 @@ const tooltipOn = (d) => {
 
     select(yAxisRef.value).selectAll('text').style('opacity', 0.3);
 
+    // eslint-disable-next-line no-prototype-builtins
     if (d.hasOwnProperty(yVar.value)) {
       select(yAxisRef.value)
         .selectAll('text')

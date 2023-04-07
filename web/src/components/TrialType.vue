@@ -70,8 +70,6 @@ const props = defineProps({
 });
 
 const phaseWidth = ref(37);
-const triangleWidth = ref(10);
-const allPhases = ref([1, 2, 3, 4]);
 const spacer = ref(7);
 const height = ref(17);
 

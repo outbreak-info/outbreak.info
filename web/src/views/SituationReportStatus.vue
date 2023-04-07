@@ -312,7 +312,6 @@ const { locationLoading1, locationLoading2, locationLoading3 } =
 
 const queryLocation = ref(null);
 const totalSubscription = ref(null);
-const locationSubscription = ref(null);
 const longitudinalSubscription = ref(null);
 const gapSubscription = ref(null);
 const mapSubscription = ref(null);
@@ -411,7 +410,7 @@ const updateMap = () => {
 };
 
 const checkID = () => {
-  idSubscription.vlaue = checkGisaidID(
+  idSubscription.value = checkGisaidID(
     genomicsUrl,
     selectedSequence.value,
   ).subscribe((found) => {
