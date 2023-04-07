@@ -1149,7 +1149,7 @@ watch(searchInput, () => {
 watch(
   () => route,
   (newVal, oldVal) => {
-    searchInput.value = newVal.query.q ? newVal.query.q : null;
+    searchInput.value = newVal.query.q ? newVal.query.q : props.q;
     filterString.value = newVal.query.filter ? newVal.query.filter : null;
     numPerPage.value = newVal.query.size ? Number(newVal.query.size) : 10;
     selectedPage.value = newVal.query.page ? Number(newVal.query.page) : 0;

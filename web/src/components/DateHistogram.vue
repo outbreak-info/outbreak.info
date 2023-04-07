@@ -13,7 +13,7 @@
       />
     </svg>
     <svg
-      :hidden="!filterable"
+      :class="{ hidden: !filterable }"
       :width="width + margin.left + margin.right"
       height="38"
     >

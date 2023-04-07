@@ -388,7 +388,7 @@
 
 <script setup>
 import { computed, inject, onMounted, onUnmounted, ref, watch } from 'vue';
-import { onBeforeRouteUpdate, useRoute } from 'vue-router';
+import { useRoute } from 'vue-router';
 import { storeToRefs } from 'pinia';
 import { timeFormat, timeParse } from 'd3-time-format';
 
@@ -493,17 +493,12 @@ watch(
   () => route.params,
   (newRoute, oldRoute) => {
     if (newRoute) {
+      id.value = newRoute.id;
       getData(newRoute.id);
     }
   },
-  { immediate: true, deep: true },
+  { immediate: true },
 );
-
-onBeforeRouteUpdate((to, from, next) => {
-  id.value = to.params.id;
-  getData(to.params.id);
-  next();
-});
 </script>
 
 <style lang="scss" scoped>
