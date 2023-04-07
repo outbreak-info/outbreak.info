@@ -654,7 +654,6 @@ const drawBarchart = () => {
           });
           bar.on('pointerout', (event) => {
             selectAll('.tooltip').style('opacity', 0);
-
             hoverLine.alpha = 0;
             hoverCircle.alpha = 0;
           });

@@ -151,7 +151,7 @@ const play = () => {
     selectedDate.value = minDate.value;
   }
 
-  if (isPlaying) {
+  if (isPlaying.value) {
     gtag.event('map_play', {
       event_category: `map_play`,
       event_label: `playing map starting from [${route.fullPath}])`,
