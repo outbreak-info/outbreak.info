@@ -96,6 +96,7 @@ watch(
   () => {
     updatePlot();
   },
+  { deep: true },
 );
 
 onMounted(() => {

@@ -359,7 +359,7 @@
       </a>
     </section>
 
-    <router-view class="main" v-slot="{ Component }">
+    <router-view class="main" v-slot="{ Component }" :key="$route.fullPath">
       <transition name="fade">
         <keep-alive>
           <component :is="Component" />

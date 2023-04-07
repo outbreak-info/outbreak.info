@@ -410,8 +410,7 @@ const columns = ref([
     essential: true,
   },
 ]);
-const searchInput = ref('');
-const filteredCases = ref(null);
+
 const sortVar = ref('-confirmed');
 const page = ref(0);
 const numPerPage = ref(10);
@@ -428,11 +427,6 @@ const upperLim = computed(() => {
 
 const lastPage = computed(() => {
   return total.value ? Math.floor(total.value / numPerPage.value) : null;
-});
-
-dataSubscription.value = epiTableState$.subscribe((res) => {
-  data.value = res['data'];
-  total.value = res['total'];
 });
 
 const sortColumn = (variable) => {
@@ -501,18 +495,19 @@ watch(
   { deep: true },
 );
 
-watch(
-  selectedAdminLevels,
-  () => {
-    updateData();
-  },
-  { deep: true },
-);
+watch(selectedAdminLevels, () => {
+  updateData();
+});
 
 onMounted(() => {
-  if (data.value) {
-    prepData();
-  }
+  dataSubscription.value = epiTableState$.subscribe((res) => {
+    data.value = res['data'];
+    total.value = res['total'];
+
+    if (data.value) {
+      prepData();
+    }
+  });
 
   // this.$nextTick(() => {
   //   tippy(".correction-explanation", {
