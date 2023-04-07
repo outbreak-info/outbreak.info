@@ -692,27 +692,18 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { onMounted, ref } from 'vue';
 import { lazyLoad } from '@/js/lazy-load';
-import Logos from '@/components/Logos';
 
-export default {
-  name: 'App',
-  components: {
-    EmailSubscription: lazyLoad('EmailSubscription'),
-    Logos,
-  },
-  data() {
-    return {
-      year: '',
-    };
-  },
-  mounted() {
-    const self = this;
-    const currentTime = new Date();
-    self.year = currentTime.getFullYear();
-  },
-};
+const EmailSubscription = lazyLoad('EmailSubscription');
+const Logos = lazyLoad('Logos');
+
+const year = ref(null);
+
+onMounted(() => {
+  year.value = new Date().getFullYear();
+});
 </script>
 
 <style lang="scss">

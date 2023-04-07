@@ -4,9 +4,7 @@ module.exports = {
     es2021: true,
   },
   extends: ['plugin:vue/vue3-recommended', 'eslint:recommended', 'prettier'],
-  parserOptions: {
-    parser: 'vue-eslint-parser',
-  },
+  parser: 'vue-eslint-parser',
   rules: {
     'no-unused-vars': 'off',
     'no-undef': 'off',
