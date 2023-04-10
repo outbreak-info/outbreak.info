@@ -23,6 +23,7 @@
                   <router-link
                     class="nav-link no-underline p-0"
                     :to="`#${anchor.replace(' ', '_')}`"
+                    exact-active-class="resource-anchor-color"
                   >
                     {{ anchor }}
                   </router-link>
@@ -508,6 +509,9 @@ watch(
 
 .helper {
   line-height: 1.2em;
+}
+.resource-anchor-color {
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .section-header {
