@@ -94,7 +94,6 @@ const margin = ref({
   gap: 10,
 });
 const innerPadding = ref(0.25);
-const transitionDuration = ref(3500);
 const height = ref(0);
 const data = ref(null);
 const barHeight = ref(15);

@@ -165,7 +165,6 @@ const margin = ref({
 });
 const radius = ref(3.5);
 const transitionDuration = ref(1500);
-const backgroundColor = ref('#f8f9fa');
 // data
 const dataSubscription = ref(null);
 const plottedData = ref(null);
@@ -296,11 +295,6 @@ const setPlotDims = () => {
 const colorScale = (location) => {
   const scale = store.getColor;
   return scale(location);
-};
-
-const lightColorScale = (location) => {
-  const scale = store.getColor;
-  return scale(location, 0.7);
 };
 
 const changeYScale = () => {

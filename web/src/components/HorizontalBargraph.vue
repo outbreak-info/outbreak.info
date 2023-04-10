@@ -47,8 +47,6 @@ const props = defineProps({
   },
 });
 
-const barHeight = ref(10);
-const spacing = ref(3);
 const margin = ref({
   top: 10,
   bottom: 3,

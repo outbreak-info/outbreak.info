@@ -161,10 +161,6 @@ const addVariant = () => {
   submitCount.value += 1;
 };
 
-const deleteVariant = (idx, variantArr) => {
-  variantArr.splice(idx, 1);
-};
-
 const submitQuery = () => {
   addVariant();
   // renamed for below variables: since pango, variant, musts are already declared

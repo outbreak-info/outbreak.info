@@ -1649,12 +1649,6 @@ const updateTable = () => {
   });
 };
 
-const createReport = () => {
-  setupReport();
-  updateTable();
-  updateMaps();
-};
-
 // created hook in previous version
 const debounceWindowChange = debounce(updateWindow, 700);
 const debounceSetupReport = debounce(setupReport, 500);

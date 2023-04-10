@@ -209,7 +209,6 @@ const props = defineProps({
   },
 });
 
-const filterWidth = ref(200);
 const rectWidth = ref(15);
 const colorDomain = ref([]);
 

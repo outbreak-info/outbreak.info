@@ -224,7 +224,6 @@ const width = ref(null);
 const minWidth = ref(450);
 const height = ref(500);
 // variables
-const fillVar = ref('pangolin_lineage');
 const xVariable = ref('date_time');
 // axes
 const x = ref(null);

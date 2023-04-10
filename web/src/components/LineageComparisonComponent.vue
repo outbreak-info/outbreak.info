@@ -1250,63 +1250,6 @@ const addLocationLineages = () => {
   });
 };
 
-const clearAddMutations = () => {
-  selectedPango.value = [];
-  addMutations();
-};
-
-const clearAddLocationLineages = () => {
-  selectedPango.value = [];
-  addLocationLineages();
-};
-
-const addWHO = (clearPrevious = false) => {
-  // set new values
-  if (clearPrevious) {
-    selectedPango.value = [selectedWHO.value];
-  } else {
-    selectedPango.value.push(selectedWHO.value);
-  }
-
-  showSnackbar.value = true;
-  snackbarText.value = `${selectedWHO.value} lineages added`;
-  setTimeout(() => {
-    showSnackbar.value = false;
-  }, 5000);
-
-  if (props.routeTo === 'GenomicsEmbed') {
-    router.push({
-      name: props.routeTo,
-      state: {
-        disableScroll: true,
-      },
-      query: {
-        type: 'comp',
-        pango: selectedPango.value,
-        gene: selectedGenes.value,
-        threshold: prevalenceThreshold.value,
-        dark: darkMode.value,
-      },
-    });
-  } else {
-    router.push({
-      name: props.routeTo,
-      state: {
-        disableScroll: true,
-      },
-      query: {
-        pango: selectedPango.value,
-        gene: selectedGenes.value,
-        threshold: prevalenceThreshold.value,
-        dark: darkMode.value,
-      },
-    });
-  }
-  // reset / clear
-  selectedWHO.value = null;
-  getData();
-};
-
 const submitNewData = () => {
   if (props.routeTo === 'GenomicsEmbed') {
     router.push({

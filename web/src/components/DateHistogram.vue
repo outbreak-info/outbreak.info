@@ -143,12 +143,6 @@ const parseDate = (val) => {
   return timeParse('%Y-%m-%d')(val);
 };
 
-const updateFilterLimits = () => {
-  selectedMin.value = new Date(2020, 3, 1);
-  // selectedMax: new Date(2020,8,1),this.minVal ;
-  selectedMax.value = new Date(2020, 6, 1);
-};
-
 const setupPlot = () => {
   svg.value = select(hist.value);
   xAxisRef.value = select(x_axis.value);
@@ -263,9 +257,6 @@ const updateDrag = (side) => {
       `translate(${x.value(selectedMax.value) - 8},0)`,
     );
   }
-
-  // selectAll(".date-histogram")
-  // .style("fill", d => d.date <= this.selectedMax && d.date >= this.selectedMin ? "#66c2a5" : "#bababa")
 };
 
 const drawPlot = () => {

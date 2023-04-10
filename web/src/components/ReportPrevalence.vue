@@ -342,10 +342,6 @@ const title = computed(() => {
     : `${props.mutationName} prevalence over time in ${props.location}`;
 });
 
-const countTitle = computed(() => {
-  return `Total samples sequenced by collection date in ${props.location}`;
-});
-
 const countMonth = computed(() => {
   if (props.xmin && props.xmax) {
     return timeMonth.count(new Date(props.xmin), new Date(props.xmax));

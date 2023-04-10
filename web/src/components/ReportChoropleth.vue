@@ -126,7 +126,6 @@ const margin = ref({
 });
 // variables
 const variable = ref('proportion');
-const thresholdVar = ref('cum_total_count');
 const filteredColor = ref('#A5A5A5');
 const nullColor = ref('#EFEFEF');
 const strokeColor = ref('#2c3e50');
@@ -145,7 +144,6 @@ const overlay = ref(null);
 const ttips = ref(null);
 // methods
 const path = ref(geoPath());
-const transition1 = ref(500);
 const noMap = ref(true);
 // variables instead of this.$refs
 const tooltip_choro = ref(null);
@@ -160,26 +158,6 @@ const x = ref(0);
 const y = ref(0);
 
 // computed variables
-const maxVal = computed(() => {
-  return props.data
-    ? props.fillMax
-      ? props.fillMax
-      : max(props.data, (d) => d[variable.value])
-    : null;
-});
-
-const maxFormatted = computed(() => {
-  return format('.0%')(maxVal.value);
-});
-
-const minVal = computed(() => {
-  return props.data ? min(props.data, (d) => d[variable.value]) : null;
-});
-
-const varMax = computed(() => {
-  return Math.max(Math.abs(minVal.value), maxVal.value);
-});
-
 const title = computed(() => {
   if (props.smallMultiples) {
     return props.recentWindow
@@ -265,10 +243,6 @@ const setupChoro = () => {
   zeros.value = select(zero_data.value);
   overlay.value = select(overlayRef.value);
   ttips.value = select(choropleth_tooltip.value); // can't find choropleth_tooltip ref
-};
-
-const formatPct = (pct) => {
-  return format('.0%')(pct);
 };
 
 const updateProjection = () => {

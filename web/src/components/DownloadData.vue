@@ -159,8 +159,7 @@ const route = useRoute();
 const router = useRouter();
 
 const store = adminStore();
-const { loading, genomicsCitation, resourcesCitation, sources, resources } =
-  storeToRefs(store);
+const { loading, sources, resources } = storeToRefs(store);
 
 const today = computed(() => {
   return new Date();
