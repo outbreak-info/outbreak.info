@@ -527,10 +527,6 @@ const retractionText = computed(() => {
 });
 
 onMounted(() => {
-  const id = route.params.id;
-
-  // console.log(this.data)
-
   tippy('.topic', {
     content: 'Loading...',
     maxWidth: '200px',
