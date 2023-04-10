@@ -5,7 +5,7 @@
       :width="width + margin.left + margin.right"
       :height="height + margin.top + margin.bottom"
     >
-      <g ref="countries" class="country-group" />
+      <g ref="countriesRef" class="country-group" />
     </svg>
     <div v-if="showNames" class="country-container d-flex flex-wrap">
       <small v-for="(country, idx) in countries" :key="idx" class="m-0 mr-1">
@@ -56,13 +56,13 @@ const svg = ref(null);
 const regions = ref(null);
 // variables to replace this.$refs
 const svgRef = ref(null);
-const countries = ref(null);
+const countriesRef = ref(null);
 // missing variables in previous version
 const baseMap = ref(null);
 
 const setupChoro = () => {
   svg.value = select(svgRef.value);
-  regions.value = select(countries.value);
+  regions.value = select(countriesRef.value);
   height.value = props.width * 0.5;
 
   baseMap.value = props.mapSource === 'GADM' ? GADM.features : GEODATA.features;
