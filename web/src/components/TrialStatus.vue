@@ -47,7 +47,6 @@ import { computed, onMounted, ref } from 'vue';
 import uniq from 'lodash/uniq';
 
 import { lazyLoad } from '@/js/lazy-load';
-import { select } from 'd3-selection';
 
 const CountryMap = lazyLoad('CountryMap');
 
