@@ -66,7 +66,7 @@ const width = computed(() => {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="scss">
+<style lang="scss" scoped>
 .polygon-phase {
   fill: $grey-40;
   stroke: $grey-70;

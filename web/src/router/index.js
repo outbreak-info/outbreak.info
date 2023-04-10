@@ -11,6 +11,7 @@ const router = createRouter({
     if (to.hash) {
       return {
         el: to.hash,
+        behavior: 'smooth',
       };
     }
     // we can't pass disableScroll property in router param. so decided to use history state

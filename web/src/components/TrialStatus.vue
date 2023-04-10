@@ -47,6 +47,7 @@ import { computed, onMounted, ref } from 'vue';
 import uniq from 'lodash/uniq';
 
 import { lazyLoad } from '@/js/lazy-load';
+import { select } from 'd3-selection';
 
 const CountryMap = lazyLoad('CountryMap');
 
@@ -61,7 +62,7 @@ const props = defineProps({
 });
 
 const mapWidth = ref(null);
-const clientWidth = ref(null);
+const map = ref(null);
 
 const countries = computed(() => {
   return uniq(
@@ -74,7 +75,7 @@ onMounted(() => {
   if (props.setWidth) {
     mapWidth.value = props.setWidth;
   } else {
-    const targetWidth = clientWidth.value * 0.85;
+    const targetWidth = map.value.clientWidth * 0.85;
     mapWidth.value = targetWidth > 600 ? 600 : targetWidth;
   }
 });

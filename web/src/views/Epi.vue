@@ -673,7 +673,7 @@ onUnmounted(() => {
 });
 
 onMounted(() => {
-  console.log('#########props', props.location);
+  console.log(props.location);
   setLocation(props.location);
   // this.$nextTick in optionsAPI
   nextTick(function () {
