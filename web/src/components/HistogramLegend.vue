@@ -229,15 +229,15 @@ const setupPlot = () => {
   xAxisRef.value = select(x_axis.value);
 };
 
-const updateFilterLimits = (min, max) => {
+const updateFilterLimits = () => {
   selectedMin.value =
-    min || min === 0
-      ? min
+    route.query.min || route.query.min === 0
+      ? route.query.min
       : Math.floor((domain.value[0] + Number.EPSILON) * precision.value) /
         precision.value;
   selectedMax.value =
-    max || max === 0
-      ? max
+    route.query.max || route.query.max === 0
+      ? route.query.max
       : Math.ceil((domain.value[1] + Number.EPSILON) * precision.value) /
         precision.value;
 };
@@ -369,10 +369,7 @@ const changeFilters = () => {
 const updatePlot = () => {
   if (props.data && props.colorScale) {
     updateAxes();
-    updateFilterLimits(
-      selectedMin.value ? selectedMin.value : props.minVal,
-      selectedMax.value ? selectedMax.value : props.maxVal,
-    );
+    updateFilterLimits();
 
     chart.value
       .selectAll('rect')
@@ -439,6 +436,26 @@ watch(
   () => {
     updatePlot();
   },
+);
+
+watch(
+  () => props.minVal,
+  (newVal, oldVal) => {
+    if (newVal) {
+      updateFilterLimits();
+    }
+  },
+  { immediate: true },
+);
+
+watch(
+  () => props.maxVal,
+  (newVal, oldVal) => {
+    if (newVal) {
+      updateFilterLimits();
+    }
+  },
+  { immediate: true },
 );
 
 onMounted(() => {
