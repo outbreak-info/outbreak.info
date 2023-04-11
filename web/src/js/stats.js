@@ -2,10 +2,6 @@ import { sum } from 'd3-array';
 import { timeDay } from 'd3-time';
 import { timeParse } from 'd3-time-format';
 
-// import {
-//   quantile
-// } from "@stdlib/stats/base/dists/beta";
-
 export const rollingAverage = (df, all, dateVar = 'date_time', numDays = 3) => {
   const parseDate = timeParse('%Y-%m-%d');
 

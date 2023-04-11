@@ -325,9 +325,7 @@ const setDims = () => {
 
   if (selector) {
     const dims = selector.getBoundingClientRect();
-    // const dims = {window.innerWidth, height: window.innerHeight}
     const whRatio = 5 / 3;
-    const widthThresh = 700;
     const selectorsProportion = 0.8;
 
     stackedWidth.value = dims.width;

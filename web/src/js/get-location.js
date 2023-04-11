@@ -29,20 +29,6 @@ const lookupLocation = () => {
   });
 };
 
-// export function getLocation(apiUrl) {
-//   // if (!navigator.geolocation) {
-//   //   console.log("Geolocation not supported")
-//   // }
-//   // else {
-//   //
-//   return new Promise((resolve, reject) => {
-//     navigator.geolocation.getCurrentPosition(resolve, reject)
-//     // navigator.geolocation.getCurrentPosition(loc => processLocation(apiUrl, loc), failedLocation)
-//   })
-//
-//   // }
-// }
-
 export const processLocation = (apiUrl, location) => {
   const scalar = 0.05;
   const url = `${apiUrl}query?q=mostRecent:true AND lat:[${
@@ -74,9 +60,4 @@ export const processLocation = (apiUrl, location) => {
       return from([]);
     }),
   );
-};
-
-const failedLocation = (location) => {
-  console.log(`failed location: ${location}`);
-  return of(null);
 };
