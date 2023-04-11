@@ -252,86 +252,6 @@ export const getCuratedMutations = (apiurl, prevalenceThreshold) => {
   );
 };
 
-export const getSublineageMutations = (
-  apiurl,
-  prevalenceThreshold,
-  sMutationsOnly = true,
-) => {
-  const query = CURATED.map((d) => d.pango_descendants).join(',');
-
-  return getCharacteristicMutations(apiurl, query, 0, false).pipe(
-    map((charMuts) => {
-      // pull out the characteristic mutations and bind to the curated list.
-      let curated = orderBy(CURATED, ['variantType']);
-      // loop over each curated report; attach the associated lineages / characteristic mutations with it.
-      curated.forEach((report) => {
-        let mutations_in_report = [];
-
-        report.pango_descendants.forEach((lineage) => {
-          // flat map the mutations within the lineages associated with that group
-          if (Object.keys(charMuts).includes(lineage)) {
-            mutations_in_report.push(charMuts[lineage]);
-          }
-        });
-
-        // flat map the mutations to collapse the sublineages down into a long list.
-        report['mutations'] = mutations_in_report.flatMap((d) => d);
-
-        if (sMutationsOnly) {
-          report.mutations = report.mutations.filter((d) => d.gene === 'S');
-        }
-
-        const prevalentMutations = uniq(
-          report.mutations
-            .filter((d) => d.prevalence > prevalenceThreshold)
-            .map((d) => d.mutation),
-        );
-        report.mutations = report.mutations.filter((x) =>
-          prevalentMutations.includes(x.mutation),
-        );
-      });
-
-      const voc = CURATED.filter(
-        (d) => d.variantType === 'Variant of Concern',
-      ).flatMap((d) => d.char_muts_query);
-      const voc_parent = CURATED.filter(
-        (d) => d.variantType === 'Variant of Concern',
-      ).map((d) => d.label);
-      const voi = CURATED.filter(
-        (d) => d.variantType === 'Variant of Interest',
-      ).flatMap((d) => d.char_muts_query);
-      const voi_parent = CURATED.filter(
-        (d) => d.variantType === 'Variant of Interest',
-      ).map((d) => d.label);
-
-      curated = nest()
-        .key((d) => d.variantType)
-        .entries(curated);
-
-      curated.forEach((d) => {
-        d['id'] =
-          d.key === 'Variant of Concern'
-            ? 'voc'
-            : d.key === 'Variant of Interest'
-            ? 'voi'
-            : d.key === 'Variant under Monitoring'
-            ? 'vum'
-            : 'unknown';
-      });
-
-      curated = orderBy(curated, [reportTypeSorter], ['asc']);
-
-      return {
-        md: curated,
-        voc: voc,
-        voc_parent: voc_parent,
-        voi: voi,
-        voi_parent: voi_parent,
-      };
-    }),
-  );
-};
-
 export const getCuratedList = (
   apiurl,
   prevalenceThreshold,
@@ -392,72 +312,6 @@ export const getCuratedList = (
       };
     }),
   );
-
-  // return forkJoin(
-  //   ...query.map((d) =>
-  //     getCharacteristicMutations(
-  //       apiurl,
-  //       d,
-  //       storeGenomics.characteristicThreshold,
-  //       false,
-  //     ),
-  //   ),
-  // ).pipe(
-  //   map((charMuts) => {
-  //     // flatten array of objects to a single object.
-  //     charMuts = Object.assign(...charMuts);
-  //
-  //     // pull out the characteristic mutations and bind to the curated list.
-  //     let curated = orderBy(CURATED, ['variantType']);
-  //     // loop over each curated report; attach the associated lineages / characteristic mutations with it.
-  //     curated.forEach((report) => {
-  //       report['showSublineages'] = false;
-  //       report['mutations'] = Object.keys(charMuts).includes(
-  //         report.char_muts_parent_query,
-  //       )
-  //         ? charMuts[report.char_muts_parent_query]
-  //         : [];
-  //       report['mutationsYDomain'] = uniq(
-  //         report.mutations.map((d) => d.pangolin_lineage),
-  //       );
-  //       report['lineage_count'] = report.mutations[0]
-  //         ? report.mutations[0].lineage_count.toLocaleString()
-  //         : null;
-  //
-  //       if (sMutationsOnly) {
-  //         report.mutations = report.mutations.filter((d) => d.gene == 'S');
-  //       }
-  //
-  //       // const prevalentMutations = uniq(report.mutations.filter(d => d.prevalence > prevalenceThreshold).map(d => d.mutation));
-  //       // report.mutations = report.mutations.filter(x => prevalentMutations.includes(x.mutation))
-  //     });
-  //
-  //     curated = nest()
-  //       .key((d) => d.variantType)
-  //       .entries(curated);
-  //
-  //     curated.forEach((d) => {
-  //       d['id'] =
-  //         d.key == 'Variant of Concern'
-  //           ? 'voc'
-  //           : d.key == 'Variant of Interest'
-  //           ? 'voi'
-  //           : d.key == 'Variant under Monitoring'
-  //           ? 'vum'
-  //           : d.key == 'Previously Circulating Variant of Concern'
-  //           ? 'previous_voc'
-  //           : d.key == 'De-escalated'
-  //           ? 'deescalated'
-  //           : 'unknown';
-  //     });
-  //
-  //     curated = orderBy(curated, [reportTypeSorter], ['asc']);
-  //
-  //     return {
-  //       md: curated,
-  //     };
-  //   }),
-  // );
 };
 
 export const getReportList = (
@@ -1013,7 +867,22 @@ export const getCharacteristicMutations = (
   prevalenceThreshold = storeGenomics.characteristicThreshold,
   returnFlat = true,
   includeSublineages = false,
-  genes = ["5UTR", "ORF1a", "ORF1b", "S", "ORF3a", "E", "M", "ORF6", "ORF7a", "ORF7b", "ORF8", "N", "ORF10", "3UTR"],
+  genes = [
+    '5UTR',
+    'ORF1a',
+    'ORF1b',
+    'S',
+    'ORF3a',
+    'E',
+    'M',
+    'ORF6',
+    'ORF7a',
+    'ORF7b',
+    'ORF8',
+    'N',
+    'ORF10',
+    '3UTR',
+  ],
 ) => {
   if (!lineage) return of([]);
 
@@ -1123,37 +992,6 @@ export const getCharacteristicMutations = (
     catchError((e) => {
       console.log(
         '%c Error in getting characteristic mutations!',
-        'color: red',
-      );
-      console.log(e);
-      return of([]);
-    }),
-  );
-};
-
-export const getMostRecentSeq = (apiurl, mutationString, mutationVar) => {
-  const url = `${apiurl}most-recent-collection-date-by-location?${mutationVar}=${mutationString}`;
-  return from(
-    axios.get(url, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    }),
-  ).pipe(
-    pluck('data', 'results'),
-    map((results) => {
-      let lineageRecent;
-      if (results.length === 1) {
-        results = filtered[0];
-        const dateTime = parseDate(lineageRecent.date);
-
-        lineageRecent['dateFormatted'] = dateTime ? formatDate(dateTime) : null;
-      }
-      return lineageRecent;
-    }),
-    catchError((e) => {
-      console.log(
-        '%c Error in getting recent global prevalence data!',
         'color: red',
       );
       console.log(e);
@@ -1318,78 +1156,6 @@ export const getCumPrevalence = (
     catchError((e) => {
       console.log(
         `%c Error in getting recent local cumulative prevalence data for location ${location}!`,
-        'color: red',
-      );
-      console.log(e);
-      return of([]);
-    }),
-  );
-};
-
-export function getNewTodayAll(apiurl, queryStr, locations) {
-  return forkJoin(
-    getNewToday(apiurl, queryStr, 'Worldwide', null),
-    ...locations
-      .filter((d) => d.type !== 'world')
-      .map((d) => getNewToday(apiurl, queryStr, d.name, d.type)),
-  ).pipe(
-    map((results) => {
-      results.sort((a, b) => b.date_count_today - a.date_count_today);
-
-      return results;
-    }),
-
-    catchError((e) => {
-      console.log(
-        '%c Error in getting new today data for all locations!',
-        'color: red',
-      );
-      console.log(e);
-      return of([]);
-    }),
-  );
-}
-
-export const getNewToday = (apiurl, queryStr, location) => {
-  const url =
-    location === 'Worldwide'
-      ? `${apiurl}most-recent-submission-date-by-location?${queryStr}`
-      : `${apiurl}most-recent-submission-date-by-location?${queryStr}&location_id=${location}`;
-  return from(
-    axios.get(url, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    }),
-  ).pipe(
-    pluck('data', 'results'),
-    map((results) => {
-      let result;
-      if (results.length === 1) {
-        result = results[0];
-        result['dateTime'] = parseDate(result.date);
-        const timeDiff = timeDay.count(result.dateTime, new Date());
-        if (timeDiff < 2) {
-          return {
-            name: location,
-            date_count_today: format(',')(result.date_count),
-          };
-        } else {
-          return {
-            name: location,
-            date_count_today: 0,
-          };
-        }
-      } else {
-        return {
-          name: location,
-          date_count_today: null,
-        };
-      }
-    }),
-    catchError((e) => {
-      console.log(
-        `%c Error in getting new today data for location ${location}!`,
         'color: red',
       );
       console.log(e);
@@ -1606,13 +1372,6 @@ export const getTemporalPrevalence = (
       indivCall ? storeAdmin.$patch({ reportloading: false }) : null,
     ),
   );
-};
-
-export const getCuratedMetadata = (id) => {
-  const curated = CURATED.filter((d) => d.mutation_name === id);
-  if (curated.length === 1) {
-    return curated[0];
-  }
 };
 
 export const getLineageResources = (
@@ -2134,27 +1893,6 @@ export const getLocationMaps = (apiurl, location, mutations, ndays) => {
   );
 };
 
-export const getMutationCumPrevalence = (
-  apiurl,
-  mutationObj,
-  location,
-  totalThreshold,
-) => {
-  return getCumPrevalence(
-    apiurl,
-    mutationObj.query,
-    location,
-    totalThreshold,
-  ).pipe(
-    map((results) => {
-      return {
-        ...results,
-        ...mutationObj,
-      };
-    }),
-  );
-};
-
 const locationTableSorter = (a) => {
   const sortingArr = [
     'Variant of Concern',
@@ -2197,12 +1935,6 @@ const reportTypeSorter = (a) => {
   ];
   // const sortingArr = ["lineage", "lineage + mutation", "mutation"];
   return sortingArr.indexOf(a.key);
-};
-
-const reportIDSorter = (a) => {
-  const sortingArr = ['VOC', 'VOI', 'VUI', 'VUM', 'unknown'];
-  // const sortingArr = ["lineage", "lineage + mutation", "mutation"];
-  return sortingArr.indexOf(a.variantType);
 };
 
 // Returns the most recent cumulative and windowed prevalence for a list of WHO variants / lineages / mutations

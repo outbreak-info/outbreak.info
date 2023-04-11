@@ -18,8 +18,6 @@ axios.interceptors.request.use(
   },
 );
 
-const formatDateTime = timeFormat('%e %B %Y %I:%M %p');
-
 export const getSourcesUpdated = (genomicsurl, resourcesurl, epiurl) => {
   return forkJoin([
     getLastUpdated(genomicsurl),
