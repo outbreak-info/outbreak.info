@@ -214,8 +214,8 @@
 
 <script setup>
 import { computed, inject, onMounted, onUnmounted, ref } from 'vue';
-import { storeToRefs } from 'pinia';
 import { format } from 'd3-format';
+import { storeToRefs } from 'pinia';
 
 import { getDateUpdated } from '@/api/genomics.js';
 import { lazyLoad } from '@/js/lazy-load';

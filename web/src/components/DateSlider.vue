@@ -80,16 +80,16 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+// can import gtag event only, but already event from d3-selection
+import * as gtag from 'vue-gtag';
 import { axisBottom } from 'd3-axis';
 import { drag } from 'd3-drag';
 import { timeParse, timeFormat } from 'd3-time-format';
 import { select, event } from 'd3-selection';
 import { timeDay } from 'd3-time';
 import { scaleTime } from 'd3-scale';
-// can import event only, but already event from d3-selection
-import * as gtag from 'vue-gtag';
 
 const props = defineProps({
   min: Date,

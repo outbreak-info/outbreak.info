@@ -24,7 +24,7 @@ import { axisLeft, axisBottom } from 'd3-axis';
 import { scaleLinear, scaleTime, scaleBand } from 'd3-scale';
 import { select } from 'd3-selection';
 import { line } from 'd3-shape';
-import { timeDay, timeWeek } from 'd3-time';
+import { timeDay } from 'd3-time';
 import { timeFormat } from 'd3-time-format';
 
 const props = defineProps({

@@ -251,6 +251,7 @@ import {
   ref,
   watch,
 } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
 import { extent, max } from 'd3-array';
 
@@ -264,7 +265,6 @@ import { lazyLoad } from '@/js/lazy-load';
 import { adminStore } from '@/stores/adminStore';
 import { geoStore } from '@/stores/geoStore';
 import { colorsStore } from '@/stores/colorsStore';
-import { useRoute, useRouter } from 'vue-router';
 
 const DataSource = lazyLoad('DataSource');
 const Warning = lazyLoad('Warning');

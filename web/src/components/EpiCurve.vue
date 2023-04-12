@@ -134,6 +134,7 @@ import { timeParse, timeFormat } from 'd3-time-format';
 import { transition } from 'd3-transition';
 import cloneDeep from 'lodash/cloneDeep';
 import debounce from 'lodash/debounce';
+
 import { colorsStore } from '@/stores/colorsStore';
 
 const props = defineProps({

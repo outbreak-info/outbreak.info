@@ -108,8 +108,6 @@ const selectedMutations = ref([]);
 const pango = ref([]);
 const variant = ref([]);
 const muts = ref([]);
-const variantArr = ref([]);
-const submitLabel = ref(null);
 const submitCount = ref(0);
 
 const formValid = computed(() => {
@@ -122,10 +120,6 @@ const formValid = computed(() => {
     location.value
   );
 });
-
-const clearSelection = () => {
-  submitCount.value += 1;
-};
 
 const addVariant = () => {
   if (selectedLineage.value && selectedMutations.value.length) {

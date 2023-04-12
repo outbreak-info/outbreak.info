@@ -167,12 +167,12 @@ import { useRoute, useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
 import { format } from 'd3-format';
 import { scaleOrdinal } from 'd3-scale';
+import debounce from 'lodash/debounce';
 
 import { findSimilar } from '@/api/find-similar.js';
 import { lazyLoad } from '@/js/lazy-load';
 import { colorsStore } from '@/stores/colorsStore';
 import { adminStore } from '@/stores/adminStore';
-import debounce from 'lodash/debounce';
 
 const MiniLocation = lazyLoad('MiniLocation');
 const LineComparison = lazyLoad('LineComparison');

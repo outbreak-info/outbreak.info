@@ -21,7 +21,7 @@ import { useRouter } from 'vue-router';
 import { max } from 'd3-array';
 import { pack, hierarchy } from 'd3-hierarchy';
 import { scaleLinear, scaleTime } from 'd3-scale';
-import { select, selectAll, event } from 'd3-selection';
+import { select, event } from 'd3-selection';
 
 const props = defineProps({
   data: Object,

@@ -31,10 +31,10 @@
 </template>
 
 <script setup>
+import { computed } from 'vue';
 import cloneDeep from 'lodash/cloneDeep';
 
 import NT_MAP from '@/assets/genomics/sarscov2_NC045512_genes_nt.json';
-import { computed } from 'vue';
 
 const props = defineProps({
   mutations: Array,

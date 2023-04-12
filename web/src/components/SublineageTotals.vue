@@ -124,6 +124,7 @@
 
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import { sum } from 'd3-array';
 import { axisLeft } from 'd3-axis';
 import { scaleLinear, scaleBand } from 'd3-scale';
@@ -131,7 +132,6 @@ import { select, selectAll } from 'd3-selection';
 import cloneDeep from 'lodash/cloneDeep';
 
 import { lazyLoad } from '@/js/lazy-load';
-import { useRoute, useRouter } from 'vue-router';
 
 const DownloadReportData = lazyLoad('DownloadReportData');
 

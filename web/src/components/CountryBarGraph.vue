@@ -59,7 +59,7 @@ import { useRouter } from 'vue-router';
 import { axisRight } from 'd3-axis';
 import { max, extent } from 'd3-array';
 import { scaleLinear, scaleBand, scaleTime } from 'd3-scale';
-import { select, selectAll } from 'd3-selection';
+import { select } from 'd3-selection';
 import { area } from 'd3-shape';
 import { transition } from 'd3-transition';
 

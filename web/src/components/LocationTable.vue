@@ -174,9 +174,10 @@
 
 <script setup>
 import { onMounted } from 'vue';
-import tippy from 'tippy.js';
-import 'tippy.js/themes/light.css';
 import { isArray } from 'lodash/lang';
+import tippy from 'tippy.js';
+
+import 'tippy.js/themes/light.css';
 
 const props = defineProps({
   data: Array,

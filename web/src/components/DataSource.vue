@@ -42,13 +42,13 @@
 
 <script setup>
 import { computed, ref } from 'vue';
-import { timeFormat } from 'd3-time-format';
+import { useRoute } from 'vue-router';
 import { event } from 'vue-gtag';
+import { timeFormat } from 'd3-time-format';
 
 import { getPng } from '@/js/get_svg.js';
 import { lazyLoad } from '@/js/lazy-load';
 import { adminStore } from '@/stores/adminStore';
-import { useRoute } from 'vue-router';
 
 const DownloadData = lazyLoad('DownloadData');
 const DataUpdated = lazyLoad('DataUpdated');

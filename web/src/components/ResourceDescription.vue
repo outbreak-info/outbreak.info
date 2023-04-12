@@ -467,9 +467,9 @@ import { timeFormat, timeParse } from 'd3-time-format';
 import tippy from 'tippy.js';
 
 import { lazyLoad } from '@/js/lazy-load';
+import { adminStore } from '@/stores/adminStore';
 
 import 'tippy.js/themes/light.css';
-import { adminStore } from '@/stores/adminStore';
 
 const ClinicalTrialSummary = lazyLoad('ClinicalTrialSummary');
 const Warning = lazyLoad('Warning');

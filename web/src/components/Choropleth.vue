@@ -188,10 +188,11 @@ import {
   ref,
   watch,
 } from 'vue';
+import { useRouter } from 'vue-router';
 import { geoEqualEarth, geoAlbersUsa, geoPath } from 'd3-geo';
 import { max, min } from 'd3-array';
 import { format } from 'd3-format';
-import { select, selectAll, event } from 'd3-selection';
+import { select, selectAll } from 'd3-selection';
 import { timeFormat, timeParse } from 'd3-time-format';
 import cloneDeep from 'lodash/cloneDeep';
 import debounce from 'lodash/debounce';
@@ -199,7 +200,6 @@ import debounce from 'lodash/debounce';
 import { getSparklineTraces } from '@/api/epi-traces.js';
 import { lazyLoad } from '@/js/lazy-load';
 import { adminStore } from '@/stores/adminStore';
-import { useRouter } from 'vue-router';
 
 const HistogramLegend = lazyLoad('HistogramLegend');
 const DataUpdated = lazyLoad('DataUpdated');

@@ -102,10 +102,10 @@
 <script setup>
 import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { event } from 'vue-gtag';
 import { storeToRefs } from 'pinia';
 import { format } from 'd3-format';
 import { timeFormat } from 'd3-time-format';
-import { event } from 'vue-gtag';
 import cloneDeep from 'lodash/cloneDeep';
 import uniq from 'lodash/uniq';
 

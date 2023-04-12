@@ -65,6 +65,7 @@
 
 <script setup>
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import { nest } from 'd3-collection';
 import { axisBottom } from 'd3-axis';
 import { min, max, sum, extent } from 'd3-array';
@@ -73,7 +74,6 @@ import { select, selectAll, event } from 'd3-selection';
 import { scaleLinear, scaleTime } from 'd3-scale';
 import { timeWeek } from 'd3-time';
 import { timeFormat, timeParse, isoParse } from 'd3-time-format';
-import { useRoute, useRouter } from 'vue-router';
 
 const props = defineProps({
   data: Array,

@@ -64,7 +64,7 @@
 <script setup>
 import { ref, computed, watch, onMounted, nextTick } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { max, min } from 'd3-array';
+import { min } from 'd3-array';
 import { format } from 'd3-format';
 import {
   geoPath,
@@ -73,7 +73,7 @@ import {
   geoAlbersUsa,
   geoAzimuthalEqualArea,
 } from 'd3-geo';
-import { select, event } from 'd3-selection';
+import { select } from 'd3-selection';
 import cloneDeep from 'lodash/cloneDeep';
 import debounce from 'lodash/debounce';
 

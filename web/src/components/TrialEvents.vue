@@ -95,11 +95,11 @@
 </template>
 
 <script setup>
+import { computed, onMounted } from 'vue';
 import { nest } from 'd3-collection';
 import { timeFormat, timeParse } from 'd3-time-format';
 
 import { lazyLoad } from '@/js/lazy-load';
-import { computed, onMounted } from 'vue';
 
 const TrialStatus = lazyLoad('TrialStatus');
 
