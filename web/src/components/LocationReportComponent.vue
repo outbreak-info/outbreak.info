@@ -1059,7 +1059,7 @@ const selectedLocation = ref(null);
 const newLocation = ref(null);
 // update mutations
 const newMuts = ref([]);
-const newPango = ref();
+const newPango = ref(null);
 const customMutations = ref([]);
 const submitCount = ref(0);
 // data
