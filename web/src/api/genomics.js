@@ -1460,7 +1460,7 @@ export const findAllLocationMetadata = (apiurl, locations, selected) => {
 
       // set the active place
       results.forEach((d) => {
-        d['isActive'] = d.id === selected;
+        d['isActive'] = selected ? d.id === selected : d.id == 'Worldwide';
       });
       return results;
     }),
