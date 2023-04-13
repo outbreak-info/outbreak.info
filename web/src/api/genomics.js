@@ -1442,7 +1442,7 @@ export const findLocationMetadata = (apiurl, location) => {
 };
 
 export const findAllLocationMetadata = (apiurl, locations, selected) => {
-  locations = locations.filter((d) => d !== 'Worldwide');
+  locations = locations.filter((d) => d !== 'Worldwide' && d);
 
   return forkJoin(
     ...locations.map((location) => findLocationMetadata(apiurl, location)),
