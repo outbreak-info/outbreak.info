@@ -1306,7 +1306,7 @@ export const getTemporalPrevalence = (
 ) => {
   storeAdmin.$patch({ reportloading: true });
   let url;
-  if (location === 'Worldwide') {
+  if (location === 'Worldwide' || !location) {
     url = `${apiurl}prevalence-by-location?${queryStr}`;
   } else {
     url = `${apiurl}prevalence-by-location?${queryStr}&location_id=${location}`;
