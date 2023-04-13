@@ -1192,7 +1192,7 @@ export const getLocationPrevalence = (
 ) => {
   let url;
   url =
-    location === 'Worldwide'
+    location === 'Worldwide' || !location
       ? `${apiurl}lineage-by-sub-admin-most-recent?${queryStr}`
       : `${apiurl}lineage-by-sub-admin-most-recent?location_id=${location}&${queryStr}`;
 
