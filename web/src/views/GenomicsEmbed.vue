@@ -313,7 +313,7 @@ watch(
   () => route.query,
   (newVal, oldVal) => {
     if (!isEqual(newVal, oldVal)) {
-      selectedReportType.value = newVal.type ? newVal.type : 'var';
+      selectedReportType.value = newVal.type ? newVal.type : oldVal.type ? oldVal.type : 'var';
     }
   },
   { deep: true },
