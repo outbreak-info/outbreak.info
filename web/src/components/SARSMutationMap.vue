@@ -865,29 +865,28 @@ const drawPlot = () => {
   }
 };
 
-watch(
-  () => width.value,
-  () => {
-    updatePlot();
-  },
-);
+watch(width, () => {
+  updatePlot();
+});
 
 watch(
   () => props.lineageMutations,
-  () => {
-    setupMutationArr();
-    updatePlot();
+  (newVal, oldVal) => {
+    if (newVal) {
+      setupMutationArr();
+      updatePlot();
+    }
   },
-  { deep: true },
 );
 
 watch(
   () => props.additionalMutations,
-  () => {
-    setupMutationArr();
-    updatePlot();
+  (newVal, oldVal) => {
+    if (newVal) {
+      setupMutationArr();
+      updatePlot();
+    }
   },
-  { deep: true },
 );
 
 onMounted(() => {
