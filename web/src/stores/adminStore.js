@@ -17,6 +17,10 @@ export const adminStore = defineStore('admin', {
         img: 'kaleigh.png',
       },
       {
+        name: 'Julia Mullen',
+        img: 'julia.jpg',
+      },
+      {
         name: 'Zhongchao Qian',
         img: 'zhongchao.jpg',
       },
@@ -80,10 +84,6 @@ export const adminStore = defineStore('admin', {
       {
         name: 'Josh Levy',
         img: 'josh.png',
-      },
-      {
-        name: 'Julia Mullen',
-        img: 'julia.jpg',
       },
       {
         name: 'Everaldo Rodolpho',
