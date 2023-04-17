@@ -17,7 +17,7 @@ jobs:
       run: npm --prefix web/ install
     - name: build website
       env:
-        VUE_APP_API_ACCESS: ${{ secrets.VUE_APP_API_ACCESS }}
+        VITE_APP_API_ACCESS: ${{ secrets.VITE_APP_API_ACCESS }}
       run: npm --prefix web/ run build
     - name: sync s3
       uses: jakejarvis/s3-sync-action@master
