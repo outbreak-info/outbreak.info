@@ -30,8 +30,9 @@
         >
           <div class="d-flex align-items-center">
             <img
-              :src="require(`@/assets/press/${article.img}`)"
+              :src="`src/assets/press/${article.img}`"
               class="article-logo mr-3"
+              :alt="`${article.img}`"
             />
             <div class="d-flex flex-column">
               <span class="hover-underline">{{ article.title }}</span>
@@ -44,42 +45,36 @@
   </div>
 </template>
 
-<script>
-import Vue from 'vue';
-import { mapState } from 'vuex';
+<script setup>
+import { onMounted, ref } from 'vue';
+import { pressStore } from '@/stores/pressStore';
 
-export default Vue.extend({
-  name: 'Press',
-  data() {
-    return {
-      currentYear: new Date().getFullYear(),
-      year: null,
-      pressList: null,
-      yearOptions: null,
-    };
-  },
-  computed: {
-    ...mapState('press', ['press']),
-  },
-  mounted() {
-    this.year = this.currentYear;
+const currentYear = ref(new Date().getFullYear());
+const year = ref(null);
+const pressList = ref(null);
+const yearOptions = ref(null);
+const pressSources = ref([]);
 
-    // create an array of yearOptions from 2021 till now.
-    const numYears = this.year - 2021 + 1;
-    this.yearOptions = Array.from({length: numYears},(v,k) => k + 2021);
+const store = pressStore();
 
-    this.updatePress();
-  },
-  methods: {
-    changeYear(y) {
-      this.year = y;
-      this.updatePress();
-    },
-    updatePress() {
-      this.pressList = this.press.filter((p) => p.date.includes(this.year));
-      this.pressList.sort((a, b) => a.order - b.order);
-    },
-  },
+const updatePress = () => {
+  pressList.value = pressSources.value.filter((p) =>
+    p.date.includes(year.value),
+  );
+  pressList.value.sort((a, b) => a.order - b.order);
+};
+
+const changeYear = (y) => {
+  year.value = y;
+  updatePress();
+};
+
+onMounted(() => {
+  pressSources.value = store.$state.press;
+  year.value = currentYear.value;
+  const numYears = year.value - 2021 + 1;
+  yearOptions.value = Array.from({ length: numYears }, (v, k) => k + 2021);
+  updatePress();
 });
 </script>
 

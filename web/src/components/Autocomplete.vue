@@ -58,168 +58,182 @@
   </div>
 </template>
 
-<script>
-import Vue from 'vue';
+<script setup>
+import { inject, onMounted, onUnmounted, ref, watch } from 'vue';
 import debounce from 'lodash/debounce';
 
 import { findEpiLocation, lookupEpiLocations } from '@/api/epi-basics.js';
-import store from '@/store';
+import { colorsStore } from '@/stores/colorsStore';
 
-export default Vue.extend({
-  name: 'Autocomplete',
-  components: {},
-  props: {
-    selected: {
-      type: Array,
-      required: false,
-      default: () => [],
-    },
-    toAdd: {
-      type: Array,
-      required: false,
-      default: () => [],
-    },
-    isAsync: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
+const props = defineProps({
+  selected: {
+    type: Array,
+    required: false,
+    default: () => [],
   },
-  data() {
-    return {
-      isOpen: false,
-      results: [],
-      selectedItems: null,
-      search: '',
-      isLoading: false,
-      isSelectAll: false,
-      arrowCounter: 0,
-      lookupSubscription: null,
-      querySubscription: null,
-    };
+  toAdd: {
+    type: Array,
+    required: false,
+    default: () => [],
   },
-  watch: {
-    selected(val, oldValue) {
-      this.updateSelected();
-    },
-    colorScale(val, oldValue) {
-      this.updateSelected();
-    },
+  isAsync: {
+    type: Boolean,
+    required: false,
+    default: false,
   },
-  created() {
-    this.debounceSearch = debounce(this.onChange, 250);
-  },
-  mounted() {
-    this.updateSelected();
-    document.addEventListener('click', this.handleClickOutside);
-  },
-  destroyed() {
-    document.removeEventListener('click', this.handleClickOutside);
+});
 
-    if (this.querySubscription) {
-      this.querySubscription.unsubscribe();
-    }
+const emit = defineEmits(['selected']);
 
-    if (this.lookupSubscription) {
-      this.lookupSubscription.unsubscribe();
-    }
+// global variable - equivalent with this.$apiurl
+const apiUrl = inject('apiUrl');
+
+const store = colorsStore();
+
+const isOpen = ref(false);
+const results = ref([]);
+const selectedItems = ref(null);
+const search = ref('');
+const isLoading = ref(false);
+const isSelectAll = ref(false);
+const arrowCounter = ref(0);
+const lookupSubscription = ref(null);
+const querySubscription = ref(null);
+
+const lightColorScale = (location) => {
+  const scale = store.getLightColor;
+  return scale(location);
+};
+
+const colorScale = (location) => {
+  const scale = store.getDarkColor;
+  return scale(location);
+};
+
+const updateSelected = () => {
+  lookupSubscription.value = lookupEpiLocations(
+    apiUrl,
+    props.selected,
+  ).subscribe((results) => {
+    selectedItems.value = results.map((d) => {
+      return {
+        label: d.label,
+        location_id: d.location_id,
+        addable: props.toAdd.includes(d.location_id),
+        darkColor: colorScale(d.location_id),
+        lightColor: lightColorScale(d.location_id),
+      };
+    });
+  });
+};
+
+const updateChip = (item) => {
+  if (item.addable) {
+    emit('selected', props.selected.concat(item.location_id));
+  } else {
+    emit(
+      'selected',
+      props.selected.filter((d) => d !== item.location_id),
+    );
+  }
+};
+
+const onChange = () => {
+  isSelectAll.value = false;
+  querySubscription.value = findEpiLocation(apiUrl, search.value).subscribe(
+    (response) => {
+      results.value = response;
+      isOpen.value = true;
+    },
+  );
+};
+
+const setResult = (result) => {
+  props.selected.push(result.location_id);
+  emit('selected', props.selected);
+  search.value = '';
+  isOpen.value = false;
+};
+
+const onArrowDown = (evt) => {
+  if (arrowCounter.value < results.value.length) {
+    arrowCounter.value = arrowCounter.value + 1;
+  }
+};
+
+const onArrowUp = () => {
+  if (arrowCounter.value > 0) {
+    arrowCounter.value = arrowCounter.value - 1;
+  }
+};
+
+const onEnter = () => {
+  // Warn the parent that a change was made
+  const result = results.value[arrowCounter.value]
+    ? results.value[arrowCounter.value]
+    : search.value;
+  props.selected.push(result.location_id);
+  emit('selected', props.selected);
+  search.value = '';
+  isOpen.value = false;
+  arrowCounter.value = -1;
+};
+
+const onBackspace = () => {
+  if (search.value === '') {
+    search.value = props.selected.pop();
+  }
+
+  if (isSelectAll.value) {
+    search.value = '';
+    emit('selected', []);
+    isSelectAll.value = false;
+  }
+};
+
+const onSelectAll = () => {
+  isSelectAll.value = true;
+};
+
+const handleClickOutside = (evt) => {
+  isSelectAll.value = false;
+  //TODO: should confirm $el in composition API
+  // if (!this.$el.contains(evt.target)) {
+  //   this.isOpen = false;
+  //   this.arrowCounter = -1;
+  // }
+};
+
+watch(
+  () => props.selected,
+  (val, oldValue) => {
+    updateSelected();
   },
-  methods: {
-    updateSelected() {
-      this.lookupSubscription = lookupEpiLocations(
-        this.$apiurl,
+  { deep: true },
+);
 
-        this.selected,
-      ).subscribe((results) => {
-        this.selectedItems = results.map((d) => {
-          return {
-            label: d.label,
-            location_id: d.location_id,
-            addable: this.toAdd.includes(d.location_id),
-            darkColor: this.colorScale(d.location_id),
-            lightColor: this.lightColorScale(d.location_id),
-          };
-        });
-      });
-    },
-    lightColorScale(location) {
-      const scale = store.getters['colors/getLightColor'];
-      return scale(location);
-    },
-    colorScale(location) {
-      const scale = store.getters['colors/getDarkColor'];
-      return scale(location);
-    },
-    updateChip(item) {
-      if (item.addable) {
-        this.$emit('selected', this.selected.concat(item.location_id));
-      } else {
-        this.$emit(
-          'selected',
-          this.selected.filter((d) => d !== item.location_id),
-        );
-      }
-    },
-    onChange() {
-      this.isSelectAll = false;
-      this.querySubscription = findEpiLocation(
-        this.$apiurl,
+//TODO: should check this again
+// colorScale(val, oldValue) {
+//   this.updateSelected();
+// },
 
-        this.search,
-      ).subscribe((results) => {
-        this.results = results;
-        this.isOpen = true;
-      });
-    },
-    setResult(result) {
-      this.selected.push(result.location_id);
-      this.$emit('selected', this.selected);
-      this.search = '';
-      this.isOpen = false;
-    },
-    onArrowDown(evt) {
-      if (this.arrowCounter < this.results.length) {
-        this.arrowCounter = this.arrowCounter + 1;
-      }
-    },
-    onArrowUp() {
-      if (this.arrowCounter > 0) {
-        this.arrowCounter = this.arrowCounter - 1;
-      }
-    },
-    onEnter() {
-      // Warn the parent that a change was made
-      const result = this.results[this.arrowCounter]
-        ? this.results[this.arrowCounter]
-        : this.search;
-      this.selected.push(result.location_id);
-      this.$emit('selected', this.selected);
-      this.search = '';
-      this.isOpen = false;
-      this.arrowCounter = -1;
-    },
-    onBackspace() {
-      if (this.search === '') {
-        this.search = this.selected.pop();
-      }
+const debounceSearch = debounce(onChange, 250);
 
-      if (this.isSelectAll) {
-        this.search = '';
-        this.$emit('selected', []);
-        this.isSelectAll = false;
-      }
-    },
-    onSelectAll() {
-      this.isSelectAll = true;
-    },
-    handleClickOutside(evt) {
-      this.isSelectAll = false;
-      if (!this.$el.contains(evt.target)) {
-        this.isOpen = false;
-        this.arrowCounter = -1;
-      }
-    },
-  },
+onMounted(() => {
+  updateSelected();
+  document.addEventListener('click', handleClickOutside);
+});
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside);
+
+  if (querySubscription.value) {
+    querySubscription.value.unsubscribe();
+  }
+
+  if (lookupSubscription.value) {
+    lookupSubscription.value.unsubscribe();
+  }
 });
 </script>
 

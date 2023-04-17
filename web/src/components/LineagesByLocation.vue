@@ -74,22 +74,25 @@
         </pattern>
       </defs>
 
-      <g ref="chart" :transform="`translate(${margin.left},${margin.top})`" />
+      <g
+        ref="chartRef"
+        :transform="`translate(${margin.left},${margin.top})`"
+      />
 
       <g
-        ref="xAxis"
+        ref="xAxisRef"
         class="stream-axis axis--x"
         :transform="`translate(${margin.left},${height - margin.bottom})`"
       />
       <g
-        ref="yAxis"
+        ref="yAxisRef"
         class="stream-axis axis--y"
         :transform="`translate(${margin.left},${margin.top})`"
       />
       <g
         v-if="data"
         id="brush-zoom"
-        ref="brush"
+        ref="brushFRef"
         class="brush"
         :transform="`translate(${margin.left},${margin.top})`"
         :class="{ hidden: !zoomAllowed }"
@@ -136,8 +139,9 @@
   </div>
 </template>
 
-<script>
-import Vue from 'vue';
+<script setup>
+import { computed, nextTick, onMounted, ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import { max, min, extent } from 'd3-array';
 import { axisLeft, axisBottom } from 'd3-axis';
 import { brushX } from 'd3-brush';
@@ -145,773 +149,809 @@ import { format } from 'd3-format';
 import { scaleLinear, scaleTime } from 'd3-scale';
 import { select, selectAll, event } from 'd3-selection';
 import { stack, area, stackOrderInsideOut } from 'd3-shape';
-import { timeSecond, timeMinute, timeHour, timeDay, timeWeek, timeMonth, timeYear  } from 'd3-time';
+import {
+  timeSecond,
+  timeMinute,
+  timeHour,
+  timeDay,
+  timeWeek,
+  timeMonth,
+  timeYear,
+} from 'd3-time';
 import { timeParse, timeFormat } from 'd3-time-format';
 import { transition } from 'd3-transition';
 import cloneDeep from 'lodash/cloneDeep';
+import debounce from 'lodash/debounce';
 
 import { lazyLoad } from '@/js/lazy-load';
 
-export default Vue.extend({
-  name: 'LineagesByLocation',
-  components: {
-    SequencingHistogram: lazyLoad('SequencingHistogram'),
-    DownloadReportData: lazyLoad('DownloadReportData'),
-  },
-  props: {
-    data: Array,
-    recentData: Object,
-    seqCounts: Array,
-    recentWindow: String,
-    location: String,
-    recentMin: Date,
-    colorScale: Function,
-    setWidth: Number,
-    mutationName: String,
-    xmin: String,
-    xmax: String,
-    includeToday: {
-      type: Boolean,
-      default: true,
-    },
-    routeName: {
-      type: String,
-      default: 'LocationReport',
-    },
-    plotTitle: {
-      type: String,
-      default: 'Lineage prevalence over time',
-    },
-    onlyTotals: {
-      type: Boolean,
-      default: true,
-    },
-    tooltipTotal: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  data() {
-    return {
-      // dimensions
-      margin: {
-        top: 18,
-        bottom: 30,
-        left: 85,
-        right: 135,
-      },
-      marginHist: {
-        top: 5,
-        bottom: 10,
-        left: 85,
-        right: 135,
-      },
-      width: null,
-      minWidth: 450,
-      height: 500,
-      // variables
-      fillVar: 'pangolin_lineage',
-      xVariable: 'date_time',
-      // axes
-      x: null,
-      y: scaleLinear(),
-      xAxis: null,
-      yAxis: null,
-      maxDate: null,
-      numXTicks: 5,
-      numYTicks: 5,
-      // methods
-      area: null,
-      brush: null,
-      // data
-      series: null,
-      lineages: null,
-      plottedData: null,
-      // refs
-      chart: null,
-      brushRef: null,
-      // controls
-      zoomAllowed: false,
-      month: 6,
-      timeOptions: [
-        { label: '3 months', value: 3 },
-        { label: '6 months', value: 6 },
-        { label: '1 year', value: 12 },
-      ],
-      isZooming: false,
-    };
-  },
-  computed: {
-    title() {
-      return `Lineage prevalence over time in ${this.location}`;
-    },
-    countMonth() {
-      if (this.xmin && this.xmax) {
-        return timeMonth.count(new Date(this.xmin), new Date(this.xmax));
-      } else {
-        return 0;
-      }
-    },
-    recent() {
-      return !!this.recentData;
-    },
-  },
-  watch: {
-    width() {
-      this.setXScale();
-      this.updateBrush();
-      this.updatePlot();
-    },
-    data() {
-      this.xMin = timeParse('%Y-%m-%d')(this.xmin);
-      this.xMax = timeParse('%Y-%m-%d')(this.xmax);
-      this.setXScale();
-      this.updatePlot();
-    },
-    xmin() {
-      this.xMin = timeParse('%Y-%m-%d')(this.xmin);
-      this.xMax = timeParse('%Y-%m-%d')(this.xmax);
-      this.setXScale();
-      this.updatePlot();
-    },
-    xmax() {
-      this.xMin = timeParse('%Y-%m-%d')(this.xmin);
-      this.xMax = timeParse('%Y-%m-%d')(this.xmax);
-      this.setXScale();
-      this.updatePlot();
-    },
-  },
-  mounted() {
-    this.$nextTick(() => {
-      window.addEventListener('resize', this.debounceSetDims);
+const SequencingHistogram = lazyLoad('SequencingHistogram');
+const DownloadReportData = lazyLoad('DownloadReportData');
 
-      this.updateBrush();
-      // set initial dimensions for the plots.
-      this.debounceSetDims();
+const props = defineProps({
+  data: Array,
+  recentData: Object,
+  seqCounts: Array,
+  recentWindow: String,
+  location: String,
+  recentMin: Date,
+  colorScale: Function,
+  setWidth: Number,
+  mutationName: String,
+  xmin: String,
+  xmax: String,
+  includeToday: {
+    type: Boolean,
+    default: true,
+  },
+  routeName: {
+    type: String,
+    default: 'LocationReport',
+  },
+  plotTitle: {
+    type: String,
+    default: 'Lineage prevalence over time',
+  },
+  onlyTotals: {
+    type: Boolean,
+    default: true,
+  },
+  tooltipTotal: {
+    type: Boolean,
+    default: false,
+  },
+});
+
+// this.$route
+const route = useRoute();
+// this.$router
+const router = useRouter();
+
+// dimensions
+const margin = ref({
+  top: 18,
+  bottom: 30,
+  left: 85,
+  right: 135,
+});
+const marginHist = ref({
+  top: 5,
+  bottom: 10,
+  left: 85,
+  right: 135,
+});
+const width = ref(null);
+const minWidth = ref(450);
+const height = ref(500);
+// variables
+const xVariable = ref('date_time');
+// axes
+const x = ref(null);
+const y = ref(scaleLinear());
+const xAxis = ref(null);
+const yAxis = ref(null);
+const maxDate = ref(null);
+const numXTicks = ref(5);
+const numYTicks = ref(5);
+// methods
+const areaF = ref(null); // renamed as areaF; already exist area function in d3 -> avoid duplicated name
+const brushF = ref(null);
+// data
+const series = ref(null);
+const lineages = ref(null);
+const plottedData = ref(null);
+// refs
+const svg = ref(null);
+const legend = ref(null);
+const chart = ref(null);
+const brushRef = ref(null);
+// controls
+const zoomAllowed = ref(false);
+const month = ref(6);
+const timeOptions = ref([
+  { label: '3 months', value: 3 },
+  { label: '6 months', value: 6 },
+  { label: '1 year', value: 12 },
+]);
+const isZooming = ref(false);
+// missing variables in previous version
+const xMax = ref(null);
+const xMin = ref(null);
+// variables to replace this.$refs
+const lineages_by_location = ref(null);
+const chartRef = ref(null);
+const legendRef = ref(null);
+const brushFRef = ref(null);
+const xAxisRef = ref(null);
+const yAxisRef = ref(null);
+const tooltip_streamgraph = ref(null);
+
+const title = computed(() => {
+  return `Lineage prevalence over time in ${props.location}`;
+});
+
+const countMonth = computed(() => {
+  if (props.xmin && props.xmax) {
+    return timeMonth.count(new Date(props.xmin), new Date(props.xmax));
+  } else {
+    return 0;
+  }
+});
+
+const recent = computed(() => {
+  return !!props.recentData;
+});
+
+const updateBrush = () => {
+  // Update brush so it spans the whole of the area
+  brushF.value = brushX()
+    .extent([
+      [0, 0],
+      [
+        width.value ? width.value - margin.value.left - margin.value.right : 0,
+        height.value - margin.value.top - margin.value.bottom,
+      ],
+    ])
+    .on('end', () => debounceZoom(event));
+
+  brushRef.value.call(brushF.value).on('dblclick', resetZoom);
+};
+
+const setDims = () => {
+  const svgContainer = document.getElementById('most-recent-lineages');
+  let containerWidth = svgContainer ? svgContainer.offsetWidth : 500;
+  const pageContainer = document.getElementById('location-report');
+  let maxWidth = pageContainer ? pageContainer.offsetWidth : 500;
+  const idealWidth = (maxWidth - containerWidth) * 0.95;
+
+  width.value = props.setWidth
+    ? props.setWidth
+    : idealWidth < minWidth.value || idealWidth > maxWidth
+    ? maxWidth * 0.95
+    : idealWidth;
+
+  numXTicks.value = width.value < 500 ? 2 : 5;
+};
+
+const setupPlot = () => {
+  // read in the limits from the route params
+  xMin.value = timeParse('%Y-%m-%d')(props.xmin);
+  xMax.value = timeParse('%Y-%m-%d')(props.xmax);
+
+  svg.value = select(lineages_by_location.value);
+  // legend.value = select(legendRef.value);
+  chart.value = select(chartRef.value);
+  brushRef.value = select(brushFRef.value);
+
+  areaF.value = area()
+    .x((d) => x.value(d.data[xVariable.value]))
+    .y0((d) => y.value(d[0]))
+    .y1((d) => y.value(d[1]));
+
+  setXScale();
+};
+
+const changeXScale = (_month) => {
+  month.value = _month;
+  isZooming.value = false;
+  const newMax = new Date();
+  const newMin = timeMonth.offset(newMax, -_month);
+
+  x.value = scaleTime()
+    .range([0, width.value - margin.value.left - margin.value.right])
+    .domain([newMin, newMax]);
+
+  plottedData.value = cloneDeep(props.data);
+
+  plottedData.value = plottedData.value.filter(
+    (d) => d[xVariable.value] >= newMin && d[xVariable.value] <= newMax,
+  );
+
+  // reset the axis
+  xAxis.value = axisBottom(x.value)
+    .ticks(numXTicks.value)
+    .tickFormat(function (date) {
+      return (
+        timeSecond(date) < date
+          ? timeFormat('.%L')
+          : timeMinute(date) < date
+          ? timeFormat(':%S')
+          : timeHour(date) < date
+          ? timeFormat('%I:%M')
+          : timeDay(date) < date
+          ? timeFormat('%I %p')
+          : timeMonth(date) < date
+          ? timeWeek(date) < date
+            ? timeFormat('%a %d')
+            : timeFormat('%b %d')
+          : timeYear(date) < date
+          ? timeFormat('%b')
+          : timeFormat('%Y')
+      )(date);
     });
 
-    this.setupPlot();
-    this.updatePlot();
-    if (!this.xmin && !this.xmax) {
-      this.changeXScale(6);
+  select(xAxisRef.value).call(xAxis.value);
+
+  // move the brush
+  // this.brushRef.call(this.brush.move, null);
+  zoomAllowed.value = false;
+  drawPlot();
+
+  // update the url
+  updateUrl(newMin, newMax);
+};
+
+const setXScale = () => {
+  let xDomain;
+  if (xMin.value && xMax.value && xMin.value < xMax.value) {
+    xDomain = [xMin.value, xMax.value];
+  } else {
+    if (props.includeToday) {
+      const today = new Date();
+      maxDate.value = max(props.data, (d) => d[xVariable.value]);
+      xDomain = [min(props.data, (d) => d[xVariable.value]), today];
+    } else {
+      xDomain = extent(props.data.map((d) => d[xVariable.value]));
     }
-  },
-  created() {
-    this.debounceSetDims = this.debounce(this.setDims, 150);
-    this.debounceZoom = this.debounce(this.zoom, 150);
-  },
-  methods: {
-    updateBrush() {
-      // Update brush so it spans the whole of the area
-      this.brush = brushX()
-        .extent([
-          [0, 0],
-          [
-            this.width ? this.width - this.margin.left - this.margin.right : 0,
-            this.height - this.margin.top - this.margin.bottom,
-          ],
-        ])
-        .on('end', () => this.debounceZoom(event));
 
-      this.brushRef.call(this.brush).on('dblclick', this.resetZoom);
-    },
-    setDims() {
-      const svgContainer = document.getElementById('most-recent-lineages');
-      let containerWidth = svgContainer ? svgContainer.offsetWidth : 500;
-      const pageContainer = document.getElementById('location-report');
-      let maxWidth = pageContainer ? pageContainer.offsetWidth : 500;
-      const idealWidth = (maxWidth - containerWidth) * 0.95;
+    if (xMin.value && xMin.value < xDomain[1]) {
+      xDomain[0] = xMin.value;
+    }
 
-      this.width = this.setWidth
-        ? this.setWidth
-        : idealWidth < this.minWidth || idealWidth > maxWidth
-        ? maxWidth * 0.95
-        : idealWidth;
+    if (xMax.value && xMax.value > xDomain[0]) {
+      xDomain[1] = xMax.value;
+    }
+  }
 
-      this.numXTicks = this.width < 500 ? 2 : 5;
-    },
-    setupPlot() {
-      // read in the limits from the route params
-      this.xMin = timeParse('%Y-%m-%d')(this.xmin);
-      this.xMax = timeParse('%Y-%m-%d')(this.xmax);
+  x.value = scaleTime()
+    .range([0, width.value - margin.value.left - margin.value.right])
+    .domain(xDomain);
 
-      this.svg = select(this.$refs.svg);
-      this.legend = select(this.$refs.legend);
-      this.chart = select(this.$refs.chart);
-      this.brushRef = select(this.$refs.brush);
+  xAxis.value = axisBottom(x.value)
+    .tickSizeOuter(0)
+    .ticks(numXTicks.value)
+    .tickFormat(function (date) {
+      return (
+        timeSecond(date) < date
+          ? timeFormat('.%L')
+          : timeMinute(date) < date
+          ? timeFormat(':%S')
+          : timeHour(date) < date
+          ? timeFormat('%I:%M')
+          : timeDay(date) < date
+          ? timeFormat('%I %p')
+          : timeMonth(date) < date
+          ? timeWeek(date) < date
+            ? timeFormat('%a %d')
+            : timeFormat('%b %d')
+          : timeYear(date) < date
+          ? timeFormat('%b')
+          : timeFormat('%Y')
+      )(date);
+    });
 
-      this.area = area()
-        .x((d) => this.x(d.data[this.xVariable]))
-        .y0((d) => this.y(d[0]))
-        .y1((d) => this.y(d[1]));
+  select(xAxisRef.value).call(xAxis.value);
 
-      this.setXScale();
-    },
-    changeXScale(month) {
-      this.month = month;
-      this.isZooming = false;
-      const newMax = new Date();
-      const newMin = timeMonth.offset(newMax, -month);
+  plottedData.value = cloneDeep(props.data);
 
-      this.x = scaleTime()
-        .range([0, this.width - this.margin.left - this.margin.right])
-        .domain([newMin, newMax]);
+  plottedData.value = plottedData.value.filter(
+    (d) => d[xVariable.value] >= xDomain[0] && d[xVariable.value] <= xDomain[1],
+  );
+};
 
-      this.plottedData = cloneDeep(this.data);
+const updateScales = () => {
+  y.value = y.value
+    // .range([0, this.height - this.margin.top - this.margin.bottom])
+    .range([height.value - margin.value.top - margin.value.bottom, 0])
+    .nice()
+    .domain([0, 1]);
 
-      this.plottedData = this.plottedData.filter(
-        (d) => d[this.xVariable] >= newMin && d[this.xVariable] <= newMax,
-      );
+  lineages.value = Object.keys(props.data[0]).filter(
+    (d) => d !== xVariable.value,
+  );
 
-      // reset the axis
-      this.xAxis = axisBottom(this.x)
-        .ticks(this.numXTicks)
-        .tickFormat(function(date){
-          return (timeSecond(date) < date ? timeFormat('.%L')
-            : timeMinute(date) < date ? timeFormat(':%S')
-            : timeHour(date) < date ? timeFormat('%I:%M')
-            : timeDay(date) < date ? timeFormat('%I %p')
-            : timeMonth(date) < date ? timeWeek(date) < date ? timeFormat('%a %d') : timeFormat('%b %d')
-            : timeYear(date) < date ? timeFormat('%b')
-            : timeFormat('%Y'))(date)
-        });
+  yAxis.value = axisLeft(y.value)
+    .tickSizeOuter(0)
+    .ticks(numYTicks.value)
+    .tickFormat(format('.0%'));
 
-      select(this.$refs.xAxis).call(this.xAxis);
+  // stacking
+  series.value = stack().keys(lineages.value).order(stackOrderInsideOut)(
+    plottedData.value,
+  );
 
-      // move the brush
-      // this.brushRef.call(this.brush.move, null);
-      this.zoomAllowed = false;
-      this.drawPlot();
+  select(yAxisRef.value).call(yAxis.value);
+};
 
-      // update the url
-      this.updateUrl(newMin, newMax);
-    },
-    setXScale() {
-      let xDomain;
-      if (this.xMin && this.xMax && this.xMin < this.xMax) {
-        xDomain = [this.xMin, this.xMax];
-      } else {
-        if (this.includeToday) {
-          const today = new Date();
-          this.maxDate = max(this.data, (d) => d[this.xVariable]);
-          xDomain = [min(this.data, (d) => d[this.xVariable]), today];
-        } else {
-          xDomain = extent(this.data.map((d) => d[this.xVariable]));
-        }
+const updatePlot = () => {
+  if (plottedData.value && props.colorScale) {
+    updateScales();
+    drawPlot();
+  }
+};
 
-        if (this.xMin && this.xMin < xDomain[1]) {
-          xDomain[0] = this.xMin;
-        }
+const tooltipOn = (key) => {
+  const ttipShift = 20;
+  // turn everything off
+  chart.value
+    .selectAll('.stacked-area-chart')
+    .style('stroke', '#BBB')
+    .style('fill-opacity', 0.2);
 
-        if (this.xMax && this.xMax > xDomain[0]) {
-          xDomain[1] = this.xMax;
-        }
-      }
+  selectAll('.stacked-bar-chart').style('fill-opacity', 0.2);
 
-      this.x = scaleTime()
-        .range([0, this.width - this.margin.left - this.margin.right])
-        .domain(xDomain);
+  chart.value.selectAll('.no-data').style('fill-opacity', 0);
 
-      this.xAxis = axisBottom(this.x)
-        .tickSizeOuter(0)
-        .ticks(this.numXTicks)
-        .tickFormat(function(date){
-          return (timeSecond(date) < date ? timeFormat('.%L')
-            : timeMinute(date) < date ? timeFormat(':%S')
-            : timeHour(date) < date ? timeFormat('%I:%M')
-            : timeDay(date) < date ? timeFormat('%I %p')
-            : timeMonth(date) < date ? timeWeek(date) < date ? timeFormat('%a %d') : timeFormat('%b %d')
-            : timeYear(date) < date ? timeFormat('%b')
-            : timeFormat('%Y'))(date)
-        });
+  // turn on the selected region
+  chart.value
+    .select(`#area_${key.replace(/\./g, '-')}`)
+    .style('fill-opacity', 1);
 
-      select(this.$refs.xAxis).call(this.xAxis);
+  select(`#${key.replace(/\./g, '-')}`).style('fill-opacity', 1);
 
-      this.plottedData = cloneDeep(this.data);
+  const ttip = select(tooltip_streamgraph.value);
 
-      this.plottedData = this.plottedData.filter(
-        (d) =>
-          d[this.xVariable] >= xDomain[0] && d[this.xVariable] <= xDomain[1],
-      );
-    },
-    updateScales() {
-      this.y = this.y
-        // .range([0, this.height - this.margin.top - this.margin.bottom])
-        .range([this.height - this.margin.top - this.margin.bottom, 0])
-        .nice()
-        .domain([0, 1]);
+  ttip.select('#lineage').text(key);
 
-      this.lineages = Object.keys(this.data[0]).filter(
-        (d) => d !== this.xVariable,
-      );
-
-      this.yAxis = axisLeft(this.y)
-        .tickSizeOuter(0)
-        .ticks(this.numYTicks)
-        .tickFormat(format('.0%'));
-
-      // stacking
-      this.series = stack().keys(this.lineages).order(stackOrderInsideOut)(
-        this.plottedData,
-      );
-
-      select(this.$refs.yAxis).call(this.yAxis);
-    },
-    updatePlot() {
-      if (this.plottedData && this.colorScale) {
-        this.updateScales();
-        this.drawPlot();
-      }
-    },
-    tooltipOn(key) {
-      const ttipShift = 20;
-      // turn everything off
-      this.chart
-        .selectAll('.stacked-area-chart')
-        .style('stroke', '#BBB')
-        .style('fill-opacity', 0.2);
-
-      selectAll('.stacked-bar-chart').style('fill-opacity', 0.2);
-
-      this.chart.selectAll('.no-data').style('fill-opacity', 0);
-
-      // turn on the selected region
-      this.chart
-        .select(`#area_${key.replace(/\./g, '-')}`)
-        .style('fill-opacity', 1);
-
-      select(`#${key.replace(/\./g, '-')}`).style('fill-opacity', 1);
-
-      const ttip = select(this.$refs.tooltip_streamgraph);
-
-      ttip.select('#lineage').text(key);
-
-      const recentPrev = this.recentData[key];
-      if (this.tooltipTotal) {
-        if (recentPrev) {
-          ttip.select('#proportion').text(format(',')(recentPrev));
-        } else {
-          ttip.select('#proportion').text('');
-        }
-      } else {
-        if (recentPrev) {
-          ttip
-            .select('#proportion')
-            .text(recentPrev < 0.005 ? '< 0.5%' : format('.0%')(recentPrev));
-        } else {
-          ttip.select('#proportion').text('Grouped into "other" category');
-        }
-      }
-
-      // fix location
+  const recentPrev = props.recentData[key];
+  if (props.tooltipTotal) {
+    if (recentPrev) {
+      ttip.select('#proportion').text(format(',')(recentPrev));
+    } else {
+      ttip.select('#proportion').text('');
+    }
+  } else {
+    if (recentPrev) {
       ttip
-        .style('left', `${event.clientX + ttipShift}px`)
-        .style('top', `${event.clientY + ttipShift}px`)
-        .style('display', 'block');
-    },
-    tooltipOff() {
-      this.chart.selectAll('.no-data').style('fill-opacity', 1);
+        .select('#proportion')
+        .text(recentPrev < 0.005 ? '< 0.5%' : format('.0%')(recentPrev));
+    } else {
+      ttip.select('#proportion').text('Grouped into "other" category');
+    }
+  }
 
-      this.chart
-        .selectAll('.stacked-area-chart')
+  // fix location
+  ttip
+    .style('left', `${event.clientX + ttipShift}px`)
+    .style('top', `${event.clientY + ttipShift}px`)
+    .style('display', 'block');
+};
+
+const tooltipOff = () => {
+  chart.value.selectAll('.no-data').style('fill-opacity', 1);
+
+  chart.value
+    .selectAll('.stacked-area-chart')
+    .style('stroke', '#555')
+    .style('fill-opacity', 1);
+
+  selectAll('.stacked-bar-chart').style('fill-opacity', 1);
+
+  select(tooltip_streamgraph.value).style('display', 'none');
+};
+
+const zoom = (evt) => {
+  isZooming.value = true;
+  // reset domain to new coords
+  const selection = evt.selection;
+
+  if (selection) {
+    const newMin = x.value.invert(selection[0]);
+    const newMax = x.value.invert(selection[1]);
+
+    x.value = scaleTime()
+      .range([0, width.value - margin.value.left - margin.value.right])
+      .domain([newMin, newMax]);
+
+    plottedData.value = cloneDeep(props.data);
+
+    plottedData.value = plottedData.value.filter(
+      (d) => d[xVariable.value] >= newMin && d[xVariable.value] <= newMax,
+    );
+
+    // reset the axis
+    xAxis.value = axisBottom(x.value).ticks(numXTicks.value);
+
+    select(xAxisRef.value).call(xAxis.value);
+
+    // move the brush
+    brushRef.value.call(brushF.value.move, null);
+    zoomAllowed.value = false;
+    drawPlot();
+
+    // update the url
+    updateUrl(newMin, newMax);
+  }
+};
+
+const updateUrl = (newMin, newMax) => {
+  const queryParams = route.query;
+  if (props.routeName === 'MutationReport') {
+    const params = route.params;
+    router.push({
+      name: props.routeName,
+      state: {
+        disableScroll: true,
+      },
+      params: { alias: params.alias },
+      query: {
+        xmin: timeFormat('%Y-%m-%d')(newMin),
+        xmax: timeFormat('%Y-%m-%d')(newMax),
+        loc: queryParams.loc,
+        muts: queryParams.muts,
+        pango: queryParams.pango,
+        selected: queryParams.selected,
+      },
+    });
+  } else if (props.routeName === 'GenomicsEmbedVariant') {
+    const params = route.params;
+    router.push({
+      name: 'GenomicsEmbed',
+      state: {
+        disableScroll: true,
+      },
+      query: {
+        type: 'var',
+        alias: queryParams.alias,
+        xmin: timeFormat('%Y-%m-%d')(newMin),
+        xmax: timeFormat('%Y-%m-%d')(newMax),
+        loc: queryParams.loc,
+        muts: queryParams.muts,
+        pango: queryParams.pango,
+        selected: queryParams.selected,
+      },
+    });
+  } else if (props.routeName === 'LocationReport') {
+    router.push({
+      name: 'LocationReport',
+      state: {
+        disableScroll: true,
+      },
+      query: {
+        xmin: timeFormat('%Y-%m-%d')(newMin),
+        xmax: timeFormat('%Y-%m-%d')(newMax),
+        loc: queryParams.loc,
+        muts: queryParams.muts,
+        alias: queryParams.alias,
+        pango: queryParams.pango,
+        variant: queryParams.variant,
+        selected: queryParams.selected,
+      },
+    });
+  } else if (props.routeName === 'GenomicsEmbedLocation') {
+    router.push({
+      name: 'GenomicsEmbed',
+      state: {
+        disableScroll: true,
+      },
+      query: {
+        var: 'loc',
+        xmin: timeFormat('%Y-%m-%d')(newMin),
+        xmax: timeFormat('%Y-%m-%d')(newMax),
+        loc: queryParams.loc,
+        muts: queryParams.muts,
+        alias: queryParams.alias,
+        pango: queryParams.pango,
+        variant: queryParams.variant,
+        selected: queryParams.selected,
+      },
+    });
+  }
+};
+
+const resetZoom = () => {
+  brushRef.value.call(brushF.value.move, null);
+  const queryParams = route.query;
+
+  xMin.value = null;
+  xMax.value = null;
+  month.value = 0;
+  isZooming.value = false;
+  setXScale();
+
+  if (props.routeName === 'MutationReport') {
+    const params = route.params;
+    router.push({
+      name: props.routeName,
+      state: {
+        disableScroll: true,
+      },
+      params: { alias: params.alias },
+      query: {
+        loc: queryParams.loc,
+        muts: queryParams.muts,
+        pango: queryParams.pango,
+        selected: queryParams.selected,
+      },
+    });
+  } else if (props.routeName === 'GenomicsEmbedVariant') {
+    const params = route.params;
+    router.push({
+      name: 'GenomicsEmbed',
+      state: {
+        disableScroll: true,
+      },
+      query: {
+        type: 'var',
+        alias: queryParams.alias,
+        loc: queryParams.loc,
+        muts: queryParams.muts,
+        pango: queryParams.pango,
+        selected: queryParams.selected,
+      },
+    });
+  } else if (props.routeName === 'LocationReport') {
+    router.push({
+      name: 'LocationReport',
+      state: {
+        disableScroll: true,
+      },
+      query: {
+        loc: queryParams.loc,
+        muts: queryParams.muts,
+        alias: queryParams.alias,
+        pango: queryParams.pango,
+        variant: queryParams.variant,
+        selected: queryParams.selected,
+      },
+    });
+  } else if (props.routeName === 'GenomicsEmbedLocation') {
+    router.push({
+      name: 'GenomicsEmbed',
+      state: {
+        disableScroll: true,
+      },
+      query: {
+        type: 'loc',
+        loc: queryParams.loc,
+        muts: queryParams.muts,
+        alias: queryParams.alias,
+        pango: queryParams.pango,
+        variant: queryParams.variant,
+        selected: queryParams.selected,
+      },
+    });
+  }
+
+  updatePlot();
+  isZooming.value = false;
+};
+
+const enableZoom = () => {
+  zoomAllowed.value = true;
+};
+
+const drawPlot = () => {
+  if (props.includeToday) {
+    const noDataSelector = chart.value.selectAll('.no-data').data([0]);
+
+    noDataSelector.join(
+      (enter) => {
+        enter
+          .append('rect')
+          .attr('class', 'no-data')
+          .attr('x', 0)
+          .attr(
+            'width',
+            width.value
+              ? width.value - margin.value.left - margin.value.right
+              : 0,
+          )
+          .attr('height', height.value - margin.value.top - margin.value.bottom)
+          .style('fill', 'url(#diagonalHatchLight)');
+      },
+      (update) => {
+        update
+          .attr('x', 0)
+          .attr(
+            'width',
+            width.value
+              ? width.value - margin.value.left - margin.value.right
+              : 0,
+          )
+          .attr('height', height.value - margin.value.top - margin.value.bottom)
+          .style('fill', 'url(#diagonalHatchLight)');
+      },
+      (exit) =>
+        exit.call((exit) => exit.transition().style('opacity', 1e-5).remove()),
+    );
+  }
+
+  const areaSelector = chart.value
+    .selectAll('.stacked-area-chart')
+    .data(series.value);
+
+  areaSelector.join(
+    (enter) => {
+      const selector = enter
+        .append('path')
+        .attr('fill', ({ key }) => props.colorScale(key))
+        .attr('class', 'stacked-area-chart')
+        .classed('pointer', ({ key }) => key.toLowerCase() !== 'other')
+        .attr('id', ({ key }) => `area_${key.replace(/\./g, '-')}`)
+        .attr('d', areaF.value)
         .style('stroke', '#555')
-        .style('fill-opacity', 1);
-
-      selectAll('.stacked-bar-chart').style('fill-opacity', 1);
-
-      select(this.$refs.tooltip_streamgraph).style('display', 'none');
+        .style('stroke-width', 0.5);
     },
-    zoom(evt) {
-      this.isZooming = true;
-      // reset domain to new coords
-      const selection = this.event.selection;
-
-      if (selection) {
-        const newMin = this.x.invert(selection[0]);
-        const newMax = this.x.invert(selection[1]);
-
-        this.x = scaleTime()
-          .range([0, this.width - this.margin.left - this.margin.right])
-          .domain([newMin, newMax]);
-
-        this.plottedData = cloneDeep(this.data);
-
-        this.plottedData = this.plottedData.filter(
-          (d) => d[this.xVariable] >= newMin && d[this.xVariable] <= newMax,
-        );
-
-        // reset the axis
-        this.xAxis = axisBottom(this.x).ticks(this.numXTicks);
-
-        select(this.$refs.xAxis).call(this.xAxis);
-
-        // move the brush
-        this.brushRef.call(this.brush.move, null);
-        this.zoomAllowed = false;
-        this.drawPlot();
-
-        // update the url
-        this.updateUrl(newMin, newMax);
-      }
+    (update) => {
+      update
+        .attr('fill', ({ key }) => props.colorScale(key))
+        .attr('id', ({ key }) => `area_${key.replace(/\./g, '-')}`)
+        .attr('d', areaF.value);
     },
-    updateUrl(newMin, newMax) {
-      const queryParams = this.$route.query;
-      if (this.routeName === 'MutationReport') {
-        const params = this.$route.params;
-        this.$router.push({
-          name: this.routeName,
-          params: {
-            disableScroll: true,
-            alias: params.alias,
-          },
-          query: {
-            xmin: timeFormat('%Y-%m-%d')(newMin),
-            xmax: timeFormat('%Y-%m-%d')(newMax),
-            loc: queryParams.loc,
-            muts: queryParams.muts,
-            pango: queryParams.pango,
-            selected: queryParams.selected,
-          },
-        });
-      } else if (this.routeName === 'GenomicsEmbedVariant') {
-        const params = this.$route.params;
-        this.$router.push({
-          name: 'GenomicsEmbed',
-          params: {
-            disableScroll: true,
-          },
-          query: {
-            type: 'var',
-            alias: queryParams.alias,
-            xmin: timeFormat('%Y-%m-%d')(newMin),
-            xmax: timeFormat('%Y-%m-%d')(newMax),
-            loc: queryParams.loc,
-            muts: queryParams.muts,
-            pango: queryParams.pango,
-            selected: queryParams.selected,
-          },
-        });
-      } else if (this.routeName === 'LocationReport') {
-        this.$router.push({
-          name: 'LocationReport',
-          params: {
-            disableScroll: true,
-          },
-          query: {
-            xmin: timeFormat('%Y-%m-%d')(newMin),
-            xmax: timeFormat('%Y-%m-%d')(newMax),
-            loc: queryParams.loc,
-            muts: queryParams.muts,
-            alias: queryParams.alias,
-            pango: queryParams.pango,
-            variant: queryParams.variant,
-            selected: queryParams.selected,
-          },
-        });
-      } else if (this.routeName === 'GenomicsEmbedLocation') {
-        this.$router.push({
-          name: 'GenomicsEmbed',
-          params: {
-            disableScroll: true,
-          },
-          query: {
-            var: 'loc',
-            xmin: timeFormat('%Y-%m-%d')(newMin),
-            xmax: timeFormat('%Y-%m-%d')(newMax),
-            loc: queryParams.loc,
-            muts: queryParams.muts,
-            alias: queryParams.alias,
-            pango: queryParams.pango,
-            variant: queryParams.variant,
-            selected: queryParams.selected,
-          },
-        });
-      }
-    },
-    resetZoom() {
-      this.brushRef.call(this.brush.move, null);
-      const queryParams = this.$route.query;
+    (exit) =>
+      exit.call((exit) => exit.transition().style('opacity', 1e-5).remove()),
+  );
 
-      this.xMin = null;
-      this.xMax = null;
-      this.month = 0;
-      this.isZooming = false;
-      this.setXScale();
+  // annotation for the most recent date
+  if (props.recentMin) {
+    const recentSelector = chart.value
+      .selectAll('.recent-date-annotation')
+      .data([props.recentMin]);
 
-      if (this.routeName === 'MutationReport') {
-        const params = this.$route.params;
-        this.$router.push({
-          name: this.routeName,
-          params: {
-            disableScroll: true,
-            alias: params.alias,
-          },
-          query: {
-            loc: queryParams.loc,
-            muts: queryParams.muts,
-            pango: queryParams.pango,
-            selected: queryParams.selected,
-          },
-        });
-      } else if (this.routeName === 'GenomicsEmbedVariant') {
-        const params = this.$route.params;
-        this.$router.push({
-          name: 'GenomicsEmbed',
-          params: {
-            disableScroll: true,
-          },
-          query: {
-            type: 'var',
-            alias: queryParams.alias,
-            loc: queryParams.loc,
-            muts: queryParams.muts,
-            pango: queryParams.pango,
-            selected: queryParams.selected,
-          },
-        });
-      } else if (this.routeName === 'LocationReport') {
-        this.$router.push({
-          name: 'LocationReport',
-          params: {
-            disableScroll: true,
-          },
-          query: {
-            loc: queryParams.loc,
-            muts: queryParams.muts,
-            alias: queryParams.alias,
-            pango: queryParams.pango,
-            variant: queryParams.variant,
-            selected: queryParams.selected,
-          },
-        });
-      } else if (this.routeName === 'GenomicsEmbedLocation') {
-        this.$router.push({
-          name: 'GenomicsEmbed',
-          params: {
-            disableScroll: true,
-          },
-          query: {
-            type: 'loc',
-            loc: queryParams.loc,
-            muts: queryParams.muts,
-            alias: queryParams.alias,
-            pango: queryParams.pango,
-            variant: queryParams.variant,
-            selected: queryParams.selected,
-          },
-        });
-      }
+    const t1 = transition().duration(500);
 
-      this.updatePlot();
-      this.isZooming = false;
-    },
-    enableZoom() {
-      this.zoomAllowed = true;
-    },
-    drawPlot() {
-      if (this.includeToday) {
-        const noDataSelector = this.chart.selectAll('.no-data').data([0]);
+    recentSelector.join(
+      (enter) => {
+        const grp = enter.append('g').attr('class', 'recent-date-annotation');
 
-        noDataSelector.join(
-          (enter) => {
-            enter
-              .append('rect')
-              .attr('class', 'no-data')
-              .attr('x', 0)
-              .attr(
-                'width',
-                this.width
-                  ? this.width - this.margin.left - this.margin.right
-                  : 0,
-              )
-              .attr(
-                'height',
-                this.height - this.margin.top - this.margin.bottom,
-              )
-              .style('fill', 'url(#diagonalHatchLight)');
-          },
-          (update) => {
-            update
-              .attr('x', 0)
-              .attr(
-                'width',
-                this.width
-                  ? this.width - this.margin.left - this.margin.right
-                  : 0,
-              )
-              .attr(
-                'height',
-                this.height - this.margin.top - this.margin.bottom,
-              )
-              .style('fill', 'url(#diagonalHatchLight)');
-          },
-          (exit) =>
-            exit.call((exit) =>
-              exit.transition().style('opacity', 1e-5).remove(),
-            ),
-        );
-      }
+        grp
+          .append('line')
+          .attr('class', 'annotation-line')
+          .attr('x1', (d) => x.value(d))
+          .attr('x2', (d) => x.value(d))
+          .attr('y1', 0)
+          .attr('y2', height.value)
+          .style('stroke', 'white')
+          .style('stroke-dasharray', '6,6');
 
-      const areaSelector = this.chart
-        .selectAll('.stacked-area-chart')
-        .data(this.series);
+        grp
+          .append('line')
+          .attr('class', 'text-line')
+          .attr('x1', (d) => x.value(d))
+          .attr('x2', (d) => x.value(d))
+          .attr('y1', 0)
+          .attr('y2', -5)
+          .style('stroke', '#2c3e50');
 
-      areaSelector.join(
-        (enter) => {
-          const selector = enter
-            .append('path')
-            .attr('fill', ({ key }) => this.colorScale(key))
-            .attr('class', 'stacked-area-chart')
-            .classed('pointer', ({ key }) => key.toLowerCase() !== 'other')
-            .attr('id', ({ key }) => `area_${key.replace(/\./g, '-')}`)
-            .attr('d', this.area)
-            .style('stroke', '#555')
-            .style('stroke-width', 0.5);
+        grp
+          .append('text')
+          .attr('x', (d) => x.value(d))
+          .attr('y', 0)
+          .attr('dy', -8)
+          .text(`${props.recentWindow} days`)
+          .style('text-anchor', (d) =>
+            x.value(d) > width.value / 2 ? 'end' : 'start',
+          )
+          .style(
+            'font-family',
+            "'DM Sans', Avenir, Helvetica, Arial, sans-serif",
+          )
+          .style('dominant-baseline', 'text-top')
+          .style('font-size', '14px');
+      },
+      (update) => {
+        update
+          .select('.annotation-line')
+          .attr('y1', 0)
+          .attr('y2', height.value)
+          .transition(t1)
+          .attr('x1', (d) => x.value(d))
+          .attr('x2', (d) => x.value(d));
+
+        update
+          .select('.text-line')
+          .transition(t1)
+          .attr('x1', (d) => x.value(d))
+          .attr('x2', (d) => x.value(d));
+
+        update
+          .select('text')
+          .text(`${props.recentWindow} days`)
+          .style('text-anchor', (d) =>
+            x.value(d) > width.value / 2 ? 'end' : 'start',
+          )
+          .transition(t1)
+          .attr('x', (d) => x.value(d));
+      },
+      (exit) =>
+        exit.call((exit) => exit.transition().style('opacity', 1e-5).remove()),
+    );
+  }
+
+  chart.value
+    .selectAll('.stacked-area-chart')
+    .on('mousemove', ({ key }) => tooltipOn(key))
+    .on('click', ({ key }) => route2Mutation(key))
+    .on('mouseleave', tooltipOff);
+};
+
+const route2Mutation = (d) => {
+  if (d.toLowerCase() !== 'other') {
+    const queryParams = route.query;
+    console.log(props.routeName);
+    if (props.routeName.includes('GenomicsEmbed')) {
+      router.push({
+        name: 'GenomicsEmbed',
+        query: {
+          type: 'var',
+          pango: d,
+          loc: queryParams.loc,
+          selected: queryParams.loc,
         },
-        (update) => {
-          update
-            .attr('fill', ({ key }) => this.colorScale(key))
-            .attr('id', ({ key }) => `area_${key.replace(/\./g, '-')}`)
-            .attr('d', this.area);
+      });
+    } else {
+      const selected =
+        props.routeName === 'LocationReport'
+          ? queryParams.loc
+          : queryParams.selected;
+      router.push({
+        name: 'MutationReport',
+        query: {
+          pango: d,
+          loc: queryParams.loc,
+          selected: selected,
         },
-        (exit) =>
-          exit.call((exit) =>
-            exit.transition().style('opacity', 1e-5).remove(),
-          ),
-      );
+      });
+    }
+  }
+};
 
-      // annotation for the most recent date
-      if (this.recentMin) {
-        const recentSelector = this.chart
-          .selectAll('.recent-date-annotation')
-          .data([this.recentMin]);
+watch(width, () => {
+  setXScale();
+  updateBrush();
+  updatePlot();
+});
 
-        const t1 = transition().duration(500);
-
-        recentSelector.join(
-          (enter) => {
-            const grp = enter
-              .append('g')
-              .attr('class', 'recent-date-annotation');
-
-            grp
-              .append('line')
-              .attr('class', 'annotation-line')
-              .attr('x1', (d) => this.x(d))
-              .attr('x2', (d) => this.x(d))
-              .attr('y1', 0)
-              .attr('y2', this.height)
-              .style('stroke', 'white')
-              .style('stroke-dasharray', '6,6');
-
-            grp
-              .append('line')
-              .attr('class', 'text-line')
-              .attr('x1', (d) => this.x(d))
-              .attr('x2', (d) => this.x(d))
-              .attr('y1', 0)
-              .attr('y2', -5)
-              .style('stroke', '#2c3e50');
-
-            grp
-              .append('text')
-              .attr('x', (d) => this.x(d))
-              .attr('y', 0)
-              .attr('dy', -8)
-              .text(`${this.recentWindow} days`)
-              .style('text-anchor', (d) =>
-                this.x(d) > this.width / 2 ? 'end' : 'start',
-              )
-              .style(
-                'font-family',
-                "'DM Sans', Avenir, Helvetica, Arial, sans-serif",
-              )
-              .style('dominant-baseline', 'text-top')
-              .style('font-size', '14px');
-          },
-          (update) => {
-            update
-              .select('.annotation-line')
-              .attr('y1', 0)
-              .attr('y2', this.height)
-              .transition(t1)
-              .attr('x1', (d) => this.x(d))
-              .attr('x2', (d) => this.x(d));
-
-            update
-              .select('.text-line')
-              .transition(t1)
-              .attr('x1', (d) => this.x(d))
-              .attr('x2', (d) => this.x(d));
-
-            update
-              .select('text')
-              .text(`${this.recentWindow} days`)
-              .style('text-anchor', (d) =>
-                this.x(d) > this.width / 2 ? 'end' : 'start',
-              )
-              .transition(t1)
-              .attr('x', (d) => this.x(d));
-          },
-          (exit) =>
-            exit.call((exit) =>
-              exit.transition().style('opacity', 1e-5).remove(),
-            ),
-        );
-      }
-
-      this.chart
-        .selectAll('.stacked-area-chart')
-        .on('mousemove', ({ key }) => this.tooltipOn(key))
-        .on('click', ({ key }) => this.route2Mutation(key))
-        .on('mouseleave', this.tooltipOff);
-    },
-    route2Mutation(d) {
-      if (d.toLowerCase() !== 'other') {
-        const queryParams = this.$route.query;
-        console.log(this.routeName);
-        if (this.routeName.includes('GenomicsEmbed')) {
-          this.$router.push({
-            name: 'GenomicsEmbed',
-            query: {
-              type: 'var',
-              pango: d,
-              loc: queryParams.loc,
-              selected: queryParams.loc,
-            },
-          });
-        } else {
-          const selected =
-            this.routeName === 'LocationReport'
-              ? queryParams.loc
-              : queryParams.selected;
-          this.$router.push({
-            name: 'MutationReport',
-            query: {
-              pango: d,
-              loc: queryParams.loc,
-              selected: selected,
-            },
-          });
-        }
-      }
-    },
-    debounce(fn, delay) {
-      let timer = null;
-      return () => {
-        const context = this,
-          args = arguments,
-          evt = event;
-        //we get the D3 event here
-        clearTimeout(timer);
-        timer = setTimeout(() => {
-          context.event = evt;
-          //and use the reference here
-          fn.apply(context, args);
-        }, delay);
-      };
-    },
+watch(
+  () => props.data,
+  () => {
+    xMin.value = timeParse('%Y-%m-%d')(props.xmin);
+    xMax.value = timeParse('%Y-%m-%d')(props.xmax);
+    setXScale();
+    updatePlot();
   },
+  { deep: true },
+);
+
+watch(
+  () => props.xmin,
+  () => {
+    xMin.value = timeParse('%Y-%m-%d')(props.xmin);
+    xMax.value = timeParse('%Y-%m-%d')(props.xmax);
+    setXScale();
+    updatePlot();
+  },
+);
+
+watch(
+  () => props.xmax,
+  () => {
+    xMin.value = timeParse('%Y-%m-%d')(props.xmin);
+    xMax.value = timeParse('%Y-%m-%d')(props.xmax);
+    setXScale();
+    updatePlot();
+  },
+);
+
+const debounceSetDims = debounce(setDims, 150);
+const debounceZoom = debounce(zoom, 150);
+
+onMounted(() => {
+  // this.$nextTick in optionsAPI
+  nextTick(() => {
+    window.addEventListener('resize', debounceSetDims);
+
+    updateBrush();
+    // set initial dimensions for the plots.
+    debounceSetDims();
+  });
+
+  setupPlot();
+  updatePlot();
+  if (!props.xmin && !props.xmax) {
+    changeXScale(6);
+  }
 });
 </script>
 
@@ -942,7 +982,7 @@ export default Vue.extend({
   .axis--y text {
     font-size: 12px;
   }
-  
+
   .stream-axis.axis--y text {
     font-size: 16px;
   }

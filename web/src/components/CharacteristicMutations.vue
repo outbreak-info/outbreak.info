@@ -155,82 +155,75 @@
   </div>
 </template>
 
-<script>
-import { mapState } from 'vuex';
+<script setup>
+import { computed, onMounted, ref } from 'vue';
 import { format } from 'd3-format';
 import { scaleOrdinal } from 'd3-scale';
 
 import { getBadMutations } from '@/api/genomics.js';
 import NT_MAP from '@/assets/genomics/sarscov2_NC045512_genes_nt.json';
 import { lazyLoad } from '@/js/lazy-load';
+import { genomicsStore } from '@/stores/genomicsStore';
 
-export default {
-  name: 'CharacteristicMutations',
-  components: {
-    SARSMutationMap: lazyLoad('SARSMutationMap'),
-    MutationTable: lazyLoad('MutationTable'),
-    Warning: lazyLoad('Warning'),
-    DownloadReportData: lazyLoad('DownloadReportData'),
-  },
-  props: {
-    mutations: Array,
-    definitionLabel: String,
-    mutationName: String,
-    lineageName: String,
-    sublineages: [Array, String],
-    reportType: String,
-    aquariaLink: Array,
-    additionalMutations: Array,
-  },
-  data() {
+const SARSMutationMap = lazyLoad('SARSMutationMap');
+const MutationTable = lazyLoad('MutationTable');
+const Warning = lazyLoad('Warning');
+const DownloadReportData = lazyLoad('DownloadReportData');
+
+const props = defineProps({
+  mutations: Array,
+  definitionLabel: String,
+  mutationName: String,
+  lineageName: String,
+  sublineages: [Array, String],
+  reportType: String,
+  aquariaLink: Array,
+  additionalMutations: Array,
+});
+
+const store = genomicsStore();
+
+const colorScale = ref(null);
+const moi = ref(null);
+const moc = ref(null);
+const colorDomain = ref([
+  '#bab0ab', // lt grey -- UTRs
+  '#1f77b4', // dk blue
+  '#aec7e8', // lt blue
+  '#f28e2c', // orange
+  '#e15759', // red
+  '#9edae5', // teal
+  '#59a14f', // green
+  '#edc949', // yellow
+  '#9467bd', // purple
+  '#ff9da7', // pink
+  '#8c564b', // brown
+  '#555555', // grey
+  '#bcbd22', // puce
+  '#bab0ab',
+]);
+
+const charMutThreshold = computed(() => {
+  return format('.0%')(store.$state.characteristicThreshold);
+});
+
+onMounted(() => {
+  const ofInterest = getBadMutations();
+  moc.value = ofInterest.moc;
+  moi.value = ofInterest.moi;
+  // convert object of nucleotides into an array
+  const ntMapArr = Object.entries(NT_MAP).map((d) => {
     return {
-      colorScale: null,
-      moi: null,
-      moc: null,
-      colorDomain: [
-        '#bab0ab', // lt grey -- UTRs
-        '#1f77b4', // dk blue
-        '#aec7e8', // lt blue
-        '#f28e2c', // orange
-        '#e15759', // red
-        '#9edae5', // teal
-        '#59a14f', // green
-        '#edc949', // yellow
-        '#9467bd', // purple
-        '#ff9da7', // pink
-        '#8c564b', // brown
-        '#555555', // grey
-        '#bcbd22', // puce
-        '#bab0ab',
-      ],
+      gene: d[0],
+      start: d[1].start,
+      end: d[1].end,
     };
-  },
-  computed: {
-    ...mapState('genomics', ['characteristicThreshold']),
-    charMutThreshold() {
-      return format('.0%')(this.characteristicThreshold);
-    },
-  },
-  mounted() {
-    const ofInterest = getBadMutations();
-    this.moc = ofInterest.moc;
-    this.moi = ofInterest.moi;
-    // convert object of nucleotides into an array
-    this.ntMapArr = Object.entries(NT_MAP).map((d) => {
-      return {
-        gene: d[0],
-        start: d[1].start,
-        end: d[1].end,
-      };
-    });
+  });
 
-    let geneNames = this.ntMapArr
-      .sort((a, b) => a.start - b.start)
-      .map((d) => d.gene);
+  let geneNames = ntMapArr.sort((a, b) => a.start - b.start).map((d) => d.gene);
 
-    this.colorScale = scaleOrdinal(this.colorDomain).domain(geneNames);
-  },
-};
+  colorScale.value = scaleOrdinal(colorDomain.value).domain(geneNames);
+});
 </script>
 
 <style lang="scss">

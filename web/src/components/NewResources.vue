@@ -55,25 +55,20 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { timeFormat, timeParse } from 'd3-time-format';
 
 import { lazyLoad } from '@/js/lazy-load';
 
-export default {
-  name: 'NewResources',
-  components: {
-    StripeAccent: lazyLoad('StripeAccent'),
-  },
-  props: {
-    newData: Array,
-  },
-  methods: {
-    format(dateStr) {
-      const parsed = timeParse('%Y-%m-%d')(dateStr);
-      return parsed ? timeFormat('%d %B')(parsed) : null;
-    },
-  },
+const StripeAccent = lazyLoad('StripeAccent');
+
+const props = defineProps({
+  newData: Array,
+});
+
+const format = (dateStr) => {
+  const parsed = timeParse('%Y-%m-%d')(dateStr);
+  return parsed ? timeFormat('%d %B')(parsed) : null;
 };
 </script>
 

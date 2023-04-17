@@ -6,12 +6,8 @@
     <table>
       <thead>
         <tr class="border-bottom">
-          <th>
-            gene
-          </th>
-          <th>
-            amino acid
-          </th>
+          <th>gene</th>
+          <th>amino acid</th>
         </tr>
       </thead>
       <tbody class="checkbook border-bottom">
@@ -34,34 +30,30 @@
   </div>
 </template>
 
-<script>
-import Vue from 'vue';
+<script setup>
+import { computed } from 'vue';
 import cloneDeep from 'lodash/cloneDeep';
 
 import NT_MAP from '@/assets/genomics/sarscov2_NC045512_genes_nt.json';
 
-export default Vue.extend({
-  name: 'MutationTable',
-  props: {
-    mutations: Array,
-    tableTitle: String,
-  },
-  computed: {
-    sortedMutations() {
-      let sortedMutations = [];
-      sortedMutations = cloneDeep(this.mutations);
-      const compare = (a, b) => {
-        if (!(a.gene in NT_MAP) || !(b.gene in NT_MAP)) return 0;
-        if (NT_MAP[a.gene].start < NT_MAP[b.gene].start) return -1;
-        if (NT_MAP[a.gene].start > NT_MAP[b.gene].start) return 0;
-        return a.codon_num < b.codon_num ? -1 : 0;
-      };
+const props = defineProps({
+  mutations: Array,
+  tableTitle: String,
+});
 
-      sortedMutations = sortedMutations.sort(compare);
+const sortedMutations = computed(() => {
+  let sortedMutations = [];
+  sortedMutations = cloneDeep(props.mutations);
+  const compare = (a, b) => {
+    if (!(a.gene in NT_MAP) || !(b.gene in NT_MAP)) return 0;
+    if (NT_MAP[a.gene].start < NT_MAP[b.gene].start) return -1;
+    if (NT_MAP[a.gene].start > NT_MAP[b.gene].start) return 0;
+    return a.codon_num < b.codon_num ? -1 : 0;
+  };
 
-      return sortedMutations;
-    },
-  },
+  sortedMutations = sortedMutations.sort(compare);
+
+  return sortedMutations;
 });
 </script>
 

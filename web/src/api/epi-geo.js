@@ -2,13 +2,14 @@ import { from } from 'rxjs';
 import { finalize, catchError, map } from 'rxjs/operators';
 import { timeParse } from 'd3-time-format';
 
-import store from '@/store';
 import { getAll } from '@/api/biothings.js';
+import { adminStore } from '@/stores/adminStore';
 
+const store = adminStore();
 export const getMapData = (apiUrl) => {
   const parseDate = timeParse('%Y-%m-%d');
 
-  store.state.admin.loading = true;
+  store.$patch({ loading: true });
   // Choosing one specific date, since all dates contain the current info.
   return getAll(
     apiUrl,
@@ -35,6 +36,6 @@ export const getMapData = (apiUrl) => {
       console.log(e);
       return from([]);
     }),
-    finalize(() => (store.state.admin.loading = false)),
+    finalize(() => store.$patch({ loading: false })),
   );
 };

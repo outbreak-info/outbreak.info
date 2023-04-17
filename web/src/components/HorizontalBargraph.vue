@@ -10,7 +10,7 @@
         :transform="`translate(${margin.left}, ${margin.top})`"
       />
       <g
-        ref="yAxis"
+        ref="yAxisRef"
         :transform="`translate(${width - margin.right + 3}, ${margin.top})`"
         class="horizontal-bargraph-y axis--y"
       />
@@ -18,105 +18,101 @@
   </div>
 </template>
 
-<script>
-import Vue from 'vue';
+<script setup>
+import { computed, onMounted, ref } from 'vue';
 import { max } from 'd3-array';
 import { axisRight } from 'd3-axis';
 import { scaleLinear, scaleBand } from 'd3-scale';
 import { select } from 'd3-selection';
 
-export default Vue.extend({
-  name: 'HorizontalBargraph',
-  props: {
-    data: Array,
-    title: String,
-    subtitle: String,
-    width: {
-      type: Number,
-      default: 250,
-    },
-    height: {
-      type: Number,
-      default: 250,
-    },
-    num2Show: {
-      type: Number,
-      default: 15,
-    },
-    fill: {
-      type: String,
-      default: '#cbd7e3',
-    },
+const props = defineProps({
+  data: Array,
+  title: String,
+  subtitle: String,
+  width: {
+    type: Number,
+    default: 250,
   },
-  data() {
-    return {
-      barHeight: 10,
-      spacing: 3,
-      margin: {
-        top: 10,
-        bottom: 3,
-        left: 3,
-        right: 150,
-      },
-      // axes
-      x: null,
-      y: scaleBand(),
-      yAxis: null,
-      // refs
-      svg: null,
-    };
+  height: {
+    type: Number,
+    default: 250,
   },
-  computed: {
-    filtered() {
-      if (this.data) {
-        return this.data.slice(0, this.num2Show);
-      } else {
-        return null;
-      }
-    },
+  num2Show: {
+    type: Number,
+    default: 15,
   },
-  mounted() {
-    this.setupPlot();
-    this.updatePlot();
+  fill: {
+    type: String,
+    default: '#cbd7e3',
   },
-  methods: {
-    setupPlot() {
-      this.svg = select(this.$refs.horizontal_bargraph);
-    },
-    updatePlot() {
-      if (this.filtered) {
-        this.updateAxes();
-        this.drawBars();
-      }
-    },
-    updateAxes() {
-      this.x = scaleLinear()
-        .range([this.width - this.margin.left - this.margin.right, 0])
-        .domain([0, max(this.filtered, (d) => d.value)]);
+});
 
-      this.y = scaleBand()
-        .paddingInner(0.2)
-        .range([0, this.height - this.margin.top - this.margin.bottom])
-        .domain(this.filtered.map((d) => d.key));
+const margin = ref({
+  top: 10,
+  bottom: 3,
+  left: 3,
+  right: 150,
+});
+// axes
+const x = ref(null);
+const y = ref(scaleBand());
+const yAxis = ref(null);
+// refs
+const svg = ref(null);
+const yAxisRef = ref(null);
+const horizontal_bargraph = ref(null);
 
-      this.yAxis = axisRight(this.y).tickSizeOuter(0);
+const filtered = computed(() => {
+  if (props.data) {
+    return props.data.slice(0, props.num2Show);
+  } else {
+    return null;
+  }
+});
 
-      select(this.$refs.yAxis).call(this.yAxis);
-    },
-    drawBars() {
-      const rectSelector = this.svg.selectAll('rect').data(this.filtered);
+const setupPlot = () => {
+  svg.value = select(horizontal_bargraph.value);
+};
 
-      rectSelector.join((enter) => {
-        enter
-          .append('rect')
-          .attr('x', (d) => this.x(d.value))
-          .attr('width', (d) => this.x(0) - this.x(d.value))
-          .attr('y', (d) => this.y(d.key))
-          .attr('height', (d) => this.y.bandwidth())
-          .style('fill', this.fill);
-      });
-    },
-  },
+const updateAxes = () => {
+  x.value = scaleLinear()
+    .range([props.width - margin.value.left - margin.value.right, 0])
+    .domain([0, max(filtered.value, (d) => d.value)]);
+
+  y.value = scaleBand()
+    .paddingInner(0.2)
+    .range([0, props.height - margin.value.top - margin.value.bottom])
+    .domain(filtered.value.map((d) => d.key));
+
+  yAxis.value = axisRight(y.value).tickSizeOuter(0);
+
+  select(yAxisRef.value).call(yAxis.value);
+};
+
+const drawBars = () => {
+  const rectSelector = svg.value.selectAll('rect').data(filtered.value);
+
+  rectSelector.join((enter) => {
+    enter
+      .append('rect')
+      .attr('x', (d) => x.value(d.value))
+      .attr('width', (d) => x.value(0) - x.value(d.value))
+      .attr('y', (d) => y.value(d.key))
+      .attr('height', (d) => y.value.bandwidth())
+      .style('fill', props.fill);
+  });
+};
+
+const updatePlot = () => {
+  if (filtered.value) {
+    updateAxes();
+    drawBars();
+  }
+};
+
+onMounted(() => {
+  setupPlot();
+  updatePlot();
 });
 </script>
 

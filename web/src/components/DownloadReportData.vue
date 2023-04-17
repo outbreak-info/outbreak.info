@@ -14,100 +14,98 @@
   </div>
 </template>
 
-<script>
-import Vue from 'vue';
+<script setup>
+import { computed, ref } from 'vue';
+import { useRoute } from 'vue-router';
+import { event } from 'vue-gtag';
 import { timeFormat } from 'd3-time-format';
 
 import { getPng } from '@/js/get_svg.js';
 
-export default Vue.extend({
-  name: 'DownloadReportData',
-  components: {},
-  props: {
-    ids: Array,
-    data: Array,
-    dataType: String,
-    reportType: {
-      type: String,
-      default: 'report',
-    },
-    numSvgs: {
-      type: Number,
-      default: 1,
-    },
-    isVertical: {
-      type: Boolean,
-      default: false,
-    },
-    fullWidth: {
-      type: Boolean,
-      default: true,
-    },
-    downloadLabel: {
-      type: String,
-      default: 'vis & data',
-    },
-    darkMode: {
-      type: Boolean,
-      default: false,
-    },
-    figureRef: String,
+const props = defineProps({
+  ids: Array,
+  data: Array,
+  dataType: String,
+  reportType: {
+    type: String,
+    default: 'report',
   },
-  data() {
-    return {
-      showSnackbar: false,
-      snackbarText: 'copying figure to the clipboard',
-      copyThreshold: 9,
-      sourceString: 'The GISAID Initiative',
-    };
+  numSvgs: {
+    type: Number,
+    default: 1,
   },
-  computed: {
-    copyable() {
-      return (
-        this.numSvgs <= this.copyThreshold && typeof ClipboardItem == 'function'
-      );
-    },
-    todayFormatted() {
-      return this.formatDate();
-    },
+  isVertical: {
+    type: Boolean,
+    default: false,
   },
-  methods: {
-    formatDate(formatString = '%d %b %Y') {
-      const dateString = new Date();
-      const formatDate = timeFormat(formatString);
-      return formatDate(dateString);
-    },
-    copyPng() {
-      this.showSnackbar = true;
-      this.snackbarText = 'copying figure to the clipboard';
-      this.$gtag.event('copy_vis', {
-        event_category: `${this.dataType}_${this.figureRef}_vis`,
-        event_label: `copying |${this.figureRef}| {vis} from [${this.$route.fullPath}]`,
-      });
-
-      getPng(
-        `svg.${this.figureRef}`,
-        this.sourceString,
-        this.todayFormatted,
-        this.isVertical,
-        this.darkMode,
-        null,
-      )
-        .then((msg) => {
-          this.snackbarText = msg;
-          setTimeout(() => {
-            this.showSnackbar = false;
-          }, 3000);
-        })
-        .catch((error) => {
-          console.log(error);
-          this.snackbarText = 'Error copying image';
-          setTimeout(() => {
-            this.showSnackbar = false;
-          }, 3000);
-          console.log('Error: in copying that image');
-        });
-    },
+  fullWidth: {
+    type: Boolean,
+    default: true,
   },
+  downloadLabel: {
+    type: String,
+    default: 'vis & data',
+  },
+  darkMode: {
+    type: Boolean,
+    default: false,
+  },
+  figureRef: String,
 });
+
+// this.$route
+const route = useRoute();
+
+const showSnackbar = ref(false);
+const snackbarText = ref('copying figure to the clipboard');
+const copyThreshold = ref(9);
+const sourceString = ref('The GISAID Initiative');
+
+const copyable = computed(() => {
+  return (
+    props.numSvgs <= copyThreshold.value && typeof ClipboardItem == 'function'
+  );
+});
+
+const todayFormatted = computed(() => {
+  return formatDate();
+});
+
+const formatDate = (formatString = '%d %b %Y') => {
+  const dateString = new Date();
+  const formatDate = timeFormat(formatString);
+  return formatDate(dateString);
+};
+
+const copyPng = () => {
+  showSnackbar.value = true;
+  snackbarText.value = 'copying figure to the clipboard';
+  event('copy_vis', {
+    event_category: `${props.dataType}_${props.figureRef}_vis`,
+    event_label: `copying |${props.figureRef}| {vis} from [${route.fullPath}]`,
+  });
+
+  getPng(
+    `svg.${props.figureRef}`,
+    props.sourceString,
+    todayFormatted.value,
+    props.isVertical,
+    props.darkMode,
+    null,
+  )
+    .then((msg) => {
+      snackbarText.value = msg;
+      setTimeout(() => {
+        showSnackbar.value = false;
+      }, 3000);
+    })
+    .catch((error) => {
+      console.log(error);
+      snackbarText.value = 'Error copying image';
+      setTimeout(() => {
+        showSnackbar.value = false;
+      }, 3000);
+      console.log('Error: in copying that image');
+    });
+};
 </script>

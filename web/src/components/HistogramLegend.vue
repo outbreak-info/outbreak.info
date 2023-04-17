@@ -124,324 +124,346 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { computed, nextTick, onMounted, ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import { max, extent, histogram } from 'd3-array';
 import { axisBottom } from 'd3-axis';
 import { drag } from 'd3-drag';
 import { format } from 'd3-format';
 import { select, selectAll, event } from 'd3-selection';
 import { scaleLinear } from 'd3-scale';
+import debounce from 'lodash/debounce';
 
-export default {
-  name: 'HistogramLegend',
-  props: {
-    data: Array,
-    variable: String,
-    variableLabel: String,
-    minVal: Number,
-    maxVal: Number,
-    colorScale: Function,
-    width: Number,
-    transition1: Number,
-    animate: Boolean,
-  },
-  data() {
-    return {
-      height: 100,
-      margin: {
-        top: 5,
-        bottom: 25,
-        left: 5,
-        right: 15,
-      },
-      selectedMin: null,
-      selectedMax: null,
-      // axes
-      x: null,
-      y: null,
-      xAxis: null,
-      legendColors: [],
-      // binned data
-      bins: null,
-      numBins: 50,
-      // refs
-      chart: null,
-      xAxisRef: null,
-    };
-  },
-  computed: {
-    sliderRight() {
-      return this.x && (this.selectedMax || this.selectedMax === 0)
-        ? this.x(this.selectedMax)
-        : 8;
-    },
-    sliderLeft() {
-      return this.x && (this.selectedMin || this.selectedMin === 0)
-        ? this.x(this.selectedMin)
-        : 0;
-    },
-    isFiltered() {
-      return (
-        this.$route.query.min ||
-        this.$route.query.max ||
-        this.$route.query.min === 0 ||
-        this.$route.query.max === 0
-      );
-    },
-    domain() {
-      return extent(this.colorScale.domain());
-    },
-    precision() {
-      return this.domain[1] - this.domain[0] <= 20 ? 10 : 1;
-    },
-    formatLimit() {
-      return this.domain[1] - this.domain[0] <= 20
-        ? format(',.1f')
-        : format(',.0f');
-    },
-    filterString() {
-      let filter = null;
-      if (
-        (this.minVal || this.minVal === 0) &&
-        (this.maxVal || this.maxVal === 0)
-      ) {
-        filter = `${this.minVal.toLocaleString()} &mdash; ${this.maxVal.toLocaleString()}`;
-      } else if (this.minVal || this.minVal === 0) {
-        filter = `&ge; ${this.minVal.toLocaleString()}`;
-      } else if (this.maxVal || this.maxVal === 0) {
-        filter = `&le; ${this.maxVal.toLocaleString()}`;
-      }
+const props = defineProps({
+  data: Array,
+  variable: String,
+  variableLabel: String,
+  minVal: Number,
+  maxVal: Number,
+  colorScale: Function,
+  width: Number,
+  transition1: Number,
+  animate: Boolean,
+});
 
-      return filter
-        ? `filtered ${filter} ${this.variableLabel}`
-        : this.variableLabel;
-    },
-  },
-  watch: {
-    data() {
-      this.updatePlot();
-    },
-    variable() {
-      this.updatePlot();
-    },
-    minVal: {
-      immediate: true,
-      handler(newMin, oldMin) {
-        this.updateFilterLimits();
-      },
-    },
-    maxVal: {
-      immediate: true,
-      handler(newMax, oldMax) {
-        this.updateFilterLimits();
-      },
-    },
-  },
-  mounted() {
-    this.setupPlot();
-    this.updatePlot();
+// instead of this.$route
+const route = useRoute();
+// instead of this.$router
+const router = useRouter();
 
-    this.$nextTick(() => this.setupDrag());
-  },
-  methods: {
-    setupPlot() {
-      this.chart = select(this.$refs.legend_bars);
-      this.xAxisRef = select(this.$refs.x_axis);
-    },
-    updateFilterLimits() {
-      this.selectedMin =
-        this.minVal || this.minVal === 0
-          ? this.minVal
-          : Math.floor((this.domain[0] + Number.EPSILON) * this.precision) /
-            this.precision;
-      this.selectedMax =
-        this.maxVal || this.maxVal === 0
-          ? this.maxVal
-          : Math.ceil((this.domain[1] + Number.EPSILON) * this.precision) /
-            this.precision;
-    },
-    updateAxes() {
-      // x-axis
-      this.x = scaleLinear()
-        .range([0, this.width - this.margin.left - this.margin.right])
-        .domain(this.domain)
-        .clamp(true);
+const height = ref(100);
+const margin = ref({
+  top: 5,
+  bottom: 25,
+  left: 5,
+  right: 15,
+});
+const selectedMin = ref(null);
+const selectedMax = ref(null);
+// axes
+const x = ref(null);
+const y = ref(null);
+const xAxis = ref(null);
+const legendColors = ref([]);
+// binned data
+const bins = ref(null);
+const numBins = ref(50);
+// refs
+const chart = ref(null);
+const xAxisRef = ref(null);
+// variables to replace this.$refs
+const legend_bars = ref(null);
+const x_axis = ref(null);
+const slider_left = ref(null);
+const slider_right = ref(null);
 
-      this.xAxis = axisBottom(this.x).tickSizeOuter(0).ticks(5);
-      this.xAxisRef.call(this.xAxis);
+const sliderRight = computed(() => {
+  return x.value && (selectedMax.value || selectedMax.value === 0)
+    ? x.value(selectedMax.value)
+    : 8;
+});
 
-      // legend gradient
-      this.legendColors = this.colorScale.range().map((color, i) => {
-        return {
-          fill: color,
-          width:
-            this.x(this.colorScale.domain()[i + 1]) -
-            this.x(this.colorScale.domain()[i]),
-          x0: this.x(this.colorScale.domain()[i]),
-        };
-      });
+const sliderLeft = computed(() => {
+  return x.value && (selectedMin.value || selectedMin.value === 0)
+    ? x.value(selectedMin.value)
+    : 0;
+});
 
-      selectAll('.axis').call(this.xAxis);
+const isFiltered = computed(() => {
+  return (
+    route.query.min ||
+    route.query.max ||
+    route.query.min === 0 ||
+    route.query.max === 0
+  );
+});
 
-      // calculate bins
-      this.bins = histogram()
-        .domain(this.x.domain())
-        .thresholds(this.x.ticks(this.numBins))(
-        this.data.map((d) => d[this.variable]),
-      );
+const domain = computed(() => {
+  return extent(props.colorScale.domain());
+});
 
-      // pre-calc if the data should be selected or not
-      this.bins.forEach((d) => {
-        if (
-          (this.minVal || this.minVal === 0) &&
-          (this.maxVal || this.maxVal === 0)
-        ) {
-          d['selected'] = d.x0 >= this.minVal && d.x1 <= this.maxVal;
-        } else if (this.minVal || this.minVal === 0) {
-          d['selected'] = d.x0 >= this.minVal;
-        } else if (this.maxVal || this.maxVal === 0) {
-          d['selected'] = d.x1 <= this.maxVal;
-        } else {
-          d['selected'] = true;
-        }
-      });
+const precision = computed(() => {
+  return domain.value[1] - domain.value[0] <= 20 ? 10 : 1;
+});
 
-      // y-axis
-      this.y = scaleLinear()
-        .range([this.height, 0])
-        .domain([0, max(this.bins, (d) => d.length)]);
-      //   select(this.$refs.slider_line)
-      //   .attr("x1", this.x(this.selectedMin))
-      //   .attr("x2", this.x(this.selectedMax))
-    },
-    setupDrag() {
-      // draggable filters
-      select(this.$refs.slider_left).call(
-        drag()
-          .on('drag', () => this.updateDrag('left'))
-          .on('end', () => this.changeFilters()),
-      );
-      select(this.$refs.slider_right).call(
-        drag()
-          .on('drag', () => this.updateDrag('right'))
-          .on('end', () => this.changeFilters()),
-      );
-    },
-    updateDrag(side) {
-      const newVal = this.x.invert(event.x);
-      if (side === 'left') {
-        this.selectedMin = newVal;
-        select(this.$refs.slider_left).attr(
-          'transform',
-          `translate(${this.x(this.selectedMin)},0)`,
-        );
+const formatLimit = computed(() => {
+  return domain.value[1] - domain.value[0] <= 20
+    ? format(',.1f')
+    : format(',.0f');
+});
 
-        // select(this.$refs.rect_mask_left).attr("width", this.x(this.selectedMin))
-      } else {
-        this.selectedMax = newVal;
+const filterString = computed(() => {
+  let filter = null;
+  if (route.query.min && route.query.max) {
+    filter = `${route.query.min.toLocaleString()} &mdash; ${route.query.max.toLocaleString()}`;
+  }
 
-        select(this.$refs.slider_right).attr(
-          'transform',
-          `translate(${this.x(this.selectedMax) - 8},0)`,
-        );
+  return filter
+    ? `filtered ${filter} ${props.variableLabel}`
+    : props.variableLabel;
+});
 
-        // select(this.$refs.rect_mask_right)
-        //   .attr("x", this.x(this.selectedMax))
-      }
-    },
-    changeFilters() {
-      if (this.selectedMin > this.selectedMax) {
-        const minVal = this.selectedMax;
-        this.selectedMax =
-          Math.ceil((this.selectedMin + Number.EPSILON) * this.precision) /
-          this.precision;
-        this.selectedMin =
-          Math.floor((minVal + Number.EPSILON) * this.precision) /
-          this.precision;
-      } else {
-        this.selectedMax =
-          Math.ceil((this.selectedMax + Number.EPSILON) * this.precision) /
-          this.precision;
-        this.selectedMin =
-          Math.floor((this.selectedMin + Number.EPSILON) * this.precision) /
-          this.precision;
-      }
-
-      const route = this.$route.query;
-      this.$router.push({
-        path: 'maps',
-        query: {
-          location: route.location,
-          admin_level: route.admin_level,
-          variable: route.variable,
-          date: route.date,
-          min: String(this.selectedMin),
-          max: String(this.selectedMax),
-        },
-      });
-    },
-    updatePlot() {
-      if (this.data && this.colorScale) {
-        this.updateAxes();
-        this.updateFilterLimits();
-
-        this.chart
-          .selectAll('rect')
-          .data(this.bins)
-          .join(
-            (enter) => {
-              enter
-                .append('rect')
-                .attr('class', 'histogram-bar')
-                .attr('fill', (d) =>
-                  this.colorScale ? this.colorScale((d.x0 + d.x1) / 2) : 'none',
-                )
-                .attr('opacity', (d) => (d.selected ? 1 : 0.25))
-                .attr('x', (d) => this.x(d.x0) + 1)
-                .attr('width', (d) =>
-                  Math.max(0, this.x(d.x1) - this.x(d.x0) - 1),
-                )
-                .attr('y', (d) => this.y(d.length))
-                .attr('height', (d) => this.y(0) - this.y(d.length));
-            },
-            (update) => {
-              if (this.animate) {
-                update
-                  .attr('fill', (d) =>
-                    this.colorScale
-                      ? this.colorScale((d.x0 + d.x1) / 2)
-                      : 'none',
-                  )
-                  .attr('opacity', (d) => (d.selected ? 1 : 0.25))
-                  .attr('x', (d) => this.x(d.x0) + 1)
-                  .attr('width', (d) =>
-                    Math.max(0, this.x(d.x1) - this.x(d.x0) - 1),
-                  )
-                  .transition()
-                  .duration(this.transition1)
-                  .attr('height', (d) => this.y(0) - this.y(d.length))
-                  .attr('y', (d) => this.y(d.length));
-              } else {
-                update
-                  .attr('fill', (d) =>
-                    this.colorScale
-                      ? this.colorScale((d.x0 + d.x1) / 2)
-                      : 'none',
-                  )
-                  .attr('opacity', (d) => (d.selected ? 1 : 0.25))
-                  .attr('x', (d) => this.x(d.x0) + 1)
-                  .attr('width', (d) =>
-                    Math.max(0, this.x(d.x1) - this.x(d.x0) - 1),
-                  )
-                  .attr('y', (d) => this.y(d.length))
-                  .attr('height', (d) => this.y(0) - this.y(d.length));
-              }
-            },
-          );
-      }
-    },
-  },
+const setupPlot = () => {
+  chart.value = select(legend_bars.value);
+  xAxisRef.value = select(x_axis.value);
 };
+
+const updateFilterLimits = () => {
+  selectedMin.value =
+    route.query.min || route.query.min === 0
+      ? route.query.min
+      : Math.floor((domain.value[0] + Number.EPSILON) * precision.value) /
+        precision.value;
+  selectedMax.value =
+    route.query.max || route.query.max === 0
+      ? route.query.max
+      : Math.ceil((domain.value[1] + Number.EPSILON) * precision.value) /
+        precision.value;
+};
+
+const updateAxes = () => {
+  // x-axis
+  x.value = scaleLinear()
+    .range([0, props.width - margin.value.left - margin.value.right])
+    .domain(domain.value)
+    .clamp(true);
+
+  xAxis.value = axisBottom(x.value).tickSizeOuter(0).ticks(5);
+  xAxisRef.value.call(xAxis.value);
+
+  // legend gradient
+  legendColors.value = props.colorScale.range().map((color, i) => {
+    return {
+      fill: color,
+      width:
+        x.value(props.colorScale.domain()[i + 1]) -
+        x.value(props.colorScale.domain()[i]),
+      x0: x.value(props.colorScale.domain()[i]),
+    };
+  });
+
+  selectAll('.axis').call(xAxis.value);
+
+  // calculate bins
+  bins.value = histogram()
+    .domain(x.value.domain())
+    .thresholds(x.value.ticks(numBins.value))(
+    props.data.map((d) => d[props.variable]),
+  );
+
+  // pre-calc if the data should be selected or not
+  bins.value.forEach((d) => {
+    if (
+      (props.minVal || props.minVal === 0) &&
+      (props.maxVal || props.maxVal === 0)
+    ) {
+      d['selected'] = d.x0 >= props.minVal && d.x1 <= props.maxVal;
+    } else if (props.minVal || props.minVal === 0) {
+      d['selected'] = d.x0 >= props.minVal;
+    } else if (props.maxVal || props.maxVal === 0) {
+      d['selected'] = d.x1 <= props.maxVal;
+    } else {
+      d['selected'] = true;
+    }
+  });
+
+  // y-axis
+  y.value = scaleLinear()
+    .range([height.value, 0])
+    .domain([0, max(bins.value, (d) => d.length)]);
+  //   select(this.$refs.slider_line)
+  //   .attr("x1", this.x(this.selectedMin))
+  //   .attr("x2", this.x(this.selectedMax))
+};
+
+const setupDrag = () => {
+  // draggable filters
+  select(slider_left.value).call(
+    drag()
+      .on('drag', () => updateDrag('left'))
+      .on('end', () => changeFilters()),
+  );
+  select(slider_right.value).call(
+    drag()
+      .on('drag', () => updateDrag('right'))
+      .on('end', () => changeFilters()),
+  );
+};
+
+const updateDrag = (side) => {
+  const newVal = x.value.invert(event.x);
+  if (side === 'left') {
+    selectedMin.value = newVal;
+    select(slider_left.value).attr(
+      'transform',
+      `translate(${x.value(selectedMin.value)},0)`,
+    );
+
+    // select(this.$refs.rect_mask_left).attr("width", this.x(this.selectedMin))
+  } else {
+    selectedMax.value = newVal;
+
+    select(slider_right.value).attr(
+      'transform',
+      `translate(${x.value(selectedMax.value) - 8},0)`,
+    );
+
+    // select(this.$refs.rect_mask_right)
+    //   .attr("x", this.x(this.selectedMax))
+  }
+};
+
+const changeFilters = () => {
+  if (selectedMin.value > selectedMax.value) {
+    const minVal = selectedMax.value;
+    selectedMax.value =
+      Math.ceil((selectedMin.value + Number.EPSILON) * precision.value) /
+      this.precision;
+    selectedMin.value =
+      Math.floor((minVal + Number.EPSILON) * precision.value) / precision.value;
+  } else {
+    selectedMax.value =
+      Math.ceil((selectedMax.value + Number.EPSILON) * precision.value) /
+      precision.value;
+    selectedMin.value =
+      Math.floor((selectedMin.value + Number.EPSILON) * precision.value) /
+      precision.value;
+  }
+
+  // renamed it since route is already declared
+  const routeObj = route.query;
+  router.push({
+    path: 'maps',
+    query: {
+      location: routeObj.location,
+      admin_level: routeObj.admin_level,
+      variable: routeObj.variable,
+      date: routeObj.date,
+      min: String(selectedMin.value),
+      max: String(selectedMax.value),
+    },
+  });
+};
+
+const updatePlot = () => {
+  if (props.data && props.colorScale) {
+    updateAxes();
+    updateFilterLimits();
+
+    chart.value
+      .selectAll('rect')
+      .data(bins.value)
+      .join(
+        (enter) => {
+          enter
+            .append('rect')
+            .attr('class', 'histogram-bar')
+            .attr('fill', (d) =>
+              props.colorScale ? props.colorScale((d.x0 + d.x1) / 2) : 'none',
+            )
+            .attr('opacity', (d) => (d.selected ? 1 : 0.25))
+            .attr('x', (d) => x.value(d.x0) + 1)
+            .attr('width', (d) =>
+              Math.max(0, x.value(d.x1) - x.value(d.x0) - 1),
+            )
+            .attr('y', (d) => y.value(d.length))
+            .attr('height', (d) => y.value(0) - y.value(d.length));
+        },
+        (update) => {
+          if (props.animate) {
+            update
+              .attr('fill', (d) =>
+                props.colorScale ? props.colorScale((d.x0 + d.x1) / 2) : 'none',
+              )
+              .attr('opacity', (d) => (d.selected ? 1 : 0.25))
+              .attr('x', (d) => x.value(d.x0) + 1)
+              .attr('width', (d) =>
+                Math.max(0, x.value(d.x1) - x.value(d.x0) - 1),
+              )
+              .transition()
+              .duration(props.transition1)
+              .attr('height', (d) => y.value(0) - y.value(d.length))
+              .attr('y', (d) => y.value(d.length));
+          } else {
+            update
+              .attr('fill', (d) =>
+                props.colorScale ? props.colorScale((d.x0 + d.x1) / 2) : 'none',
+              )
+              .attr('opacity', (d) => (d.selected ? 1 : 0.25))
+              .attr('x', (d) => x.value(d.x0) + 1)
+              .attr('width', (d) =>
+                Math.max(0, x.value(d.x1) - x.value(d.x0) - 1),
+              )
+              .attr('y', (d) => y.value(d.length))
+              .attr('height', (d) => y.value(0) - y.value(d.length));
+          }
+        },
+      );
+  }
+};
+
+watch(
+  () => props.data,
+  () => {
+    updatePlot();
+  },
+  { deep: true },
+);
+
+watch(
+  () => props.variable,
+  () => {
+    updatePlot();
+  },
+);
+
+watch(
+  () => props.minVal,
+  (newVal, oldVal) => {
+    if (newVal) {
+      updateFilterLimits();
+    }
+  },
+  { immediate: true },
+);
+
+watch(
+  () => props.maxVal,
+  (newVal, oldVal) => {
+    if (newVal) {
+      updateFilterLimits();
+    }
+  },
+  { immediate: true },
+);
+
+onMounted(() => {
+  setupPlot();
+  updatePlot();
+  // this.$nextTick in optionsAPI
+  nextTick(() => setupDrag());
+});
 </script>
 
 <style lang="scss">

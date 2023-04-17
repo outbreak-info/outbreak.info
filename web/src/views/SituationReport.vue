@@ -13,34 +13,30 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { computed } from 'vue';
 import { lazyLoad } from '@/js/lazy-load';
 
-export default {
-  name: 'SituationReport',
-  components: {
-    SituationReportComponent: lazyLoad('SituationReportComponent'),
+const SituationReportComponent = lazyLoad('SituationReportComponent');
+
+const props = defineProps({
+  alias: String,
+  loc: [Array, String],
+  muts: [Array, String],
+  pango: String,
+  xmin: String,
+  xmax: String,
+  overlay: {
+    type: [String, Boolean],
+    default: 'false',
   },
-  props: {
-    alias: String,
-    loc: [Array, String],
-    muts: [Array, String],
-    pango: String,
-    xmin: String,
-    xmax: String,
-    overlay: {
-      type: [String, Boolean],
-      default: 'false',
-    },
-    selected: {
-      type: String,
-      default: 'Worldwide',
-    },
+  selected: {
+    type: String,
+    default: 'Worldwide',
   },
-  computed: {
-    selectedLocation() {
-      return this.selected ? this.selected : 'Worldwide';
-    },
-  },
-};
+});
+
+const selectedLocation = computed(() => {
+  return props.selected ? props.selected : 'Worldwide';
+});
 </script>

@@ -58,62 +58,60 @@
   </div>
 </template>
 
-<script>
-import Vue from 'vue';
+<script setup>
+import { computed, ref } from 'vue';
 
-export default Vue.extend({
-  name: 'ShareReport',
-  components: {},
-  props: {
-    title: String,
-    url: String,
-  },
-  data() {
-    return {
-      showSnackbar: false,
-    };
-  },
-  computed: {
-    outbreakUrl() {
-      return window.location.href;
-    },
-    twitterUrl() {
-      return `https://twitter.com/intent/tweet?url=${this.outbreakUrl}&hashtags=covid-19,outbreak.info`;
-    },
-    facebookUrl() {
-      return `https://www.facebook.com/sharer/sharer.php?u=${this.outbreakUrl}`;
-    },
-    redditUrl() {
-      return `http://www.reddit.com/submit?url=${this.outbreakUrl}`;
-    },
-    linkedinUrl() {
-      return `https://www.linkedin.com/sharing/share-offsite/?url=${this.outbreakUrl}`;
-    },
-    emailUrl() {
-      return `mailto:?subject=outbreak.info%20Mutation%20Report&body=${this.outbreakUrl}`;
-    },
-    canShare() {
-      return !!navigator.share;
-    },
-  },
-  methods: {
-    copy2Clipboard() {
-      this.showSnackbar = true;
-      setTimeout(() => {
-        this.showSnackbar = false;
-      }, 3000);
-      navigator.clipboard.writeText(this.outbreakUrl);
-    },
-    shareLink() {
-      if (navigator.share) {
-        navigator.share({
-          title: `outbreak.info Mutation Report`,
-          url: this.outbreakUrl,
-        });
-      }
-    },
-  },
+const props = defineProps({
+  title: String,
+  url: String,
 });
+
+const showSnackbar = ref(false);
+
+const outbreakUrl = computed(() => {
+  return window.location.href;
+});
+
+const twitterUrl = computed(() => {
+  return `https://twitter.com/intent/tweet?url=${outbreakUrl.value}&hashtags=covid-19,outbreak.info`;
+});
+
+const facebookUrl = computed(() => {
+  return `https://www.facebook.com/sharer/sharer.php?u=${outbreakUrl.value}`;
+});
+
+const redditUrl = computed(() => {
+  return `https://www.reddit.com/submit?url=${outbreakUrl.value}`;
+});
+
+const linkedinUrl = computed(() => {
+  return `https://www.linkedin.com/sharing/share-offsite/?url=${outbreakUrl.value}`;
+});
+
+const emailUrl = computed(() => {
+  return `mailto:?subject=outbreak.info%20Mutation%20Report&body=${outbreakUrl.value}`;
+});
+
+const canShare = computed(() => {
+  return !!navigator.share;
+});
+
+const copy2Clipboard = () => {
+  showSnackbar.value = true;
+  setTimeout(() => {
+    showSnackbar.value = false;
+  }, 3000);
+  navigator.clipboard.writeText(outbreakUrl.value);
+};
+
+const shareLink = () => {
+  if (navigator.share) {
+    navigator.share({
+      title: `outbreak.info Mutation Report`,
+      url: outbreakUrl.value,
+    });
+  }
+};
 </script>
 
 <style lang="scss">

@@ -148,7 +148,7 @@
               class="team-member d-flex flex-column align-items-center mx-5 my-3"
             >
               <img
-                :src="require(`@/assets/team/${person.img}`)"
+                :src="`src/assets/team/${person.img}`"
                 class="profile-pic text-"
               />
               <span class="mt-1">{{ person.name }}</span>
@@ -184,7 +184,9 @@
       </div>
 
       <!-- FORMER TEAM -->
-      <div class="bg-light d-flex justify-content-center align-items-center w-100">
+      <div
+        class="bg-light d-flex justify-content-center align-items-center w-100"
+      >
         <div
           class="bg-light d-flex flex-column justify-content-center align-items-center w-75 border-top py-5"
         >
@@ -240,62 +242,59 @@
   </div>
 </template>
 
-<script>
-import Vue from 'vue';
-import { mapState } from 'vuex';
+<script setup>
+import { inject, ref, onMounted, onUnmounted } from 'vue';
+import { storeToRefs } from 'pinia';
 
 import { getResourceTotal } from '@/api/resources.js';
 import { getSequenceCount } from '@/api/genomics.js';
 import { lazyLoad } from '@/js/lazy-load';
+import { adminStore } from '@/stores/adminStore';
 
-export default Vue.extend({
-  name: 'About',
-  components: {
-    Jobs: lazyLoad('Jobs'),
-    EmailSubscription: lazyLoad('EmailSubscription'),
-  },
-  data() {
-    return {
-      resourceCount: null,
-      gisaidCount: null,
-      resourceSubscription: null,
-      genomicsSubscription: null,
-    };
-  },
-  computed: {
-    ...mapState('admin', ['funding', 'team', 'formerTeam']),
-  },
-  mounted() {
-    let twitterScript = document.createElement('script');
-    twitterScript.setAttribute(
-      'src',
-      'https://platform.twitter.com/widgets.js',
-    );
-    document.head.appendChild(twitterScript);
+const Jobs = lazyLoad('Jobs');
+const EmailSubscription = lazyLoad('EmailSubscription');
 
-    // get totals from the API
-    this.resourceSubscription = getResourceTotal(this.$resourceurl).subscribe(
-      (total) => {
-        this.resourceCount = total.floor;
-      },
-    );
-    this.genomicsSubscription = getSequenceCount(
-      this.$genomicsurl,
-      null,
-      true,
-      true,
-    ).subscribe((total) => {
-      this.gisaidCount = total;
-    });
-  },
-  destroyed() {
-    if (this.resourceSubscription) {
-      this.resourceSubscription.unsubscribe();
-    }
-    if (this.genomicsSubscription) {
-      this.genomicsSubscription.unsubscribe();
-    }
-  },
+const resourceCount = ref(null);
+const gisaidCount = ref(null);
+const resourceSubscription = ref(null);
+const genomicsSubscription = ref(null);
+
+// global variable - equivalent with this.$resourceurl
+const resourceUrl = inject('resourceUrl');
+// global variable - equivalent with this.$genomicsurl
+const genomicsUrl = inject('genomicsUrl');
+
+const store = adminStore(); // importing only required store
+const { funding, team, formerTeam } = storeToRefs(store); // admin store state variables needed in this component
+
+onMounted(() => {
+  let twitterScript = document.createElement('script');
+  twitterScript.setAttribute('src', 'https://platform.twitter.com/widgets.js');
+  document.head.appendChild(twitterScript);
+
+  // get totals from the API
+  resourceSubscription.value = getResourceTotal(resourceUrl).subscribe(
+    (total) => {
+      resourceCount.value = total.floor;
+    },
+  );
+  genomicsSubscription.value = getSequenceCount(
+    genomicsUrl,
+    null,
+    true,
+    true,
+  ).subscribe((total) => {
+    gisaidCount.value = total;
+  });
+});
+
+onUnmounted(() => {
+  if (resourceSubscription.value) {
+    resourceSubscription.value.unsubscribe();
+  }
+  if (genomicsSubscription.value) {
+    genomicsSubscription.value.unsubscribe();
+  }
 });
 </script>
 

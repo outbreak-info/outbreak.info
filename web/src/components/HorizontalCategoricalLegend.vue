@@ -16,7 +16,7 @@
         x="0"
         :y="legendRectWidth / 2"
         :dx="legendRectWidth + 5"
-        style="dominant-baseline: central;"
+        style="dominant-baseline: central"
       >
         {{ value.label }}
       </text>
@@ -57,7 +57,7 @@
         x="0"
         :y="legendRectWidth / 2"
         :dx="legendRectWidth + 5"
-        style="dominant-baseline: central;"
+        style="dominant-baseline: central"
       >
         No data
       </text>
@@ -65,32 +65,28 @@
   </div>
 </template>
 
-<script>
-import Vue from 'vue';
+<script setup>
+import { computed } from 'vue';
 
-export default Vue.extend({
-  name: 'HorizontalCategoricalLegend',
-  props: {
-    values: Array,
-    colorScale: Function,
-    legendRectWidth: {
-      type: Number,
-      default: 15,
-    },
+const props = defineProps({
+  values: Array,
+  colorScale: Function,
+  legendRectWidth: {
+    type: Number,
+    default: 15,
   },
-  computed: {
-    legendValues() {
-      if (this.colorScale) {
-        return this.values.map((d) => {
-          return {
-            fill: this.colorScale(d),
-            label: d,
-          };
-        });
-      } else {
-        return null;
-      }
-    },
-  },
+});
+
+const legendValues = computed(() => {
+  if (props.colorScale) {
+    return props.values.map((d) => {
+      return {
+        fill: props.colorScale(d),
+        label: d,
+      };
+    });
+  } else {
+    return null;
+  }
 });
 </script>

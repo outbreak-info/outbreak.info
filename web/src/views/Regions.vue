@@ -65,7 +65,7 @@
 
         <div class="col-sm-12 d-flex">
           <section id="regional-epi-curves" class="w-100">
-            <template v-if="nestedData && nestedData.length > 0">
+            <div v-if="nestedData && nestedData.length > 0">
               <div
                 v-for="(region, idx) in regionDict"
                 :key="idx"
@@ -104,9 +104,9 @@
                   @regionSelected="handleTooltip"
                 />
               </div>
-            </template>
+            </div>
 
-            <template v-if="nestedData && nestedData.length > 0">
+            <div v-if="nestedData && nestedData.length > 0">
               <h3>
                 Cumulative Number of COVID-19
                 <select
@@ -124,7 +124,7 @@
                 </select>
                 by Region
               </h3>
-            </template>
+            </div>
 
             <div
               id="regional-stacked-area-plots d-flex"
@@ -139,7 +139,7 @@
                     :data="nestedData"
                     :includeChinaAnnot="true"
                     :title="`${selectedVariableLabel} Worldwide`"
-                    @regionSelected="handleTooltip"
+                    @region-selected="handleTooltip"
                   />
                 </div>
               </div>
@@ -219,153 +219,166 @@
   </div>
 </template>
 
-<script>
-import { mapState } from 'vuex';
+<script setup>
+import { computed, inject, nextTick, onMounted, onUnmounted, ref } from 'vue';
+import { storeToRefs } from 'pinia';
 
 import { getStackedRegions } from '@/api/region-summary.js';
 import { getWorldDailyCases } from '@/api/epi-traces.js';
 import { lazyLoad } from '@/js/lazy-load';
-import store from '@/store';
+import { adminStore } from '@/stores/adminStore';
+import { colorsStore } from '@/stores/colorsStore';
+import { geoStore } from '@/stores/geoStore';
 
-export default {
-  name: 'Regions',
-  components: {
-    EpiStacked: lazyLoad('EpiStacked'),
-    Bargraph: lazyLoad('Bargraph'),
-    CountryBarGraph: lazyLoad('CountryBarGraph'),
-    DataSource: lazyLoad('DataSource'),
-  },
-  data() {
-    return {
-      stackedWidth: 500,
-      stackedHeight: 250,
-      bargraphTransform: null,
-      bargraphWidth: null,
-      data: null,
-      total: null,
-      dataSubscription: null,
-      totalSubscription: null,
-      nestedData: null,
-      selectedVariable: 'confirmed',
-      variableObj: {
-        label: 'cases',
-        ttip: 'new cases',
-        value: 'confirmed_numIncrease',
-        sources: ['NYT', 'JHU'],
-      },
-      totalOptions: [
-        {
-          label: 'cases',
-          ttip: 'new cases',
-          value: 'confirmed_numIncrease',
-          sources: ['NYT', 'JHU'],
-        },
-        {
-          label: 'deaths',
-          ttip: 'new deaths',
-          value: 'dead_numIncrease',
-          sources: ['NYT', 'JHU'],
-        },
-      ],
-      variableOptions: [
-        {
-          label: 'Cases',
-          value: 'confirmed',
-        },
-        {
-          label: 'Deaths',
-          value: 'dead',
-        },
-      ],
-      searchQuery: '',
-    };
-  },
-  computed: {
-    ...mapState('admin', ['loading']),
-    ...mapState('geo', ['regionDict']),
-    selectedVariableLabel() {
-      return this.variableOptions.filter(
-        (d) => d.value === this.selectedVariable,
-      )[0]['label'];
-    },
-  },
-  mounted() {
-    this.dataSubscription = getStackedRegions(this.$apiurl).subscribe((d) => {
-      this.data = d;
-      this.nestedData = d[this.selectedVariable];
-    });
-    this.totalSubscription = getWorldDailyCases(this.$apiurl).subscribe((d) => {
-      this.total = d;
-    });
+const EpiStacked = lazyLoad('EpiStacked');
+const Bargraph = lazyLoad('Bargraph');
+const CountryBarGraph = lazyLoad('CountryBarGraph');
+const DataSource = lazyLoad('DataSource');
 
-    // Event listener for mobile responsiveness
-    // $nextTick waits till DOM rendered
-    this.$nextTick(() => {
-      window.addEventListener('resize', this.setDims);
-      // set initial dimensions for the stacked area plots.
-      this.setDims();
-    });
-  },
-  destroyed() {
-    this.dataSubscription.unsubscribe();
-    this.totalSubscription.unsubscribe();
-    window.removeEventListener('resize', this.setDims);
-  },
-  methods: {
-    changeVariable() {
-      this.nestedData = this.data[this.selectedVariable];
-    },
-    changeVariableObject() {
-      store.state.admin.loading = true;
-      setTimeout(() => {
-        store.state.admin.loading = false;
-      }, 3000);
-    },
-    handleTooltip(selected) {
-      store.commit('geo/setRegionTooltip', selected);
-    },
-    regionColorScale(location) {
-      const scale = store.getters['colors/getRegionColorFromLocation'];
-      return scale(location);
-    },
-    lightColor(region) {
-      const scale = store.getters['colors/getRegionColor'];
-      return scale(region, 0.85);
-    },
-    setDims() {
-      const selector = this.$refs.regional_stacked_area_plots;
+// global variable - equivalent with this.$apiurl
+const apiUrl = inject('apiUrl');
 
-      if (selector) {
-        const dims = selector.getBoundingClientRect();
-        // const dims = {window.innerWidth, height: window.innerHeight}
-        const whRatio = 5 / 3;
-        const widthThresh = 700;
-        const selectorsProportion = 0.8;
+const storeAdmin = adminStore();
+const storeGeo = geoStore();
+const storeColor = colorsStore();
 
-        this.stackedWidth = dims.width;
-        const idealHeight = this.stackedWidth / whRatio;
-        if (idealHeight < window.innerHeight * selectorsProportion) {
-          this.stackedHeight = idealHeight * selectorsProportion;
-        } else {
-          this.stackedHeight = window.innerHeight * selectorsProportion;
-          this.stackedWidth = this.stackedHeight * whRatio;
-        }
-      }
-      this.bargraphWidth = 650;
-      if (window.innerWidth < 360) {
-        this.bargraphTransform = 0.4;
-      } else if (window.innerWidth < 390) {
-        this.bargraphTransform = 0.45;
-      } else if (window.innerWidth < 630) {
-        this.bargraphTransform = 0.5;
-      } else if (window.innerWidth < 790) {
-        this.bargraphTransform = 0.8;
-      } else {
-        this.bargraphTransform = 1;
-      }
-    },
+const { loading } = storeToRefs(storeAdmin);
+const { regionDict } = storeToRefs(storeGeo);
+
+const stackedWidth = ref(500);
+const stackedHeight = ref(250);
+const bargraphTransform = ref(null);
+const bargraphWidth = ref(null);
+const data = ref(null);
+const total = ref(null);
+const dataSubscription = ref(null);
+const totalSubscription = ref(null);
+const nestedData = ref(null);
+const selectedVariable = ref('confirmed');
+const variableObj = ref({
+  label: 'cases',
+  ttip: 'new cases',
+  value: 'confirmed_numIncrease',
+  sources: ['NYT', 'JHU'],
+});
+const totalOptions = ref([
+  {
+    label: 'cases',
+    ttip: 'new cases',
+    value: 'confirmed_numIncrease',
+    sources: ['NYT', 'JHU'],
   },
+  {
+    label: 'deaths',
+    ttip: 'new deaths',
+    value: 'dead_numIncrease',
+    sources: ['NYT', 'JHU'],
+  },
+]);
+
+const variableOptions = ref([
+  {
+    label: 'Cases',
+    value: 'confirmed',
+  },
+  {
+    label: 'Deaths',
+    value: 'dead',
+  },
+]);
+
+const regional_stacked_area_plots = ref(null);
+
+const selectedVariableLabel = computed(() => {
+  return variableOptions.value.filter(
+    (d) => d.value === selectedVariable.value,
+  )[0]['label'];
+});
+
+const changeVariable = () => {
+  nestedData.value = data.value[selectedVariable.value];
 };
+
+const changeVariableObject = () => {
+  storeAdmin.$patch({ loading: true });
+  setTimeout(() => {
+    storeAdmin.$patch({ loading: false });
+  }, 3000);
+};
+
+const handleTooltip = (selected) => {
+  storeGeo.setRegionTooltip(selected);
+};
+
+const regionColorScale = (location) => {
+  const scale = storeColor.getRegionColorFromLocation;
+  return scale(location);
+};
+
+const lightColor = (region) => {
+  const scale = storeColor.getRegionColor;
+  return scale(region, 0.85);
+};
+
+const setDims = () => {
+  const selector = regional_stacked_area_plots.value;
+
+  if (selector) {
+    const dims = selector.getBoundingClientRect();
+    const whRatio = 5 / 3;
+    const selectorsProportion = 0.8;
+
+    stackedWidth.value = dims.width;
+    const idealHeight = stackedWidth.value / whRatio;
+    if (idealHeight < window.innerHeight * selectorsProportion) {
+      stackedHeight.value = idealHeight * selectorsProportion;
+    } else {
+      stackedHeight.value = window.innerHeight * selectorsProportion;
+      stackedWidth.value = stackedHeight.value * whRatio;
+    }
+  }
+  bargraphWidth.value = 650;
+  if (window.innerWidth < 360) {
+    bargraphTransform.value = 0.4;
+  } else if (window.innerWidth < 390) {
+    bargraphTransform.value = 0.45;
+  } else if (window.innerWidth < 630) {
+    bargraphTransform.value = 0.5;
+  } else if (window.innerWidth < 790) {
+    bargraphTransform.value = 0.8;
+  } else {
+    bargraphTransform.value = 1;
+  }
+};
+
+onMounted(() => {
+  dataSubscription.value = getStackedRegions(apiUrl).subscribe((d) => {
+    data.value = d;
+    nestedData.value = d[selectedVariable.value];
+  });
+  totalSubscription.value = getWorldDailyCases(apiUrl).subscribe((d) => {
+    total.value = d;
+  });
+
+  // Event listener for mobile responsiveness
+  // $nextTick waits till DOM rendered
+  // this.$nextTick in optionsAPI
+  nextTick(() => {
+    window.addEventListener('resize', setDims);
+    // set initial dimensions for the stacked area plots.
+    setDims();
+  });
+});
+
+onUnmounted(() => {
+  if (dataSubscription.value) {
+    dataSubscription.value.unsubscribe();
+  }
+  if (totalSubscription.value) {
+    totalSubscription.value.unsubscribe();
+  }
+  window.removeEventListener('resize', setDims);
+});
 </script>
 
 <style lang="scss" scoped>

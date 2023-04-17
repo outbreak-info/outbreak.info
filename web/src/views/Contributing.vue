@@ -1,5 +1,5 @@
 <template>
-  <div style="min-height: 75vh;">
+  <div style="min-height: 75vh">
     <div class="row m-0">
       <div
         class="col-sm-12 bg-light d-flex justify-content-center align-items-center my-5"
@@ -53,9 +53,7 @@
     </div>
 
     <div class="container">
-      <h4 class="text-left">
-        How to contribute data
-      </h4>
+      <h4 class="text-left">How to contribute data</h4>
       <p class="text-left">
         The easiest way to contribute data is to deposit your analysis, clinical
         trial, dataset, protocol, or publication in one of the
@@ -94,9 +92,7 @@
     </div>
 
     <div class="container mt-5">
-      <h4 class="text-left">
-        How to help curate data
-      </h4>
+      <h4 class="text-left">How to help curate data</h4>
       <p class="text-left">
         Keeping track of the growing list of COVID-19 and SARS-CoV-2 resources
         is a challenge, as is curating the information to make it more findable
@@ -183,53 +179,44 @@
   </div>
 </template>
 
-<script>
-import Vue from 'vue';
-import { mapState } from 'vuex';
+<script setup>
+import { ref } from 'vue';
+import { storeToRefs } from 'pinia';
+import { adminStore } from '@/stores/adminStore';
 
-export default Vue.extend({
-  name: 'Contributing',
-  components: {},
-  data() {
-    return {
-      types: [
-        {
-          label: 'Clinical Trials',
-          description: 'Publicly and privately funded human clinical studies',
-          id: 'ClinicalTrial',
-        },
-        {
-          label: 'Datasets',
-          description: 'A collection of primary or secondary data',
-          id: 'Dataset',
-        },
-        // {
-        //   label: "Analyses",
-        //   description:
-        //     "Web-based resources that interpret data based off assumptions and frequently update with new data",
-        //   id: "Analysis"
-        // },
-        {
-          label: 'Protocols',
-          description:
-            'A detailed series of instructions to perform an experimental technique and/or analysis',
-          id: 'Protocol',
-        },
+const store = adminStore();
+const { resources } = storeToRefs(store); // extract admin store state variables
 
-        {
-          label: 'Publications',
-          description:
-            'A published report, set of results, or commentary, including preprints and blog posts',
-          id: 'Publication',
-        },
-      ],
-    };
+const types = ref([
+  {
+    label: 'Clinical Trials',
+    description: 'Publicly and privately funded human clinical studies',
+    id: 'ClinicalTrial',
   },
-
-  computed: {
-    ...mapState('admin', ['resources']),
+  {
+    label: 'Datasets',
+    description: 'A collection of primary or secondary data',
+    id: 'Dataset',
   },
-});
+  // {
+  //   label: "Analyses",
+  //   description:
+  //     "Web-based resources that interpret data based off assumptions and frequently update with new data",
+  //   id: "Analysis"
+  // },
+  {
+    label: 'Protocols',
+    description:
+      'A detailed series of instructions to perform an experimental technique and/or analysis',
+    id: 'Protocol',
+  },
+  {
+    label: 'Publications',
+    description:
+      'A published report, set of results, or commentary, including preprints and blog posts',
+    id: 'Publication',
+  },
+]);
 </script>
 
 <style lang="scss">

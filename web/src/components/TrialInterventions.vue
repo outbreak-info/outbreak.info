@@ -112,22 +112,15 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { lazyLoad } from '@/js/lazy-load';
 
-export default {
-  name: 'TrialInterventions',
-  components: {
-    TrialType: lazyLoad('TrialType'),
-    SearchLink: lazyLoad('SearchLink'),
-  },
-  props: {
-    data: Object,
-  },
-  data() {
-    return {};
-  },
-};
+const TrialType = lazyLoad('TrialType');
+const SearchLink = lazyLoad('SearchLink');
+
+const props = defineProps({
+  data: Object,
+});
 </script>
 
 <style lang="scss" scoped>

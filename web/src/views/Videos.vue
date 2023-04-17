@@ -1,14 +1,12 @@
 <template>
   <div class="container">
-    <div class="row" style="min-height: 75vh;">
+    <div class="row" style="min-height: 75vh">
       <div class="col-sm-12 my-5">
         <div class="text-left mb-5">
           <h1>Video demos of outbreak.info</h1>
           <div class="row">
             <div class="col-sm-6">
-              <h4 class="text-highlight">
-                outbreak.info overview
-              </h4>
+              <h4 class="text-highlight">outbreak.info overview</h4>
               <video class="w-100 mb-3" controls>
                 <source
                   src="@/assets/home/outbreak_video_v3.mp4"
@@ -63,11 +61,9 @@
 </template>
 
 <script>
-import Vue from "vue";
-
-export default Vue.extend({
-  name: "Videos"
-});
+export default {
+  name: 'Videos',
+};
 </script>
 
 <style lang="scss">

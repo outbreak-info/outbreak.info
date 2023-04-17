@@ -137,7 +137,7 @@
                   class="b-contain d-flex align-items-center pr-4 m-0"
                 >
                   <img
-                    :src="require(`@/assets/${curator.src}`)"
+                    :src="`src/assets/${curator.src}`"
                     class="variant-logo mr-1"
                   />
                   <span>{{ curator.label }}</span>
@@ -160,7 +160,7 @@
                   class="b-contain d-flex align-items-center pr-4 m-0"
                 >
                   <img
-                    :src="require(`@/assets/${curator.src}`)"
+                    :src="`src/assets/${curator.src}`"
                     class="variant-logo mr-1"
                   />
                   <span>{{ curator.label }}</span>
@@ -179,8 +179,9 @@
                 <small class="text-muted mr-2">MOC classified by:</small>
                 <label class="b-contain d-flex align-items-center pr-4 m-0">
                   <img
-                    :src="require(`@/assets/icon-01.svg`)"
+                    :src="`src/assets/icon-01.svg`"
                     class="variant-logo mr-1"
+                    alt="variant-logo"
                   />
                   <span>outbreak.info</span>
                   <input
@@ -198,7 +199,7 @@
                 <small class="text-muted mr-2">MOI classified by:</small>
                 <label class="b-contain d-flex align-items-center pr-4 m-0">
                   <img
-                    :src="require(`@/assets/icon-01.svg`)"
+                    :src="`src/assets/icon-01.svg`"
                     class="variant-logo mr-1"
                   />
                   <span>outbreak.info</span>
@@ -246,7 +247,7 @@
           >
             <div class="d-flex justify-content-between">
               <h2 :id="group.id" class="mb-0">
-                {{ group.key | capitalize }} Reports
+                {{ $filters.capitalize(group.key) }} Reports
               </h2>
               <div v-if="i === 0" class="d-flex align-items-center text-sec">
                 <font-awesome-icon
@@ -290,8 +291,9 @@
                   class="b-contain d-flex align-items-center pr-4 m-0"
                 >
                   <img
-                    :src="require(`@/assets/${curator.src}`)"
+                    :src="`src/assets/${curator.src}`"
                     class="variant-logo mr-1"
+                    alt="curator"
                   />
                   <span>{{ curator.label }}</span>
                   <input
@@ -369,10 +371,9 @@
 
                 <!-- table body -->
                 <tbody>
-                  <template v-for="(report, rIdx) in group.values">
+                  <template v-for="(report, rIdx) in group.values" :key="rIdx">
                     <tr
                       :id="report.identifier"
-                      :key="rIdx"
                       class="border-bottom"
                       :class="{ checkbook: (rIdx % 2) - 1 }"
                     >
@@ -670,7 +671,7 @@
                                 :key="cIdx + 'table'"
                               >
                                 <img
-                                  :src="require(`@/assets/${curator.src}`)"
+                                  :src="`src/assets/${curator.src}`"
                                   class="variant-logo"
                                 />
                               </th>
@@ -1042,7 +1043,7 @@
 
         <template v-if="!filteredMutations.length">
           <h2 id="moc">Mutation of Concern &amp; Interest Reports</h2>
-          <button id="moi" class="btn btn-main" @click="getCuratedMutations">
+          <button id="moi" class="btn btn-main" @click="getCuratedMutation">
             show mutation reports
           </button>
         </template>
@@ -1057,7 +1058,7 @@
           >
             <div class="d-flex justify-content-between">
               <h2 :id="group.id" class="mb-0">
-                {{ group.key | capitalize }} Reports
+                {{ $filters.capitalize(group.key) }} Reports
               </h2>
             </div>
             <small>
@@ -1084,7 +1085,7 @@
                 </small>
                 <label class="b-contain d-flex align-items-center pr-4 m-0">
                   <img
-                    :src="require(`@/assets/icon-01.svg`)"
+                    :src="`src/assets/icon-01.svg`"
                     class="variant-logo mr-1"
                   />
                   <span>outbreak.info</span>
@@ -1159,10 +1160,9 @@
                 </thead>
 
                 <tbody>
-                  <template v-for="(report, rIdx) in group.values">
+                  <template v-for="(report, rIdx) in group.values" :key="rIdx">
                     <tr
                       :id="report.identifier"
-                      :key="rIdx"
                       :class="{ checkbook: (rIdx % 2) - 1 }"
                     >
                       <!-- name + synonyms -->
@@ -1223,9 +1223,10 @@
                         >
                           {{ report.mutation_name }} 3D structures
                           <img
-                            src="@/assets/resources/aquaria.svg"
+                            src="src/assets/resources/aquaria.svg"
                             style="width: 35px"
                             class="ml-2"
+                            alt="aquaria-svg"
                           />
                           ""
                         </a>
@@ -1299,9 +1300,10 @@
   </div>
 </template>
 
-<script>
-import { mapState } from 'vuex';
-import { format } from 'd3-format';
+<script setup>
+import { inject, onBeforeUnmount, onMounted, onUpdated, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { storeToRefs } from 'pinia';
 import cloneDeep from 'lodash/cloneDeep';
 import debounce from 'lodash/debounce';
 import tippy from 'tippy.js';
@@ -1313,524 +1315,506 @@ import {
   getBadMutations,
 } from '@/api/genomics.js';
 import { lazyLoad } from '@/js/lazy-load';
-import store from '@/store';
+import { adminStore } from '@/stores/adminStore';
 
 import 'tippy.js/themes/light.css';
+import { genomicsStore } from '@/stores/genomicsStore';
 
-export default {
-  name: 'SituationReports',
-  components: {
-    CustomReportForm: lazyLoad('CustomReportForm'),
-    ReportAcknowledgements: lazyLoad('ReportAcknowledgements'),
-  },
-  props: {
-    voc: [Array, String],
-    voi: [Array, String],
-    moc: [Array, String],
-    moi: [Array, String],
-    name: String,
-  },
-  data() {
-    return {
-      // reminder: must be the raw verison of the file
-      curatedSubscription: null,
-      totalSubscription: null,
-      lastUpdated: null,
-      total: null,
-      reports: null,
-      mutationReports: [],
-      filteredReports: null,
-      filteredMutations: [],
-      sublineageMax: 5,
-      variantTypes: [
-        {
-          id: 'VOC',
-          label: 'Variant of Concern',
-          def: 'Variants with increased transmissibility, virulence, and/or decreased diagnostic, therapeutic, or vaccine efficacy',
-        },
-        {
-          id: 'VOI',
-          label: 'Variant of Interest',
-          def: "Variants with mutations suspected or confirmed to cause a change in transmissibility, virulence, or diagnostic / therapeutic / vaccine efficacy, <span class='text-underline'>plus</span> community transmission, a cluster of cases, or detection in multiple countries",
-        },
-        {
-          id: 'VUM',
-          label: 'Variant Under Monitoring',
-          def: 'Variants with mutations suspected to cause a change in transmissibility, virulence, or diagnostic / therapeutic / vaccine efficacy',
-        },
-        {
-          id: 'de-escalated',
-          label: 'De-escalated Variant',
-          def: 'These former VOCs and/or VOIs have been de-escalated by public health agencies based on at least one the following criteria: (1) the variant is no longer circulating, (2) the variant has been circulating for a long time without any impact on the overall epidemiological situation, (3) scientific evidence demonstrates that the variant is not associated with any concerning properties',
-        },
-      ],
-      mutationTypes: [
-        {
-          id: 'MOC',
-          label: 'Mutation of Concern',
-          def: "Mutations with evidence of increasing transmissibility or virulence or decreasing therapeutic/vaccine efficacy. <span class='text-underline'>However</span>, the phenotype of a variant depends on <b>all</b> its mutations, not any one particular mutation.",
-        },
-        {
-          id: 'MOI',
-          label: 'Mutation of Interest',
-          def: "Mutations suspected of causing a change in transmissibility, virulence, or therapeutic/vaccine efficacy. <span class='text-underline'>However</span>, the phenotype of a variant depends on <b>all</b> its mutations, not any one particular mutation.",
-        },
-      ],
-      curatedVOC: null,
-      curatedVOI: null,
-      curatedMOC: null,
-      curatedMOI: null,
-      curatorOpts: [
-        {
-          id: 'outbreak',
-          label: 'outbreak.info',
-          src: 'icon-01.svg',
-        },
-        {
-          id: 'CDC',
-          label: 'CDC',
-          src: 'resources/cdc-logo.svg',
-        },
-        {
-          id: 'ECDC',
-          label: 'ECDC',
-          src: 'resources/ecdc-logo.png',
-        },
-        {
-          id: 'PHE',
-          label: 'Public Health England',
-          src: 'resources/PHE-logo-square.png',
-        },
-        {
-          id: 'WHO',
-          label: 'WHO',
-          src: 'resources/who-emblem.svg',
-        },
-      ],
-      searchInput: '',
-      selectedVOC: [],
-      selectedVOI: [],
-      selectedMOC: [],
-      selectedMOI: [],
-    };
-  },
-  computed: {
-    ...mapState('admin', ['reportloading']),
-    // ...mapState('genomics', ['characteristicThreshold']),
-    // charMutThreshold() {
-    //   return format('.0%')(this.characteristicThreshold);
-    // },
-  },
-  created() {
-    this.debounceSearch = debounce(this.filterName, 250);
-  },
-  updated() {
-    tippy('.tracked-variant-badge', {
-      content: 'Loading...',
-      maxWidth: '250px',
-      placement: 'bottom',
-      animation: 'fade',
-      theme: 'light',
-      allowHTML: true,
-      onShow(instance) {
-        let info = instance.reference.dataset.tippyInfo;
-        instance.setContent(info);
-      },
-    });
+const CustomReportForm = lazyLoad('CustomReportForm');
+const ReportAcknowledgements = lazyLoad('ReportAcknowledgements');
 
-    tippy('.tracked-variant-report', {
-      content: 'Loading...',
-      maxWidth: '200px',
-      placement: 'bottom',
-      animation: 'fade',
-      theme: 'light',
-      allowHTML: true,
-      onShow(instance) {
-        let info = instance.reference.dataset.tippyInfo;
-        instance.setContent(info);
-      },
-    });
+const props = defineProps({
+  voc: [Array, String],
+  voi: [Array, String],
+  moc: [Array, String],
+  moi: [Array, String],
+  name: String,
+});
+
+// instead of this.$route
+const route = useRoute();
+// instead of this.$router
+const router = useRouter();
+
+// global variable - equivalent with this.$genomicsurl
+const genomicsUrl = inject('genomicsUrl');
+
+const store = adminStore();
+const storeGenomics = genomicsStore();
+const { reportloading } = storeToRefs(store);
+
+// reminder: must be the raw verison of the file
+const curatedSubscription = ref(null);
+const totalSubscription = ref(null);
+const lastUpdated = ref(null);
+const total = ref(null);
+const reports = ref(null);
+const mutationReports = ref([]);
+const filteredReports = ref(null);
+const filteredMutations = ref([]);
+const sublineageMax = ref(5);
+
+const variantTypes = ref([
+  {
+    id: 'VOC',
+    label: 'Variant of Concern',
+    def: 'Variants with increased transmissibility, virulence, and/or decreased diagnostic, therapeutic, or vaccine efficacy',
   },
-  mounted() {
-    this.selectedVOC = this.voc
-      ? typeof this.voc == 'string'
-        ? [this.voc]
-        : this.voc
-      : [];
-    this.selectedVOI = this.voi
-      ? typeof this.voi == 'string'
-        ? [this.voi]
-        : this.voi
-      : [];
-    this.selectedMOC = this.moc
-      ? typeof this.moc == 'string'
-        ? [this.moc]
-        : this.moc
-      : [];
-    this.selectedMOI = this.moi
-      ? typeof this.moi == 'string'
-        ? [this.moi]
-        : this.moi
-      : [];
-    this.searchInput = this.name;
-
-    const ofInterest = getBadMutations(true);
-    this.curatedMOC = ofInterest.moc;
-    this.curatedMOI = ofInterest.moi;
-
-    this.curatedSubscription = getReportList(this.$genomicsurl).subscribe(
-      (results) => {
-        this.lastUpdated = results.dateUpdated;
-        this.reports = results.md;
-        this.filterReports();
-      },
-    );
-
-    this.totalSubscription = getSequenceCount(
-      this.$genomicsurl,
-      null,
-      true,
-    ).subscribe((total) => {
-      this.total = total;
-    });
+  {
+    id: 'VOI',
+    label: 'Variant of Interest',
+    def: "Variants with mutations suspected or confirmed to cause a change in transmissibility, virulence, or diagnostic / therapeutic / vaccine efficacy, <span class='text-underline'>plus</span> community transmission, a cluster of cases, or detection in multiple countries",
   },
-  beforeDestroyed() {
-    if (this.curatedSubscription) {
-      this.curatedSubscription.unsubscribe();
-    }
-
-    if (this.curatedMutationsSubscription) {
-      this.curatedMutationsSubscription.unsubscribe();
-    }
-
-    if (this.totalSubscription) {
-      this.totalSubscription.unsubscribe();
-    }
+  {
+    id: 'VUM',
+    label: 'Variant Under Monitoring',
+    def: 'Variants with mutations suspected to cause a change in transmissibility, virulence, or diagnostic / therapeutic / vaccine efficacy',
   },
-  methods: {
-    clearFilters() {
-      this.selectedVOC = [];
-      this.selectedVOI = [];
-      this.selectedMOC = [];
-      this.selectedMOI = [];
-      this.searchInput = null;
-      this.filterReports();
+  {
+    id: 'de-escalated',
+    label: 'De-escalated Variant',
+    def: 'These former VOCs and/or VOIs have been de-escalated by public health agencies based on at least one the following criteria: (1) the variant is no longer circulating, (2) the variant has been circulating for a long time without any impact on the overall epidemiological situation, (3) scientific evidence demonstrates that the variant is not associated with any concerning properties',
+  },
+]);
+const mutationTypes = ref([
+  {
+    id: 'MOC',
+    label: 'Mutation of Concern',
+    def: "Mutations with evidence of increasing transmissibility or virulence or decreasing therapeutic/vaccine efficacy. <span class='text-underline'>However</span>, the phenotype of a variant depends on <b>all</b> its mutations, not any one particular mutation.",
+  },
+  {
+    id: 'MOI',
+    label: 'Mutation of Interest',
+    def: "Mutations suspected of causing a change in transmissibility, virulence, or therapeutic/vaccine efficacy. <span class='text-underline'>However</span>, the phenotype of a variant depends on <b>all</b> its mutations, not any one particular mutation.",
+  },
+]);
+const curatedVOC = ref(null);
+const curatedVOI = ref(null);
+const curatedMOC = ref(null);
+const curatedMOI = ref(null);
+const curatedMutationsSubscription = ref(null);
 
-      this.$router.push({
-        name: 'SituationReports',
-        params: {
-          disableScroll: true,
-        },
-        query: {
-          voc: this.selectedVOC,
-          voi: this.selectedVOI,
-          moc: this.selectedMOC,
-          moi: this.selectedMOI,
-          name: this.searchInput,
-        },
-      });
+const curatorOpts = ref([
+  {
+    id: 'outbreak',
+    label: 'outbreak.info',
+    src: 'icon-01.svg',
+  },
+  {
+    id: 'CDC',
+    label: 'CDC',
+    src: 'resources/cdc-logo.svg',
+  },
+  {
+    id: 'ECDC',
+    label: 'ECDC',
+    src: 'resources/ecdc-logo.png',
+  },
+  {
+    id: 'PHE',
+    label: 'Public Health England',
+    src: 'resources/PHE-logo-square.png',
+  },
+  {
+    id: 'WHO',
+    label: 'WHO',
+    src: 'resources/who-emblem.svg',
+  },
+]);
+const searchInput = ref('');
+const selectedVOC = ref([]);
+const selectedVOI = ref([]);
+const selectedMOC = ref([]);
+const selectedMOI = ref([]);
+
+onUpdated(() => {
+  tippy('.tracked-variant-badge', {
+    content: 'Loading...',
+    maxWidth: '250px',
+    placement: 'bottom',
+    animation: 'fade',
+    theme: 'light',
+    allowHTML: true,
+    onShow(instance) {
+      let info = instance.reference.dataset.tippyInfo;
+      instance.setContent(info);
     },
-    getReportType(group) {
-      const vfiltered = this.variantTypes.filter((d) => d.label === group);
-      const mfiltered = this.mutationTypes.filter((d) => d.label === group);
-      if (vfiltered.length === 1) {
-        return vfiltered[0].def;
-      }
-      if (mfiltered.length === 1) {
-        return mfiltered[0].def;
-      }
-      return null;
+  });
+
+  tippy('.tracked-variant-report', {
+    content: 'Loading...',
+    maxWidth: '200px',
+    placement: 'bottom',
+    animation: 'fade',
+    theme: 'light',
+    allowHTML: true,
+    onShow(instance) {
+      let info = instance.reference.dataset.tippyInfo;
+      instance.setContent(info);
     },
-    filterVOC(disableScroll = true) {
-      // cleanup empty values
-      if (!this.selectedVOC[0]) {
-        this.selectedVOC = [];
-      }
-      if (!this.selectedVOI[0]) {
-        this.selectedVOI = [];
-      }
+  });
+});
 
-      this.filterReports();
+const filterReports = () => {
+  filteredReports.value = cloneDeep(reports.value);
+  filteredMutations.value = cloneDeep(mutationReports.value);
 
-      this.$router.push({
-        name: 'SituationReports',
-        params: {
-          disableScroll: disableScroll,
-        },
-        query: {
-          voc: this.selectedVOC,
-          voi: this.selectedVOI,
-          moc: this.selectedMOC,
-          moi: this.selectedMOI,
-          name: this.searchInput,
-        },
-      });
-    },
-    filterMOC(disableScroll = true) {
-      // cleanup empty values
-      if (!this.selectedMOC[0]) {
-        this.selectedMOC = [];
-      }
-      if (!this.selectedMOI[0]) {
-        this.selectedMOI = [];
-      }
-
-      this.filterReports();
-
-      this.$router.push({
-        name: 'SituationReports',
-        params: {
-          disableScroll: disableScroll,
-        },
-        query: {
-          voc: this.selectedVOC,
-          voi: this.selectedVOI,
-          moc: this.selectedMOC,
-          moi: this.selectedMOI,
-          name: this.searchInput,
-        },
-      });
-    },
-    route2Filtered(org, type) {
-      if (type === 'VOC') {
-        this.selectedVOC = [org];
-        this.selectedVOI = [];
-        this.selectedMOC = [];
-        this.selectedMOI = [];
-      }
-      if (type === 'VOI' || type === 'VUI') {
-        this.selectedVOI = [org];
-        this.selectedVOC = [];
-        this.selectedMOC = [];
-        this.selectedMOI = [];
-      }
-
-      this.filterVOC(false);
-    },
-    route2OutbreakClass(anchorID) {
-      // clear anything that's selected
-      this.clearFilters();
-      this.$router.push({
-        name: 'SituationReports',
-        query: {},
-        hash: `#${anchorID}`,
-      });
-    },
-    filterName() {
-      this.filterReports();
-
-      this.$router.push({
-        name: 'SituationReports',
-        params: {
-          disableScroll: true,
-        },
-        query: {
-          voc: this.selectedVOC,
-          voi: this.selectedVOI,
-          moc: this.selectedMOC,
-          moi: this.selectedMOI,
-          name: this.searchInput,
-        },
-      });
-    },
-    filterReports() {
-      this.filteredReports = cloneDeep(this.reports);
-      this.filteredMutations = cloneDeep(this.mutationReports);
-
-      if (
-        this.selectedVOC.length ||
-        this.selectedVOI.length ||
-        this.searchInput
-      ) {
-        // filter the selected VOC/VOI reports
-        this.filteredReports.forEach((group) => {
-          let filtered = [];
-          group.values.forEach((report) => {
-            // FILTER OUTBREAK CLASSIFICATIONS
+  if (
+    selectedVOC.value.length ||
+    selectedVOI.value.length ||
+    searchInput.value
+  ) {
+    // filter the selected VOC/VOI reports
+    filteredReports.value.forEach((group) => {
+      let filtered = [];
+      group.values.forEach((report) => {
+        // FILTER OUTBREAK CLASSIFICATIONS
+        if (
+          (report.variantType === 'Variant of Concern' &&
+            selectedVOC.value.includes('outbreak')) ||
+          (report.variantType === 'Variant of Interest' &&
+            selectedVOI.value.includes('outbreak'))
+        ) {
+          // Filter by outbreak VOC/VOI + name
+          if (searchInput.value) {
             if (
-              (report.variantType === 'Variant of Concern' &&
-                this.selectedVOC.includes('outbreak')) ||
-              (report.variantType === 'Variant of Interest' &&
-                this.selectedVOI.includes('outbreak'))
+              report.searchTerms.some((x) =>
+                x.toLowerCase().includes(searchInput.value.toLowerCase()),
+              )
             ) {
-              // Filter by outbreak VOC/VOI + name
-              if (this.searchInput) {
-                if (
-                  report.searchTerms.some((x) =>
-                    x.toLowerCase().includes(this.searchInput.toLowerCase()),
-                  )
-                ) {
-                  filtered.push(report);
-                }
-              } else {
-                // just add the outbreak VOC/VOI
-                filtered.push(report);
-              }
+              filtered.push(report);
+            }
+          } else {
+            // just add the outbreak VOC/VOI
+            filtered.push(report);
+          }
 
-              // FILTER BY CLASSICATIONS
-            } else if (
-              report.classifications &&
-              (this.selectedVOC.length || this.selectedVOI.length)
+          // FILTER BY CLASSICATIONS
+        } else if (
+          report.classifications &&
+          (selectedVOC.value.length || selectedVOI.value.length)
+        ) {
+          // filter name filters
+          if (searchInput.value) {
+            if (
+              report.searchTerms.some((x) =>
+                x.toLowerCase().includes(searchInput.value.toLowerCase()),
+              ) &&
+              (report.classifications.filter(
+                (x) =>
+                  x.variantType === 'VOC' &&
+                  selectedVOC.value.includes(x.author),
+              ).length ||
+                report.classifications.filter(
+                  (x) =>
+                    (x.variantType === 'VOI' || x.variantType === 'VUI') &&
+                    selectedVOI.value.includes(x.author),
+                ).length)
             ) {
-              // filter name filters
-              if (this.searchInput) {
-                if (
-                  report.searchTerms.some((x) =>
-                    x.toLowerCase().includes(this.searchInput.toLowerCase()),
-                  ) &&
-                  (report.classifications.filter(
-                    (x) =>
-                      x.variantType === 'VOC' &&
-                      this.selectedVOC.includes(x.author),
-                  ).length ||
-                    report.classifications.filter(
-                      (x) =>
-                        (x.variantType === 'VOI' || x.variantType === 'VUI') &&
-                        this.selectedVOI.includes(x.author),
-                    ).length)
-                ) {
-                  filtered.push(report);
-                }
-              } else {
-                // filter only the classifications
-                if (
-                  report.classifications.filter(
-                    (x) =>
-                      x.variantType === 'VOC' &&
-                      this.selectedVOC.includes(x.author),
-                  ).length ||
-                  report.classifications.filter(
-                    (x) =>
-                      (x.variantType === 'VOI' || x.variantType === 'VUI') &&
-                      this.selectedVOI.includes(x.author),
-                  ).length
-                ) {
-                  filtered.push(report);
-                }
-              }
-            } else {
-              // no report classifications; just filter by name
-              if (
-                report.searchTerms.some((x) =>
-                  x.toLowerCase().includes(this.searchInput.toLowerCase()),
-                )
-              ) {
-                filtered.push(report);
-              }
+              filtered.push(report);
             }
-          });
-
-          group.values = filtered;
-        });
-      }
-
-      // filter mutation reports
-      if (
-        this.selectedMOC.length ||
-        this.selectedMOI.length ||
-        this.searchInput
-      ) {
-        if (this.searchInput) {
-          this.filteredMutations.forEach((group) => {
-            let mutFiltered = [];
-            group.values.forEach((report) => {
-              if (
-                report.mutation_name
-                  .toLowerCase()
-                  .includes(this.searchInput.toLowerCase()) ||
-                report.lineages.some((x) =>
-                  x.toLowerCase().includes(this.searchInput.toLowerCase()),
-                )
-              ) {
-                mutFiltered.push(report);
-              }
-            });
-            group.values = mutFiltered;
-
-            if (this.selectedMOC.length || this.selectedMOI.length) {
-              // filter MOC
-              if (!this.selectedMOC.includes('outbreak')) {
-                if (group.key === 'Mutation of Concern') {
-                  group.values = [];
-                }
-              }
-
-              // filter MOI
-              if (!this.selectedMOI.includes('outbreak')) {
-                if (group.key === 'Mutation of Interest') {
-                  group.values = [];
-                }
-              }
+          } else {
+            // filter only the classifications
+            if (
+              report.classifications.filter(
+                (x) =>
+                  x.variantType === 'VOC' &&
+                  selectedVOC.value.includes(x.author),
+              ).length ||
+              report.classifications.filter(
+                (x) =>
+                  (x.variantType === 'VOI' || x.variantType === 'VUI') &&
+                  selectedVOI.value.includes(x.author),
+              ).length
+            ) {
+              filtered.push(report);
             }
-          });
+          }
         } else {
-          this.filteredMutations.forEach((group) => {
-            // filter MOC
-            if (!this.selectedMOC.includes('outbreak')) {
-              if (group.key === 'Mutation of Concern') {
-                group.values = [];
-              }
-            }
-
-            // filter MOI
-            if (!this.selectedMOI.includes('outbreak')) {
-              if (group.key === 'Mutation of Interest') {
-                group.values = [];
-              }
-            }
-          });
+          // no report classifications; just filter by name
+          if (
+            report.searchTerms.some((x) =>
+              x.toLowerCase().includes(searchInput.value.toLowerCase()),
+            )
+          ) {
+            filtered.push(report);
+          }
         }
-      }
-
-      // MOC || MOI selected but not VOC / VOI
-      if (
-        (this.selectedMOC.length || this.selectedMOI.length) &&
-        !this.selectedVOC.length &&
-        !this.selectedVOI.length
-      ) {
-        this.filteredReports.forEach((group) => {
-          group.values = [];
-        });
-      }
-
-      // VOC || VOI selected but not MOC / MOI
-      if (
-        (this.selectedVOC.length || this.selectedVOI.length) &&
-        !this.selectedMOC.length &&
-        !this.selectedMOI.length
-      ) {
-        this.filteredMutations.forEach((group) => {
-          group.values = [];
-        });
-      }
-    },
-    viewSublineages(report) {
-      report.showSublineages = true;
-    },
-    anchorLink(link) {
-      return link.replace(/\./g, '_');
-    },
-    getCuratedMutations() {
-      store.commit('admin/setReportLoading', true);
-      this.curatedMutationsSubscription = getCuratedMutations(
-        this.$genomicsurl,
-        this.characteristicThreshold,
-      ).subscribe((results) => {
-        this.curatedVOC = this.reports
-          .filter((d) => d.id === 'voc')[0]
-          ['values'].flatMap((d) => d.pango_descendants)
-          .map((d) => d.toLowerCase());
-        this.curatedVOI = this.reports
-          .filter((d) => d.id === 'voi')[0]
-          ['values'].flatMap((d) => d.pango_descendants)
-          .map((d) => d.toLowerCase());
-        this.mutationReports = results;
-        store.commit('admin/setReportLoading', false);
-        this.filterReports();
       });
-    },
-  },
+
+      group.values = filtered;
+    });
+  }
+
+  // filter mutation reports
+  if (
+    selectedMOC.value.length ||
+    selectedMOI.value.length ||
+    searchInput.value
+  ) {
+    if (searchInput.value) {
+      filteredMutations.value.forEach((group) => {
+        let mutFiltered = [];
+        group.values.forEach((report) => {
+          if (
+            report.mutation_name
+              .toLowerCase()
+              .includes(searchInput.value.toLowerCase()) ||
+            report.lineages.some((x) =>
+              x.toLowerCase().includes(searchInput.value.toLowerCase()),
+            )
+          ) {
+            mutFiltered.push(report);
+          }
+        });
+        group.values = mutFiltered;
+
+        if (selectedMOC.value.length || selectedMOI.value.length) {
+          // filter MOC
+          if (!selectedMOC.value.includes('outbreak')) {
+            if (group.key === 'Mutation of Concern') {
+              group.values = [];
+            }
+          }
+
+          // filter MOI
+          if (!selectedMOI.value.includes('outbreak')) {
+            if (group.key === 'Mutation of Interest') {
+              group.values = [];
+            }
+          }
+        }
+      });
+    } else {
+      filteredMutations.value.forEach((group) => {
+        // filter MOC
+        if (!selectedMOC.value.includes('outbreak')) {
+          if (group.key === 'Mutation of Concern') {
+            group.values = [];
+          }
+        }
+
+        // filter MOI
+        if (!selectedMOI.value.includes('outbreak')) {
+          if (group.key === 'Mutation of Interest') {
+            group.values = [];
+          }
+        }
+      });
+    }
+  }
+
+  // MOC || MOI selected but not VOC / VOI
+  if (
+    (selectedMOC.value.length || selectedMOI.value.length) &&
+    !selectedVOC.value.length &&
+    !selectedVOI.value.length
+  ) {
+    filteredReports.value.forEach((group) => {
+      group.values = [];
+    });
+  }
+
+  // VOC || VOI selected but not MOC / MOI
+  if (
+    (selectedVOC.value.length || selectedVOI.value.length) &&
+    !selectedMOC.value.length &&
+    !selectedMOI.value.length
+  ) {
+    filteredMutations.value.forEach((group) => {
+      group.values = [];
+    });
+  }
 };
+
+const clearFilters = () => {
+  selectedVOC.value = [];
+  selectedVOI.value = [];
+  selectedMOC.value = [];
+  selectedMOI.value = [];
+  searchInput.value = null;
+  filterReports();
+
+  router.push({
+    name: 'SituationReports',
+    state: {
+      disableScroll: true,
+    },
+    query: {
+      voc: selectedVOC.value,
+      voi: selectedVOI.value,
+      moc: selectedMOC.value,
+      moi: selectedMOI.value,
+      name: searchInput.value,
+    },
+  });
+};
+
+const getReportType = (group) => {
+  const vfiltered = variantTypes.value.filter((d) => d.label === group);
+  const mfiltered = mutationTypes.value.filter((d) => d.label === group);
+  if (vfiltered.length === 1) {
+    return vfiltered[0].def;
+  }
+  if (mfiltered.length === 1) {
+    return mfiltered[0].def;
+  }
+  return null;
+};
+
+const filterVOC = (disableScroll = true) => {
+  // cleanup empty values
+  if (!selectedVOC.value[0]) {
+    selectedVOC.value = [];
+  }
+  if (!selectedVOI.value[0]) {
+    selectedVOI.value = [];
+  }
+
+  filterReports();
+
+  router.push({
+    name: 'SituationReports',
+    state: {
+      disableScroll: disableScroll,
+    },
+    query: {
+      voc: selectedVOC.value,
+      voi: selectedVOI.value,
+      moc: selectedMOC.value,
+      moi: selectedMOI.value,
+      name: searchInput.value,
+    },
+  });
+};
+
+const filterMOC = (disableScroll = true) => {
+  // cleanup empty values
+  if (!selectedMOC.value[0]) {
+    selectedMOC.value = [];
+  }
+  if (!selectedMOI.value[0]) {
+    selectedMOI.value = [];
+  }
+
+  filterReports();
+
+  router.push({
+    name: 'SituationReports',
+    state: {
+      disableScroll: disableScroll,
+    },
+    query: {
+      voc: selectedVOC.value,
+      voi: selectedVOI.value,
+      moc: selectedMOC.value,
+      moi: selectedMOI.value,
+      name: searchInput.value,
+    },
+  });
+};
+
+const filterName = () => {
+  filterReports();
+
+  router.push({
+    name: 'SituationReports',
+    state: {
+      disableScroll: true,
+    },
+    query: {
+      voc: selectedVOC.value,
+      voi: selectedVOI.value,
+      moc: selectedMOC.value,
+      moi: selectedMOI.value,
+      name: searchInput.value,
+    },
+  });
+};
+
+const viewSublineages = (report) => {
+  report.showSublineages = true;
+};
+
+const anchorLink = (link) => {
+  return link.replace(/\./g, '_');
+};
+
+const getCuratedMutation = () => {
+  store.setReportLoading(true);
+  curatedMutationsSubscription.value = getCuratedMutations(
+    genomicsUrl,
+    storeGenomics.$state.characteristicThreshold,
+  ).subscribe((results) => {
+    curatedVOC.value = reports.value
+      .filter((d) => d.id === 'voc')[0]
+      ['values'].flatMap((d) => d.pango_descendants)
+      .map((d) => d.toLowerCase());
+    curatedVOI.value = reports.value
+      .filter((d) => d.id === 'voi')[0]
+      ['values'].flatMap((d) => d.pango_descendants)
+      .map((d) => d.toLowerCase());
+    mutationReports.value = results;
+    store.setReportLoading(false);
+    filterReports();
+  });
+};
+
+const debounceSearch = debounce(filterName, 250);
+
+onMounted(() => {
+  selectedVOC.value = props.voc
+    ? typeof props.voc == 'string'
+      ? [props.voc]
+      : props.voc
+    : [];
+  selectedVOI.value = props.voi
+    ? typeof props.voi == 'string'
+      ? [props.voi]
+      : props.voi
+    : [];
+  selectedMOC.value = props.moc
+    ? typeof props.moc == 'string'
+      ? [props.moc]
+      : props.moc
+    : [];
+  selectedMOI.value = props.moi
+    ? typeof props.moi == 'string'
+      ? [props.moi]
+      : props.moi
+    : [];
+  searchInput.value = props.name;
+
+  const ofInterest = getBadMutations(true);
+  curatedMOC.value = ofInterest.moc;
+  curatedMOI.value = ofInterest.moi;
+
+  curatedSubscription.value = getReportList(genomicsUrl).subscribe(
+    (results) => {
+      lastUpdated.value = results.dateUpdated;
+      reports.value = results.md;
+      filterReports();
+    },
+  );
+
+  totalSubscription.value = getSequenceCount(genomicsUrl, null, true).subscribe(
+    (totals) => {
+      total.value = totals;
+    },
+  );
+});
+
+onBeforeUnmount(() => {
+  if (curatedSubscription.value) {
+    curatedSubscription.value.unsubscribe();
+  }
+  if (totalSubscription.value) {
+    totalSubscription.value.unsubscribe();
+  }
+  if (curatedMutationsSubscription.value) {
+    curatedMutationsSubscription.value.unsubscribe();
+  }
+});
 </script>
 
 <style lang="scss" scoped>

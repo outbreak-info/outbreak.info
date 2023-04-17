@@ -47,7 +47,7 @@
                   aria-label="search"
                   aria-describedby="sb"
                   type="text"
-                  @keydown.enter.prevent="onEnter"
+                  @keydown.enter.prevent="debounceSearchText"
                 />
               </div>
             </form>
@@ -163,7 +163,7 @@
                         type="text"
                         autocomplete="off"
                         class="border p-1 w-100 font-awesome"
-                        :style="{ 'border-color': '#bababa !important;' }"
+                        :style="{ 'border-color': '#bababa !important' }"
                         :placeholder="`Search ${facet.variable}`"
                       />
                     </small>
@@ -246,7 +246,7 @@
                 <select
                   v-model="numPerPage"
                   class="select-dropdown mr-4"
-                  @change="changePageNum()"
+                  @change="debounceChangePageNum"
                 >
                   <option
                     v-for="option in pageOpts"
@@ -568,13 +568,10 @@
                         }"
                       >
                         <img
-                          :src="
-                            require(`@/assets/resources/${getLogo(
-                              item.curatedBy.name,
-                            )}`)
-                          "
-                          alt="item.curatedBy.name"
-                          width="auto"
+                          :src="`/src/assets/resources/${getLogo(
+                            item.curatedBy.name,
+                          )}`"
+                          :alt="item.curatedBy.name"
                           height="25"
                           class="ml-2"
                         />
@@ -675,9 +672,19 @@
   </div>
 </template>
 
-<script>
-import { mapState } from 'vuex';
-import { timeFormat, timeParse } from 'd3-time-format';
+<script setup>
+import {
+  inject,
+  ref,
+  onUpdated,
+  computed,
+  watch,
+  onBeforeUnmount,
+  onMounted,
+  onUnmounted,
+} from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { storeToRefs } from 'pinia';
 import cloneDeep from 'lodash/cloneDeep';
 import debounce from 'lodash/debounce';
 import tippy from 'tippy.js';
@@ -685,453 +692,451 @@ import tippy from 'tippy.js';
 import { getResources } from '@/api/resources.js';
 import { lazyLoad } from '@/js/lazy-load';
 import 'tippy.js/themes/light.css';
+import { adminStore } from '@/stores/adminStore';
 
-export default {
-  name: 'Resources',
-  components: {
-    StripeAccent: lazyLoad('StripeAccent'),
-    TrialPhase: lazyLoad('TrialPhase'),
-    TrialStatus: lazyLoad('TrialStatus'),
-    TrialType: lazyLoad('TrialType'),
-    DownloadData: lazyLoad('DownloadData'),
-    Donut: lazyLoad('Donut'),
-    DateHistogram: lazyLoad('DateHistogram'),
+const StripeAccent = lazyLoad('StripeAccent');
+const TrialPhase = lazyLoad('TrialPhase');
+const TrialStatus = lazyLoad('TrialStatus');
+const TrialType = lazyLoad('TrialType');
+const DownloadData = lazyLoad('DownloadData');
+const Donut = lazyLoad('Donut');
+const DateHistogram = lazyLoad('DateHistogram');
+
+const props = defineProps({
+  q: String,
+  sort: String,
+  page: String,
+  size: String,
+  filter: String,
+  dateMin: String,
+  dateMax: String,
+});
+
+// global variable - equivalent with this.$resourceurl
+const resourceUrl = inject('resourceUrl');
+
+const store = adminStore();
+const { loading } = storeToRefs(store);
+
+// instead of this.$route
+const route = useRoute();
+// instead of this.$router
+const router = useRouter();
+
+const resultsSubscription = ref(null);
+const data = ref(null);
+const dates = ref(null);
+const dateFacet = ref({ expanded: false });
+const numResults = ref(0);
+const selectedPage = ref(null);
+const searchInput = ref(null);
+const filterString = ref(null);
+const esQuery = ref(null);
+const facetFilters = ref([]);
+const selectedFilters = ref([]);
+const sortValue = ref(null);
+const numPerPage = ref(null);
+const pageOpts = ref([5, 10, 50, 100]);
+const pieVariables = ref([
+  'Type',
+  'Source',
+  'Topic',
+  'Funding',
+  'Measurement Technique',
+]);
+const sortOpts = ref([
+  {
+    value: '',
+    label: 'best match',
   },
-  props: {
-    q: String,
-    sort: String,
-    page: String,
-    size: String,
-    filter: String,
-    dateMin: String,
-    dateMax: String,
+  {
+    value: '-date',
+    label: 'date: newest to oldest',
   },
-  data() {
-    return {
-      resultsSubscription: null,
-      data: null,
-      dates: null,
-      dateFacet: {
-        expanded: false,
-      },
-      numResults: 0,
-      selectedPage: null,
-      searchInput: null,
-      filterString: null,
-      esQuery: null,
-      facetFilters: [],
-      selectedFilters: [],
-      sortValue: null,
-      numPerPage: null,
-      pageOpts: [5, 10, 50, 100],
-      pieVariables: [
-        'Type',
-        'Source',
-        'Topic',
-        'Funding',
-        'Measurement Technique',
-      ],
-      sortOpts: [
-        {
-          value: '',
-          label: 'best match',
-        },
-        {
-          value: '-date',
-          label: 'date: newest to oldest',
-        },
-        {
-          value: 'date',
-          label: 'date: oldest to newest',
-        },
-        {
-          value: 'name',
-          label: 'A-Z',
-        },
-        {
-          value: '-name',
-          label: 'Z-A',
-        },
-      ],
-
-      resourceTypes: [
-        {
-          //   label: "What's New",
-          //   id: "whats-new"
-          // }, {
-          //   label: "Topics",
-          //   id: "topics"
-          // }, {
-          label: 'Publications',
-          id: 'Publication',
-        },
-        // {
-        //   label: "Analyses",
-        //   id: "Analysis"
-        // },
-        {
-          label: 'Clinical Trials',
-          id: 'ClinicalTrial',
-        },
-        {
-          label: 'Datasets',
-          id: 'Dataset',
-        },
-        {
-          label: 'Protocols',
-          id: 'Protocol',
-        },
-      ],
-      new2Display: 3,
-      newData: null,
-      facetSummary: null,
-    };
+  {
+    value: 'date',
+    label: 'date: oldest to newest',
   },
-  computed: {
-    ...mapState('admin', ['loading', 'resources']),
-    lowerLim() {
-      return this.selectedPage * this.numPerPage;
-    },
-    upperLim() {
-      const upper = this.selectedPage * this.numPerPage + this.numPerPage;
-      return upper > this.numResults ? this.numResults : upper;
-    },
-    lastPage() {
-      return this.numResults
-        ? Math.floor(this.numResults / this.numPerPage)
-        : null;
-    },
-    quotedSearch() {
-      return `"${this.searchInput}"`;
-    },
-    showSearchHelper() {
-      return this.searchInput
-        ? this.searchInput.includes(' ') && !this.searchInput.includes('"')
-        : false;
-    },
+  {
+    value: 'name',
+    label: 'A-Z',
   },
-  watch: {
-    searchInput() {
-      this.debounceSearchText();
-    },
-    $route: {
-      immediate: true,
-      handler(to, from) {
-        this.searchInput = this.q ? this.q : null;
-        this.filterString = this.filter ? this.filter : null;
-        this.numPerPage = this.size ? Number(this.size) : 10;
-        this.selectedPage = this.page ? Number(this.page) : 0;
-        this.sortValue = this.sort ? this.sort : '';
-
-        this.getResults();
-      },
-    },
+  {
+    value: '-name',
+    label: 'Z-A',
   },
-  created() {
-    this.debounceFilterText = debounce(this.selectFilterText, 500);
-    this.debounceSearchText = debounce(this.onEnter, 500);
-  },
-  beforeDestroy() {
-    if (this.resultsSubscription) {
-      this.resultsSubscription.unsubscribe();
-    }
-  },
-  updated() {
-    if (window._altmetric_embed_init) {
-      // Call Altmetrics
-      window._altmetric_embed_init();
-    } else {
-      // append Altmetrics script
-      let altmetricsScript = document.createElement('script');
-      altmetricsScript.setAttribute(
-        'src',
-        'https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js',
-      );
-      document.body.appendChild(altmetricsScript);
-    }
-  },
-  methods: {
-    getResults() {
-      const searchTerm = this.searchInput;
+]);
 
-      this.resultsSubscription = getResources(
-        this.$resourceurl,
-        searchTerm,
-        this.filterString,
-        this.sortValue,
-        this.numPerPage,
-        this.selectedPage * this.numPerPage,
-        this.dateMin,
-        this.dateMax,
-      ).subscribe((results) => {
-        this.data = results.results;
-        this.dates = results.dates.filter((d) => d.count);
-        this.newData = results.recent;
-        this.facetSummary = results.facets;
+const resources = ref([]);
 
-        if (results.total) {
-          this.selectedFilters = results.facets
-            .map((d) => {
-              return {
-                id: d.id,
-                vars: d.filtered.filter((d) => d.checked).map((d) => d.term),
-              };
-            })
-            .filter((d) => d.vars.length);
-        } else {
-          this.selectedFilters = this.$route.query.filter
-            .split(';')
-            .map((d) => {
-              let term = d.split(':');
-              return {
-                id: term[0],
-                vars: term[1].split(','),
-              };
-            });
-        }
+const newData = ref(null);
+const facetSummary = ref(null);
 
-        this.numResults = results.total;
-        this.esQuery = results.query;
+const lowerLim = computed(() => {
+  return selectedPage.value * numPerPage.value;
+});
 
-        tippy('.keyword', {
-          content: 'Loading...',
-          maxWidth: '200px',
-          placement: 'bottom',
-          animation: 'fade',
-          theme: 'light',
-          onShow(instance) {
-            let info = instance.reference.dataset.tippyInfo;
-            instance.setContent(info);
-          },
-        });
-      });
-    },
-    expandDescription(item) {
-      item.descriptionExpanded = !item.descriptionExpanded;
-    },
-    getLogo(curator) {
-      const source = this.resources
-        .flatMap((d) => d.sources)
-        .filter(
-          (d) =>
-            d.id === curator.toLowerCase() ||
-            d.name.toLowerCase() === curator.toLowerCase(),
-        );
-      return source.length ? source[0].img : null;
-    },
-    selectFilterText(facet, idx) {
-      const selectedText = this.facetFilters[idx].toLowerCase();
-      if (selectedText !== '') {
-        facet.filtered = facet.counts.filter((d) =>
-          d.term.toLowerCase().includes(selectedText),
-        );
-        facet.filtered.forEach((d) => (d.checked = true));
-      } else {
-        facet.filtered = cloneDeep(facet.counts);
-        facet.filtered.forEach((d) => (d.checked = false));
-      }
+const upperLim = computed(() => {
+  const upper = selectedPage.value * numPerPage.value + numPerPage.value;
+  return upper > numResults.value ? numResults.value : upper;
+});
 
-      this.filterString = this.filters2String();
-      this.$router.push({
-        name: 'Resources',
-        params: {
-          disableScroll: true,
-        },
-        query: {
-          q: this.searchInput,
-          filter: this.filterString,
-          params: {
-            disableScroll: true,
-          },
-          page: '0',
-          size: String(this.numPerPage),
-          sort: this.sortValue,
-          dateMin: this.dateMin,
-          dateMax: this.dateMax,
-        },
-      });
-    },
-    selectFilter(facet, option) {
-      option.checked = !option.checked;
+const lastPage = computed(() => {
+  return numResults.value
+    ? Math.floor(numResults.value / numPerPage.value)
+    : null;
+});
 
-      this.filterString = this.filters2String();
-      this.$router.push({
-        name: 'Resources',
-        params: {
-          disableScroll: true,
-        },
-        query: {
-          q: this.searchInput,
-          filter: this.filterString,
-          page: '0',
-          size: String(this.numPerPage),
-          sort: this.sortValue,
-          dateMin: this.dateMin,
-          dateMax: this.dateMax,
-        },
-      });
-    },
-    filters2String() {
-      const filters = this.facetSummary
+const quotedSearch = computed(() => {
+  return `"${searchInput.value}"`;
+});
+
+const showSearchHelper = computed(() => {
+  return searchInput.value
+    ? searchInput.value.includes(' ') && !searchInput.value.includes('"')
+    : false;
+});
+
+onMounted(() => {
+  resources.value = store.$state.resources;
+});
+
+onBeforeUnmount(() => {
+  if (resultsSubscription.value) {
+    resultsSubscription.value.unsubscribe();
+  }
+});
+
+onUpdated(() => {
+  if (window._altmetric_embed_init) {
+    // Call Altmetrics
+    window._altmetric_embed_init();
+  } else {
+    // append Altmetrics script
+    let altmetricsScript = document.createElement('script');
+    altmetricsScript.setAttribute(
+      'src',
+      'https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js',
+    );
+    document.body.appendChild(altmetricsScript);
+  }
+});
+
+const getResults = () => {
+  const searchTerm = searchInput.value;
+
+  resultsSubscription.value = getResources(
+    resourceUrl,
+    searchTerm,
+    filterString.value,
+    sortValue.value,
+    numPerPage.value,
+    selectedPage.value * numPerPage.value,
+    props.dateMin,
+    props.dateMax,
+  ).subscribe((results) => {
+    data.value = results.results;
+    dates.value = results.dates.filter((d) => d.count);
+    newData.value = results.recent;
+    facetSummary.value = results.facets;
+
+    if (results.total) {
+      selectedFilters.value = results.facets
         .map((d) => {
           return {
             id: d.id,
-            vars: d.filtered.filter((d) => d.checked),
+            vars: d.filtered.filter((d) => d.checked).map((d) => d.term),
           };
         })
         .filter((d) => d.vars.length);
+    } else {
+      selectedFilters.value = route.query.filter.split(';').map((d) => {
+        let term = d.split(':');
+        return {
+          id: term[0],
+          vars: term[1].split(','),
+        };
+      });
+    }
 
-      const filterArr = filters.map(
-        (d) => `${d.id}:${d.vars.map((x) => x.term).join(',')}`,
-      );
+    numResults.value = results.total;
+    esQuery.value = results.query;
 
-      return filterArr.join(';');
-      // return (filters.map(d => `${d.id}:("${d.vars.map(x => x.term).join('" OR "')}")`));
-    },
-    clearFilters() {
-      this.filterString = null;
-      this.$router.push({
-        name: 'Resources',
-        params: {
-          disableScroll: true,
-        },
-        query: {
-          q: this.searchInput,
-          filter: this.filterString,
-          page: '0',
-          size: String(this.numPerPage),
-          sort: this.sortValue,
-        },
-      });
-    },
-    removeFilter(variable, id) {
-      const typeIdx = this.facetSummary.findIndex((d) => d.id === id);
-      if (typeIdx >= 0) {
-        const varIdx = this.facetSummary[typeIdx].filtered.findIndex(
-          (d) => d.term === variable,
-        );
-        if (varIdx >= 0) {
-          this.facetSummary[typeIdx].filtered[varIdx]['checked'] = false;
-        }
-      }
-      this.filterString = this.filters2String();
-      this.$router.push({
-        name: 'Resources',
-        query: {
-          q: this.searchInput,
-          filter: this.filterString,
-          page: '0',
-          size: String(this.numPerPage),
-          sort: this.sortValue,
-          dateMin: this.dateMin,
-          dateMax: this.dateMax,
-        },
-      });
-    },
-    removeDateFilter(type) {
-      if (type === 'min') {
-        this.$router.push({
-          name: 'Resources',
-          params: {
-            disableScroll: true,
-          },
-          query: {
-            q: this.searchInput,
-            filter: this.filterString,
-            page: '0',
-            size: String(this.numPerPage),
-            sort: this.sortValue,
-            dateMin: null,
-            dateMax: this.dateMax,
-          },
-        });
-      } else {
-        this.$router.push({
-          name: 'Resources',
-          params: {
-            disableScroll: true,
-          },
-          query: {
-            q: this.searchInput,
-            filter: this.filterString,
-            page: '0',
-            size: String(this.numPerPage),
-            sort: this.sortValue,
-            dateMin: this.dateMin,
-            dateMax: null,
-          },
-        });
-      }
-    },
-    onEnter() {
-      this.$router.push({
-        name: 'Resources',
-        query: {
-          q: this.searchInput,
-          filter: this.filterString,
-          page: '0',
-          size: String(this.numPerPage),
-          sort: this.sortValue,
-        },
-      });
-    },
-    changeSort() {
-      this.$router.push({
-        name: 'Resources',
-        params: {
-          disableScroll: true,
-        },
-        query: {
-          q: this.searchInput,
-          filter: this.filterString,
-          page: '0',
-          size: String(this.numPerPage),
-          sort: this.sortValue,
-          dateMin: this.dateMin,
-          dateMax: this.dateMax,
-        },
-      });
-    },
-    changePage(step) {
-      this.selectedPage += step;
-
-      this.$router.push({
-        name: 'Resources',
-        params: {
-          disableScroll: true,
-        },
-        query: {
-          q: this.searchInput,
-          filter: this.filterString,
-          page: String(this.selectedPage),
-          size: String(this.numPerPage),
-          sort: this.sortValue,
-          dateMin: this.dateMin,
-          dateMax: this.dateMax,
-        },
-      });
-    },
-    changePageNum() {
-      this.selectedPage = 0;
-
-      this.$router.push({
-        name: 'Resources',
-        params: {
-          disableScroll: true,
-        },
-        query: {
-          q: this.searchInput,
-          filter: this.filterString,
-          page: String(this.selectedPage),
-          size: String(this.numPerPage),
-          sort: this.sortValue,
-          dateMin: this.dateMin,
-          dateMax: this.dateMax,
-        },
-      });
-    },
-  },
+    tippy('.keyword', {
+      content: 'Loading...',
+      maxWidth: '200px',
+      placement: 'bottom',
+      animation: 'fade',
+      theme: 'light',
+      onShow(instance) {
+        let info = instance.reference.dataset.tippyInfo;
+        instance.setContent(info);
+      },
+    });
+  });
 };
+
+const expandDescription = (item) => {
+  item.descriptionExpanded = !item.descriptionExpanded;
+};
+
+const filters2String = () => {
+  const filters = facetSummary.value
+    .map((d) => {
+      return {
+        id: d.id,
+        vars: d.filtered.filter((d) => d.checked),
+      };
+    })
+    .filter((d) => d.vars.length);
+
+  const filterArr = filters.map(
+    (d) => `${d.id}:${d.vars.map((x) => x.term).join(',')}`,
+  );
+
+  return filterArr.join(';');
+  // return (filters.map(d => `${d.id}:("${d.vars.map(x => x.term).join('" OR "')}")`));
+};
+
+const getLogo = (curator) => {
+  const source = store.$state.resources
+    .flatMap((d) => d.sources)
+    .filter(
+      (d) =>
+        d.id === curator.toLowerCase() ||
+        d.name.toLowerCase() === curator.toLowerCase(),
+    );
+  return source.length ? source[0].img : null;
+};
+
+const selectFilterText = (facet, idx) => {
+  const selectedText = facetFilters.value[idx].toLowerCase();
+  if (selectedText !== '') {
+    facet.filtered = facet.counts.filter((d) =>
+      d.term.toLowerCase().includes(selectedText),
+    );
+    facet.filtered.forEach((d) => (d.checked = true));
+  } else {
+    facet.filtered = cloneDeep(facet.counts);
+    facet.filtered.forEach((d) => (d.checked = false));
+  }
+
+  filterString.value = filters2String();
+  router.push({
+    name: 'Resources',
+    state: {
+      disableScroll: true,
+    },
+    query: {
+      q: searchInput.value,
+      filter: filterString.value,
+      page: '0',
+      size: String(numPerPage.value),
+      sort: sortValue.value,
+      dateMin: props.dateMin,
+      dateMax: props.dateMax,
+    },
+  });
+};
+
+const selectFilter = (facet, option) => {
+  option.checked = !option.checked;
+
+  filterString.value = filters2String();
+  router.push({
+    name: 'Resources',
+    state: {
+      disableScroll: true,
+    },
+    query: {
+      q: searchInput.value,
+      filter: filterString.value,
+      page: '0',
+      size: String(numPerPage.value),
+      sort: sortValue.value,
+      dateMin: props.dateMin,
+      dateMax: props.dateMax,
+    },
+  });
+};
+
+const clearFilters = () => {
+  filterString.value = null;
+  router.push({
+    name: 'Resources',
+    state: {
+      disableScroll: true,
+    },
+    query: {
+      q: searchInput.value,
+      filter: filterString.value,
+      page: '0',
+      size: String(numPerPage.value),
+      sort: sortValue.value,
+    },
+  });
+};
+
+const removeFilter = (variable, id) => {
+  const typeIdx = facetSummary.value.findIndex((d) => d.id === id);
+  if (typeIdx >= 0) {
+    const varIdx = facetSummary.value[typeIdx].filtered.findIndex(
+      (d) => d.term === variable,
+    );
+    if (varIdx >= 0) {
+      facetSummary.value[typeIdx].filtered[varIdx]['checked'] = false;
+    }
+  }
+  filterString.value = filters2String();
+  router.push({
+    name: 'Resources',
+    query: {
+      q: searchInput.value,
+      filter: filterString.value,
+      page: '0',
+      size: String(numPerPage.value),
+      sort: sortValue.value,
+      dateMin: props.dateMin,
+      dateMax: props.dateMax,
+    },
+  });
+};
+
+const removeDateFilter = (type) => {
+  if (type === 'min') {
+    router.push({
+      name: 'Resources',
+      state: {
+        disableScroll: true,
+      },
+      query: {
+        q: searchInput.value,
+        filter: filterString.value,
+        page: '0',
+        size: String(numPerPage.value),
+        sort: sortValue.value,
+        dateMin: null,
+        dateMax: props.dateMax,
+      },
+    });
+  } else {
+    router.push({
+      name: 'Resources',
+      state: {
+        disableScroll: true,
+      },
+      query: {
+        q: searchInput.value,
+        filter: filterString.value,
+        page: '0',
+        size: String(numPerPage.value),
+        sort: sortValue.value,
+        dateMin: props.dateMin,
+        dateMax: null,
+      },
+    });
+  }
+};
+
+const onEnter = () => {
+  router.push({
+    name: 'Resources',
+    query: {
+      q: searchInput.value,
+      filter: filterString.value,
+      page: '0',
+      size: String(numPerPage.value),
+      sort: sortValue.value,
+    },
+  });
+};
+
+const changeSort = () => {
+  router.push({
+    name: 'Resources',
+    state: {
+      disableScroll: true,
+    },
+    query: {
+      q: searchInput.value,
+      filter: filterString.value,
+      page: '0',
+      size: String(numPerPage.value),
+      sort: sortValue.value,
+      dateMin: props.dateMin,
+      dateMax: props.dateMax,
+    },
+  });
+};
+
+const changePage = (step) => {
+  selectedPage.value += step;
+
+  router.push({
+    name: 'Resources',
+    state: {
+      disableScroll: true,
+    },
+    query: {
+      q: searchInput.value,
+      filter: filterString.value,
+      page: String(selectedPage.value),
+      size: String(numPerPage.value),
+      sort: sortValue.value,
+      dateMin: props.dateMin,
+      dateMax: props.dateMax,
+    },
+  });
+};
+
+const changePageNum = () => {
+  selectedPage.value = 0;
+
+  router.push({
+    name: 'Resources',
+    state: {
+      disableScroll: true,
+    },
+    query: {
+      q: searchInput.value,
+      filter: filterString.value,
+      page: String(selectedPage.value),
+      size: String(numPerPage.value),
+      sort: sortValue.value,
+      dateMin: props.dateMin,
+      dateMax: props.dateMax,
+    },
+  });
+};
+
+const debounceFilterText = debounce(selectFilterText, 500);
+const debounceSearchText = debounce(onEnter, 500);
+const debounceGetResult = debounce(getResults, 500);
+const debounceChangePageNum = debounce(changePageNum, 500);
+
+watch(searchInput, () => {
+  debounceSearchText();
+});
+
+watch(
+  () => route,
+  (newVal, oldVal) => {
+    searchInput.value = newVal.query.q ? newVal.query.q : props.q;
+    filterString.value = newVal.query.filter ? newVal.query.filter : null;
+    numPerPage.value = newVal.query.size ? Number(newVal.query.size) : 10;
+    selectedPage.value = newVal.query.page ? Number(newVal.query.page) : 0;
+    sortValue.value = newVal.query.sort ? newVal.query.sort : '';
+
+    debounceGetResult();
+  },
+  { immediate: true, deep: true },
+);
+
+onUnmounted(() => {
+  if (resultsSubscription.value) {
+    resultsSubscription.value.unsubscribe();
+  }
+});
 </script>
 
 <style lang="scss" scoped>

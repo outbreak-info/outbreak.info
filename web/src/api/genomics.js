@@ -20,7 +20,11 @@ import NT_MAP from '@/assets/genomics/sarscov2_NC045512_genes_nt.json';
 import WHO_REGIONS from '@/assets/genomics/who_regions.json';
 import orderBy from 'lodash/orderBy';
 import uniq from 'lodash/uniq';
-import store from '@/store';
+import { adminStore } from '@/stores/adminStore';
+import { genomicsStore } from '@/stores/genomicsStore';
+
+const storeAdmin = adminStore();
+const storeGenomics = genomicsStore();
 
 const parseDate = timeParse('%Y-%m-%d');
 const formatDate = timeFormat('%e %B %Y');
@@ -32,7 +36,9 @@ axios.interceptors.request.use(
   (config) => {
     // Pass GISAID param to API via headers
     // * BEFORE COMPLIATION, YOU NEED to run `export VUE_APP_API_ACCESS={key}`*
-    config.headers.Authorization = `Bearer ${process.env.VUE_APP_API_ACCESS}`;
+    config.headers.Authorization = `Bearer ${
+      import.meta.env.VITE_APP_API_ACCESS
+    }`;
     return config;
   },
   (error) => {
@@ -246,86 +252,6 @@ export const getCuratedMutations = (apiurl, prevalenceThreshold) => {
   );
 };
 
-export const getSublineageMutations = (
-  apiurl,
-  prevalenceThreshold,
-  sMutationsOnly = true,
-) => {
-  const query = CURATED.map((d) => d.pango_descendants).join(',');
-
-  return getCharacteristicMutations(apiurl, query, 0, false).pipe(
-    map((charMuts) => {
-      // pull out the characteristic mutations and bind to the curated list.
-      let curated = orderBy(CURATED, ['variantType']);
-      // loop over each curated report; attach the associated lineages / characteristic mutations with it.
-      curated.forEach((report) => {
-        let mutations_in_report = [];
-
-        report.pango_descendants.forEach((lineage) => {
-          // flat map the mutations within the lineages associated with that group
-          if (Object.keys(charMuts).includes(lineage)) {
-            mutations_in_report.push(charMuts[lineage]);
-          }
-        });
-
-        // flat map the mutations to collapse the sublineages down into a long list.
-        report['mutations'] = mutations_in_report.flatMap((d) => d);
-
-        if (sMutationsOnly) {
-          report.mutations = report.mutations.filter((d) => d.gene === 'S');
-        }
-
-        const prevalentMutations = uniq(
-          report.mutations
-            .filter((d) => d.prevalence > prevalenceThreshold)
-            .map((d) => d.mutation),
-        );
-        report.mutations = report.mutations.filter((x) =>
-          prevalentMutations.includes(x.mutation),
-        );
-      });
-
-      const voc = CURATED.filter(
-        (d) => d.variantType === 'Variant of Concern',
-      ).flatMap((d) => d.char_muts_query);
-      const voc_parent = CURATED.filter(
-        (d) => d.variantType === 'Variant of Concern',
-      ).map((d) => d.label);
-      const voi = CURATED.filter(
-        (d) => d.variantType === 'Variant of Interest',
-      ).flatMap((d) => d.char_muts_query);
-      const voi_parent = CURATED.filter(
-        (d) => d.variantType === 'Variant of Interest',
-      ).map((d) => d.label);
-
-      curated = nest()
-        .key((d) => d.variantType)
-        .entries(curated);
-
-      curated.forEach((d) => {
-        d['id'] =
-          d.key === 'Variant of Concern'
-            ? 'voc'
-            : d.key === 'Variant of Interest'
-            ? 'voi'
-            : d.key === 'Variant under Monitoring'
-            ? 'vum'
-            : 'unknown';
-      });
-
-      curated = orderBy(curated, [reportTypeSorter], ['asc']);
-
-      return {
-        md: curated,
-        voc: voc,
-        voc_parent: voc_parent,
-        voi: voi,
-        voi_parent: voi_parent,
-      };
-    }),
-  );
-};
-
 export const getCuratedList = (
   apiurl,
   prevalenceThreshold,
@@ -386,79 +312,13 @@ export const getCuratedList = (
       };
     }),
   );
-
-  // return forkJoin(
-  //   ...query.map((d) =>
-  //     getCharacteristicMutations(
-  //       apiurl,
-  //       d,
-  //       store.state.genomics.characteristicThreshold,
-  //       false,
-  //     ),
-  //   ),
-  // ).pipe(
-  //   map((charMuts) => {
-  //     // flatten array of objects to a single object.
-  //     charMuts = Object.assign(...charMuts);
-  //
-  //     // pull out the characteristic mutations and bind to the curated list.
-  //     let curated = orderBy(CURATED, ['variantType']);
-  //     // loop over each curated report; attach the associated lineages / characteristic mutations with it.
-  //     curated.forEach((report) => {
-  //       report['showSublineages'] = false;
-  //       report['mutations'] = Object.keys(charMuts).includes(
-  //         report.char_muts_parent_query,
-  //       )
-  //         ? charMuts[report.char_muts_parent_query]
-  //         : [];
-  //       report['mutationsYDomain'] = uniq(
-  //         report.mutations.map((d) => d.pangolin_lineage),
-  //       );
-  //       report['lineage_count'] = report.mutations[0]
-  //         ? report.mutations[0].lineage_count.toLocaleString()
-  //         : null;
-  //
-  //       if (sMutationsOnly) {
-  //         report.mutations = report.mutations.filter((d) => d.gene == 'S');
-  //       }
-  //
-  //       // const prevalentMutations = uniq(report.mutations.filter(d => d.prevalence > prevalenceThreshold).map(d => d.mutation));
-  //       // report.mutations = report.mutations.filter(x => prevalentMutations.includes(x.mutation))
-  //     });
-  //
-  //     curated = nest()
-  //       .key((d) => d.variantType)
-  //       .entries(curated);
-  //
-  //     curated.forEach((d) => {
-  //       d['id'] =
-  //         d.key == 'Variant of Concern'
-  //           ? 'voc'
-  //           : d.key == 'Variant of Interest'
-  //           ? 'voi'
-  //           : d.key == 'Variant under Monitoring'
-  //           ? 'vum'
-  //           : d.key == 'Previously Circulating Variant of Concern'
-  //           ? 'previous_voc'
-  //           : d.key == 'De-escalated'
-  //           ? 'deescalated'
-  //           : 'unknown';
-  //     });
-  //
-  //     curated = orderBy(curated, [reportTypeSorter], ['asc']);
-  //
-  //     return {
-  //       md: curated,
-  //     };
-  //   }),
-  // );
 };
 
 export const getReportList = (
   apiurl,
-  prevalenceThreshold = store.state.genomics.characteristicThreshold,
+  prevalenceThreshold = storeGenomics.characteristicThreshold,
 ) => {
-  store.state.admin.reportloading = true;
+  storeAdmin.$patch({ reportloading: true });
 
   return forkJoin([
     getDateUpdated(apiurl),
@@ -476,7 +336,7 @@ export const getReportList = (
       return of([]);
     }),
 
-    finalize(() => (store.state.admin.reportloading = false)),
+    finalize(() => storeAdmin.$patch({ reportloading: false })),
   );
 };
 
@@ -490,7 +350,7 @@ const filterCuratedTypes = (d) => {
 };
 
 export const getLocationBasics = (apiurl) => {
-  store.state.admin.reportloading = true;
+  storeAdmin.$patch({ reportloading: true });
   let ofInterest = CURATED.filter(
     (d) => d.variantType === 'Variant of Concern',
   ).filter((d) => filterCuratedTypes(d));
@@ -518,7 +378,7 @@ export const getLocationBasics = (apiurl) => {
       return of([]);
     }),
 
-    finalize(() => (store.state.admin.reportloading = false)),
+    finalize(() => storeAdmin.$patch({ reportloading: false })),
   );
 };
 
@@ -591,7 +451,7 @@ export const getReportData = (
   ndays,
   defaultLocations = ['USA', 'USA_US-CA'],
 ) => {
-  store.state.admin.reportloading = true;
+  storeAdmin.$patch({ reportloading: true });
 
   // clean up the locations data
   // ensure it's an array
@@ -690,7 +550,7 @@ export const getReportData = (
       console.log(e);
       return of([]);
     }),
-    finalize(() => (store.state.admin.reportloading = false)),
+    finalize(() => storeAdmin.$patch({ reportloading: false })),
   );
 };
 
@@ -703,7 +563,7 @@ export const updateChoroData = (
   location,
   ndays,
 ) => {
-  store.state.admin.reportloading = true;
+  storeAdmin.$patch({ reportloading: true });
   location = location ? location : 'Worldwide';
 
   // lookup WHO name in curated dictionary
@@ -732,7 +592,7 @@ export const updateChoroData = (
       return of([]);
     }),
 
-    finalize(() => (store.state.admin.reportloading = false)),
+    finalize(() => storeAdmin.$patch({ reportloading: false })),
   );
 };
 
@@ -853,7 +713,7 @@ export const updateLocationData = (
     queryStr = buildQueryStr(lineageString, mutationArr);
   }
 
-  store.state.admin.reportloading = true;
+  storeAdmin.$patch({ reportloading: true });
 
   if (!locations || !locations.length) {
     locations = [location];
@@ -910,7 +770,7 @@ export const updateLocationData = (
       console.log(e);
       return of([]);
     }),
-    finalize(() => (store.state.admin.reportloading = false)),
+    finalize(() => storeAdmin.$patch({ reportloading: false })),
   );
 };
 
@@ -1004,10 +864,25 @@ const cleanSelectors = (id) => {
 export const getCharacteristicMutations = (
   apiurl,
   lineage,
-  prevalenceThreshold = store.state.genomics.characteristicThreshold,
+  prevalenceThreshold = storeGenomics.characteristicThreshold,
   returnFlat = true,
   includeSublineages = false,
-  genes = ["5UTR", "ORF1a", "ORF1b", "S", "ORF3a", "E", "M", "ORF6", "ORF7a", "ORF7b", "ORF8", "N", "ORF10", "3UTR"],
+  genes = [
+    '5UTR',
+    'ORF1a',
+    'ORF1b',
+    'S',
+    'ORF3a',
+    'E',
+    'M',
+    'ORF6',
+    'ORF7a',
+    'ORF7b',
+    'ORF8',
+    'N',
+    'ORF10',
+    '3UTR',
+  ],
 ) => {
   if (!lineage) return of([]);
 
@@ -1117,37 +992,6 @@ export const getCharacteristicMutations = (
     catchError((e) => {
       console.log(
         '%c Error in getting characteristic mutations!',
-        'color: red',
-      );
-      console.log(e);
-      return of([]);
-    }),
-  );
-};
-
-export const getMostRecentSeq = (apiurl, mutationString, mutationVar) => {
-  const url = `${apiurl}most-recent-collection-date-by-location?${mutationVar}=${mutationString}`;
-  return from(
-    axios.get(url, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    }),
-  ).pipe(
-    pluck('data', 'results'),
-    map((results) => {
-      let lineageRecent;
-      if (results.length === 1) {
-        results = filtered[0];
-        const dateTime = parseDate(lineageRecent.date);
-
-        lineageRecent['dateFormatted'] = dateTime ? formatDate(dateTime) : null;
-      }
-      return lineageRecent;
-    }),
-    catchError((e) => {
-      console.log(
-        '%c Error in getting recent global prevalence data!',
         'color: red',
       );
       console.log(e);
@@ -1320,78 +1164,6 @@ export const getCumPrevalence = (
   );
 };
 
-export function getNewTodayAll(apiurl, queryStr, locations) {
-  return forkJoin(
-    getNewToday(apiurl, queryStr, 'Worldwide', null),
-    ...locations
-      .filter((d) => d.type !== 'world')
-      .map((d) => getNewToday(apiurl, queryStr, d.name, d.type)),
-  ).pipe(
-    map((results) => {
-      results.sort((a, b) => b.date_count_today - a.date_count_today);
-
-      return results;
-    }),
-
-    catchError((e) => {
-      console.log(
-        '%c Error in getting new today data for all locations!',
-        'color: red',
-      );
-      console.log(e);
-      return of([]);
-    }),
-  );
-}
-
-export const getNewToday = (apiurl, queryStr, location) => {
-  const url =
-    location === 'Worldwide'
-      ? `${apiurl}most-recent-submission-date-by-location?${queryStr}`
-      : `${apiurl}most-recent-submission-date-by-location?${queryStr}&location_id=${location}`;
-  return from(
-    axios.get(url, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    }),
-  ).pipe(
-    pluck('data', 'results'),
-    map((results) => {
-      let result;
-      if (results.length === 1) {
-        result = results[0];
-        result['dateTime'] = parseDate(result.date);
-        const timeDiff = timeDay.count(result.dateTime, new Date());
-        if (timeDiff < 2) {
-          return {
-            name: location,
-            date_count_today: format(',')(result.date_count),
-          };
-        } else {
-          return {
-            name: location,
-            date_count_today: 0,
-          };
-        }
-      } else {
-        return {
-          name: location,
-          date_count_today: null,
-        };
-      }
-    }),
-    catchError((e) => {
-      console.log(
-        `%c Error in getting new today data for location ${location}!`,
-        'color: red',
-      );
-      console.log(e);
-      return of([]);
-    }),
-  );
-};
-
 export const getAllLocationPrevalence = (
   apiurl,
   mutation,
@@ -1420,7 +1192,7 @@ export const getLocationPrevalence = (
 ) => {
   let url;
   url =
-    location === 'Worldwide'
+    location === 'Worldwide' || !location
       ? `${apiurl}lineage-by-sub-admin-most-recent?${queryStr}`
       : `${apiurl}lineage-by-sub-admin-most-recent?location_id=${location}&${queryStr}`;
 
@@ -1532,9 +1304,9 @@ export const getTemporalPrevalence = (
   indivCall = false,
   returnFlat = true,
 ) => {
-  store.state.admin.reportloading = true;
+  storeAdmin.$patch({ reportloading: true });
   let url;
-  if (location === 'Worldwide') {
+  if (location === 'Worldwide' || !location) {
     url = `${apiurl}prevalence-by-location?${queryStr}`;
   } else {
     url = `${apiurl}prevalence-by-location?${queryStr}&location_id=${location}`;
@@ -1597,16 +1369,9 @@ export const getTemporalPrevalence = (
       return of([]);
     }),
     finalize(() =>
-      indivCall ? (store.state.admin.reportloading = false) : null,
+      indivCall ? storeAdmin.$patch({ reportloading: false }) : null,
     ),
   );
-};
-
-export const getCuratedMetadata = (id) => {
-  const curated = CURATED.filter((d) => d.mutation_name === id);
-  if (curated.length === 1) {
-    return curated[0];
-  }
 };
 
 export const getLineageResources = (
@@ -1677,7 +1442,7 @@ export const findLocationMetadata = (apiurl, location) => {
 };
 
 export const findAllLocationMetadata = (apiurl, locations, selected) => {
-  locations = locations.filter((d) => d !== 'Worldwide');
+  locations = locations.filter((d) => d !== 'Worldwide' && d);
 
   return forkJoin(
     ...locations.map((location) => findLocationMetadata(apiurl, location)),
@@ -1695,7 +1460,7 @@ export const findAllLocationMetadata = (apiurl, locations, selected) => {
 
       // set the active place
       results.forEach((d) => {
-        d['isActive'] = d.id === selected;
+        d['isActive'] = selected ? d.id === selected : d.id == 'Worldwide';
       });
       return results;
     }),
@@ -1926,7 +1691,7 @@ export const getPrevalenceAllLineages = (
 
 // LOCATION REPORTS
 export const getBasicLocationReportData = (apiurl, location) => {
-  store.state.genomics.locationLoading1 = true;
+  storeGenomics.$patch({ locationLoading1: true });
 
   // pull out just the Variants of Concern
   let filtered = CURATED.filter(
@@ -1984,7 +1749,7 @@ export const getBasicLocationReportData = (apiurl, location) => {
       return of([]);
     }),
 
-    finalize(() => (store.state.genomics.locationLoading1 = false)),
+    finalize(() => storeGenomics.$patch({ locationLoading1: false })),
   );
 };
 
@@ -1998,7 +1763,7 @@ export const getLocationReportData = (
   ndays,
   window,
 ) => {
-  store.state.genomics.locationLoading2 = true;
+  storeGenomics.$patch({ locationLoading2: true });
 
   return getLocationLineagePrevalences(
     apiurl,
@@ -2023,7 +1788,7 @@ export const getLocationReportData = (
       console.log(e);
       return of([]);
     }),
-    finalize(() => (store.state.genomics.locationLoading2 = false)),
+    finalize(() => storeGenomics.$patch({ locationLoading2: false })),
   );
 };
 
@@ -2103,7 +1868,7 @@ export const getLocationLineagePrevalences = (
 };
 
 export const getLocationMaps = (apiurl, location, mutations, ndays) => {
-  store.state.genomics.locationLoading5 = true;
+  storeGenomics.$patch({ locationLoading5: true });
 
   return forkJoin(
     ...mutations.map((mutation) =>
@@ -2124,28 +1889,7 @@ export const getLocationMaps = (apiurl, location, mutations, ndays) => {
       return of([]);
     }),
 
-    finalize(() => (store.state.genomics.locationLoading5 = false)),
-  );
-};
-
-export const getMutationCumPrevalence = (
-  apiurl,
-  mutationObj,
-  location,
-  totalThreshold,
-) => {
-  return getCumPrevalence(
-    apiurl,
-    mutationObj.query,
-    location,
-    totalThreshold,
-  ).pipe(
-    map((results) => {
-      return {
-        ...results,
-        ...mutationObj,
-      };
-    }),
+    finalize(() => storeGenomics.$patch({ locationLoading5: false })),
   );
 };
 
@@ -2193,12 +1937,6 @@ const reportTypeSorter = (a) => {
   return sortingArr.indexOf(a.key);
 };
 
-const reportIDSorter = (a) => {
-  const sortingArr = ['VOC', 'VOI', 'VUI', 'VUM', 'unknown'];
-  // const sortingArr = ["lineage", "lineage + mutation", "mutation"];
-  return sortingArr.indexOf(a.variantType);
-};
-
 // Returns the most recent cumulative and windowed prevalence for a list of WHO variants / lineages / mutations
 // Used in Location Report Table
 export const getLocationTable = (
@@ -2207,7 +1945,7 @@ export const getLocationTable = (
   mutations,
   totalThreshold,
 ) => {
-  store.state.genomics.locationLoading3 = true;
+  storeGenomics.$patch({ locationLoading3: true });
   const pangos = mutations
     .filter((d) => d.type && d.type === 'pango')
     .map((d) => d.qParam);
@@ -2262,7 +2000,7 @@ export const getLocationTable = (
       console.log(e);
       return of([]);
     }),
-    finalize(() => (store.state.genomics.locationLoading3 = false)),
+    finalize(() => storeGenomics.$patch({ locationLoading3: false })),
   );
 };
 
@@ -2273,7 +2011,7 @@ export const getEpiMutationPrevalence = (
   mutations,
   epiFields = 'location_id,date,confirmed,mostRecent,confirmed_numIncrease,confirmed_rolling,dead_numIncrease,dead_rolling',
 ) => {
-  store.state.genomics.locationLoading4 = true;
+  storeGenomics.$patch({ locationLoading4: true });
 
   return forkJoin([
     getEpiTraces(epiurl, [locationID], epiFields),
@@ -2296,7 +2034,7 @@ export const getEpiMutationPrevalence = (
       console.log(e);
       return of([]);
     }),
-    finalize(() => (store.state.genomics.locationLoading4 = false)),
+    finalize(() => storeGenomics.$patch({ locationLoading4: false })),
   );
 };
 
@@ -2318,7 +2056,7 @@ export const getAllTemporalPrevalences = (apiurl, locationID, mutations) => {
         console.log(e);
         return of([]);
       }),
-      finalize(() => (store.state.genomics.locationLoading4 = false)),
+      finalize(() => storeGenomics.$patch({ locationLoading4: false })),
     );
   } else {
     return of([]);
@@ -2374,7 +2112,7 @@ export const getSequenceCount = (
 
 // COMPARISON REPORTS
 export const getBasicComparisonReportData = (apiurl) => {
-  store.state.genomics.locationLoading1 = true;
+  storeGenomics.$patch({ locationLoading1: true });
 
   const who = CURATED.filter((d) => d.who_name)
     .map((d) => d.who_name)
@@ -2417,14 +2155,14 @@ export const getBasicComparisonReportData = (apiurl) => {
       console.log(e);
       return of([]);
     }),
-    finalize(() => (store.state.genomics.locationLoading1 = false)),
+    finalize(() => storeGenomics.$patch({ locationLoading1: false })),
   );
 };
 
 export const getMutationsOfInterestPrevalence = (
   apiurl,
   lineages,
-  prevalenceThreshold = store.state.genomics.characteristicThreshold,
+  prevalenceThreshold = storeGenomics.characteristicThreshold,
 ) => {
   const mutationsOfInterest = [
     's:s477n',
@@ -2589,7 +2327,7 @@ export const getLineagesComparison = (
   includeSublineages = false,
   genes,
 ) => {
-  store.state.genomics.locationLoading2 = true;
+  storeGenomics.$patch({ locationLoading2: true });
 
   // if nothing selected, pull out the VOCs/VOIs
   if (!lineages) {
@@ -2655,7 +2393,7 @@ export const getLineagesComparison = (
       return of([]);
     }),
 
-    finalize(() => (store.state.genomics.locationLoading2 = false)),
+    finalize(() => storeGenomics.$patch({ locationLoading2: false })),
   );
 };
 
@@ -2732,7 +2470,7 @@ export const getBadMutations = (returnSimplified = false) => {
 
 // Lag functions
 export const getStatusBasics = (apiurl, location) => {
-  store.state.admin.reportloading = true;
+  storeAdmin.$patch({ reportloading: true });
 
   return forkJoin([
     getSequenceCount(apiurl, null, true),
@@ -2755,12 +2493,12 @@ export const getStatusBasics = (apiurl, location) => {
       return of([]);
     }),
 
-    finalize(() => (store.state.admin.reportloading = false)),
+    finalize(() => storeAdmin.$patch({ reportloading: false })),
   );
 };
 
 export const getStatusLocation = (apiurl, location) => {
-  store.state.admin.reportloading = true;
+  storeAdmin.$patch({ reportloading: true });
 
   return forkJoin([
     getSequenceCount(apiurl, location, true),
@@ -2781,12 +2519,12 @@ export const getStatusLocation = (apiurl, location) => {
       return of([]);
     }),
 
-    finalize(() => (store.state.admin.reportloading = false)),
+    finalize(() => storeAdmin.$patch({ reportloading: false })),
   );
 };
 
 export const getSeqGaps = (apiurl, location) => {
-  store.state.genomics.locationLoading1 = true;
+  storeGenomics.$patch({ locationLoading1: true });
   let url = `${apiurl}collection-submission`;
 
   if (location) {
@@ -2868,12 +2606,12 @@ export const getSeqGaps = (apiurl, location) => {
       return of([]);
     }),
 
-    finalize(() => (store.state.genomics.locationLoading1 = false)),
+    finalize(() => storeGenomics.$patch({ locationLoading1: false })),
   );
 };
 
 export const checkGisaidID = (apiurl, id) => {
-  store.state.genomics.locationLoading2 = true;
+  storeGenomics.$patch({ locationLoading2: true });
   const url = `${apiurl}gisaid-id-lookup?id=${id}`;
 
   return from(
@@ -2893,12 +2631,12 @@ export const checkGisaidID = (apiurl, id) => {
       return of([]);
     }),
 
-    finalize(() => (store.state.genomics.locationLoading2 = false)),
+    finalize(() => storeGenomics.$patch({ locationLoading2: false })),
   );
 };
 
 export const getSeqMap = (apiurl, epiurl, location) => {
-  store.state.genomics.locationLoading3 = true;
+  storeGenomics.$patch({ locationLoading3: true });
 
   return forkJoin([getSequenceCount(apiurl, location, true, true)]).pipe(
     map(([results]) => {
@@ -2910,12 +2648,12 @@ export const getSeqMap = (apiurl, epiurl, location) => {
       return of([]);
     }),
 
-    finalize(() => (store.state.genomics.locationLoading3 = false)),
+    finalize(() => storeGenomics.$patch({ locationLoading3: false })),
   );
 };
 
 export const getGlanceSummary = (apiUrl, genomicsUrl, locations) => {
-  store.state.admin.loading = true;
+  storeAdmin.$patch({ loading: true });
   const formatDate = timeFormat('%e %B %Y');
   const parseDate = timeParse('%Y-%m-%d');
   const location_string =
@@ -2978,7 +2716,7 @@ export const getGlanceSummary = (apiUrl, genomicsUrl, locations) => {
       console.log(e);
       return from([]);
     }),
-    finalize(() => (store.state.admin.loading = false)),
+    finalize(() => storeAdmin.$patch({ loading: false })),
   );
 };
 

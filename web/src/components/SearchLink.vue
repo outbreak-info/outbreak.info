@@ -16,41 +16,41 @@
   </span>
 </template>
 
-<script>
+<script setup>
+import { onMounted } from 'vue';
 import tippy from 'tippy.js';
+
 import 'tippy.js/themes/light.css';
 
-export default {
-  name: 'SearchLink',
-  props: {
-    data: Array,
-    searchField: String,
-    filterField: String,
-    tooltipLabel: String,
-  },
-  mounted() {
-    tippy('.search-link', {
-      content: 'Loading...',
-      maxWidth: '300px',
-      placement: 'bottom',
-      animation: 'fade',
-      theme: 'light',
-      onShow(instance) {
-        let info = instance.reference.dataset.tippyInfo;
-        instance.setContent(info);
-      },
-    });
-  },
-  methods: {
-    searchStr(item) {
-      return this.searchField ? `${this.searchField}:"${item}"` : item;
+const props = defineProps({
+  data: Array,
+  searchField: String,
+  filterField: String,
+  tooltipLabel: String,
+});
+
+onMounted(() => {
+  tippy('.search-link', {
+    content: 'Loading...',
+    maxWidth: '300px',
+    placement: 'bottom',
+    animation: 'fade',
+    theme: 'light',
+    onShow(instance) {
+      let info = instance.reference.dataset.tippyInfo;
+      instance.setContent(info);
     },
-    tooltipText(item) {
-      return this.tooltipLabel
-        ? `Search for ${item} ${this.tooltipLabel}`
-        : `Search for ${item}`;
-    },
-  },
+  });
+});
+
+const searchStr = (item) => {
+  return props.searchField ? `${props.searchField}:"${item}"` : item;
+};
+
+const tooltipText = (item) => {
+  return props.tooltipLabel
+    ? `Search for ${item} ${props.tooltipLabel}`
+    : `Search for ${item}`;
 };
 </script>
 

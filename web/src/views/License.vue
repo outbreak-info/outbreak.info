@@ -1,10 +1,8 @@
 <template>
-  <div class="row" style="min-height: 75vh;">
+  <div class="row" style="min-height: 75vh">
     <div class="col-sm-12 my-5">
       <div class="container text-left mb-5">
-        <h1 class="text-highlight">
-          outbreak.info license
-        </h1>
+        <h1 class="text-highlight">outbreak.info license</h1>
 
         <DataUsage />
         <CiteUs class="mt-5" />
@@ -13,16 +11,9 @@
   </div>
 </template>
 
-<script>
-import Vue from 'vue';
-
+<script setup>
 import { lazyLoad } from '@/js/lazy-load';
 
-export default Vue.extend({
-  name: 'License',
-  components: {
-    DataUsage: lazyLoad('DataUsage'),
-    CiteUs: lazyLoad('CiteUs'),
-  },
-});
+const DataUsage = lazyLoad('DataUsage');
+const CiteUs = lazyLoad('CiteUs');
 </script>

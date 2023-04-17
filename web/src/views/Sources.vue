@@ -4,11 +4,7 @@
     <section
       class="d-flex flex-column justify-content-center align-items-center pt-3"
     >
-      <a
-        href="https://api.outbreak.info/"
-        alt="outbreak.info API"
-        class="position-relative"
-      >
+      <a href="https://api.outbreak.info/" class="position-relative">
         <img src="@/assets/back-api.png" class="w-100" alt="outbreak-api" />
         <p
           class="pt-1 m-0 align-items-center position-absolute text-overlay d-none d-lg-inline"
@@ -31,9 +27,7 @@
           </div>
 
           <div class="text-left mt-5">
-            <h3 id="geographic" class="pt-4 border-top">
-              Genomic Data
-            </h3>
+            <h3 id="geographic" class="pt-4 border-top">Genomic Data</h3>
             <SourceDescription
               v-if="sourceMetadata"
               :sources="genomicSources"
@@ -53,9 +47,7 @@
           </div>
 
           <div class="text-left mt-5">
-            <h3 id="geographic" class="pt-4 border-top">
-              Geographic Data
-            </h3>
+            <h3 id="geographic" class="pt-4 border-top">Geographic Data</h3>
             <SourceDescription :sources="geoSources" />
           </div>
 
@@ -63,9 +55,7 @@
             <div
               class="mb-3 pt-4 border-top d-flex justify-content-between align-items-center"
             >
-              <h3 id="resources" class="">
-                Resources
-              </h3>
+              <h3 id="resources" class="">Resources</h3>
               <DownloadData
                 downloadLabel="all resources"
                 type="resources"
@@ -106,47 +96,45 @@
   </div>
 </template>
 
-<script>
-import Vue from 'vue';
-import { mapState } from 'vuex';
+<script setup>
+import { onMounted, ref, onUnmounted, inject } from 'vue';
+import { storeToRefs } from 'pinia';
 
 import { getIndivSourcesUpdated } from '@/api/metadata.js';
 import { lazyLoad } from '@/js/lazy-load';
+import { adminStore } from '@/stores/adminStore';
 
-export default Vue.extend({
-  name: 'Sources',
-  components: {
-    SourceDescription: lazyLoad('SourceDescription'),
-    DownloadData: lazyLoad('DownloadData'),
-  },
-  data() {
-    return {
-      metadataSubscription: null,
-      sourceMetadata: null,
-    };
-  },
-  computed: {
-    ...mapState('admin', [
-      'sources',
-      'geoSources',
-      'genomicSources',
-      'resources',
-    ]),
-  },
-  mounted() {
-    this.metadataSubscription = getIndivSourcesUpdated(
-      this.$genomicsurl,
-      this.$resourceurl,
-      this.$apiurl,
-    ).subscribe((results) => {
-      this.sourceMetadata = results;
-    });
-  },
-  destroyed() {
-    if (this.metadataSubscription) {
-      this.metadataSubscription.unsubscribe();
-    }
-  },
+const SourceDescription = lazyLoad('SourceDescription');
+const DownloadData = lazyLoad('DownloadData');
+
+// global variable - equivalent with this.$apiurl
+const apiUrl = inject('apiUrl');
+// global variable - equivalent with this.$genomicsurl
+const genomicsUrl = inject('genomicsUrl');
+// global variable - equivalent with this.$resourceurl
+const resourceUrl = inject('resourceUrl');
+
+const metadataSubscription = ref(null);
+const sourceMetadata = ref(null);
+
+const store = adminStore();
+
+const { sources, geoSources, genomicSources, resources } = storeToRefs(store);
+
+onMounted(() => {
+  metadataSubscription.value = getIndivSourcesUpdated(
+    genomicsUrl,
+    resourceUrl,
+    apiUrl,
+  ).subscribe((results) => {
+    sourceMetadata.value = results;
+  });
+});
+
+onUnmounted(() => {
+  if (metadataSubscription.value) {
+    metadataSubscription.value.unsubscribe();
+  }
 });
 </script>
 

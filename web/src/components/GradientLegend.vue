@@ -42,53 +42,46 @@
   </div>
 </template>
 
-<script>
-import Vue from 'vue';
+<script setup>
+import { computed, ref, watch } from 'vue';
 import { range } from 'd3-array';
 
-export default Vue.extend({
-  name: 'GradientLegend',
-  props: {
-    label: String,
-    dark: {
-      type: Boolean,
-      default: true,
-    },
-    legendWidth: {
-      type: Number,
-      default: 200,
-    },
-    minValue: {
-      type: String,
-      default: '0',
-    },
-    maxValue: String,
-    colorScale: Function,
+const props = defineProps({
+  label: String,
+  dark: {
+    type: Boolean,
+    default: true,
   },
-  data() {
-    return {
-      legendColors: [],
-    };
+  legendWidth: {
+    type: Number,
+    default: 200,
   },
-  computed: {
-    legendColor() {
-      return this.dark ? '#f8f9fa' : '#6c757d';
-    },
+  minValue: {
+    type: String,
+    default: '0',
   },
-  watch: {
-    colorScale: {
-      immediate: true,
-      handler(newVal, oldVal) {
-        if (this.colorScale) {
-          // legend gradient
-          const domain = this.colorScale.domain();
-          const step = (domain[1] - domain[0]) / 10;
-          this.legendColors = range(domain[0], domain[1] + step, step).map(
-            (d) => this.colorScale(d),
-          );
-        }
-      },
-    },
-  },
+  maxValue: String,
+  colorScale: Function,
 });
+
+const legendColors = ref([]);
+
+const legendColor = computed(() => {
+  return props.dark ? '#f8f9fa' : '#6c757d';
+});
+
+watch(
+  () => props.colorScale,
+  (newVal, oldVal) => {
+    if (props.colorScale) {
+      // legend gradient
+      const domain = props.colorScale.domain();
+      const step = (domain[1] - domain[0]) / 10;
+      legendColors.value = range(domain[0], domain[1] + step, step).map((d) =>
+        props.colorScale(d),
+      );
+    }
+  },
+  { immediate: true, deep: true },
+);
 </script>

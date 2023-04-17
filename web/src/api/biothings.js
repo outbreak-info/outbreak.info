@@ -10,8 +10,9 @@ import {
   reduce,
 } from 'rxjs/operators';
 import { timeParse, timeFormat } from 'd3-time-format';
-import store from '@/store';
+import { adminStore } from '@/stores/adminStore';
 
+const store = adminStore();
 export const progressSubject = new BehaviorSubject(0);
 export const progressState$ = progressSubject.asObservable();
 
@@ -65,7 +66,7 @@ export const getCurrentDate = (apiUrl, returnFormatted = true) => {
 };
 
 export const getAll = (apiUrl, queryString) => {
-  store.state.admin.loading = true;
+  store.$patch({ loading: true });
   return getOne(apiUrl, queryString, 0).pipe(
     expand((data, _) =>
       data.next ? getOne(apiUrl, queryString, data.count, data.next) : EMPTY,
@@ -87,7 +88,7 @@ export const getAll = (apiUrl, queryString) => {
     }),
     finalize(() => {
       progressSubject.next(0);
-      store.state.admin.loading = false;
+      store.$patch({ loading: false });
     }),
   );
 };
@@ -119,6 +120,5 @@ export const getOne = (apiUrl, queryString, count, scrollID = null) => {
       console.log(e);
       return from([]);
     }),
-    // finalize(() => (store.state.admin.loading = false))
   );
 };

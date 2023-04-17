@@ -127,13 +127,7 @@
   </div>
 </template>
 
-<script>
-import Vue from 'vue';
-
-export default Vue.extend({
-  name: 'Logos',
-});
-</script>
+<script setup></script>
 
 <style>
 .picBox {

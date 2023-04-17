@@ -109,42 +109,38 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'TrialEligibility',
-  components: {},
-  props: {
-    data: Object,
-  },
-  data() {
-    return {
-      showCriteria: false,
-    };
-  },
-  computed: {
-    inclMale() {
-      return this.data.gender
-        ? ['all', 'both', 'male'].includes(this.data.gender.toLowerCase())
-        : null;
-    },
-    inclFemale() {
-      return this.data.gender
-        ? ['all', 'both', 'female'].includes(this.data.gender.toLowerCase())
-        : null;
-    },
-    acceptedAges() {
-      if (this.data.minimumAge && this.data.maximumAge) {
-        return `${this.data.minimumAge} &minus; ${this.data.maximumAge}`;
-      } else if (this.data.minimumAge) {
-        return `${this.data.minimumAge} +`;
-      } else if (this.data.maximumAge) {
-        return `0 &minus; ${this.data.maximumAge}`;
-      } else {
-        return 'not specified';
-      }
-    },
-  },
-};
+<script setup>
+import { computed, ref } from 'vue';
+
+const props = defineProps({
+  data: Object,
+});
+
+let showCriteria = ref(false);
+
+const inclMale = computed(() => {
+  return props.data.gender
+    ? ['all', 'both', 'male'].includes(props.data.gender.toLowerCase())
+    : null;
+});
+
+const inclFemale = computed(() => {
+  return props.data.gender
+    ? ['all', 'both', 'female'].includes(props.data.gender.toLowerCase())
+    : null;
+});
+
+const acceptedAges = computed(() => {
+  if (props.data.minimumAge && props.data.maximumAge) {
+    return `${props.data.minimumAge} &minus; ${props.data.maximumAge}`;
+  } else if (props.data.minimumAge) {
+    return `${props.data.minimumAge} +`;
+  } else if (props.data.maximumAge) {
+    return `0 &minus; ${props.data.maximumAge}`;
+  } else {
+    return 'not specified';
+  }
+});
 </script>
 
 <style lang="scss" scoped>

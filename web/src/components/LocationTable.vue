@@ -109,7 +109,7 @@
               :to="{
                 name: 'MutationReport',
                 params: lineage.params ? lineage.params : {},
-                query: lineage.route,
+                query: transformQuery(lineage.route),
               }"
               :data-tippy-info="lineage.tooltip"
             >
@@ -172,62 +172,70 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { onMounted } from 'vue';
+import { isArray } from 'lodash/lang';
 import tippy from 'tippy.js';
+
 import 'tippy.js/themes/light.css';
 
-export default {
-  name: 'LocationTable',
-  components: {
-    // FontAwesomeIcon
+const props = defineProps({
+  data: Array,
+  locationID: String,
+  locationName: String,
+  routeTo: {
+    type: String,
+    default: 'MutationReport',
   },
-  props: {
-    data: Array,
-    locationID: String,
-    locationName: String,
-    routeTo: {
-      type: String,
-      default: 'MutationReport',
-    },
-  },
-  mounted() {
-    tippy('.variant-table', {
-      content: 'Loading...',
-      maxWidth: '200px',
-      placement: 'bottom',
-      animation: 'fade',
-      theme: 'light',
-      onShow(instance) {
-        let info = instance.reference.dataset.tippyInfo;
-        instance.setContent(info);
-      },
-    });
+});
 
-    tippy('.variant-expand', {
-      content: 'Loading...',
-      maxWidth: '200px',
-      placement: 'bottom',
-      animation: 'fade',
-      theme: 'light',
-      onShow(instance) {
-        let info = instance.reference.dataset.tippyInfo;
-        instance.setContent(info);
-      },
-    });
-
-    tippy('.no-estimate', {
-      content: 'Loading...',
-      maxWidth: '200px',
-      placement: 'bottom',
-      animation: 'fade',
-      theme: 'light',
-      onShow(instance) {
-        let info = instance.reference.dataset.tippyInfo;
-        instance.setContent(info);
-      },
-    });
-  },
+const transformQuery = (query) => {
+  if (typeof query.pango === 'string') {
+    return query;
+  } else if (isArray(query.pango)) {
+    let tempQuery = query;
+    tempQuery.pango = tempQuery.pango[0];
+    return tempQuery;
+  }
 };
+
+onMounted(() => {
+  tippy('.variant-table', {
+    content: 'Loading...',
+    maxWidth: '200px',
+    placement: 'bottom',
+    animation: 'fade',
+    theme: 'light',
+    onShow(instance) {
+      let info = instance.reference.dataset.tippyInfo;
+      instance.setContent(info);
+    },
+  });
+
+  tippy('.variant-expand', {
+    content: 'Loading...',
+    maxWidth: '200px',
+    placement: 'bottom',
+    animation: 'fade',
+    theme: 'light',
+    onShow(instance) {
+      let info = instance.reference.dataset.tippyInfo;
+      instance.setContent(info);
+    },
+  });
+
+  tippy('.no-estimate', {
+    content: 'Loading...',
+    maxWidth: '200px',
+    placement: 'bottom',
+    animation: 'fade',
+    theme: 'light',
+    onShow(instance) {
+      let info = instance.reference.dataset.tippyInfo;
+      instance.setContent(info);
+    },
+  });
+});
 </script>
 
 <style lang="scss" scoped>

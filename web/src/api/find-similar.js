@@ -4,9 +4,10 @@ import { extent, max } from 'd3-array';
 import { nest } from 'd3-collection';
 import { timeParse } from 'd3-time-format';
 
-import store from '@/store';
 import { getAll } from '@/api/biothings.js';
+import { adminStore } from '@/stores/adminStore';
 
+const store = adminStore();
 export const findSimilar = (
   apiUrl,
   locationID,
@@ -15,7 +16,7 @@ export const findSimilar = (
   adminLevels,
   num2Return = 5,
 ) => {
-  store.state.admin.dataloading = true;
+  store.$patch({ dataloading: true });
   // Choosing one specific date, since all dates contain the current info.
   // First get the location's data for the most recent date.
   // Use that value to get the most recent value of `similarityMetric` and find locations with similar values
@@ -93,7 +94,7 @@ export const findSimilar = (
       console.log(e);
       return from([]);
     }),
-    finalize(() => (store.state.admin.dataloading = false)),
+    finalize(() => store.$patch({ dataloading: false })),
   );
 };
 

@@ -14,7 +14,7 @@
         <router-link
           class="btn btn-main-outline router-link no-underline m-1 d-flex align-items-center"
           role="button"
-          :class="{ active: admin_level === '0' }"
+          :class="{ 'active-btn': adminLevel === '0' }"
           :to="{
             name: 'Maps',
             query: {
@@ -29,7 +29,7 @@
         <div class="d-flex flex-column justify-content-around">
           <router-link
             class="btn btn-main-outline router-link no-underline m-1"
-            :class="{ active: admin_level === '1' }"
+            :class="{ 'active-btn': adminLevel === '1' }"
             role="button"
             :to="{
               name: 'Maps',
@@ -47,7 +47,7 @@
             <router-link
               class="btn btn-main-outline router-link no-underline m-1"
               role="button"
-              :class="{ active: admin_level === '1.5' }"
+              :class="{ 'active-btn': adminLevel === '1.5' }"
               :to="{
                 name: 'Maps',
                 query: {
@@ -62,7 +62,7 @@
             </router-link>
             <router-link
               class="btn btn-main-outline router-link no-underline m-1"
-              :class="{ active: admin_level === '2' }"
+              :class="{ 'active-btn': adminLevel === '2' }"
               role="button"
               :to="{
                 name: 'Maps',
@@ -92,7 +92,11 @@
       >
         <!-- variable options -->
         <div class="row d-flex align-items-center">
-          <select v-model="selectedVariable" class="select-dropdown">
+          <select
+            v-model="selectedVariable"
+            class="select-dropdown"
+            @change="debounceChangeVariable"
+          >
             <option
               v-for="option in variableOptions"
               :key="option.value"
@@ -109,7 +113,7 @@
             :date="selectedDate"
             :min="minDate"
             :max="maxDate"
-            :adminLevel="admin_level"
+            :adminLevel="adminLevel"
           />
         </div>
       </div>
@@ -123,7 +127,7 @@
       :selectedMin="selectedMin"
       :selectedMax="selectedMax"
       :colorScale="colorScale"
-      :adminLevel="admin_level"
+      :adminLevel="adminLevel"
       :variable="selectedVariable.value"
       :variableLabel="selectedVariable.choro"
       :date1="selectedDate"
@@ -138,165 +142,183 @@
   </div>
 </template>
 
-<script>
-import { mapState } from 'vuex';
+<script setup>
+import { inject, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { storeToRefs } from 'pinia';
 import { timeFormat } from 'd3-time-format';
+import debounce from 'lodash/debounce';
 
 import { getComparisonData } from '@/api/epi-comparison.js';
 import { lazyLoad } from '@/js/lazy-load';
+import { adminStore } from '@/stores/adminStore';
 
-export default {
-  name: 'Maps',
-  components: {
-    Choropleth: lazyLoad('Choropleth'),
-    DataSource: lazyLoad('DataSource'),
-    DateSlider: lazyLoad('DateSlider'),
-  },
-  props: {
-    admin_level: {
-      type: String,
-      default: '0',
-    },
-    variable: {
-      type: String,
-      default: 'confirmed_rolling_14days_ago_diff',
-    },
-    location: String,
-    min: String,
-    max: String,
-    date: String,
-    animate: { type: Boolean, default: true },
-  },
-  data() {
-    return {
-      colorScale: null,
-      data: [],
-      blankMap: null,
-      outline: null,
-      selectedDate: null,
-      selectedMin: null,
-      selectedMax: null,
-      maxDate: null,
-      minDate: new Date('2020-01-22 0:0'),
-      dataSubscription: null,
-      selectedVariable: null,
-      variableOptions: [
-        {
-          label: 'total cases per capita',
-          choro: 'total cases per 100,000 people',
-          value: 'confirmed_per_100k',
-        },
-        {
-          label: 'total deaths per capita',
-          choro: 'total deaths per 100,000 people',
-          value: 'dead_per_100k',
-        },
-        {
-          label: 'new cases/day',
-          choro: 'average new cases/day',
-          value: 'confirmed_rolling',
-        },
-        {
-          label: 'new cases/day per capita',
-          choro: 'average new cases/day per 100,000 people',
-          value: 'confirmed_rolling_per_100k',
-        },
-        {
-          label: 'new deaths/day',
-          choro: 'average new deaths/day',
-          value: 'dead_rolling',
-        },
-        {
-          label: 'new deaths/day per capita',
-          choro: 'average new deaths/day per 100,000 people',
-          value: 'dead_rolling_per_100k',
-        },
-        {
-          label: '2 week change in cases/day',
-          choro: 'cases vs. 2 weeks ago',
-          value: 'confirmed_rolling_14days_ago_diff',
-        },
-        {
-          label: '2 week change in cases/day per capita',
-          choro: 'cases vs. 2 weeks ago per 100,000 people',
-          value: 'confirmed_rolling_14days_ago_diff_per_100k',
-        },
-        {
-          label: '2 week change in deaths/day',
-          choro: 'deaths vs. 2 weeks ago',
-          value: 'dead_rolling_14days_ago_diff',
-        },
-        {
-          label: '2 week change in deaths/day per capita',
-          choro: 'deaths vs. 2 weeks ago per 100,000 people',
-          value: 'dead_rolling_14days_ago_diff_per_100k',
-        },
-      ],
-    };
-  },
-  computed: {
-    ...mapState('admin', ['dataloading']),
-  },
-  watch: {
-    '$route.params': {
-      immediate: true,
-      handler(newRoute, oldRoute) {
-        // update selections based on routes
-        const filtered = this.variableOptions.filter(
-          (d) => d.value === this.variable,
-        );
-        this.selectedVariable = filtered.length === 1 ? filtered[0] : null;
-        // reset selected min/max
-        // If the data already exists, pull out the min/max.
-        this.selectedMin = this.min || this.min === 0 ? +this.min : null;
-        this.selectedMax = this.max || this.max === 0 ? +this.max : null;
+const Choropleth = lazyLoad('Choropleth');
+const DataSource = lazyLoad('DataSource');
+const DateSlider = lazyLoad('DateSlider');
 
-        this.selectedDate = this.date;
+const props = defineProps({
+  admin_level: {
+    type: String,
+    default: '0',
+  },
+  variable: {
+    type: String,
+    default: 'confirmed_rolling_14days_ago_diff',
+  },
+  location: String,
+  min: String,
+  max: String,
+  date: String,
+  animate: { type: Boolean, default: true },
+});
 
-        this.getData(this.selectedDate);
-      },
-    },
-    selectedVariable() {
-      this.$router.push({
-        path: 'maps',
-        query: {
-          location: this.location,
-          admin_level: this.admin_level,
-          variable: this.selectedVariable.value,
-          date: this.selectedDate,
-        },
-      });
-    },
-  },
-  beforeDestroy() {
-    this.dataSubscription.unsubscribe();
-  },
-  methods: {
-    formatDate(dateStr) {
-      return timeFormat('%Y-%m-%d')(dateStr);
-    },
-    getData(date) {
-      this.dataSubscription = getComparisonData(
-        this.$apiurl,
-        this.location,
-        this.admin_level,
-        this.variable,
-        this.selectedVariable.choro,
-        date,
-      ).subscribe((results) => {
-        this.data = results.data;
-        this.outline = results.overlay;
-        this.blankMap = results.blankMap;
+// global variable - equivalent with this.$apiurl
+const apiUrl = inject('apiUrl');
 
-        this.maxDate = results.maxDate;
-        if (!this.selectedDate) {
-          this.selectedDate = this.formatDate(results.maxDate);
-        }
-        this.colorScale = results.colorScale;
-      });
-    },
+// instead of this.$route
+const route = useRoute();
+// instead of this.$router
+const router = useRouter();
+
+const colorScale = ref(null);
+const data = ref([]);
+const blankMap = ref(null);
+const outline = ref(null);
+const selectedDate = ref(null);
+const selectedMin = ref(null);
+const selectedMax = ref(null);
+const maxDate = ref(null);
+const minDate = ref(new Date('2020-01-22 0:0'));
+const dataSubscription = ref(null);
+const selectedVariable = ref({
+  label: '2 week change in cases/day',
+  choro: 'cases vs. 2 weeks ago',
+  value: 'confirmed_rolling_14days_ago_diff',
+});
+const variableOptions = ref([
+  {
+    label: 'total cases per capita',
+    choro: 'total cases per 100,000 people',
+    value: 'confirmed_per_100k',
   },
+  {
+    label: 'total deaths per capita',
+    choro: 'total deaths per 100,000 people',
+    value: 'dead_per_100k',
+  },
+  {
+    label: 'new cases/day',
+    choro: 'average new cases/day',
+    value: 'confirmed_rolling',
+  },
+  {
+    label: 'new cases/day per capita',
+    choro: 'average new cases/day per 100,000 people',
+    value: 'confirmed_rolling_per_100k',
+  },
+  {
+    label: 'new deaths/day',
+    choro: 'average new deaths/day',
+    value: 'dead_rolling',
+  },
+  {
+    label: 'new deaths/day per capita',
+    choro: 'average new deaths/day per 100,000 people',
+    value: 'dead_rolling_per_100k',
+  },
+  {
+    label: '2 week change in cases/day',
+    choro: 'cases vs. 2 weeks ago',
+    value: 'confirmed_rolling_14days_ago_diff',
+  },
+  {
+    label: '2 week change in cases/day per capita',
+    choro: 'cases vs. 2 weeks ago per 100,000 people',
+    value: 'confirmed_rolling_14days_ago_diff_per_100k',
+  },
+  {
+    label: '2 week change in deaths/day',
+    choro: 'deaths vs. 2 weeks ago',
+    value: 'dead_rolling_14days_ago_diff',
+  },
+  {
+    label: '2 week change in deaths/day per capita',
+    choro: 'deaths vs. 2 weeks ago per 100,000 people',
+    value: 'dead_rolling_14days_ago_diff_per_100k',
+  },
+]);
+const adminLevel = ref('0');
+
+const store = adminStore();
+const { dataloading } = storeToRefs(store);
+
+const formatDate = (dateStr) => {
+  return timeFormat('%Y-%m-%d')(dateStr);
 };
+
+const getData = () => {
+  dataSubscription.value = getComparisonData(
+    apiUrl,
+    props.location,
+    adminLevel.value,
+    props.variable,
+    selectedVariable.value.choro,
+    selectedDate.value,
+  ).subscribe((results) => {
+    data.value = results.data;
+    outline.value = results.overlay;
+    blankMap.value = results.blankMap;
+
+    maxDate.value = results.maxDate;
+    if (!selectedDate.value) {
+      selectedDate.value = formatDate(results.maxDate);
+    }
+    colorScale.value = results.colorScale;
+  });
+};
+
+const changeVariable = () => {
+  router.push({
+    path: 'maps',
+    query: {
+      location: props.location,
+      admin_level: adminLevel.value,
+      variable: selectedVariable.value.value,
+      date: selectedDate.value,
+    },
+  });
+};
+
+const debounceChangeVariable = debounce(changeVariable, 250);
+
+watch(
+  route,
+  (newRoute, oldRoute) => {
+    adminLevel.value = newRoute.query.admin_level || '0';
+    // reset selected min/max
+    // If the data already exists, pull out the min/max.
+    selectedMin.value = props.min || props.min === 0 ? +props.min : null;
+    selectedMax.value = props.max || props.max === 0 ? +props.max : null;
+
+    selectedDate.value = newRoute.query.date ? newRoute.query.date : props.date;
+
+    setTimeout(() => {
+      getData();
+    }, 1000);
+  },
+  { immediate: true },
+);
+
+onMounted(() => {
+  getData();
+});
+
+onBeforeUnmount(() => {
+  if (dataSubscription.value) {
+    dataSubscription.value.unsubscribe();
+  }
+});
 </script>
 
 <style lang="scss" scoped>
@@ -341,7 +363,7 @@ tr.table-header-merged {
   // border-bottom: 1px solid $grey-40;
 }
 
-.btn-main-outline.active {
+.active-btn {
   background: $primary-color !important;
   color: white;
 }

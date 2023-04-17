@@ -26,66 +26,74 @@
     <Logos />
   </div>
 </template>
-<script>
-import { mapState } from 'vuex';
+
+<script setup>
+import { ref, inject, watch, onMounted, onUnmounted } from 'vue';
+import { storeToRefs } from 'pinia';
 
 import { getGlanceSummary } from '@/api/genomics.js';
 import { lazyLoad } from '@/js/lazy-load';
+import { adminStore } from '@/stores/adminStore';
 
-export default {
-  name: 'Summary',
-  components: {
-    GlanceSummary: lazyLoad('GlanceSummary'),
-    Logos: lazyLoad('Logos'),
-    DataSource: lazyLoad('DataSource'),
-  },
-  props: {
-    location: String,
-  },
-  data() {
-    return {
-      glanceSummaries: [],
-      glanceLocations: null,
-      dataSubscription: null,
-    };
-  },
-  computed: {
-    ...mapState('admin', ['loading']),
-  },
-  watch: {
-    location: {
-      immediate: true,
-      handler(newValue, oldValue) {
-        this.glanceLocations = newValue ? newValue.split(';') : [];
-        this.getData();
-      },
-    },
-  },
-  mounted() {
-    this.getData();
-  },
-  methods: {
-    getData() {
-      this.dataSubscription = getGlanceSummary(
-        this.$apiurl,
-        this.$genomicsurl,
-        this.glanceLocations,
-      ).subscribe((d) => {
-        this.glanceSummaries = this.sortSummaries(d);
-      });
-    },
-    sortSummaries(data) {
-      if (this.glanceLocations && this.glanceLocations.length > 0) {
-        data.sort(
-          (a, b) =>
-            this.glanceLocations.indexOf(a.location_id) -
-            this.glanceLocations.indexOf(b.location_id),
-        );
-      }
-      return data;
-    },
-  },
+const GlanceSummary = lazyLoad('GlanceSummary');
+const Logos = lazyLoad('Logos');
+const DataSource = lazyLoad('DataSource');
+
+const props = defineProps({
+  location: String,
+});
+
+// global variable - equivalent with this.$apiurl
+const apiUrl = inject('apiUrl');
+// global variable - equivalent with this.$genomicsurl
+const genomicsUrl = inject('genomicsUrl');
+
+const glanceSummaries = ref([]);
+const glanceLocations = ref(null);
+const dataSubscription = ref(null);
+
+const store = adminStore();
+const { loading } = storeToRefs(store);
+
+const sortSummaries = (data) => {
+  if (glanceLocations.value && glanceLocations.value.length > 0) {
+    data.sort(
+      (a, b) =>
+        glanceLocations.value.indexOf(a.location_id) -
+        glanceLocations.value.indexOf(b.location_id),
+    );
+  }
+  return data;
 };
+
+const getData = () => {
+  dataSubscription.value = getGlanceSummary(
+    apiUrl,
+    genomicsUrl,
+    glanceLocations.value,
+  ).subscribe((d) => {
+    glanceSummaries.value = sortSummaries(d);
+  });
+};
+
+watch(
+  () => props.location,
+  (newValue, oldValue) => {
+    glanceLocations.value = newValue ? newValue.split(';') : [];
+    getData();
+  },
+  { immediate: true },
+);
+
+onMounted(() => {
+  getData();
+});
+
+onUnmounted(() => {
+  if (dataSubscription.value) {
+    dataSubscription.value.unsubscribe();
+  }
+});
 </script>
 
 <style lang="scss" scoped></style>

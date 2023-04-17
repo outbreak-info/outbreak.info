@@ -88,82 +88,81 @@
   </div>
 </template>
 
-<script>
-import Vue from 'vue';
-
+<script setup>
+import { computed, inject, onBeforeUnmount, ref, watch } from 'vue';
 import { getLineageResources } from '@/api/genomics.js';
 
-export default Vue.extend({
-  name: 'ReportResources',
-  components: {},
-  props: {
-    mutationName: String,
-    searchTerms: Array,
-  },
-  data() {
-    return {
-      total: null,
-      totalFormatted: null,
-      selectedPage: 0,
-      numPerPage: 10,
-      resources: null,
-      resultSubscription: null,
-      pageOpts: [10, 50, 100],
-    };
-  },
+const props = defineProps({
+  mutationName: String,
+  searchTerms: Array,
+});
 
-  computed: {
-    lowerLim() {
-      return this.selectedPage * this.numPerPage;
-    },
-    upperLim() {
-      const upper = this.selectedPage * this.numPerPage + this.numPerPage;
-      return upper > this.total ? this.total : upper;
-    },
-    lastPage() {
-      return this.total ? Math.floor(this.total / this.numPerPage) : null;
-    },
-    queryString() {
-      return `"${this.searchTerms.join('" OR "')}"`;
-    },
+// global variable - equivalent with this.$resourceurl
+const resourceUrl = inject('resourceUrl');
+
+const total = ref(null);
+const totalFormatted = ref(null);
+const selectedPage = ref(null);
+const numPerPage = ref(10);
+const resources = ref(null);
+const resultSubscription = ref(null);
+const pageOpts = ref([10, 50, 100]);
+
+// computed variables
+const lowerLim = computed(() => {
+  return selectedPage.value * numPerPage.value;
+});
+
+const upperLim = computed(() => {
+  const upper = selectedPage.value * numPerPage.value + numPerPage.value;
+  return upper > total.value ? total.value : upper;
+});
+
+const lastPage = computed(() => {
+  return total.value ? Math.floor(total.value / numPerPage.value) : null;
+});
+
+const queryString = computed(() => {
+  return `"${props.searchTerms.join('" OR "')}"`;
+});
+
+const updateResults = () => {
+  if (props.searchTerms.length) {
+    resultSubscription.value = getLineageResources(
+      resourceUrl,
+      queryString.value,
+      numPerPage.value,
+      selectedPage.value * numPerPage.value,
+    ).subscribe((results) => {
+      total.value = results.total;
+      totalFormatted.value = results.totalFormatted;
+      resources.value = results.resources;
+    });
+  }
+};
+
+const changePage = (step) => {
+  selectedPage.value += step;
+  updateResults();
+};
+
+const changePageNum = () => {
+  selectedPage.value = 0;
+  updateResults();
+};
+
+watch(
+  () => queryString.value,
+  () => {
+    updateResults();
   },
-  watch: {
-    queryString: {
-      immediate: true,
-      handler(newVal, oldVal) {
-        this.updateResults();
-      },
-    },
-  },
-  beforeDestroy() {
-    if (this.resultSubscription) {
-      this.resultSubscription.unsubscribe();
-    }
-  },
-  methods: {
-    changePage(step) {
-      this.selectedPage += step;
-      this.updateResults();
-    },
-    changePageNum() {
-      this.selectedPage = 0;
-      this.updateResults();
-    },
-    updateResults() {
-      if (this.searchTerms.length) {
-        this.resultSubscription = getLineageResources(
-          this.$resourceurl,
-          this.queryString,
-          this.numPerPage,
-          this.selectedPage * this.numPerPage,
-        ).subscribe((results) => {
-          this.total = results.total;
-          this.totalFormatted = results.totalFormatted;
-          this.resources = results.resources;
-        });
-      }
-    },
-  },
+  { immediate: true },
+);
+
+onBeforeUnmount(() => {
+  if (resultSubscription.value) {
+    resultSubscription.value.unsubscribe();
+  }
 });
 </script>
 <style lang="scss"></style>

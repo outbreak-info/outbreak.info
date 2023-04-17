@@ -222,79 +222,77 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { computed, onMounted, ref } from 'vue';
 import { formatRIS } from '@/js/citationConverter.js';
 
-export default {
-  name: 'ResourceSidebar',
-  components: {},
-  props: {
-    data: Object,
-    type: String,
-    date: String,
-  },
-  data() {
-    return {
-      showSnackbar: false,
-      citationRIS: null,
-    };
-  },
-  computed: {
-    outbreakUrl() {
-      return window.location.href;
-    },
-    resourceLinkLabel() {
-      if (this.type === 'Publication') {
-        return this.data.journalName
-          ? this.data.journalName
-          : this.data.journalNameAbbrev
-          ? this.data.journalNameAbbrev
-          : this.data.curatedBy.name;
-      } else if (this.data.curatedBy) {
-        return this.data.curatedBy.name;
-      } else {
-        return this.data.includedInDataCatalog.name;
-      }
-    },
-    canShare() {
-      return !!navigator.share;
-    },
-  },
-  mounted() {
-    // append Altmetrics script
-    let altmetricsScript = document.createElement('script');
-    altmetricsScript.setAttribute(
-      'src',
-      'https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js',
-    );
-    document.body.appendChild(altmetricsScript);
-  },
-  methods: {
-    copy2Clipboard() {
-      this.showSnackbar = true;
-      setTimeout(() => {
-        this.showSnackbar = false;
-      }, 3000);
-      navigator.clipboard.writeText(this.outbreakUrl);
-    },
-    downloadCitation() {
-      const ris = formatRIS(this.data);
+const props = defineProps({
+  data: Object,
+  type: String,
+  date: String,
+});
 
-      if (ris) {
-        this.citationRIS = `data:text/plain;charset=utf-8,${encodeURI(ris)}`;
-        this.$refs.risDownload.href = this.citationRIS;
-        this.$refs.risDownload.click();
-      }
-    },
-    shareLink() {
-      if (navigator.share) {
-        navigator.share({
-          title: `outbreak.info ${this.type}`,
-          url: window.location.href,
-        });
-      }
-    },
-  },
+const showSnackbar = ref(false);
+const citationRIS = ref(null);
+const risDownload = ref(null);
+
+const outbreakUrl = computed(() => {
+  return window.location.href;
+});
+
+const resourceLinkLabel = computed(() => {
+  if (props.type === 'Publication') {
+    return props.data.journalName
+      ? props.data.journalName
+      : props.data.journalNameAbbrev
+      ? props.data.journalNameAbbrev
+      : props.data.curatedBy.name;
+  } else if (props.data.curatedBy) {
+    return props.data.curatedBy.name;
+  } else {
+    return props.data.includedInDataCatalog.name;
+  }
+});
+
+const canShare = computed(() => {
+  return !!navigator.share;
+});
+
+onMounted(() => {
+  // append Altmetrics script
+  let altmetricsScript = document.createElement('script');
+  altmetricsScript.setAttribute(
+    'src',
+    'https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js',
+  );
+  document.body.appendChild(altmetricsScript);
+});
+
+const copy2Clipboard = () => {
+  showSnackbar.value = true;
+  setTimeout(() => {
+    showSnackbar.value = false;
+  }, 3000);
+  navigator.clipboard.writeText(outbreakUrl.value);
+};
+
+const downloadCitation = () => {
+  const ris = formatRIS(props.data);
+
+  if (ris) {
+    citationRIS.value = `data:text/plain;charset=utf-8,${encodeURI(ris)}`;
+    risDownload.value.href = citationRIS.value;
+    risDownload.value.click();
+  }
+};
+
+const shareLink = () => {
+  if (navigator.share) {
+    navigator.share({
+      title: `outbreak.info ${props.type}`,
+      url: window.location.href,
+    });
+  }
 };
 </script>
 

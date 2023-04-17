@@ -88,8 +88,8 @@
               <!-- <CustomLocationForm :curated="null" :includeLocation="false" :selectedMutations.sync="newMuts" :selectedLineage.sync="newPango" :formCount.sync="formCount" /> -->
               <VariantForm
                 :minimalistic="false"
-                :selectedLineage.sync="newPango"
-                :selectedMutations.sync="newMuts"
+                v-model:selectedLineage="newPango"
+                v-model:selectedMutations="newMuts"
                 :submitted="submitCount"
               />
 
@@ -144,7 +144,7 @@
       </div>
       <!-- end change mutations modal -->
 
-      <template>
+      <div>
         <!-- SOCIAL MEDIA SHARE, BACK BTN -->
         <div v-if="!embedded" class="d-flex align-items-center mb-2 mt-3">
           <router-link :to="{ name: 'LocationReports' }" class="no-underline">
@@ -406,7 +406,7 @@
                     v-model="recentWindow"
                     class="border p-1 mx-2"
                     :style="{
-                      'border-color': '#bababa !important;',
+                      'border-color': '#bababa !important',
                       width: '40px',
                     }"
                     placeholder="days"
@@ -416,8 +416,8 @@
 
                 <!-- Histogram of sequencing counts -->
                 <SequencingHistogram
-                  :data="seqCountsWindowed"
                   v-if="seqCountsWindowed && !noRecentData"
+                  :data="seqCountsWindowed"
                   :width="widthHist"
                   :downward="false"
                   :includeXAxis="true"
@@ -469,7 +469,7 @@
                       v-model="recentWindow"
                       class="border p-1 mx-2"
                       :style="{
-                        'border-color': '#bababa !important;',
+                        'border-color': '#bababa !important',
                         width: '40px',
                       }"
                       placeholder="days"
@@ -479,7 +479,7 @@
                 </div>
               </div>
 
-              <template v-else>
+              <div v-else>
                 <section
                   v-if="mostRecentLineages"
                   id="most-recent-lineages"
@@ -503,7 +503,7 @@
                     />
                   </div>
                 </section>
-              </template>
+              </div>
             </div>
           </div>
 
@@ -751,7 +751,7 @@
                 />
                 <div class="d-flex flex-column">
                   <ThresholdSlider
-                    :countThreshold.sync="choroCountThreshold"
+                    v-model:countThreshold="choroCountThreshold"
                     :maxCount="choroMaxCount"
                     class="mr-3"
                   />
@@ -761,7 +761,7 @@
                       v-model="recentWindow"
                       class="border p-1 mx-2"
                       :style="{
-                        'border-color': '#bababa !important;',
+                        'border-color': '#bababa !important',
                         width: '40px',
                       }"
                       placeholder="days"
@@ -863,7 +863,7 @@
                     v-model="recentWindow"
                     class="border p-1 mx-2"
                     :style="{
-                      'border-color': '#bababa !important;',
+                      'border-color': '#bababa !important',
                       width: '40px',
                     }"
                     placeholder="days"
@@ -932,13 +932,24 @@
 
         <!-- ACKNOWLEDGEMENTS -->
         <ReportAcknowledgements class="border-top pt-3" />
-      </template>
+      </div>
     </div>
   </div>
 </template>
 
-<script>
-import { mapState } from 'vuex';
+<script setup>
+import {
+  computed,
+  inject,
+  nextTick,
+  onMounted,
+  onUnmounted,
+  onUpdated,
+  ref,
+  watch,
+} from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import { storeToRefs } from 'pinia';
 import { max } from 'd3-array';
 import { format } from 'd3-format';
 import { scaleOrdinal, scaleThreshold, scaleSequential } from 'd3-scale';
@@ -963,770 +974,775 @@ import {
 import { lazyLoad } from '@/js/lazy-load';
 
 import 'tippy.js/themes/material.css';
+import { adminStore } from '@/stores/adminStore';
+import { genomicsStore } from '@/stores/genomicsStore';
 
-export default {
-  name: 'LocationReportComponent',
-  components: {
-    ShareReport: lazyLoad('ShareReport'),
-    TypeaheadSelect: lazyLoad('TypeaheadSelect'),
-    ReportMethodology: lazyLoad('ReportMethodology'),
-    Warning: lazyLoad('Warning'),
-    ReportAcknowledgements: lazyLoad('ReportAcknowledgements'),
-    ReportChoropleth: lazyLoad('ReportChoropleth'),
-    LineagesByLocation: lazyLoad('LineagesByLocation'),
-    ReportStackedBarGraph: lazyLoad('ReportStackedBarGraph'),
-    HorizontalCategoricalLegend: lazyLoad('HorizontalCategoricalLegend'),
-    LocationTable: lazyLoad('LocationTable'),
-    OverlayLineagePrevalence: lazyLoad('OverlayLineagePrevalence'),
-    VariantForm: lazyLoad('VariantForm'),
-    ClassedLegend: lazyLoad('ClassedLegend'),
-    SequencingHistogram: lazyLoad('SequencingHistogram'),
-    ThresholdSlider: lazyLoad('ThresholdSlider'),
-    MutationHeatmap: lazyLoad('MutationHeatmap'),
-    DownloadReportData: lazyLoad('DownloadReportData'),
-    GradientLegend: lazyLoad('GradientLegend'),
-    GenomicsCitation: lazyLoad('GenomicsCitation'),
+const ShareReport = lazyLoad('ShareReport');
+const TypeaheadSelect = lazyLoad('TypeaheadSelect');
+const ReportMethodology = lazyLoad('ReportMethodology');
+const Warning = lazyLoad('Warning');
+const ReportAcknowledgements = lazyLoad('ReportAcknowledgements');
+const ReportChoropleth = lazyLoad('ReportChoropleth');
+const LineagesByLocation = lazyLoad('LineagesByLocation');
+const ReportStackedBarGraph = lazyLoad('ReportStackedBarGraph');
+const HorizontalCategoricalLegend = lazyLoad('HorizontalCategoricalLegend');
+const LocationTable = lazyLoad('LocationTable');
+const OverlayLineagePrevalence = lazyLoad('OverlayLineagePrevalence');
+const VariantForm = lazyLoad('VariantForm');
+const ClassedLegend = lazyLoad('ClassedLegend');
+const SequencingHistogram = lazyLoad('SequencingHistogram');
+const ThresholdSlider = lazyLoad('ThresholdSlider');
+const MutationHeatmap = lazyLoad('MutationHeatmap');
+const DownloadReportData = lazyLoad('DownloadReportData');
+const GradientLegend = lazyLoad('GradientLegend');
+const GenomicsCitation = lazyLoad('GenomicsCitation');
+
+const props = defineProps({
+  loc: String,
+  embedded: Boolean,
+  muts: [Array, String],
+  pango: [Array, String],
+  alias: [Array, String],
+  variant: [Array, String],
+  xmin: String,
+  xmax: String,
+  dark: {
+    type: [String, Boolean],
+    default: false,
   },
-  props: {
-    loc: String,
-    embedded: Boolean,
-    muts: [Array, String],
-    pango: [Array, String],
-    alias: [Array, String],
-    variant: [Array, String],
-    xmin: String,
-    xmax: String,
-    dark: {
-      type: [String, Boolean],
-      default: false,
-    },
-    routeTo: {
-      type: String,
-      default: 'LocationReport',
-    },
-    selected: {
-      type: [Array, String],
-      default: () => [],
+  routeTo: {
+    type: String,
+    default: 'LocationReport',
+  },
+  selected: {
+    type: [Array, String],
+    default() {
+      return [];
     },
   },
-  data() {
-    return {
-      smallScreen: false,
-      mediumScreen: false,
-      darkMode: null,
-      currentTime: null,
-      today: null,
-      url: null,
-      disclaimer: `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the mutations but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`,
-      basicSubscription: null,
-      reportSubscription: null,
-      choroSubscription: null,
-      tableSubscription: null,
-      countSubscription: null,
-      // methods
-      queryLocation: null,
-      // variables
-      recentWindow: '60',
-      recentMin: null,
-      otherThresh: 0.03,
-      ndayThresh: 5,
-      dayThresh: 60,
-      totalThresh: 25, // threshold for "unreliable estimate" in the table
-      // location info
-      selectedLocation: null,
-      newLocation: null,
-      // update mutations
-      newMuts: [],
-      newPango: null,
-      customMutations: [],
-      submitCount: 0,
-      // data
-      moi: [],
-      moc: [],
-      voi: null,
-      voc: null,
-      dateUpdated: null,
-      lastUpdated: null,
-      lineagesByDay: null,
-      mostRecentLineages: null,
-      noRecentData: false,
-      lineageTable: null,
-      lineageDomain: [],
-      totalSequences: null,
-      curatedLineages: [],
-      recentHeatmap: null,
-      heatmapColorScale: scaleSequential(interpolateRdPu),
-      mostRecentDomain: null,
-      geoData: null,
-      seqCounts: null,
-      widthHist: 300,
-      marginHist: {
-        left: 55,
-        right: 55,
-        top: 7,
-        bottom: 25,
-      },
-      // selections
-      // scales
-      // mainly Tableau 20: https://jrnold.github.io/ggthemes/reference/tableau_color_pal.html
-      colorScale: null,
-      choroColorDomain: [0.01, 0.05, 0.1, 0.2, 0.35, 0.5, 0.75],
-      choroColorScale: null,
-      choroCountThreshold: 25,
-      choroMaxCount: null,
-      colorPalette: [
-        '#bab0ab', // grey (other)
-        '#4E79A7', // dk blue
-        '#aecBe8', // lt blue
-        '#f28e2b', // orange
-        '#FFBE7D', // lt. orange
-        '#59a14f', // green
-        '#8CD17D', // lt. green
-        '#e15759', // red
-        '#FF9D9A', // lt. red
-        '#499894', // teal
-        '#86BCB6', // lt. teal
-        '#B6992D', // dk yellow
-        '#F1CE63', // yellow
-        '#D37295', // dk pink
-        '#FABFD2', // lt. pink,
-        '#B07AA1', // dk purple
-        '#D4A6C8', // lt. purple
-        '#9D7660', // brown
-        '#D7B5A6', // lt. brown
-        '#bcbd22', // puce
-        '#79706E', // grey
-        '#79706E',
-      ],
-      // [ "#bab0ab", // grey (other)
-      //   "#4E79A7", // dk blue
-      //   // "#1f77b4", // dk blue
-      //   "#f28e2b", // orange
-      //   "#59a14f", // green
-      //   "#e15759", // red
-      //   // "#9edae5", // teal
-      //   "#499894", // teal
-      //   "#B6992D", // dk yellow
-      //   "#D37295", // dk pink
-      //   // "#9467bd", // purple
-      //   "#B07AA1", // dk purple
-      //   "#9D7660", // brown
-      //   // "#8c564b", // brown
-      //   "#aecBe8", // lt blue
-      //   "#FFBE7D", // lt. orange
-      //   "#8CD17D", // lt. green
-      //   "#FF9D9A", // lt. red
-      //   "#86BCB6", // lt. teal
-      //   "#F1CE63", // yellow
-      //   // "#edc949", // yellow
-      //   // "#ff9da7", // pink
-      //   "#FABFD2", // lt. pink,
-      //   "#D4A6C8", // lt. purple
-      //   "#D7B5A6", // lt. brown
-      //   "#bcbd22", // puce
-      //   "#79706E", // grey
-      //   "#79706E"
-      // ])
+});
+
+// this.$route
+const route = useRoute();
+// this.$router
+const router = useRouter();
+
+// equivalent to this.$genomicsurl
+const genomicsUrl = inject('genomicsUrl');
+
+const smallScreen = ref(false);
+const mediumScreen = ref(false);
+const darkMode = ref(null);
+const currentTime = ref(null);
+const today = ref(null);
+const url = ref(null);
+const disclaimer = ref(
+  `SARS-CoV-2 (hCoV-19) sequencing is not a random sample of mutations. As a result, this report does not indicate the true prevalence of the mutations but rather our best estimate now. <a class='text-light text-underline ml-3' href='https://outbreak.info/situation-reports/caveats'>How to interpret this report</a>`,
+);
+
+const basicSubscription = ref(null);
+const reportSubscription = ref(null);
+const choroSubscription = ref(null);
+const tableSubscription = ref(null);
+const countSubscription = ref(null);
+// methods
+const queryLocation = ref(null);
+// variables
+const recentWindow = ref('60');
+const recentMin = ref(null);
+const otherThresh = ref(0.03);
+const ndayThresh = ref(5);
+const dayThresh = ref(60);
+const totalThresh = ref(25); // threshold for "unreliable estimate" in the table
+// location info
+const selectedLocation = ref(null);
+const newLocation = ref(null);
+// update mutations
+const newMuts = ref([]);
+const newPango = ref(null);
+const customMutations = ref([]);
+const submitCount = ref(0);
+// data
+const moi = ref([]);
+const moc = ref([]);
+const voi = ref(null);
+const voc = ref(null);
+const dateUpdated = ref(null);
+const lastUpdated = ref(null);
+const lineagesByDay = ref(null);
+const mostRecentLineages = ref(null);
+const noRecentData = ref(false);
+const lineageTable = ref(null);
+const lineageDomain = ref([]);
+const totalSequences = ref(null);
+const curatedLineages = ref([]);
+const recentHeatmap = ref(null);
+const heatmapColorScale = ref(scaleSequential(interpolateRdPu));
+const mostRecentDomain = ref(null);
+const geoData = ref(null);
+const seqCounts = ref(null);
+const widthHist = ref(300);
+const marginHist = ref({
+  left: 55,
+  right: 55,
+  top: 7,
+  bottom: 25,
+});
+// selections
+// scales
+// mainly Tableau 20: https://jrnold.github.io/ggthemes/reference/tableau_color_pal.html
+const colorScale = ref(null);
+const choroColorDomain = ref([0.01, 0.05, 0.1, 0.2, 0.35, 0.5, 0.75]);
+const choroColorScale = ref(null);
+const choroCountThreshold = ref(25);
+const choroMaxCount = ref(null);
+
+const colorPalette = ref([
+  '#bab0ab', // grey (other)
+  '#4E79A7', // dk blue
+  '#aecBe8', // lt blue
+  '#f28e2b', // orange
+  '#FFBE7D', // lt. orange
+  '#59a14f', // green
+  '#8CD17D', // lt. green
+  '#e15759', // red
+  '#FF9D9A', // lt. red
+  '#499894', // teal
+  '#86BCB6', // lt. teal
+  '#B6992D', // dk yellow
+  '#F1CE63', // yellow
+  '#D37295', // dk pink
+  '#FABFD2', // lt. pink,
+  '#B07AA1', // dk purple
+  '#D4A6C8', // lt. purple
+  '#9D7660', // brown
+  '#D7B5A6', // lt. brown
+  '#bcbd22', // puce
+  '#79706E', // grey
+  '#79706E',
+]);
+
+const store = adminStore();
+const { mutationAuthors, genomicsCitation } = storeToRefs(store);
+const storeGenomics = genomicsStore();
+
+const loading = computed(() => {
+  return (
+    storeGenomics.$state.locationLoading1 ||
+    storeGenomics.$state.locationLoading2 ||
+    storeGenomics.$state.locationLoading3 ||
+    storeGenomics.$state.locationLoading4 ||
+    storeGenomics.$state.locationLoading5
+  );
+});
+
+const charMutThreshold = computed(() => {
+  return format('.0%')(storeGenomics.$state.characteristicThreshold);
+});
+
+const otherThreshFormatted = computed(() => {
+  return format('.0%')(otherThresh.value);
+});
+
+const title = computed(() => {
+  return selectedLocation.value
+    ? `${selectedLocation.value.label} Variant Report`
+    : null;
+});
+
+const seqCountsWindowed = computed(() => {
+  return recentMin.value && seqCounts.value
+    ? seqCounts.value.filter((d) => d.dateTime >= recentMin.value)
+    : null;
+});
+
+const formValid = computed(() => {
+  return newMuts.value.length > 0 || newPango.value;
+});
+
+const darkModeHelper = computed(() => {
+  return darkMode.value
+    ? 'Switch to <b>light mode</b> to focus on similarities between lineages'
+    : 'Switch to <b>dark mode</b> to emphasize mutations with low prevalence';
+});
+// object to store the temporary additions to the custom mutations form BEFORE submission
+// should consist of label + route param (qParam) + type (alias, pango, variant, mutation)
+
+const newVariant = computed(() => {
+  let newVariantObj = null;
+  if (newPango.value && newMuts.value.length) {
+    newVariantObj = {
+      label: `${newPango.value.name} + ${newMuts.value
+        .map((d) => d.mutation)
+        .join(', ')}`,
+      qParam: `${newPango.value.name}|${newMuts.value
+        .map((d) => d.mutation)
+        .join(' AND ')}`,
+      type: 'variant',
     };
-  },
-  computed: {
-    ...mapState('admin', ['mutationAuthors', 'genomicsCitation']),
-    ...mapState('genomics', [
-      'locationLoading1',
-      'locationLoading2',
-      'locationLoading3',
-      'locationLoading4',
-      'locationLoading5',
-      'characteristicThreshold',
-    ]),
-    loading() {
-      return (
-        this.locationLoading1 ||
-        this.locationLoading2 ||
-        this.locationLoading3 ||
-        this.locationLoading4 ||
-        this.locationLoading5
+  } else if (newPango.value) {
+    if (newPango.value.alias) {
+      newVariantObj = {
+        label: newPango.value.name,
+        qParam: newPango.value.name,
+        type: 'alias',
+      };
+    } else {
+      newVariantObj = {
+        label: newPango.value.name,
+        qParam: newPango.value.name,
+        type: 'pango',
+      };
+    }
+  } else if (newMuts.value.length) {
+    newVariantObj = {
+      label: newMuts.value.map((d) => d.mutation).join(', '),
+      qParam: newMuts.value.map((d) => d.mutation).join(' AND '),
+      type: 'mutation',
+    };
+  }
+  return newVariantObj;
+});
+
+// parses the route information to track what custom mutations should be queryable.
+const selectedMutations = computed(() => {
+  let tracked = curatedLineages.value;
+  // WHO Aliases
+  if (props.alias) {
+    const curatedQuery = findWHOLineage(props.alias);
+    if (curatedQuery) {
+      tracked.push(...curatedQuery);
+    }
+  }
+
+  if (props.pango) {
+    if (typeof props.pango == 'string') {
+      tracked.push({
+        type: 'pango',
+        label: props.pango,
+        qParam: props.pango,
+        mutation_string: props.pango,
+        query: `pangolin_lineage=${props.pango}`,
+        variantType: 'Custom Lineages & Mutations',
+        route: {
+          pango: props.pango,
+        },
+      });
+    } else {
+      tracked = tracked.concat(
+        props.pango.map((d) => {
+          return {
+            type: 'pango',
+            label: d,
+            qParam: d,
+            mutation_string: d,
+            query: `pangolin_lineage=${d}`,
+            variantType: 'Custom Lineages & Mutations',
+            route: {
+              pango: d,
+            },
+          };
+        }),
       );
-    },
-    charMutThreshold() {
-      return format('.0%')(this.characteristicThreshold);
-    },
-    otherThreshFormatted() {
-      return format('.0%')(this.otherThresh);
-    },
-    title() {
-      return this.selectedLocation
-        ? `${this.selectedLocation.label} Variant Report`
-        : null;
-    },
-    seqCountsWindowed() {
-      return this.recentMin && this.seqCounts
-        ? this.seqCounts.filter((d) => d.dateTime >= this.recentMin)
-        : null;
-    },
-    formValid() {
-      return this.newMuts.length > 0 || this.newPango;
-    },
-    darkModeHelper() {
-      return this.darkMode
-        ? 'Switch to <b>light mode</b> to focus on similarities between lineages'
-        : 'Switch to <b>dark mode</b> to emphasize mutations with low prevalence';
-    },
-    // object to store the temporary additions to the custom mutations form BEFORE submission
-    // should consist of label + route param (qParam) + type (alias, pango, variant, mutation)
-    newVariant() {
-      let newVariantObj = null;
-      if (this.newPango && this.newMuts.length) {
-        newVariantObj = {
-          label: `${this.newPango.name} + ${this.newMuts
-            .map((d) => d.mutation)
-            .join(', ')}`,
-          qParam: `${this.newPango.name}|${this.newMuts
-            .map((d) => d.mutation)
-            .join(' AND ')}`,
-          type: 'variant',
-        };
-      } else if (this.newPango) {
-        if (this.newPango.alias) {
-          newVariantObj = {
-            label: this.newPango.name,
-            qParam: this.newPango.name,
-            type: 'alias',
-          };
-        } else {
-          newVariantObj = {
-            label: this.newPango.name,
-            qParam: this.newPango.name,
-            type: 'pango',
-          };
-        }
-      } else if (this.newMuts.length) {
-        newVariantObj = {
-          label: this.newMuts.map((d) => d.mutation).join(', '),
-          qParam: this.newMuts.map((d) => d.mutation).join(' AND '),
-          type: 'mutation',
-        };
-      }
-      return newVariantObj;
-    },
-    // parses the route information to track what custom mutations should be queryable.
-    selectedMutations() {
-      let tracked = this.curatedLineages;
-      // WHO Aliases
-      if (this.alias) {
-        const curatedQuery = findWHOLineage(this.alias);
-        if (curatedQuery) {
-          tracked.push(...curatedQuery);
-        }
-      }
-
-      if (this.pango) {
-        if (typeof this.pango == 'string') {
-          tracked.push({
-            type: 'pango',
-            label: this.pango,
-            qParam: this.pango,
-            mutation_string: this.pango,
-            query: `pangolin_lineage=${this.pango}`,
-            variantType: 'Custom Lineages & Mutations',
-            route: {
-              pango: this.pango,
-            },
-          });
-        } else {
-          tracked = tracked.concat(
-            this.pango.map((d) => {
-              return {
-                type: 'pango',
-                label: d,
-                qParam: d,
-                mutation_string: d,
-                query: `pangolin_lineage=${d}`,
-                variantType: 'Custom Lineages & Mutations',
-                route: {
-                  pango: d,
-                },
-              };
-            }),
-          );
-        }
-      }
-      if (this.muts) {
-        if (typeof this.muts == 'string') {
-          const mutations = this.muts.split(' AND ');
-          tracked.push({
+    }
+  }
+  if (props.muts) {
+    if (typeof props.muts == 'string') {
+      const mutations = props.muts.split(' AND ');
+      tracked.push({
+        type: 'mutation',
+        label: props.muts,
+        qParam: props.muts,
+        mutation_string: props.muts,
+        query: `mutations=${props.muts}`,
+        variantType: 'Custom Lineages & Mutations',
+        route: {
+          muts: mutations,
+        },
+      });
+    } else {
+      tracked = tracked.concat(
+        props.muts.map((d) => {
+          const mutations = d.split(' AND ');
+          return {
             type: 'mutation',
-            label: this.muts,
-            qParam: this.muts,
-            mutation_string: this.muts,
-            query: `mutations=${this.muts}`,
+            label: mutations.join(', '),
+            qParam: d,
+            mutation_string: d,
+            query: `mutations=${d}`,
             variantType: 'Custom Lineages & Mutations',
             route: {
-              muts: mutations,
+              muts: d.split(' AND '),
+            },
+          };
+        }),
+      );
+    }
+  }
+  if (props.variant) {
+    if (typeof props.variant == 'string') {
+      const variant = props.variant.split('|');
+      if (variant.length === 2) {
+        tracked.push({
+          type: 'variant',
+          label: `${variant[0]} + ${variant[1]}`,
+          qParam: props.variant,
+          mutation_string: `(${variant[0]}) AND (${variant[1]})`,
+          query: `pangolin_lineage=${variant[0]}&mutations=${variant[1]}`,
+          variantType: 'Custom Lineages & Mutations',
+          route: {
+            pango: variant[0],
+            muts: variant[1],
+          },
+        });
+      }
+    } else {
+      props.variant.map((d) => {
+        const variant = d.split('|');
+        if (variant.length === 2) {
+          tracked.push({
+            type: 'variant',
+            label: `${variant[0]} + ${variant[1]}`,
+            qParam: d,
+            mutation_string: `(${variant[0]}) AND (${variant[1]})`,
+            query: `pangolin_lineage=${variant[0]}&mutations=${variant[1]}`,
+            variantType: 'Custom Lineages & Mutations',
+            route: {
+              pango: variant[0],
+              muts: variant[1],
             },
           });
-        } else {
-          tracked = tracked.concat(
-            this.muts.map((d) => {
-              const mutations = d.split(' AND ');
-              return {
-                type: 'mutation',
-                label: mutations.join(', '),
-                qParam: d,
-                mutation_string: d,
-                query: `mutations=${d}`,
-                variantType: 'Custom Lineages & Mutations',
-                route: {
-                  muts: d.split(' AND '),
-                },
-              };
-            }),
-          );
         }
-      }
-      if (this.variant) {
-        if (typeof this.variant == 'string') {
-          const variant = this.variant.split('|');
-          if (variant.length === 2) {
-            tracked.push({
-              type: 'variant',
-              label: `${variant[0]} + ${variant[1]}`,
-              qParam: this.variant,
-              mutation_string: `(${variant[0]}) AND (${variant[1]})`,
-              query: `pangolin_lineage=${variant[0]}&mutations=${variant[1]}`,
-              variantType: 'Custom Lineages & Mutations',
-              route: {
-                pango: variant[0],
-                muts: variant[1],
-              },
-            });
-          }
-        } else {
-          this.variant.map((d) => {
-            const variant = d.split('|');
-            if (variant.length === 2) {
-              tracked.push({
-                type: 'variant',
-                label: `${variant[0]} + ${variant[1]}`,
-                qParam: d,
-                mutation_string: `(${variant[0]}) AND (${variant[1]})`,
-                query: `pangolin_lineage=${variant[0]}&mutations=${variant[1]}`,
-                variantType: 'Custom Lineages & Mutations',
-                route: {
-                  pango: variant[0],
-                  muts: variant[1],
-                },
-              });
-            }
-          });
-        }
-      }
-      tracked = uniqBy(tracked, 'label');
-      return tracked;
+      });
+    }
+  }
+  tracked = uniqBy(tracked, 'label');
+  return tracked;
+});
+
+onUpdated(() => {
+  tippy('.dark-mode-helper', {
+    content: 'Loading...',
+    maxWidth: '200px',
+    placement: 'bottom',
+    animation: 'fade',
+    theme: 'material',
+    allowHTML: true,
+    onShow(instance) {
+      let info = instance.reference.dataset.tippyInfo;
+      instance.setContent(info);
     },
-  },
-  watch: {
-    '$route.query': function (newVal, oldVal) {
-      if (newVal.loc !== oldVal.loc) {
-        this.newLocation = null;
-        this.createReport();
-        this.customMutations = this.grabCustomMutations();
-      }
-    },
-    recentWindow() {
-      if (this.recentWindow) {
-        this.debounceWindowChange();
-      }
-    },
-    selectedMutations() {
-      this.customMutations = this.grabCustomMutations();
-      this.updateMaps();
-      this.updateTable();
-    },
-  },
-  created() {
-    this.debounceWindowChange = debounce(this.updateWindow, 700);
-  },
-  mounted() {
-    this.darkMode =
-      this.dark === 'true' || (!!this.dark && this.dark !== 'false');
+  });
+});
 
-    const ofInterest = getBadMutations(true);
-    this.moc = ofInterest.moc;
-    this.moi = ofInterest.moi;
+const setDims = () => {
+  mediumScreen.value = window.innerWidth < 900;
+  smallScreen.value = window.innerWidth < 500;
+};
 
-    this.queryLocation = findLocation;
-    this.choroColorScale = scaleThreshold(
-      schemeYlGnBu[this.choroColorDomain.length + 2],
-    ).domain(this.choroColorDomain);
+const setupReport = () => {
+  basicSubscription.value = getBasicLocationReportData(
+    genomicsUrl,
+    props.loc,
+  ).subscribe((results) => {
+    dateUpdated.value = results.dateUpdated.dateUpdated;
+    lastUpdated.value = results.dateUpdated.lastUpdated;
+    totalSequences.value = results.total;
+    curatedLineages.value = results.curated;
+    voc.value = results.voc;
+    voi.value = results.voi;
+    selectedLocation.value = results.location;
+  });
 
-    this.customMutations = this.grabCustomMutations();
+  reportSubscription.value = getLocationReportData(
+    genomicsUrl,
+    props.loc,
+    props.muts,
+    props.pango,
+    otherThresh.value,
+    ndayThresh.value,
+    dayThresh.value,
+    recentWindow.value,
+  ).subscribe((results) => {
+    lineagesByDay.value = results.lineagesByDay;
+    noRecentData.value = !(
+      results.mostRecentLineages && results.mostRecentLineages.length
+    );
 
-    const formatDate = timeFormat('%e %B %Y');
-    this.currentTime = new Date();
-    this.today = formatDate(this.currentTime);
+    mostRecentLineages.value = results.mostRecentLineages;
+    lineageDomain.value = results.lineageDomain;
+    colorScale.value = scaleOrdinal(colorPalette.value).domain(
+      lineageDomain.value,
+    );
+    recentMin.value = timeDay.offset(
+      currentTime.value,
+      -1 * recentWindow.value,
+    );
+    recentHeatmap.value = results.heatmap.characteristic.data;
+    mostRecentDomain.value = results.heatmap.characteristic.yDomain;
+  });
 
-    this.$nextTick(() => {
-      // resize listener
-      window.addEventListener('resize', this.setDims);
-      this.setDims;
+  updateSequenceCount();
+};
 
-      // set URL for sharing, etc.
-      const location = window.location;
-      this.url =
-        location.search !== ''
-          ? `${location.origin}${location.pathname}${location.search}`
-          : `${location.origin}${location.pathname}`;
-    });
+const updateLocations = (selected) => {
+  if (selected) {
+    newLocation.value = selected;
+  }
+};
 
-    // intial setup
-    this.setDims();
-
-    this.setupReport();
-  },
-  updated() {
-    tippy('.dark-mode-helper', {
-      content: 'Loading...',
-      maxWidth: '200px',
-      placement: 'bottom',
-      animation: 'fade',
-      theme: 'material',
-      allowHTML: true,
-      onShow(instance) {
-        let info = instance.reference.dataset.tippyInfo;
-        instance.setContent(info);
+const submitNewLocation = () => {
+  if (props.routeTo === 'GenomicsEmbedLocation') {
+    router.push({
+      name: 'GenomicsEmbed',
+      query: {
+        type: 'loc',
+        loc: newLocation.value.id,
+        alias: props.alias,
+        pango: props.pango,
+        variant: props.variant,
+        muts: props.muts,
+        dark: darkMode.value,
+        selected: props.selected,
       },
     });
-  },
-  destroyed() {
-    if (this.basicSubscription) {
-      this.basicSubscription.unsubscribe();
-    }
-
-    if (this.reportSubscription) {
-      this.reportSubscription.unsubscribe();
-    }
-
-    if (this.choroSubscription) {
-      this.choroSubscription.unsubscribe();
-    }
-
-    if (this.tableSubscription) {
-      this.tableSubscription.unsubscribe();
-    }
-
-    if (this.countSubscription) {
-      this.countSubscription.unsubscribe();
-    }
-  },
-  methods: {
-    setDims() {
-      this.mediumScreen = window.innerWidth < 900;
-      this.smallScreen = window.innerWidth < 500;
-    },
-    setupReport() {
-      this.basicSubscription = getBasicLocationReportData(
-        this.$genomicsurl,
-        this.loc,
-      ).subscribe((results) => {
-        this.dateUpdated = results.dateUpdated.dateUpdated;
-        this.lastUpdated = results.dateUpdated.lastUpdated;
-        this.totalSequences = results.total;
-        this.curatedLineages = results.curated;
-        this.voc = results.voc;
-        this.voi = results.voi;
-        this.selectedLocation = results.location;
-      });
-
-      this.reportSubscription = getLocationReportData(
-        this.$genomicsurl,
-        this.loc,
-        this.muts,
-        this.pango,
-        this.otherThresh,
-        this.ndayThresh,
-        this.dayThresh,
-        this.recentWindow,
-      ).subscribe((results) => {
-        this.lineagesByDay = results.lineagesByDay;
-        this.noRecentData = !(
-          results.mostRecentLineages && results.mostRecentLineages.length
-        );
-
-        this.mostRecentLineages = results.mostRecentLineages;
-        this.lineageDomain = results.lineageDomain;
-        this.colorScale = scaleOrdinal(this.colorPalette).domain(
-          this.lineageDomain,
-        );
-        this.recentMin = timeDay.offset(
-          this.currentTime,
-          -1 * this.recentWindow,
-        );
-        this.recentHeatmap = results.heatmap.characteristic.data;
-        this.mostRecentDomain = results.heatmap.characteristic.yDomain;
-      });
-
-      this.updateSequenceCount();
-    },
-    createReport() {
-      this.setupReport();
-      this.updateTable();
-      this.updateMaps();
-    },
-    updateLocations(selected) {
-      if (selected) {
-        this.newLocation = selected;
-      }
-    },
-    submitNewLocation() {
-      if (this.routeTo === 'GenomicsEmbedLocation') {
-        this.$router.push({
-          name: 'GenomicsEmbed',
-          query: {
-            type: 'loc',
-            loc: this.newLocation.id,
-            alias: this.alias,
-            pango: this.pango,
-            variant: this.variant,
-            muts: this.muts,
-            dark: this.darkMode,
-            selected: this.selected,
-          },
-        });
-      } else {
-        this.$router.push({
-          name: this.routeTo,
-          query: {
-            loc: this.newLocation.id,
-            alias: this.alias,
-            pango: this.pango,
-            variant: this.variant,
-            muts: this.muts,
-            dark: this.darkMode,
-            selected: this.selected,
-          },
-        });
-      }
-      this.newLocation = null;
-    },
-    grabCustomMutations() {
-      let custom = [];
-      if (this.pango) {
-        const pango =
-          typeof this.pango == 'string'
-            ? [
-                {
-                  type: 'pango',
-                  label: this.pango,
-                  qParam: this.pango,
-                },
-              ]
-            : this.pango.map((d) => ({
-                type: 'pango',
-                label: d,
-                qParam: d,
-              }));
-        custom = custom.concat(pango);
-      }
-      if (this.variant) {
-        let variant;
-        if (typeof this.variant == 'string') {
-          const label = this.variant.split('|');
-          variant = [
-            {
-              type: 'variant',
-              label: `${label[0]} + ${label[1]}`,
-              qParam: this.variant,
-            },
-          ];
-        } else {
-          variant = this.variant.map((d) => {
-            const label = d.split('|');
-            return {
-              type: 'variant',
-              label: `${label[0]} + ${label[1]}`,
-              qParam: d,
-            };
-          });
-        }
-        custom = custom.concat(variant);
-      }
-      if (this.muts) {
-        const mutation =
-          typeof this.muts == 'string'
-            ? [
-                {
-                  type: 'mutation',
-                  label: this.muts,
-                  qParam: this.muts,
-                },
-              ]
-            : this.muts.map((d) => ({
-                type: 'mutation',
-                label: d,
-                qParam: d,
-              }));
-        custom = custom.concat(mutation);
-      }
-      return custom;
-    },
-    deleteMutation(idx) {
-      this.customMutations.splice(idx, 1);
-    },
-    addMutations() {
-      if (this.newVariant) {
-        this.customMutations.push(this.newVariant);
-      }
-      // this.customMutations.push(this.newVariant);
-      this.customMutations = uniqBy(this.customMutations, 'qParam');
-      this.submitCount += 1;
-    },
-    clearMutations() {
-      this.submitCount += 1;
-      this.customMutations = [];
-      this.selected = [];
-    },
-    submitNewMutations() {
-      if (this.newVariant) {
-        this.customMutations.push(this.newVariant);
-      }
-      let alias = this.customMutations
-        .filter((d) => d.type === 'alias')
-        .map((d) => d.qParam);
-      let pango = this.customMutations
-        .filter((d) => d.type === 'pango')
-        .map((d) => d.qParam);
-
-      const variant = this.customMutations
-        .filter((d) => d.type === 'variant')
-        .map((d) => d.qParam);
-      const mutation = this.customMutations
-        .filter((d) => d.type === 'mutation')
-        .map((d) => d.qParam);
-
-      let selected = this.customMutations
-        .map((d) => d.label)
-        .concat(this.selected);
-
-      if (this.newVariant) {
-        if (typeof this.selected == 'string') {
-          selected = [this.selected, this.newVariant.label];
-        } else {
-          selected.push(this.newVariant.label);
-        }
-      }
-
-      // clear new additions
-      this.submitCount += 1;
-
-      if (this.routeTo === 'GenomicsEmbedLocation') {
-        this.$router.push({
-          name: 'GenomicsEmbed',
-          query: {
-            type: 'loc',
-            loc: this.loc,
-            alias: uniq(alias),
-            pango: uniq(pango),
-            variant: uniq(variant),
-            muts: uniq(mutation),
-            dark: this.darkMode,
-            selected: uniq(selected),
-          },
-        });
-      } else {
-        this.$router.push({
-          name: this.routeTo,
-          query: {
-            loc: this.loc,
-            alias: uniq(alias),
-            pango: uniq(pango),
-            variant: uniq(variant),
-            muts: uniq(mutation),
-            dark: this.darkMode,
-            selected: uniq(selected),
-          },
-        });
-      }
-    },
-    routeDark() {
-      if (this.routeTo === 'GenomicsEmbedLocation') {
-        this.$router.push({
-          name: 'GenomicsEmbed',
-          params: {
-            disableScroll: true,
-          },
-          query: {
-            type: 'loc',
-            loc: this.loc,
-            alias: this.alias,
-            pango: this.pango,
-            variant: this.variant,
-            muts: this.muts,
-            dark: this.darkMode,
-            selected: this.selected,
-          },
-        });
-      } else {
-        this.$router.push({
-          name: this.routeTo,
-          params: {
-            disableScroll: true,
-          },
-          query: {
-            loc: this.loc,
-            alias: this.alias,
-            pango: this.pango,
-            variant: this.variant,
-            muts: this.muts,
-            dark: this.darkMode,
-            selected: this.selected,
-          },
-        });
-      }
-    },
-    updateWindow() {
-      this.dayThresh = +this.recentWindow;
-      this.setupReport();
-      this.updateMaps();
-    },
-    updateSequenceCount() {
-      this.countSubscription = getSequenceCount(
-        this.$genomicsurl,
-        this.loc,
-        false,
-      ).subscribe((results) => {
-        this.seqCounts = results;
-      });
-    },
-    updateMaps() {
-      if (this.selectedLocation.admin_level === 0) {
-        this.choroSubscription = getLocationMaps(
-          this.$genomicsurl,
-          this.loc,
-          this.selectedMutations,
-          this.recentWindow,
-        ).subscribe((results) => {
-          this.geoData = results;
-
-          this.choroMaxCount = max(
-            results.flatMap((d) => d.values),
-            (d) => d.cum_total_count,
-          );
-        });
-      }
-    },
-    updateTable() {
-      this.tableSubscription = getLocationTable(
-        this.$genomicsurl,
-        this.loc,
-        this.selectedMutations,
-        this.totalThresh,
-      ).subscribe((results) => {
-        this.lineageTable = results;
-      });
-    },
-  },
+  } else {
+    router.push({
+      name: props.routeTo,
+      query: {
+        loc: newLocation.value.id,
+        alias: props.alias,
+        pango: props.pango,
+        variant: props.variant,
+        muts: props.muts,
+        dark: darkMode.value,
+        selected: props.selected,
+      },
+    });
+  }
+  newLocation.value = null;
 };
+
+const grabCustomMutations = () => {
+  let custom = [];
+  if (props.pango) {
+    const pango =
+      typeof props.pango == 'string'
+        ? [
+            {
+              type: 'pango',
+              label: props.pango,
+              qParam: props.pango,
+            },
+          ]
+        : props.pango.map((d) => ({
+            type: 'pango',
+            label: d,
+            qParam: d,
+          }));
+    custom = custom.concat(pango);
+  }
+  if (props.variant) {
+    let variant;
+    if (typeof props.variant == 'string') {
+      const label = props.variant.split('|');
+      variant = [
+        {
+          type: 'variant',
+          label: `${label[0]} + ${label[1]}`,
+          qParam: props.variant,
+        },
+      ];
+    } else {
+      variant = props.variant.map((d) => {
+        const label = d.split('|');
+        return {
+          type: 'variant',
+          label: `${label[0]} + ${label[1]}`,
+          qParam: d,
+        };
+      });
+    }
+    custom = custom.concat(variant);
+  }
+  if (props.muts) {
+    const mutation =
+      typeof props.muts == 'string'
+        ? [
+            {
+              type: 'mutation',
+              label: props.muts,
+              qParam: props.muts,
+            },
+          ]
+        : props.muts.map((d) => ({
+            type: 'mutation',
+            label: d,
+            qParam: d,
+          }));
+    custom = custom.concat(mutation);
+  }
+  return custom;
+};
+
+const deleteMutation = (idx) => {
+  customMutations.value.splice(idx, 1);
+};
+
+const addMutations = () => {
+  if (newVariant.value) {
+    customMutations.value.push(newVariant.value);
+  }
+  // this.customMutations.push(this.newVariant);
+  customMutations.value = uniqBy(customMutations.value, 'qParam');
+  submitCount.value += 1;
+};
+
+const clearMutations = () => {
+  submitCount.value += 1;
+  customMutations.value = [];
+  props.selected = [];
+};
+
+const submitNewMutations = () => {
+  if (newVariant.value) {
+    customMutations.value.push(newVariant.value);
+  }
+  let alias = customMutations.value
+    .filter((d) => d.type === 'alias')
+    .map((d) => d.qParam);
+  let pango = customMutations.value
+    .filter((d) => d.type === 'pango')
+    .map((d) => d.qParam);
+
+  const variant = customMutations.value
+    .filter((d) => d.type === 'variant')
+    .map((d) => d.qParam);
+  const mutation = customMutations.value
+    .filter((d) => d.type === 'mutation')
+    .map((d) => d.qParam);
+
+  let selected = customMutations.value
+    .map((d) => d.label)
+    .concat(props.selected);
+
+  if (newVariant.value) {
+    if (typeof props.selected == 'string') {
+      selected = [props.selected, newVariant.value.label];
+    } else {
+      selected.push(newVariant.value.label);
+    }
+  }
+
+  // clear new additions
+  submitCount.value += 1;
+
+  if (props.routeTo === 'GenomicsEmbedLocation') {
+    router.push({
+      name: 'GenomicsEmbed',
+      query: {
+        type: 'loc',
+        loc: props.loc,
+        alias: uniq(alias),
+        pango: uniq(pango),
+        variant: uniq(variant),
+        muts: uniq(mutation),
+        dark: darkMode.value,
+        selected: uniq(selected),
+      },
+    });
+  } else {
+    router.push({
+      name: props.routeTo,
+      query: {
+        loc: props.loc,
+        alias: uniq(alias),
+        pango: uniq(pango),
+        variant: uniq(variant),
+        muts: uniq(mutation),
+        dark: darkMode.value,
+        selected: uniq(selected),
+      },
+    });
+  }
+};
+
+const routeDark = () => {
+  if (props.routeTo === 'GenomicsEmbedLocation') {
+    router.push({
+      name: 'GenomicsEmbed',
+      state: {
+        disableScroll: true,
+      },
+      query: {
+        type: 'loc',
+        loc: props.loc,
+        alias: props.alias,
+        pango: props.pango,
+        variant: props.variant,
+        muts: props.muts,
+        dark: darkMode.value,
+        selected: props.selected,
+      },
+    });
+  } else {
+    router.push({
+      name: props.routeTo,
+      state: {
+        disableScroll: true,
+      },
+      query: {
+        loc: props.loc,
+        alias: props.alias,
+        pango: props.pango,
+        variant: props.variant,
+        muts: props.muts,
+        dark: darkMode.value,
+        selected: props.selected,
+      },
+    });
+  }
+};
+
+const updateWindow = () => {
+  dayThresh.value = +recentWindow.value;
+  setupReport();
+  updateMaps();
+};
+
+const updateSequenceCount = () => {
+  countSubscription.value = getSequenceCount(
+    genomicsUrl,
+    props.loc,
+    false,
+  ).subscribe((results) => {
+    seqCounts.value = results;
+  });
+};
+
+const updateMaps = () => {
+  if (selectedLocation.value.admin_level === 0) {
+    choroSubscription.value = getLocationMaps(
+      genomicsUrl,
+      props.loc,
+      selectedMutations.value,
+      recentWindow.value,
+    ).subscribe((results) => {
+      geoData.value = results;
+
+      choroMaxCount.value = max(
+        results.flatMap((d) => d.values),
+        (d) => d.cum_total_count,
+      );
+    });
+  }
+};
+
+const updateTable = () => {
+  tableSubscription.value = getLocationTable(
+    genomicsUrl,
+    props.loc,
+    selectedMutations.value,
+    totalThresh.value,
+  ).subscribe((results) => {
+    lineageTable.value = results;
+  });
+};
+
+// created hook in previous version
+const debounceWindowChange = debounce(updateWindow, 700);
+const debounceSetupReport = debounce(setupReport, 500);
+
+watch(
+  route,
+  (newVal, oldVal) => {
+    if (newVal.query.loc !== oldVal.query.loc) {
+      newLocation.value = null;
+      debounceSetupReport();
+      customMutations.value = grabCustomMutations();
+    } else {
+      debounceSetupReport();
+    }
+  },
+  { deep: true },
+);
+
+watch(recentWindow, () => {
+  if (recentWindow.value) {
+    debounceWindowChange();
+  }
+});
+
+watch(
+  selectedMutations,
+  () => {
+    customMutations.value = grabCustomMutations();
+    updateMaps();
+    updateTable();
+  },
+  { deep: true },
+);
+
+onMounted(() => {
+  darkMode.value =
+    props.dark === 'true' || (!!props.dark && props.dark !== 'false');
+
+  const ofInterest = getBadMutations(true);
+  moc.value = ofInterest.moc;
+  moi.value = ofInterest.moi;
+
+  queryLocation.value = findLocation;
+  choroColorScale.value = scaleThreshold(
+    schemeYlGnBu[choroColorDomain.value.length + 2],
+  ).domain(choroColorDomain.value);
+
+  customMutations.value = grabCustomMutations();
+
+  const formatDate = timeFormat('%e %B %Y');
+  currentTime.value = new Date();
+  today.value = formatDate(currentTime.value);
+
+  // this.$nextTick in optionsAPI
+  nextTick(() => {
+    // resize listener
+    window.addEventListener('resize', setDims);
+    setDims();
+
+    // set URL for sharing, etc.
+    const location = window.location;
+    url.value =
+      location.search !== ''
+        ? `${location.origin}${location.pathname}${location.search}`
+        : `${location.origin}${location.pathname}`;
+  });
+
+  // intial setup
+  setDims();
+
+  setupReport();
+});
+
+onUnmounted(() => {
+  if (basicSubscription.value) {
+    basicSubscription.value.unsubscribe();
+  }
+
+  if (reportSubscription.value) {
+    reportSubscription.value.unsubscribe();
+  }
+
+  if (choroSubscription.value) {
+    choroSubscription.value.unsubscribe();
+  }
+
+  if (tableSubscription.value) {
+    tableSubscription.value.unsubscribe();
+  }
+
+  if (countSubscription.value) {
+    countSubscription.value.unsubscribe();
+  }
+});
 </script>
 
 <style lang="scss" scoped>
