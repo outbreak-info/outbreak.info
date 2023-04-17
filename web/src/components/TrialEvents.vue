@@ -94,58 +94,55 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { computed, onMounted } from 'vue';
 import { nest } from 'd3-collection';
 import { timeFormat, timeParse } from 'd3-time-format';
 
 import { lazyLoad } from '@/js/lazy-load';
 
-export default {
-  name: 'TrialEvents',
-  components: {
-    TrialStatus: lazyLoad('TrialStatus'),
-  },
-  props: {
-    data: Object,
-  },
-  computed: {
-    locations() {
-      if (this.data.studyLocation) {
-        return nest()
-          .key((d) => d.studyLocationCountry)
-          .entries(
-            this.data.studyLocation
-              .slice()
-              .sort((a, b) =>
-                a.studyLocationCountry < b.studyLocationCountry ? -1 : 1,
-              ),
-          );
-      } else {
-        return null;
-      }
-    },
-  },
-  mounted() {
-    const today = new Date();
-    if (this.data.studyEvent) {
-      this.data.studyEvent.forEach((d) => {
-        d['date'] = this.parseDate(d.studyEventDate);
-        d['dateStr'] = d.date ? this.formatDate(d.date) : d.studyEventDate;
-        d['inPast'] = d.date <= today;
-      });
+const TrialStatus = lazyLoad('TrialStatus');
 
-      this.data.studyEvent.sort((a, b) => a.date - b.date);
-    }
-  },
-  methods: {
-    formatDate(date) {
-      return timeFormat('%e %B %Y')(date);
-    },
-    parseDate(date) {
-      return timeParse('%Y-%m-%d')(date);
-    },
-  },
+const props = defineProps({
+  data: Object,
+});
+
+const locations = computed(() => {
+  if (props.data.studyLocation) {
+    return nest()
+      .key((d) => d.studyLocationCountry)
+      .entries(
+        props.data.studyLocation
+          .slice()
+          .sort((a, b) =>
+            a.studyLocationCountry < b.studyLocationCountry ? -1 : 1,
+          ),
+      );
+  } else {
+    return null;
+  }
+});
+
+const formatDate = (date) => {
+  return timeFormat('%e %B %Y')(date);
 };
+
+const parseDate = (date) => {
+  return timeParse('%Y-%m-%d')(date);
+};
+
+onMounted(() => {
+  const today = new Date();
+  if (props.data.studyEvent) {
+    props.data.studyEvent.forEach((d) => {
+      d['date'] = parseDate(d.studyEventDate);
+      d['dateStr'] = d.date ? formatDate(d.date) : d.studyEventDate;
+      d['inPast'] = d.date <= today;
+    });
+
+    props.data.studyEvent.sort((a, b) => a.date - b.date);
+  }
+});
 </script>
 
 <style lang="scss" scoped>

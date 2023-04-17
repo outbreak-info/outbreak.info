@@ -86,46 +86,43 @@
   </div>
 </template>
 
-<script>
-import { mapState } from 'vuex';
+<script setup>
+import { onMounted, ref, inject, onBeforeUnmount } from 'vue';
+import { storeToRefs } from 'pinia';
 
 import { getLocationBasics } from '@/api/genomics.js';
 import { lazyLoad } from '@/js/lazy-load';
+import { adminStore } from '@/stores/adminStore';
 
-export default {
-  name: 'LocationReports',
-  components: {
-    // ReportLogos,
-    ReportAcknowledgements: lazyLoad('ReportAcknowledgements'),
-    CustomLocationForm: lazyLoad('CustomLocationForm'),
-  },
-  data() {
-    return {
-      // reminder: must be the raw verison of the file
-      curatedSubscription: null,
-      lastUpdated: null,
-      total: null,
-      curated: null,
-    };
-  },
-  computed: {
-    ...mapState('admin', ['reportloading']),
-  },
-  mounted() {
-    this.curatedSubscription = getLocationBasics(this.$genomicsurl).subscribe(
-      (results) => {
-        this.lastUpdated = results.dateUpdated;
-        this.curated = results.curated;
-        this.total = results.total;
-      },
-    );
-  },
-  beforeDestroyed() {
-    if (this.curatedSubscription) {
-      this.curatedSubscription.unsubscribe();
-    }
-  },
-};
+const ReportAcknowledgements = lazyLoad('ReportAcknowledgements');
+const CustomLocationForm = lazyLoad('CustomLocationForm');
+
+const curatedSubscription = ref(null);
+const lastUpdated = ref(null);
+const total = ref(null);
+const curated = ref(null);
+
+const store = adminStore();
+const { reportloading } = storeToRefs(store);
+
+// global variable - equivalent with this.$genomicsurl
+const genomicsUrl = inject('genomicsUrl');
+
+onMounted(() => {
+  curatedSubscription.value = getLocationBasics(genomicsUrl).subscribe(
+    (results) => {
+      lastUpdated.value = results.dateUpdated;
+      curated.value = results.curated;
+      total.value = results.total;
+    },
+  );
+});
+
+onBeforeUnmount(() => {
+  if (curatedSubscription.value) {
+    curatedSubscription.value.unsubscribe();
+  }
+});
 </script>
 
 <style lang="scss" scoped>

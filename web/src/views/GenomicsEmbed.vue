@@ -269,99 +269,103 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { onMounted, ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import isEqual from 'lodash/isEqual';
 
 import { findPangolin, findLocation } from '@/api/genomics.js';
 import GENOMICSEXAMPLES from '@/assets/examples/genomics_examples.json';
 import { lazyLoad } from '@/js/lazy-load';
 
-export default {
-  name: 'GenomicsEmbed',
-  components: {
-    TypeaheadSelect: lazyLoad('TypeaheadSelect'),
-    SituationReportComponent: lazyLoad('SituationReportComponent'),
-    LocationReportComponent: lazyLoad('LocationReportComponent'),
-    LineageComparisonComponent: lazyLoad('LineageComparisonComponent'),
-  },
-  props: {
-    type: String,
-    loc: [String, Array],
-    pango: [String, Array],
-    muts: [String, Array],
-    alias: [String, Array],
-    variant: [String, Array],
-    xmin: String,
-    xmax: String,
-    selected: {
-      type: [Array, String],
-      default: () => null,
-    },
-  },
-  data() {
-    return {
-      queryPangolin: null,
-      queryLocation: null,
-      dark: false,
-      selectedReportType: null,
-      genomicsExamples: [],
-    };
-  },
-  computed: {},
-  watch: {
-    '$route.query': function (newVal, oldVal) {
-      if (!isEqual(newVal, oldVal)) {
-        this.selectedReportType = this.type ? this.type : 'var';
-      }
-    },
-  },
-  mounted() {
-    this.genomicsExamples = GENOMICSEXAMPLES;
-    this.selectedReportType = this.type ? this.type : 'var';
-    this.queryPangolin = findPangolin;
-    this.queryLocation = findLocation;
-  },
-  methods: {
-    switchRadioBtn() {
-      const newSelected = this.selectedReportType === 'loc' ? [] : null;
+const TypeaheadSelect = lazyLoad('TypeaheadSelect');
+const SituationReportComponent = lazyLoad('SituationReportComponent');
+const LocationReportComponent = lazyLoad('LocationReportComponent');
+const LineageComparisonComponent = lazyLoad('LineageComparisonComponent');
 
-      this.$router.push({
-        name: 'GenomicsEmbed',
-        query: {
-          type: this.selectedReportType,
-          selected: newSelected,
-        },
-      });
-    },
-    updatePangolin(selected) {
-      if (selected.alias) {
-        this.$router.push({
-          name: 'GenomicsEmbed',
-          query: {
-            type: 'var',
-            alias: selected.name.toLowerCase(),
-          },
-        });
-      } else {
-        this.$router.push({
-          name: 'GenomicsEmbed',
-          query: {
-            type: 'var',
-            pango: selected.name,
-          },
-        });
-      }
-    },
-    submitLocation(selected) {
-      this.$router.push({
-        name: 'GenomicsEmbed',
-        query: {
-          type: 'loc',
-          loc: selected.id,
-        },
-      });
-    },
+const props = defineProps({
+  type: String,
+  loc: [String, Array],
+  pango: [String, Array],
+  muts: [String, Array],
+  alias: [String, Array],
+  variant: [String, Array],
+  xmin: String,
+  xmax: String,
+  selected: {
+    type: [Array, String],
+    default: () => null,
   },
+});
+
+// instead of this.$route
+const route = useRoute();
+// instead of this.$router
+const router = useRouter();
+
+const queryPangolin = ref(null);
+const queryLocation = ref(null);
+const dark = ref(false);
+const selectedReportType = ref(null);
+const genomicsExamples = ref([]);
+
+watch(
+  () => route.query,
+  (newVal, oldVal) => {
+    if (!isEqual(newVal, oldVal)) {
+      selectedReportType.value = newVal.type ? newVal.type : oldVal.type ? oldVal.type : 'var';
+    }
+  },
+  { deep: true },
+);
+
+onMounted(() => {
+  genomicsExamples.value = GENOMICSEXAMPLES;
+  selectedReportType.value = props.type ? props.type : 'var';
+  queryPangolin.value = findPangolin;
+  queryLocation.value = findLocation;
+});
+
+const switchRadioBtn = () => {
+  const newSelected = selectedReportType.value === 'loc' ? [] : null;
+
+  router.push({
+    name: 'GenomicsEmbed',
+    query: {
+      type: selectedReportType.value,
+      selected: newSelected,
+    },
+  });
+};
+
+const updatePangolin = (selected) => {
+  if (selected.alias) {
+    router.push({
+      name: 'GenomicsEmbed',
+      query: {
+        type: 'var',
+        alias: selected.name.toLowerCase(),
+      },
+    });
+  } else {
+    router.push({
+      name: 'GenomicsEmbed',
+      query: {
+        type: 'var',
+        pango: selected.name,
+      },
+    });
+  }
+};
+
+const submitLocation = (selected) => {
+  router.push({
+    name: 'GenomicsEmbed',
+    query: {
+      type: 'loc',
+      loc: selected.id,
+    },
+  });
 };
 </script>
 

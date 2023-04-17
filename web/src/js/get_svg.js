@@ -6,7 +6,7 @@ const prefix = {
 
 const canvas = document.createElement('canvas'),
   context = canvas.getContext('2d'),
-  ratio = global.devicePixelRatio || 1;
+  ratio = 1;
 
 import { max } from 'd3-array';
 import { nest } from 'd3-collection';
@@ -343,7 +343,7 @@ export const getPng = (
       const rowNum = Math.floor(i / numAcross);
       const colNum = i % numAcross;
 
-      // store the dims of the image Array
+      // stores the dims of the image Array
       if (i === 0) {
         // add the header
         headerHeight =

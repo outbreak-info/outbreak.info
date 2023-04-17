@@ -19,6 +19,7 @@
     </p>
 
     <svg
+      ref="svgRef"
       :width="width"
       :height="height"
       class="sublineage_counts"
@@ -47,7 +48,7 @@
         :transform="`translate(${margin.left}, ${margin.top})`"
       />
       <g
-        ref="yAxis"
+        ref="yAxisRef"
         :transform="`translate(${margin.left}, ${margin.top})`"
         class="horizontal-bargraph-y pointer axis--y"
       />
@@ -121,8 +122,9 @@
   </div>
 </template>
 
-<script>
-import Vue from 'vue';
+<script setup>
+import { computed, onMounted, ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import { sum } from 'd3-array';
 import { axisLeft } from 'd3-axis';
 import { scaleLinear, scaleBand } from 'd3-scale';
@@ -131,287 +133,298 @@ import cloneDeep from 'lodash/cloneDeep';
 
 import { lazyLoad } from '@/js/lazy-load';
 
-export default Vue.extend({
-  name: 'SublineageTotals',
-  components: {
-    DownloadReportData: lazyLoad('DownloadReportData'),
+const DownloadReportData = lazyLoad('DownloadReportData');
+
+const props = defineProps({
+  data: Array,
+  lineageName: String,
+  location: String,
+  routeTo: String,
+  margin: {
+    type: Object,
+    default: () => {
+      return {
+        left: 80,
+        right: 100,
+        top: 10,
+        bottom: 45,
+      };
+    },
   },
-  props: {
-    data: Array,
-    lineageName: String,
-    location: String,
-    routeTo: String,
-    margin: {
-      type: Object,
-      default: () => {
-        return {
-          left: 80,
-          right: 100,
-          top: 10,
-          bottom: 45,
-        };
+  width: {
+    type: Number,
+    default: 500,
+  },
+  fill: {
+    type: String,
+    default: '#f28e2c',
+  },
+});
+
+// instead of this.$router
+const router = useRouter();
+// instead of this.$route
+const route = useRoute();
+
+const numXTicks = ref(4);
+const bandwidth = ref(25);
+const height = ref(null);
+const hideZeros = ref(true);
+const areZerosFiltered = ref(false);
+// variables
+const yVar = ref('mutation_string');
+// refs
+const svg = ref(null);
+const svgRef = ref(null);
+// axes
+const x = ref(null);
+const y = ref(null);
+
+const combinedTotal = ref(null);
+const yAxis = ref(null);
+const showAll = ref(false);
+const showZero = ref(false);
+const processedData = ref(null);
+const horizontal_bargraph = ref(null);
+const yAxisRef = ref(null);
+
+const geographicName = computed(() => {
+  return props.location === 'Worldwide'
+    ? 'globally'
+    : props.location
+    ? `in ${props.location}`
+    : null;
+});
+
+const title = computed(() => {
+  return geographicName.value
+    ? `${props.lineageName} ${geographicName.value}`
+    : props.lineageName;
+});
+
+const swoopyPosition = computed(() => {
+  return `M ${props.width - props.margin.left - 20} ${
+    height.value - props.margin.top - 5
+  } c 0 0, 15 0, 0 -25`;
+});
+
+const handleLineageClick = (lineage) => {
+  const queryParams = route.query;
+  if (props.routeTo === 'GenomicsEmbedVariant') {
+    router.push({
+      name: 'GenomicsEmbed',
+      query: {
+        type: 'var',
+        country: queryParams.country,
+        division: queryParams.division,
+        pango: lineage,
+        selected: queryParams.selected,
+        selectedType: queryParams.selectedType,
       },
-    },
-    width: {
-      type: Number,
-      default: 500,
-    },
-    fill: {
-      type: String,
-      default: '#f28e2c',
-    },
-  },
-  data() {
-    return {
-      numXTicks: 4,
-      bandwidth: 25,
-      height: null,
+    });
+  } else {
+    router.push({
+      name: props.routeTo,
+      query: {
+        country: queryParams.country,
+        division: queryParams.division,
+        pango: lineage,
+        selected: queryParams.selected,
+        selectedType: queryParams.selectedType,
+      },
+    });
+  }
+};
 
-      // forms
-      hideZeros: true,
-      areZerosFiltered: false,
+const preprocessData = () => {
+  processedData.value = cloneDeep(props.data);
+  if (hideZeros.value) {
+    processedData.value = processedData.value.filter((d) => d.lineage_count);
+    areZerosFiltered.value = props.data.length !== processedData.value.length;
+  } else {
+    areZerosFiltered.value = false;
+  }
 
-      // variables
-      yVar: 'mutation_string',
+  processedData.value.sort((a, b) => {
+    return b.lineage_count - a.lineage_count;
+  });
 
-      // refs
-      svg: null,
-      // axes
-      x: null,
-      y: null,
-      combinedTotal: null,
-      yAxis: null,
-      showAll: false,
-      showZero: false,
-    };
-  },
-  computed: {
-    geographicName() {
-      return this.location === 'Worldwide'
-        ? 'globally'
-        : this.location
-        ? `in ${this.location}`
-        : null;
-    },
-    title() {
-      return this.geographicName
-        ? `${this.lineageName} ${this.geographicName}`
-        : this.lineageName;
-    },
-    swoopyPosition() {
-      return `M ${this.width - this.margin.left - 20} ${
-        this.height - this.margin.top - 5
-      } c 0 0, 15 0, 0 -25`;
-    },
-  },
-  watch: {
-    data() {
-      this.preprocessData();
-      this.updatePlot();
-    },
-  },
-  mounted() {
-    this.setupPlot();
-    this.updatePlot();
-  },
-  methods: {
-    handleLineageClick(lineage) {
-      const queryParams = this.$route.query;
-      if (this.routeTo === 'GenomicsEmbedVariant') {
-        this.$router.push({
-          name: 'GenomicsEmbed',
-          query: {
-            type: 'var',
-            country: queryParams.country,
-            division: queryParams.division,
-            pango: lineage,
-            selected: queryParams.selected,
-            selectedType: queryParams.selectedType,
-          },
-        });
-      } else {
-        this.$router.push({
-          name: this.routeTo,
-          query: {
-            country: queryParams.country,
-            division: queryParams.division,
-            pango: lineage,
-            selected: queryParams.selected,
-            selectedType: queryParams.selectedType,
-          },
-        });
-      }
-    },
-    preprocessData() {
-      this.processedData = cloneDeep(this.data);
-      if (this.hideZeros) {
-        this.processedData = this.processedData.filter((d) => d.lineage_count);
-        this.areZerosFiltered = this.data.length !== this.processedData.length;
-      } else {
-        this.areZerosFiltered = false;
-      }
+  if (processedData.value.length > 10) {
+    if (!showAll.value) {
+      processedData.value = processedData.value.slice(0, 10);
+    }
+  } else {
+    showZero.value = true;
+  }
+};
 
-      this.processedData.sort((a, b) => {
-        return b.lineage_count - a.lineage_count;
-      });
+const setupPlot = () => {
+  svg.value = select(horizontal_bargraph.value);
+  preprocessData();
+};
 
-      if (this.processedData.length > 10) {
-        if (!this.showAll) {
-          this.processedData = this.processedData.slice(0, 10);
-        }
-      } else {
-        this.showZero = true;
-      }
-    },
-    setupPlot() {
-      this.svg = select(this.$refs.horizontal_bargraph);
-      this.preprocessData();
-    },
-    updatePlot() {
-      this.updateAxes();
-      this.drawBars();
-    },
-    tooltipOn(d) {
-      this.svg.selectAll('.lineage-group').style('opacity', 0.3);
+const updateAxes = () => {
+  const paddingInner = 0.25;
+  height.value =
+    processedData.value.length * bandwidth.value +
+    (processedData.value.length - 1) * bandwidth.value * paddingInner +
+    props.margin.top +
+    props.margin.bottom;
 
-      select(this.$refs.yAxis).selectAll('text').style('opacity', 0.3);
+  const originData = cloneDeep(props.data);
+  combinedTotal.value = sum(originData, (d) => d.lineage_count);
 
-      select(this.$refs.yAxis)
+  x.value = scaleLinear()
+    .range([0, props.width - props.margin.right - props.margin.left])
+    .domain([0, combinedTotal.value]);
+
+  y.value = scaleBand()
+    .paddingInner(paddingInner)
+    .range([0, height.value - props.margin.top - props.margin.bottom])
+    .domain(processedData.value.map((d) => d[yVar.value]));
+
+  yAxis.value = axisLeft(y.value).tickSizeOuter(0);
+
+  select(yAxisRef.value).call(yAxis.value);
+};
+
+const tooltipOn = (d) => {
+  if (d) {
+    svg.value.selectAll('.lineage-group').style('opacity', 0.3);
+
+    select(yAxisRef.value).selectAll('text').style('opacity', 0.3);
+
+    // eslint-disable-next-line no-prototype-builtins
+    if (d.hasOwnProperty(yVar.value)) {
+      select(yAxisRef.value)
         .selectAll('text')
-        .filter((axis_label) => axis_label === d[this.yVar])
+        .filter((axis_label) => axis_label === d[yVar.value])
         .style('opacity', 1);
+    }
+    svg.value.select(`#${d.id}`).style('opacity', 1);
+  }
+};
 
-      this.svg.select(`#${d.id}`).style('opacity', 1);
+const tooltipOff = () => {
+  svg.value.selectAll('.lineage-group').style('opacity', 1);
+
+  select(yAxisRef.value).selectAll('text').style('opacity', 1);
+};
+
+const drawBars = () => {
+  const rectSelector = svg.value
+    .selectAll('.lineage-group')
+    .data(processedData.value, (d) => d[yVar.value]);
+
+  rectSelector.join(
+    (enter) => {
+      const grp = enter
+        .append('g')
+        .attr('class', 'lineage-group')
+        .attr('id', (d) => d.id);
+
+      grp
+        .append('rect')
+        .attr('class', 'variant-total')
+        .attr('x', (d) => x.value(0))
+        .attr('y', (d) => y.value(d[yVar.value]))
+        .attr('height', (d) => y.value.bandwidth())
+        .style('fill', props.fill)
+        .style('fill-opacity', 0.05)
+        .style('stroke', props.fill)
+        .attr('width', x.value(combinedTotal.value) - x.value(0));
+
+      grp
+        .append('rect')
+        .attr('class', 'rect-by-lineage')
+        .attr('x', (d) => x.value(0))
+        .attr('y', (d) => y.value(d[yVar.value]))
+        .attr('height', (d) => y.value.bandwidth())
+        .style('fill', props.fill)
+        .attr('width', (d) => x.value(d.lineage_count) - x.value(0));
+
+      grp
+        .append('text')
+        .attr('class', 'lineage-count-annotation')
+        .attr('x', (d) => props.width - props.margin.left - props.margin.right)
+        .attr('dx', 10)
+        .attr('y', (d) => y.value(d[yVar.value]) + y.value.bandwidth() / 2)
+        .text((d) => d.lineage_count_formatted)
+        .style('font-family', "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
+        .style('fill', props.fill)
+        .style('font-weight', 700)
+        .style('dominant-baseline', 'central');
     },
-    tooltipOff() {
-      this.svg.selectAll('.lineage-group').style('opacity', 1);
+    (update) => {
+      update.attr('id', (d) => d.id + props.location);
 
-      select(this.$refs.yAxis).selectAll('text').style('opacity', 1);
+      update
+        .select('.variant-total')
+        .attr('y', (d) => y.value(d[yVar.value]))
+        .attr('height', (d) => y.value.bandwidth())
+        .attr('width', x.value(combinedTotal.value) - x.value(0));
+
+      update
+        .select('.rect-by-lineage')
+        .attr('x', (d) => x.value(0))
+        .transition()
+        .duration(250)
+        .attr('width', (d) => x.value(d.lineage_count) - x.value(0))
+        .attr('y', (d) => y.value(d[yVar.value]))
+        .attr('height', (d) => y.value.bandwidth());
+
+      update
+        .select('.lineage-count-annotation')
+        .transition()
+        .duration(250)
+        .attr('y', (d) => y.value(d[yVar.value]) + y.value.bandwidth() / 2)
+        .text((d) => d.lineage_count_formatted);
     },
-    showZeros() {
-      if (this.showZero) {
-        this.hideZeros = !this.hideZeros;
-      }
-      this.showAll = !this.showAll;
-      this.preprocessData();
-      this.updatePlot();
-    },
-    updateAxes() {
-      const paddingInner = 0.25;
-      this.height =
-        this.processedData.length * this.bandwidth +
-        (this.processedData.length - 1) * this.bandwidth * paddingInner +
-        this.margin.top +
-        this.margin.bottom;
-
-      const originData = cloneDeep(this.data);
-      this.combinedTotal = sum(originData, (d) => d.lineage_count);
-
-      this.x = scaleLinear()
-        .range([0, this.width - this.margin.right - this.margin.left])
-        .domain([0, this.combinedTotal]);
-
-      this.y = scaleBand()
-        .paddingInner(paddingInner)
-        .range([0, this.height - this.margin.top - this.margin.bottom])
-        .domain(this.processedData.map((d) => d[this.yVar]));
-
-      this.yAxis = axisLeft(this.y).tickSizeOuter(0);
-
-      select(this.$refs.yAxis).call(this.yAxis);
-    },
-    drawBars() {
-      const rectSelector = this.svg
-        .selectAll('.lineage-group')
-        .data(this.processedData, (d) => d[this.yVar]);
-
-      rectSelector.join(
-        (enter) => {
-          const grp = enter
-            .append('g')
-            .attr('class', 'lineage-group')
-            .attr('id', (d) => d.id);
-
-          grp
-            .append('rect')
-            .attr('class', 'variant-total')
-            .attr('x', (d) => this.x(0))
-            .attr('y', (d) => this.y(d[this.yVar]))
-            .attr('height', (d) => this.y.bandwidth())
-            .style('fill', this.fill)
-            .style('fill-opacity', 0.05)
-            .style('stroke', this.fill)
-            .attr('width', this.x(this.combinedTotal) - this.x(0));
-
-          grp
-            .append('rect')
-            .attr('class', 'rect-by-lineage')
-            .attr('x', (d) => this.x(0))
-            .attr('y', (d) => this.y(d[this.yVar]))
-            .attr('height', (d) => this.y.bandwidth())
-            .style('fill', this.fill)
-            .attr('width', (d) => this.x(d.lineage_count) - this.x(0));
-
-          grp
-            .append('text')
-            .attr('class', 'lineage-count-annotation')
-            .attr('x', (d) => this.width - this.margin.left - this.margin.right)
-            .attr('dx', 10)
-            .attr('y', (d) => this.y(d[this.yVar]) + this.y.bandwidth() / 2)
-            .text((d) => d.lineage_count_formatted)
-            .style(
-              'font-family',
-              "'DM Sans', Avenir, Helvetica, Arial, sans-serif",
-            )
-            .style('fill', this.fill)
-            .style('font-weight', 700)
-            .style('dominant-baseline', 'central');
-        },
-        (update) => {
-          update.attr('id', (d) => d.id + this.location);
-
-          update
-            .select('.variant-total')
-            .attr('y', (d) => this.y(d[this.yVar]))
-            .attr('height', (d) => this.y.bandwidth())
-            .attr('width', this.x(this.combinedTotal) - this.x(0));
-
-          update
-            .select('.rect-by-lineage')
-            .attr('x', (d) => this.x(0))
-            .transition()
-            .duration(250)
-            .attr('width', (d) => this.x(d.lineage_count) - this.x(0))
-            .attr('y', (d) => this.y(d[this.yVar]))
-            .attr('height', (d) => this.y.bandwidth());
-
-          update
-            .select('.lineage-count-annotation')
-            .transition()
-            .duration(250)
-            .attr('y', (d) => this.y(d[this.yVar]) + this.y.bandwidth() / 2)
-            .text((d) => d.lineage_count_formatted);
-        },
-        (exit) => {
-          exit.call((exit) =>
-            exit.transition().duration(10).style('opacity', 1e-5).remove(),
-          );
-        },
+    (exit) => {
+      exit.call((exit) =>
+        exit.transition().duration(10).style('opacity', 1e-5).remove(),
       );
-
-      // event listener for click event
-      select(this.$refs.yAxis)
-        .selectAll('text')
-        .classed('pointer', true)
-        .on('click', (d) => this.handleLineageClick(d));
-
-      selectAll('.lineage-group')
-        .classed('pointer', true)
-        .on('mousemove', (d) => this.tooltipOn(d))
-        .on('mouseleave', () => this.tooltipOff())
-        .on('click', (d) => this.handleLineageClick(d[this.yVar]));
     },
+  );
+
+  // event listener for click event
+  select(yAxisRef.value)
+    .selectAll('text')
+    .classed('pointer', true)
+    .on('click', (d) => handleLineageClick(d));
+
+  selectAll('.lineage-group')
+    .classed('pointer', true)
+    .on('mousemove', (d) => tooltipOn(d))
+    .on('mouseleave', () => tooltipOff())
+    .on('click', (d) => handleLineageClick(d[yVar.value]));
+};
+
+const updatePlot = () => {
+  updateAxes();
+  drawBars();
+};
+
+const showZeros = () => {
+  if (showZero.value) {
+    hideZeros.value = !hideZeros.value;
+  }
+  showAll.value = !showAll.value;
+  preprocessData();
+  updatePlot();
+};
+
+watch(
+  () => props.data,
+  () => {
+    preprocessData();
+    updatePlot();
   },
+);
+
+onMounted(() => {
+  setupPlot();
+  updatePlot();
 });
 </script>
 

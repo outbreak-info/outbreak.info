@@ -15,238 +15,247 @@
   </div>
 </template>
 
-<script>
-import Vue from 'vue';
+<script setup>
+import { onMounted, ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
 import { max } from 'd3-array';
 import { pack, hierarchy } from 'd3-hierarchy';
 import { scaleLinear, scaleTime } from 'd3-scale';
-import { select, selectAll, event } from 'd3-selection';
+import { select, event } from 'd3-selection';
 
-export default Vue.extend({
-  name: 'CirclePacking',
-  props: {
-    data: Object,
-    query: String,
-  },
-  data() {
-    return {
-      colorScale: null,
-      width: 420,
-      height: 420,
-      margin: {
-        top: 10,
-        bottom: 10,
-        right: 10,
-        left: 10,
+const props = defineProps({
+  data: Object,
+  query: String,
+});
+
+// instead of this.$router
+const router = useRouter();
+
+const colorScale = ref(null);
+const width = ref(420);
+const height = ref(420);
+const margin = ref({
+  top: 10,
+  bottom: 10,
+  right: 10,
+  left: 10,
+});
+// axes
+const x = ref(scaleLinear());
+const y = ref(scaleTime());
+const opacity = ref(scaleLinear().range([1, 0.3]));
+// refs
+const svg = ref(null);
+const svgDefs = ref(null);
+// data
+const nodes = ref(null);
+// methods * previous name: pack - should be named differently with pack method in d3 hierarchy
+const packF = ref(null);
+// variables instead of this.$refs
+const circle_tooltip = ref(null);
+const circle_packing = ref(null);
+
+const tooltipOn = (d) => {
+  select(circle_tooltip.value)
+    .classed('hidden', false)
+    .style('top', event.layerY + 'px')
+    .style('left', event.layerX + 'px')
+    .html(
+      d.depth === 1
+        ? `Search ${d.data.name}s`
+        : `Search ${d.data.name} ${d.parent.data.name}s`,
+    );
+
+  svg.value.selectAll('.circle-group').style('opacity', 0.25);
+
+  svg.value.selectAll('.annotation--type').style('opacity', 0.25);
+
+  svg.value.select(`.${d.data.name.replace(' ', '_')}`).style('opacity', 1);
+
+  if (d.depth === 1) {
+    svg.value.selectAll(`.${d.data.name}`).style('opacity', 1);
+  }
+};
+
+const tooltipOff = (d) => {
+  select(circle_tooltip.value).classed('hidden', true);
+
+  svg.value.selectAll('.annotation--type').style('opacity', 1);
+
+  svg.value.selectAll('.circle-group').style('opacity', 1);
+};
+
+const searchResource = (d) => {
+  if (d.depth === 1) {
+    router.push({
+      name: 'Resources',
+      query: {
+        q: props.query,
+        filter: `@type:${d.data.name}`,
+        page: '0',
+        size: '10',
+        sort: '-date',
       },
-      // axes
-      y: scaleLinear(),
-      x: scaleTime(),
-      opacity: scaleLinear().range([1, 0.3]),
-      // refs
-      svg: null,
-      svgDefs: null,
-      // data
-      nodes: null,
-      // methods
-      pack: null,
-    };
-  },
-  watch: {
-    data() {
-      this.updatePlot();
-    },
-  },
-  mounted() {
-    this.setupPlot();
-    this.updatePlot();
-  },
-  methods: {
-    tooltipOn(d) {
-      select(this.$refs.circle_tooltip)
-        .classed('hidden', false)
-        .style('top', event.layerY + 'px')
-        .style('left', event.layerX + 'px')
-        .html(
-          d.depth === 1
-            ? `Search ${d.data.name}s`
-            : `Search ${d.data.name} ${d.parent.data.name}s`,
-        );
+    });
+  } else {
+    router.push({
+      name: 'Resources',
+      query: {
+        q: props.query,
+        filter: `@type:${d.parent.data.name};curatedBy.name:${d.data.term}`,
+        page: '0',
+        size: '10',
+        sort: '-date',
+      },
+    });
+  }
+};
 
-      this.svg.selectAll('.circle-group').style('opacity', 0.25);
+const setupPlot = () => {
+  svg.value = select(circle_packing.value);
 
-      this.svg.selectAll('.annotation--type').style('opacity', 0.25);
+  svgDefs.value = svg.value.select('defs');
 
-      this.svg.select(`.${d.data.name.replace(' ', '_')}`).style('opacity', 1);
+  packF.value = pack()
+    .size([
+      width.value - margin.value.left - margin.value.right,
+      height.value - margin.value.top - margin.value.bottom,
+    ])
+    .padding(3);
+};
 
-      if (d.depth === 1) {
-        this.svg.selectAll(`.${d.data.name}`).style('opacity', 1);
-      }
-    },
-    tooltipOff(d) {
-      select(this.$refs.circle_tooltip).classed('hidden', true);
+const prepData = () => {
+  props.data.children.forEach((source) => {
+    source.children.sort((a, b) => b.count - a.count);
 
-      this.svg.selectAll('.annotation--type').style('opacity', 1);
+    source.children.forEach((d, i) => {
+      d['idx'] = i / (source.children.length - 1);
+    });
+  });
+  let root = hierarchy(props.data)
+    .sum((d) => d.count)
+    .sort(function (a, b) {
+      return b.value - a.value;
+    });
 
-      this.svg.selectAll('.circle-group').style('opacity', 1);
-    },
-    searchResource(d) {
-      if (d.depth === 1) {
-        this.$router.push({
-          name: 'Resources',
-          query: {
-            q: this.query,
-            filter: `@type:${d.data.name}`,
-            page: '0',
-            size: '10',
-            sort: '-date',
-          },
-        });
-      } else {
-        this.$router.push({
-          name: 'Resources',
-          query: {
-            q: this.query,
-            filter: `@type:${d.parent.data.name};curatedBy.name:${d.data.term}`,
-            page: '0',
-            size: '10',
-            sort: '-date',
-          },
-        });
-      }
-    },
-    setupPlot() {
-      this.svg = select(this.$refs.circle_packing);
+  nodes.value = packF.value(root).descendants();
+};
 
-      this.svgDefs = this.svg.select('defs');
+const updatePlot = () => {
+  if (props.data) {
+    prepData();
+    drawPlot();
+  }
+};
 
-      this.pack = pack()
-        .size([
-          this.width - this.margin.left - this.margin.right,
-          this.height - this.margin.top - this.margin.bottom,
-        ])
-        .padding(3);
-    },
-    prepData() {
-      this.data.children.forEach((source) => {
-        source.children.sort((a, b) => b.count - a.count);
+const circle2Path = (cx, cy, r) => {
+  r = r - 10;
+  return r > 0
+    ? `M${cx - r},${cy}a${r},${r} 0 1,1 ${2 * r},0a${r},${r} 0 1,1 -${2 * r},0`
+    : null;
+};
 
-        source.children.forEach((d, i) => {
-          d['idx'] = i / (source.children.length - 1);
-        });
-      });
-      let root = hierarchy(this.data)
-        .sum((d) => d.count)
-        .sort(function (a, b) {
-          return b.value - a.value;
-        });
+const drawPlot = () => {
+  const dataMax = max(
+    props.data.children.flatMap((d) => d.children).flatMap((d) => d.count),
+  );
+  const textThresh = dataMax / 30;
+  const typeThresh = dataMax / 40;
 
-      this.nodes = this.pack(root).descendants();
-    },
-    updatePlot() {
-      if (this.data) {
-        this.prepData();
-        this.drawPlot();
-      }
-    },
-    circle2Path(cx, cy, r) {
-      r = r - 10;
-      return r > 0
-        ? `M${cx - r},${cy}a${r},${r} 0 1,1 ${2 * r},0a${r},${r} 0 1,1 -${
-            2 * r
-          },0`
-        : null;
-    },
-    drawPlot() {
-      const dataMax = max(
-        this.data.children.flatMap((d) => d.children).flatMap((d) => d.count),
+  const circles = svg.value
+    .selectAll('circle')
+    .data(nodes.value.filter((d) => d.depth));
+
+  circles.join((enter) => {
+    const grp = enter
+      .append('g')
+      .attr(
+        'class',
+        (d) => `circle-group pointer ${d.data.name.replace(' ', '_')}`,
       );
-      const textThresh = dataMax / 30;
-      const typeThresh = dataMax / 40;
 
-      const circles = this.svg
-        .selectAll('circle')
-        .data(this.nodes.filter((d) => d.depth));
+    grp
+      .append('circle')
+      .attr('cx', (d) => d.x)
+      .attr('cy', (d) => d.y)
+      .attr('r', (d) => d.r)
+      .attr('class', (d) =>
+        d.depth === 1
+          ? `resource-count ${d.data.name} depth${d.depth}`
+          : `resource-count ${d.parent.data.name} depth${d.depth}`,
+      )
+      .attr('id', (d) => `circle-${d.data.name.replace(' ', '_')}`)
+      .attr('fill-opacity', (d) => opacity.value(d.data.idx))
+      .classed('tiny', (d) => d.value < 100)
+      .on('mouseenter', (d) => tooltipOn(d))
+      .on('mouseleave', (d) => tooltipOff())
+      .on('click', (d) => searchResource(d));
 
-      circles.join((enter) => {
-        const grp = enter
-          .append('g')
-          .attr(
-            'class',
-            (d) => `circle-group pointer ${d.data.name.replace(' ', '_')}`,
-          );
+    // text annotation
+    grp
+      .filter((d) => d.depth === 2 && d.value > textThresh)
+      .append('text')
+      .attr('x', (d) => d.x)
+      .attr('y', (d) => d.y)
+      .append('tspan')
+      .text((d) => d.data.name)
+      .attr('class', (d) =>
+        d.depth === 1
+          ? `annotation--source ${d.data.name} depth${d.depth}`
+          : `annotation--source ${d.parent.data.name} depth${d.depth}`,
+      )
+      .append('tspan')
+      .text((d) => d.value.toLocaleString())
+      .attr('x', (d) => d.x)
+      .attr('dy', '1.1em')
+      .attr('class', 'annotation--count')
+      .on('mouseenter', (d) => tooltipOn(d))
+      .on('mouseleave', (d) => tooltipOff())
+      .on('click', (d) => searchResource(d));
+  });
 
-        grp
-          .append('circle')
-          .attr('cx', (d) => d.x)
-          .attr('cy', (d) => d.y)
-          .attr('r', (d) => d.r)
-          .attr('class', (d) =>
-            d.depth === 1
-              ? `resource-count ${d.data.name} depth${d.depth}`
-              : `resource-count ${d.parent.data.name} depth${d.depth}`,
-          )
-          .attr('id', (d) => `circle-${d.data.name.replace(' ', '_')}`)
-          .attr('fill-opacity', (d) => this.opacity(d.data.idx))
-          .classed('tiny', (d) => d.value < 100)
-          .on('mouseenter', (d) => this.tooltipOn(d))
-          .on('mouseleave', (d) => this.tooltipOff())
-          .on('click', (d) => this.searchResource(d));
+  const text = svg.value
+    .selectAll('.annotation--type')
+    .data(nodes.value.filter((d) => d.depth === 1 && d.value > typeThresh));
 
-        // text annotation
-        grp
-          .filter((d) => d.depth === 2 && d.value > textThresh)
-          .append('text')
-          .attr('x', (d) => d.x)
-          .attr('y', (d) => d.y)
-          .append('tspan')
-          .text((d) => d.data.name)
-          .attr('class', (d) =>
-            d.depth === 1
-              ? `annotation--source ${d.data.name} depth${d.depth}`
-              : `annotation--source ${d.parent.data.name} depth${d.depth}`,
-          )
-          .append('tspan')
-          .text((d) => d.value.toLocaleString())
-          .attr('x', (d) => d.x)
-          .attr('dy', '1.1em')
-          .attr('class', 'annotation--count')
-          .on('mouseenter', (d) => this.tooltipOn(d))
-          .on('mouseleave', (d) => this.tooltipOff())
-          .on('click', (d) => this.searchResource(d));
-      });
+  const textPaths = svgDefs.value
+    .selectAll('path')
+    .data(nodes.value.filter((d) => d.depth === 1));
 
-      const text = this.svg
-        .selectAll('.annotation--type')
-        .data(this.nodes.filter((d) => d.depth === 1 && d.value > typeThresh));
+  textPaths.join((enter) => {
+    enter
+      .append('path')
+      .attr('d', (d) => circle2Path(d.x, d.y, d.r))
+      .attr('transform', (d) => `rotate(-90 ${d.x} ${d.y})`)
+      .attr('id', (d, i) => `textpath${i}`);
+  });
 
-      const textPaths = this.svgDefs
-        .selectAll('path')
-        .data(this.nodes.filter((d) => d.depth === 1));
+  text.join((enter) => {
+    enter
+      .append('text')
+      .append('textPath')
+      .attr('href', (d, i) => `#textpath${i}`)
+      // .attr("textLength", 200)
+      .attr('startOffset', '50%')
+      .attr('class', (d) => `annotation--type pointer ${d.data.name}`)
+      .text((d) => d.data.name.replace('ClinicalTrial', 'Clinical Trial'))
+      .on('mouseover', (d) => tooltipOn(d))
+      .on('mouseout', (d) => tooltipOff())
+      .on('click', (d) => searchResource(d));
+  });
+};
 
-      textPaths.join((enter) => {
-        enter
-          .append('path')
-          .attr('d', (d) => this.circle2Path(d.x, d.y, d.r))
-          .attr('transform', (d) => `rotate(-90 ${d.x} ${d.y})`)
-          .attr('id', (d, i) => `textpath${i}`);
-      });
-
-      text.join((enter) => {
-        enter
-          .append('text')
-          .append('textPath')
-          .attr('href', (d, i) => `#textpath${i}`)
-          // .attr("textLength", 200)
-          .attr('startOffset', '50%')
-          .attr('class', (d) => `annotation--type pointer ${d.data.name}`)
-          .text((d) => d.data.name.replace('ClinicalTrial', 'Clinical Trial'))
-          .on('mouseover', (d) => this.tooltipOn(d))
-          .on('mouseout', (d) => this.tooltipOff())
-          .on('click', (d) => this.searchResource(d));
-      });
-    },
+watch(
+  () => props.data,
+  () => {
+    updatePlot();
   },
+  { deep: true },
+);
+
+onMounted(() => {
+  setupPlot();
+  updatePlot();
 });
 </script>
 

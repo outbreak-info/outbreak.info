@@ -7,7 +7,9 @@ axios.interceptors.request.use(
   (config) => {
     // Pass GISAID param to API via headers
     // * BEFORE COMPLIATION, YOU NEED to run `export VUE_APP_API_ACCESS={key}`*
-    config.headers.Authorization = `Bearer ${process.env.VUE_APP_API_ACCESS}`;
+    config.headers.Authorization = `Bearer ${
+      import.meta.env.VITE_APP_API_ACCESS
+    }`;
     return config;
   },
 
@@ -15,8 +17,6 @@ axios.interceptors.request.use(
     return Promise.reject(error);
   },
 );
-
-const formatDateTime = timeFormat('%e %B %Y %I:%M %p');
 
 export const getSourcesUpdated = (genomicsurl, resourcesurl, epiurl) => {
   return forkJoin([
@@ -28,7 +28,6 @@ export const getSourcesUpdated = (genomicsurl, resourcesurl, epiurl) => {
       return {
         epi: epi,
         genomics: genomics,
-
         resources: resources,
       };
     }),
@@ -49,7 +48,6 @@ export const getIndivSourcesUpdated = (genomicsurl, resourcesurl, epiurl) => {
         genomics: {
           genomics: genomics,
         },
-
         resources: resources,
       };
     }),

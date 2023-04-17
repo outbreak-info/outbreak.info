@@ -34,21 +34,24 @@
       class="lineages-by-location"
       :name="title"
     >
-      <g ref="chart" :transform="`translate(${margin.left},${margin.top})`" />
       <g
-        ref="xAxis"
+        ref="chartRef"
+        :transform="`translate(${margin.left},${margin.top})`"
+      />
+      <g
+        ref="xAxisRef"
         class="stream-axis axis--x"
         :transform="`translate(${margin.left},${height - margin.bottom})`"
       />
       <g
-        ref="yAxis"
+        ref="yAxisRef"
         class="stream-axis axis--y"
         :transform="`translate(${margin.left},${margin.top})`"
       />
       <g
         v-if="data"
         id="brush-zoom"
-        ref="brush"
+        ref="brush_ref"
         class="brush"
         :transform="`translate(${margin.left},${margin.top})`"
         :class="{ hidden: !zoomAllowed }"
@@ -90,8 +93,8 @@
   </div>
 </template>
 
-<script>
-import Vue from 'vue';
+<script setup>
+import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import { extent } from 'd3-array';
 import { axisLeft, axisBottom } from 'd3-axis';
 import { brushX } from 'd3-brush';
@@ -100,374 +103,367 @@ import { scaleLinear, scaleTime } from 'd3-scale';
 import { select, selectAll, event } from 'd3-selection';
 import { area, stack, stackOrderInsideOut } from 'd3-shape';
 import { transition } from 'd3-transition';
+import debounce from 'lodash/debounce';
 
 import { lazyLoad } from '@/js/lazy-load';
 
-export default Vue.extend({
-  name: 'LineagesByLocation',
-  components: {
-    SequencingHistogram: lazyLoad('SequencingHistogram'),
-    DownloadReportData: lazyLoad('DownloadReportData'),
-  },
-  props: {
-    data: Array,
-    recentData: Object,
-    seqCounts: Array,
-    recentWindow: String,
-    location: String,
-    recentMin: Date,
-    colorScale: Function,
-  },
-  data() {
-    return {
-      // dimensions
-      margin: {
-        top: 18,
-        bottom: 30,
-        left: 55,
-        right: 55,
-      },
-      marginHist: {
-        top: 5,
-        bottom: 10,
-        left: 55,
-        right: 55,
-      },
-      width: null,
-      minWidth: 450,
-      height: 500,
-      // variables
-      fillVar: 'pangolin_lineage',
-      // axes
-      x: null,
-      y: scaleLinear(),
-      xAxis: null,
-      yAxis: null,
-      numXTicks: 5,
-      numYTicks: 5,
-      // methods
-      area: null,
-      brush: null,
-      // data
-      series: null,
-      lineages: null,
-      // refs
-      chart: null,
-      brushRef: null,
-      // controls
-      zoomAllowed: false,
-    };
-  },
-  computed: {
-    title() {
-      return `Lineage prevalence over time in ${this.location}`;
-    },
-  },
-  watch: {
-    width() {
-      this.updateBrush();
-      this.updatePlot();
-    },
-    data() {
-      this.updatePlot();
-    },
-  },
-  mounted() {
-    this.$nextTick(() => {
-      window.addEventListener('resize', this.debounceSetDims);
+const SequencingHistogram = lazyLoad('SequencingHistogram');
+const DownloadReportData = lazyLoad('DownloadReportData');
 
-      this.updateBrush();
-      // set initial dimensions for the plots.
-      this.debounceSetDims();
-    });
+const props = defineProps({
+  data: Array,
+  recentData: Object,
+  seqCounts: Array,
+  recentWindow: String,
+  location: String,
+  recentMin: Date,
+  colorScale: Function,
+});
 
-    this.setupPlot();
-    this.updatePlot();
-  },
-  created() {
-    this.debounceSetDims = this.debounce(this.setDims, 150);
-    this.debounceZoom = this.debounce(this.zoom, 150);
-  },
-  methods: {
-    updateBrush() {
-      // Update brush so it spans the whole of the area
-      this.brush = brushX()
-        .extent([
-          [0, 0],
-          [
-            this.width - this.margin.left - this.margin.right,
-            this.height - this.margin.top - this.margin.bottom,
-          ],
-        ])
-        .on('end', () => this.debounceZoom(event));
+// dimensions
+const margin = ref({
+  top: 18,
+  bottom: 30,
+  left: 55,
+  right: 55,
+});
+const marginHist = ref({
+  top: 5,
+  bottom: 10,
+  left: 55,
+  right: 55,
+});
+const width = ref(null);
+const minWidth = ref(null);
+const height = ref(500);
+// axes
+const x = ref(null);
+const y = ref(scaleLinear());
+const xAxis = ref(null);
+const yAxis = ref(null);
+const numXTicks = ref(5);
+const numYTicks = ref(5);
+// methods
+const areaF = ref(null);
+const brush = ref(null);
+// data
+const series = ref(null);
+const lineages = ref(null);
+// refs
+const svg = ref(null);
+const chart = ref(null);
+const brushRef = ref(null);
+const legend = ref(null);
+// controls
+const zoomAllowed = ref(false);
+// variables to replace this.$refs
+const chartRef = ref(null);
+const legendRef = ref(null);
+const brush_ref = ref(null); // to avoid duplication name like this;
+const xAxisRef = ref(null); // xAxis is already declared, so renamed
+const yAxisRef = ref(null); // yAxis is already declared, so renamed
+const tooltip_streamgraph = ref(null);
+const lineages_by_location = ref(null);
 
-      this.brushRef.call(this.brush).on('dblclick', this.resetZoom);
-    },
-    setDims() {
-      const svgContainer = document.getElementById('most-recent-lineages');
-      let containerWidth = svgContainer ? svgContainer.offsetWidth : 500;
-      const pageContainer = document.getElementById('location-report');
-      let maxWidth = pageContainer ? pageContainer.offsetWidth : 500;
-      const idealWidth = (maxWidth - containerWidth) * 0.95;
-      this.width =
-        idealWidth < this.minWidth || idealWidth > maxWidth
-          ? maxWidth * 0.95
-          : idealWidth;
+// computed variables
+const title = computed(() => {
+  return `Lineage prevalence over time in ${props.location}`;
+});
 
-      this.numXTicks = this.width < 500 ? 2 : 5;
-    },
-    setupPlot() {
-      this.svg = select(this.$refs.svg);
-      this.legend = select(this.$refs.legend);
-      this.chart = select(this.$refs.chart);
-      this.brushRef = select(this.$refs.brush);
+const updateBrush = () => {
+  // Update brush so it spans the whole of the area
+  brush.value = brushX()
+    .extent([
+      [0, 0],
+      [
+        width.value - margin.value.left - margin.value.right,
+        height.value - margin.value.top - margin.value.bottom,
+      ],
+    ])
+    .on('end', () => debounceZoom(event));
 
-      this.area = area()
-        .x((d) => this.x(d.data.date_time))
-        .y0((d) => this.y(d[0]))
-        .y1((d) => this.y(d[1]));
-    },
-    updateScales() {
-      this.x = scaleTime()
-        .range([0, this.width - this.margin.left - this.margin.right])
-        .domain(extent(this.data.map((d) => d.date_time)))
-        .clamp(true);
+  brushRef.value.call(brush.value).on('dblclick', resetZoom);
+};
 
-      this.y = this.y
-        // .range([0, this.height - this.margin.top - this.margin.bottom])
-        .range([this.height - this.margin.top - this.margin.bottom, 0])
-        .nice()
-        .domain([0, 1]);
+const setDims = () => {
+  const svgContainer = document.getElementById('most-recent-lineages');
+  let containerWidth = svgContainer ? svgContainer.offsetWidth : 500;
+  const pageContainer = document.getElementById('location-report');
+  let maxWidth = pageContainer ? pageContainer.offsetWidth : 500;
+  const idealWidth = (maxWidth - containerWidth) * 0.95;
+  width.value =
+    idealWidth < minWidth.value || idealWidth > maxWidth
+      ? maxWidth * 0.95
+      : idealWidth;
 
-      this.lineages = Object.keys(this.data[0]).filter(
-        (d) => d !== 'date_time',
-      );
+  numXTicks.value = width.value < 500 ? 2 : 5;
+};
 
-      this.xAxis = axisBottom(this.x).ticks(this.numXTicks);
+const setupPlot = () => {
+  // this.svg = select(this.$refs.svg); TODO: should confirm where svg ref
+  svg.value = select(lineages_by_location.value);
+  legend.value = select(legendRef.value); // TODO: should confirm where legend ref
+  chart.value = select(chartRef.value);
+  brushRef.value = select(brush_ref.value);
 
-      select(this.$refs.xAxis).call(this.xAxis);
+  areaF.value = area()
+    .x((d) => x.value(d.data.date_time))
+    .y0((d) => y.value(d[0]))
+    .y1((d) => y.value(d[1]));
+};
 
-      this.yAxis = axisLeft(this.y)
-        .tickSizeOuter(0)
-        .ticks(this.numYTicks)
-        .tickFormat(format('.0%'));
+const updateScales = () => {
+  x.value = scaleTime()
+    .range([0, width.value - margin.value.left - margin.value.right])
+    .domain(extent(props.data.map((d) => d.date_time)))
+    .clamp(true);
 
-      // stacking
-      this.series = stack().keys(this.lineages).order(stackOrderInsideOut)(
-        this.data,
-      );
+  y.value = y.value
+    // .range([0, this.height - this.margin.top - this.margin.bottom])
+    .range([height.value - margin.value.top - margin.value.bottom, 0])
+    .nice()
+    .domain([0, 1]);
 
-      select(this.$refs.yAxis).call(this.yAxis);
-    },
-    updatePlot() {
-      if (this.data && this.colorScale) {
-        this.updateScales();
-        this.drawPlot();
-      }
-    },
-    tooltipOn(key) {
-      const ttipShift = 20;
-      // turn everything off
-      this.chart
-        .selectAll('.stacked-area-chart')
-        .style('stroke', '#BBB')
-        .style('fill-opacity', 0.2);
+  lineages.value = Object.keys(props.data[0]).filter((d) => d !== 'date_time');
 
-      selectAll('.stacked-bar-chart').style('fill-opacity', 0.2);
+  xAxis.value = axisBottom(x.value).ticks(numXTicks.value);
 
-      // turn on the selected region
-      this.chart
-        .select(`#area_${key.replace(/\./g, '-')}`)
-        .style('fill-opacity', 1);
+  select(xAxisRef.value).call(xAxis.value);
 
-      select(`#${key.replace(/\./g, '-')}`).style('fill-opacity', 1);
+  yAxis.value = axisLeft(y.value)
+    .tickSizeOuter(0)
+    .ticks(numYTicks.value)
+    .tickFormat(format('.0%'));
 
-      const ttip = select(this.$refs.tooltip_streamgraph);
+  // stacking
+  series.value = stack().keys(lineages.value).order(stackOrderInsideOut)(
+    props.data,
+  );
 
-      ttip.select('#lineage').text(key);
+  select(yAxisRef.value).call(yAxis.value);
+};
 
-      const recentPrev = this.recentData[key];
-      if (recentPrev) {
-        ttip
-          .select('#proportion')
-          .text(recentPrev < 0.005 ? '< 0.5%' : format('.0%')(recentPrev));
-      } else {
-        ttip.select('#proportion').text('Grouped into "other" category');
-      }
+const updatePlot = () => {
+  if (props.data && props.colorScale) {
+    updateScales();
+    drawPlot();
+  }
+};
 
-      // fix location
-      ttip
-        .style('left', `${event.clientX + ttipShift}px`)
-        .style('top', `${event.clientY + ttipShift}px`)
-        .style('display', 'block');
-    },
-    tooltipOff() {
-      this.chart
-        .selectAll('.stacked-area-chart')
+const tooltipOn = (key) => {
+  const ttipShift = 20;
+  // turn everything off
+  chart.value
+    .selectAll('.stacked-area-chart')
+    .style('stroke', '#BBB')
+    .style('fill-opacity', 0.2);
+
+  selectAll('.stacked-bar-chart').style('fill-opacity', 0.2);
+
+  // turn on the selected region
+  chart.value
+    .select(`#area_${key.replace(/\./g, '-')}`)
+    .style('fill-opacity', 1);
+
+  select(`#${key.replace(/\./g, '-')}`).style('fill-opacity', 1);
+
+  const ttip = select(tooltip_streamgraph.value);
+
+  ttip.select('#lineage').text(key);
+
+  const recentPrev = props.recentData[key];
+  if (recentPrev) {
+    ttip
+      .select('#proportion')
+      .text(recentPrev < 0.005 ? '< 0.5%' : format('.0%')(recentPrev));
+  } else {
+    ttip.select('#proportion').text('Grouped into "other" category');
+  }
+
+  // fix location
+  ttip
+    .style('left', `${event.clientX + ttipShift}px`)
+    .style('top', `${event.clientY + ttipShift}px`)
+    .style('display', 'block');
+};
+
+const tooltipOff = () => {
+  chart.value
+    .selectAll('.stacked-area-chart')
+    .style('stroke', '#555')
+    .style('fill-opacity', 1);
+
+  selectAll('.stacked-bar-chart').style('fill-opacity', 1);
+
+  select(tooltip_streamgraph.value).style('display', 'none');
+};
+
+const zoom = (evt) => {
+  // reset domain to new coords
+  const selection = evt.selection;
+
+  if (selection) {
+    const newMin = x.value.invert(selection[0]);
+    const newMax = x.value.invert(selection[1]);
+
+    x.value = scaleTime()
+      .range([0, width.value - margin.value.left - margin.value.right])
+      .domain([newMin, newMax])
+      .clamp(true);
+
+    // reset the axis
+    xAxis.value = axisBottom(x.value).ticks(numXTicks.value);
+
+    select(xAxisRef.value).call(xAxis.value);
+
+    // move the brush
+    brushRef.value.call(brush.value.move, null);
+    zoomAllowed.value = false;
+    drawPlot();
+  }
+};
+
+const resetZoom = () => {
+  x.value = x.value.domain(extent(props.data.map((d) => d.date_time)));
+  brushRef.value.call(brush.value.move, null);
+  updatePlot();
+};
+
+const enableZoom = () => {
+  zoomAllowed.value = true;
+};
+
+const drawPlot = () => {
+  const areaSelector = chart.value
+    .selectAll('.stacked-area-chart')
+    .data(series.value);
+
+  areaSelector.join(
+    (enter) => {
+      const selector = enter
+        .append('path')
+        .attr('fill', ({ key }) => props.colorScale(key))
+        .attr('class', 'stacked-area-chart')
+        .attr('id', ({ key }) => `area_${key.replace(/\./g, '-')}`)
+        .attr('d', areaF.value)
         .style('stroke', '#555')
-        .style('fill-opacity', 1);
-
-      selectAll('.stacked-bar-chart').style('fill-opacity', 1);
-
-      select(this.$refs.tooltip_streamgraph).style('display', 'none');
+        .style('stroke-width', 0.5);
     },
-    zoom(evt) {
-      // reset domain to new coords
-      const selection = this.event.selection;
-
-      if (selection) {
-        const newMin = this.x.invert(selection[0]);
-        const newMax = this.x.invert(selection[1]);
-
-        this.x = scaleTime()
-          .range([0, this.width - this.margin.left - this.margin.right])
-          .domain([newMin, newMax])
-          .clamp(true);
-
-        // reset the axis
-        this.xAxis = axisBottom(this.x).ticks(this.numXTicks);
-
-        select(this.$refs.xAxis).call(this.xAxis);
-
-        // move the brush
-        this.brushRef.call(this.brush.move, null);
-        this.zoomAllowed = false;
-        this.drawPlot();
-      }
+    (update) => {
+      update
+        .attr('fill', ({ key }) => props.colorScale(key))
+        .attr('id', ({ key }) => `area_${key.replace(/\./g, '-')}`)
+        .attr('d', areaF.value);
     },
-    resetZoom() {
-      this.x = this.x.domain(extent(this.data.map((d) => d.date_time)));
-      this.brushRef.call(this.brush.move, null);
-      this.updatePlot();
+    (exit) =>
+      exit.call((exit) => exit.transition().style('opacity', 1e-5).remove()),
+  );
+
+  // annotation for the most recent date
+  const recentSelector = chart.value
+    .selectAll('.recent-date-annotation')
+    .data([props.recentMin]);
+
+  const t1 = transition().duration(500);
+
+  recentSelector.join(
+    (enter) => {
+      const grp = enter.append('g').attr('class', 'recent-date-annotation');
+
+      grp
+        .append('line')
+        .attr('class', 'annotation-line')
+        .attr('x1', (d) => x.value(d))
+        .attr('x2', (d) => x.value(d))
+        .attr('y1', 0)
+        .attr('y2', height.value)
+        .style('stroke', 'white')
+        .style('stroke-dasharray', '6,6');
+
+      grp
+        .append('line')
+        .attr('class', 'text-line')
+        .attr('x1', (d) => x.value(d))
+        .attr('x2', (d) => x.value(d))
+        .attr('y1', 0)
+        .attr('y2', -5)
+        .style('stroke', '#2c3e50');
+
+      grp
+        .append('text')
+        .attr('x', (d) => x.value(d))
+        .attr('y', 0)
+        .attr('dy', -8)
+        .text(`${props.recentWindow} days`)
+        .style('text-anchor', (d) =>
+          x.value(d) > width.value / 2 ? 'end' : 'start',
+        )
+        .style('font-family', "'DM Sans', Avenir, Helvetica, Arial, sans-serif")
+        .style('dominant-baseline', 'text-top')
+        .style('font-size', '9pt');
     },
-    enableZoom() {
-      this.zoomAllowed = true;
+    (update) => {
+      update
+        .select('.annotation-line')
+        .attr('y1', 0)
+        .attr('y2', height.value)
+        .transition(t1)
+        .attr('x1', (d) => x.value(d))
+        .attr('x2', (d) => x.value(d));
+
+      update
+        .select('.text-line')
+        .transition(t1)
+        .attr('x1', (d) => x.value(d))
+        .attr('x2', (d) => x.value(d));
+
+      update
+        .select('text')
+        .text(`${props.recentWindow} days`)
+        .style('text-anchor', (d) =>
+          x.value(d) > width.value / 2 ? 'end' : 'start',
+        )
+        .transition(t1)
+        .attr('x', (d) => x.value(d));
     },
-    drawPlot() {
-      const areaSelector = this.chart
-        .selectAll('.stacked-area-chart')
-        .data(this.series);
+    (exit) =>
+      exit.call((exit) => exit.transition().style('opacity', 1e-5).remove()),
+  );
 
-      areaSelector.join(
-        (enter) => {
-          const selector = enter
-            .append('path')
-            .attr('fill', ({ key }) => this.colorScale(key))
-            .attr('class', 'stacked-area-chart')
-            .attr('id', ({ key }) => `area_${key.replace(/\./g, '-')}`)
-            .attr('d', this.area)
-            .style('stroke', '#555')
-            .style('stroke-width', 0.5);
-        },
-        (update) => {
-          update
-            .attr('fill', ({ key }) => this.colorScale(key))
-            .attr('id', ({ key }) => `area_${key.replace(/\./g, '-')}`)
-            .attr('d', this.area);
-        },
-        (exit) =>
-          exit.call((exit) =>
-            exit.transition().style('opacity', 1e-5).remove(),
-          ),
-      );
+  chart.value
+    .selectAll('.stacked-area-chart')
+    .on('mousemove', ({ key }) => tooltipOn(key))
+    .on('mouseleave', tooltipOff);
+};
 
-      // annotation for the most recent date
-      const recentSelector = this.chart
-        .selectAll('.recent-date-annotation')
-        .data([this.recentMin]);
+watch(width, () => {
+  updateBrush();
+  updatePlot();
+});
 
-      const t1 = transition().duration(500);
-
-      recentSelector.join(
-        (enter) => {
-          const grp = enter.append('g').attr('class', 'recent-date-annotation');
-
-          grp
-            .append('line')
-            .attr('class', 'annotation-line')
-            .attr('x1', (d) => this.x(d))
-            .attr('x2', (d) => this.x(d))
-            .attr('y1', 0)
-            .attr('y2', this.height)
-            .style('stroke', 'white')
-            .style('stroke-dasharray', '6,6');
-
-          grp
-            .append('line')
-            .attr('class', 'text-line')
-            .attr('x1', (d) => this.x(d))
-            .attr('x2', (d) => this.x(d))
-            .attr('y1', 0)
-            .attr('y2', -5)
-            .style('stroke', '#2c3e50');
-
-          grp
-            .append('text')
-            .attr('x', (d) => this.x(d))
-            .attr('y', 0)
-            .attr('dy', -8)
-            .text(`${this.recentWindow} days`)
-            .style('text-anchor', (d) =>
-              this.x(d) > this.width / 2 ? 'end' : 'start',
-            )
-            .style(
-              'font-family',
-              "'DM Sans', Avenir, Helvetica, Arial, sans-serif",
-            )
-            .style('dominant-baseline', 'text-top')
-            .style('font-size', '9pt');
-        },
-        (update) => {
-          update
-            .select('.annotation-line')
-            .attr('y1', 0)
-            .attr('y2', this.height)
-            .transition(t1)
-            .attr('x1', (d) => this.x(d))
-            .attr('x2', (d) => this.x(d));
-
-          update
-            .select('.text-line')
-            .transition(t1)
-            .attr('x1', (d) => this.x(d))
-            .attr('x2', (d) => this.x(d));
-
-          update
-            .select('text')
-            .text(`${this.recentWindow} days`)
-            .style('text-anchor', (d) =>
-              this.x(d) > this.width / 2 ? 'end' : 'start',
-            )
-            .transition(t1)
-            .attr('x', (d) => this.x(d));
-        },
-        (exit) =>
-          exit.call((exit) =>
-            exit.transition().style('opacity', 1e-5).remove(),
-          ),
-      );
-
-      this.chart
-        .selectAll('.stacked-area-chart')
-        .on('mousemove', ({ key }) => this.tooltipOn(key))
-        .on('mouseleave', this.tooltipOff);
-    },
-    debounce(fn, delay) {
-      let timer = null;
-      return () => {
-        const context = this,
-          args = arguments,
-          evt = event;
-        //we get the D3 event here
-        clearTimeout(timer);
-        timer = setTimeout(() => {
-          context.event = evt;
-          //and use the reference here
-          fn.apply(context, args);
-        }, delay);
-      };
-    },
+watch(
+  () => props.data,
+  () => {
+    updatePlot();
   },
+  { deep: true },
+);
+
+const debounceSetDims = debounce(setDims, 150);
+const debounceZoom = debounce(zoom, 150);
+
+onMounted(() => {
+  // this.$nextTick in optionsAPI
+  nextTick(() => {
+    window.addEventListener('resize', debounceSetDims);
+
+    updateBrush();
+    // set initial dimensions for the plots.
+    debounceSetDims();
+  });
+
+  setupPlot();
+  updatePlot();
 });
 </script>
 

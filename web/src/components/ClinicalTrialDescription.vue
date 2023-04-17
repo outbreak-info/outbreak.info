@@ -5,9 +5,7 @@
       id="design"
       class="text-left border-top border-bottom text-muted py-3 my-3"
     >
-      <h6 class="m-0">
-        Study Design
-      </h6>
+      <h6 class="m-0">Study Design</h6>
       <div v-if="data.studyDesign">
         <TrialDesign :data="data" />
       </div>
@@ -21,9 +19,7 @@
       id="interventions"
       class="text-left border-bottom text-muted pb-3 mb-3"
     >
-      <h6 class="m-0">
-        Interventions
-      </h6>
+      <h6 class="m-0">Interventions</h6>
       <div v-if="data.armGroup || data.interventions">
         <TrialInterventions :data="data" />
       </div>
@@ -37,9 +33,7 @@
 
     <!-- eligibility -->
     <div id="eligibility" class="text-left border-bottom text-muted pb-3 mb-3">
-      <h6 class="m-0">
-        Eligibility
-      </h6>
+      <h6 class="m-0">Eligibility</h6>
       <div v-if="data.eligibilityCriteria">
         <TrialEligibility :data="data.eligibilityCriteria" />
       </div>
@@ -50,9 +44,7 @@
 
     <!-- outcome -->
     <div id="outcome" class="text-left border-bottom text-muted pb-3 mb-3">
-      <h6 class="m-0">
-        Outcome
-      </h6>
+      <h6 class="m-0">Outcome</h6>
       <div v-if="data.outcome">
         <TrialOutcome :data="data.outcome" />
       </div>
@@ -63,9 +55,7 @@
 
     <!-- status -->
     <div id="status" class="text-left border-bottom text-muted pb-3 mb-3">
-      <h6 class="m-0">
-        Status
-      </h6>
+      <h6 class="m-0">Status</h6>
       <div v-if="data.studyStatus || data.studyEvent">
         <TrialEvents :data="data" />
       </div>
@@ -76,9 +66,7 @@
 
     <!-- publications -->
     <div id="publications" class="text-left border-bottom text-muted pb-3 mb-3">
-      <h6 class="m-0 mb-2">
-        Publications
-      </h6>
+      <h6 class="m-0 mb-2">Publications</h6>
       <div v-if="(data.citedBy && data.citedBy.length) || citations">
         <template v-if="data.citedBy">
           <div
@@ -106,45 +94,44 @@
   </div>
 </template>
 
-<script>
-import tippy from 'tippy.js';
-
+<script setup>
+import { inject, onBeforeUnmount, onMounted, ref } from 'vue';
 import { getCTPublications } from '@/api/resources.js';
 import { lazyLoad } from '@/js/lazy-load';
 
 import 'tippy.js/themes/light.css';
 
-export default {
-  name: 'ClinicalTrialDescription',
-  components: {
-    TrialDesign: lazyLoad('TrialDesign'),
-    TrialInterventions: lazyLoad('TrialInterventions'),
-    TrialEligibility: lazyLoad('TrialEligibility'),
-    TrialOutcome: lazyLoad('TrialOutcome'),
-    TrialEvents: lazyLoad('TrialEvents'),
-    ResourceCitation: lazyLoad('ResourceCitation'),
-  },
-  props: {
-    data: Object,
-  },
-  data() {
-    return {
-      citations: null,
-      citationSubscription: null,
-    };
-  },
-  mounted() {
-    this.citationSubscription = getCTPublications(
-      this.$resourceurl,
-      this.data['_id'],
-    ).subscribe((citations) => {
-      this.citations = citations.length ? citations : null;
-    });
-  },
-  beforeDestroy() {
-    this.citationSubscription.unsubscribe();
-  },
-};
+const TrialDesign = lazyLoad('TrialDesign');
+const TrialInterventions = lazyLoad('TrialInterventions');
+const TrialEligibility = lazyLoad('TrialEligibility');
+const TrialOutcome = lazyLoad('TrialOutcome');
+const TrialEvents = lazyLoad('TrialEvents');
+const ResourceCitation = lazyLoad('ResourceCitation');
+
+const props = defineProps({
+  data: Object,
+});
+
+// global variable - equivalent with this.$resourceurl
+const resourceUrl = inject('resourceUrl');
+
+const citations = ref(null);
+const citationSubscription = ref(null);
+
+onMounted(() => {
+  citationSubscription.value = getCTPublications(
+    resourceUrl,
+    props.data['_id'],
+  ).subscribe((citationResponse) => {
+    citations.value = citationResponse.length ? citationResponse : null;
+  });
+});
+
+onBeforeUnmount(() => {
+  if (citationSubscription.value) {
+    citationSubscription.value.unsubscribe();
+  }
+});
 </script>
 
 <style lang="scss" scoped></style>

@@ -29,27 +29,15 @@ const lookupLocation = () => {
   });
 };
 
-// export function getLocation(apiUrl) {
-//   // if (!navigator.geolocation) {
-//   //   console.log("Geolocation not supported")
-//   // }
-//   // else {
-//   //
-//   return new Promise((resolve, reject) => {
-//     navigator.geolocation.getCurrentPosition(resolve, reject)
-//     // navigator.geolocation.getCurrentPosition(loc => processLocation(apiUrl, loc), failedLocation)
-//   })
-//
-//   // }
-// }
-
-const processLocation = (apiUrl, location) => {
+export const processLocation = (apiUrl, location) => {
   const scalar = 0.05;
-  const url = `${apiUrl}query?q=mostRecent:true AND lat:[${(1 - scalar) *
-    location.coords.latitude} TO ${(1 + scalar) *
-    location.coords.latitude}] AND long:[${(1 + scalar) *
-    location.coords.longitude} TO ${(1 - scalar) *
-    location.coords.longitude}] &fields=location_id,lat,long&size=25`;
+  const url = `${apiUrl}query?q=mostRecent:true AND lat:[${
+    (1 - scalar) * location.coords.latitude
+  } TO ${(1 + scalar) * location.coords.latitude}] AND long:[${
+    (1 + scalar) * location.coords.longitude
+  } TO ${
+    (1 - scalar) * location.coords.longitude
+  }] &fields=location_id,lat,long&size=25`;
   return from(axios.get(url)).pipe(
     pluck('data', 'hits'),
     map((results) => {
@@ -72,9 +60,4 @@ const processLocation = (apiUrl, location) => {
       return from([]);
     }),
   );
-};
-
-const failedLocation = (location) => {
-  console.log(`failed location: ${location}`);
-  return of(null);
 };

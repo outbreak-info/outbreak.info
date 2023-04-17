@@ -49,14 +49,14 @@
   background-position: top left;
   background-repeat: no-repeat;
   background-size: cover;
-  background-image: url("~@/assets/navback-01.svg");
+  background-image: url("@/assets/navback-01.svg");
 }
 
 .back-1 {
   background-position: bottom left;
   background-repeat: no-repeat;
   background-size: contain;
-  background-image: url("~@/assets/back1.png");
+  background-image: url("@/assets/back1.png");
   min-height: 100px;
 }
 
@@ -64,7 +64,7 @@
   background-position: top right;
   background-repeat: no-repeat;
   background-size: contain;
-  background-image: url("~@/assets/back2.png");
+  background-image: url("@/assets/back2.png");
 }
 
 .bg-grag-main {
@@ -560,7 +560,7 @@ select {
   -ms-appearance: none;
   padding: 0.3em 1.5em 0.3em 0.3em;
   color: $secondary-color;
-  background: url("~@/assets/drop2.svg");
+  background: url("@/assets/drop2.svg");
   background-color: lighten($grey-40,20%);
   background-repeat: no-repeat;
   border: thin $secondary-color solid;
@@ -576,7 +576,7 @@ select:focus {
 }
 
 select:hover {
-  background: url("~@/assets/drop.svg");
+  background: url("@/assets/drop.svg");
   background-color: lighten($grey-40,20%);
   background-repeat: no-repeat;
   border: thin $secondary-color solid;

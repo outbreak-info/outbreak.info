@@ -20,16 +20,10 @@
   </div>
 </template>
 
-<script>
-import Vue from 'vue';
-
-export default Vue.extend({
-  name: 'Warning',
-  components: {},
-  props: {
-    text: String,
-    align_left: Boolean,
-    animate: Boolean,
-  },
+<script setup>
+const props = defineProps({
+  text: String,
+  align_left: Boolean,
+  animate: Boolean,
 });
 </script>

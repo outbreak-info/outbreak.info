@@ -326,7 +326,7 @@
       id="notices"
       class="bg-highlight py-2 px-3 text-light text-center fa-sm"
     >
-    <!-- <div class="border-bottom pb-2 mb-2">
+      <!-- <div class="border-bottom pb-2 mb-2">
       outbreak.info will be undergoing maintenance on <b>12 January 2023</b>. Data may be inaccessible during this time.
     </div> -->
       <b class="mr-1">
@@ -359,9 +359,11 @@
       </a>
     </section>
 
-    <transition name="fade">
-      <router-view class="main" />
-    </transition>
+    <router-view class="main" v-slot="{ Component }">
+      <transition name="fade">
+        <component :is="Component" />
+      </transition>
+    </router-view>
 
     <!-- FOOTER -->
     <footer v-if="!$route.meta.hideNavigation" id="outbreak-footer">
@@ -688,27 +690,18 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { onMounted, ref } from 'vue';
 import { lazyLoad } from '@/js/lazy-load';
-import Logos from '@/components/Logos';
 
-export default {
-  name: 'App',
-  components: {
-    EmailSubscription: lazyLoad('EmailSubscription'),
-    Logos,
-  },
-  data() {
-    return {
-      year: '',
-    };
-  },
-  mounted() {
-    const self = this;
-    const currentTime = new Date();
-    self.year = currentTime.getFullYear();
-  },
-};
+const EmailSubscription = lazyLoad('EmailSubscription');
+const Logos = lazyLoad('Logos');
+
+const year = ref(null);
+
+onMounted(() => {
+  year.value = new Date().getFullYear();
+});
 </script>
 
 <style lang="scss">

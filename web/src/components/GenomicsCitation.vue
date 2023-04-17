@@ -1,8 +1,6 @@
 <template>
   <div>
-    <h4 class="">
-      Citing this report
-    </h4>
+    <h4 class="">Citing this report</h4>
     <section id="outbreak-citation" class="my-3 border-top pt-3">
       <p class="mt-2" v-html="genomicsCitation" />
     </section>
@@ -26,22 +24,16 @@
   </div>
 </template>
 
-<script>
-import Vue from 'vue';
-
+<script setup>
 import { lazyLoad } from '@/js/lazy-load';
 
-export default Vue.extend({
-  name: 'GenomicsCitation',
-  components: {
-    ShareReport: lazyLoad('ShareReport'),
-  },
-  props: {
-    title: String,
-    mutationAuthors: String,
-    genomicsCitation: String,
-    url: String,
-    today: String,
-  },
+const ShareReport = lazyLoad('ShareReport');
+
+const props = defineProps({
+  title: String,
+  mutationAuthors: String,
+  genomicsCitation: String,
+  url: String,
+  today: String,
 });
 </script>

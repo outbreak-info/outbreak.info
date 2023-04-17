@@ -19,7 +19,7 @@
         </marker>
       </defs>
       <g
-        ref="xAxis"
+        ref="xAxisRef"
         :transform="`translate(${margin.left}, ${height - margin.bottom})`"
         class="epi-axis axis--x"
       />
@@ -33,252 +33,241 @@
   </div>
 </template>
 
-<script>
-import Vue from 'vue';
+<script setup>
+import { onMounted, ref, watch } from 'vue';
 import { axisBottom } from 'd3-axis';
 import { select } from 'd3-selection';
 import { scaleLinear } from 'd3-scale';
 
-const width = 125;
-const height = 75;
-const margin = {
+const props = defineProps({
+  slope1: Number,
+  slope2: Number,
+});
+
+const width = ref(125);
+const height = ref(75);
+const margin = ref({
   top: 5,
   right: 50,
   bottom: 5,
   left: 5,
+});
+const x = ref(scaleLinear());
+const y = ref(scaleLinear());
+const xAxis = ref(null);
+const yMax = ref(0.5);
+const svg = ref(null);
+const chart = ref(null);
+const line = ref(null);
+// variables to replace this.$refs
+const xAxisRef = ref(null);
+
+const updateScales = () => {
+  x.value = x.value
+    .range([0, width.value - margin.value.left - margin.value.right])
+    .domain([0, 1]);
+
+  y.value = scaleLinear()
+    .range([height.value - margin.value.top - margin.value.bottom, 0])
+    .domain([0, yMax.value]);
+
+  xAxis.value = axisBottom(x.value).ticks(0).tickSizeOuter(0);
+
+  select(xAxisRef.value).call(xAxis.value);
+
+  // this.yAxis = axisLeft(this.y).ticks(this.numYTicks);
+
+  // select(this.$refs.yAxis).call(this.yAxis);
 };
 
-export default Vue.extend({
-  name: 'SlopeComparison',
-  components: {},
-  props: {
-    slope1: Number,
-    slope2: Number,
+const drawSlopes = () => {
+  // --- poly fill and swoopy arrow ---
+  chart.value
+    .selectAll('.fit-diff')
+    .data(
+      props.slope1 && props.slope2
+        ? [
+            {
+              slope1: props.slope1,
+              slope2: props.slope2,
+            },
+          ]
+        : [],
+    )
+    .join(
+      (enter) =>
+        enter
+          .append('polygon')
+          .attr('class', (d) =>
+            props.slope1 < props.slope2 ? 'fit-diff worse' : 'fit-diff better',
+          )
+          .attr(
+            'points',
+            (d) =>
+              `${x.value(0)},${y.value(0)} ${x.value(1)},${y.value(
+                d.slope1,
+              )} ${x.value(1)},${y.value(d.slope2)}`,
+          ),
+      (update) =>
+        update.attr(
+          'points',
+          (d) =>
+            `${x.value(0)},${y.value(0)} ${x.value(1)},${y.value(
+              d.slope1,
+            )} ${x.value(1)},${y.value(d.slope2)}`,
+        ),
+      (exit) => exit.call((exit) => exit.remove()),
+    );
+
+  chart.value
+    .selectAll('.swoopy-arrow')
+    .data(
+      props.slope1 && props.slope2
+        ? [
+            {
+              slope1: props.slope1,
+              slope2: props.slope2,
+            },
+          ]
+        : [],
+    )
+    .join(
+      (enter) =>
+        enter
+          .append('path')
+          .attr('transform', 'translate(15, 0)')
+          .attr('marker-end', 'url(#arrowhead)')
+          .attr(
+            'd',
+            (d) =>
+              `M${x.value(1)} ${y.value(d.slope1)} C ${
+                x.value(1) + 10
+              } ${y.value(d.slope1)}, ${x.value(1) + 10} ${y.value(
+                d.slope2,
+              )}, ${x.value(1) - 4} ${y.value(d.slope2)}`,
+          )
+          .attr('class', (d) =>
+            d.slope1 < d.slope2 ? 'swoopy-arrow worse' : 'swoopy-arrow better',
+          ),
+      (update) =>
+        update
+          .attr(
+            'd',
+            (d) =>
+              `M${x.value(1)} ${y.value(d.slope1)} C ${
+                x.value(1) + 10
+              } ${y.value(d.slope1)}, ${x.value(1) + 10} ${y.value(
+                d.slope2,
+              )}, ${x.value(1) - 4} ${y.value(d.slope2)}`,
+          )
+          .attr('class', (d) =>
+            d.slope1 < d.slope2 ? 'swoopy-arrow worse' : 'swoopy-arrow better',
+          ),
+      (exit) => exit.call((exit) => exit.remove()),
+    );
+
+  // --- slope lines ---
+  chart.value
+    .selectAll('.recent-slope')
+    .data(props.slope2 ? [props.slope2] : [])
+    .join(
+      (enter) =>
+        enter
+          .append('line')
+          .attr('x1', x.value(0))
+          .attr('y1', y.value(0))
+          .attr('x2', x.value(1))
+          .attr('y2', (d) => y.value(d))
+          .attr('class', 'recent-slope'),
+      (update) =>
+        update
+          .attr('x1', x.value(0))
+          .attr('y1', y.value(0))
+          .attr('x2', x.value(1))
+          .attr('y2', (d) => y.value(d)),
+      (exit) => exit.call((exit) => exit.remove()),
+    );
+
+  chart.value
+    .selectAll('.penultimate-slope')
+    .data(props.slope1 ? [props.slope1] : [])
+    .join(
+      (enter) =>
+        enter
+          .append('line')
+          .attr('x1', x.value(0))
+          .attr('y1', y.value(0))
+          .attr('x2', x.value(1))
+          .attr('y2', (d) => y.value(d))
+          .attr('class', 'penultimate-slope'),
+      (update) =>
+        update
+          .attr('x1', x.value(0))
+          .attr('y1', y.value(0))
+          .attr('x2', x.value(1))
+          .attr('y2', (d) => y.value(d)),
+      (exit) => exit.call((exit) => exit.remove()),
+    );
+
+  // --- circles ---
+  chart.value
+    .selectAll('.recent-slope-end')
+    .data(props.slope2 ? [props.slope2] : [])
+    .join(
+      (enter) =>
+        enter
+          .append('circle')
+          .attr('r', 3)
+          .attr('cx', x.value(1))
+          .attr('cy', (d) => y.value(d))
+          .attr('class', 'recent-slope-end'),
+      (update) => update.attr('cx', x.value(1)).attr('cy', (d) => y.value(d)),
+      (exit) => exit.call((exit) => exit.remove()),
+    );
+
+  chart.value
+    .selectAll('.penultimate-slope-end')
+    .data(props.slope1 ? [props.slope1] : [])
+    .join(
+      (enter) =>
+        enter
+          .append('circle')
+          .attr('r', 3)
+          .attr('cx', x.value(1))
+          .attr('cy', (d) => y.value(d))
+          .attr('class', 'penultimate-slope-end'),
+      (update) => update.attr('cx', x.value(1)).attr('cy', (d) => y.value(d)),
+      (exit) => exit.call((exit) => exit.remove()),
+    );
+};
+
+const updatePlot = () => {
+  updateScales();
+  drawSlopes();
+};
+
+const setupPlot = () => {
+  svg.value = select('svg.slope-comparison');
+  chart.value = svg.value.select('.slopes');
+};
+
+watch(
+  () => props.slope1,
+  () => {
+    updatePlot();
   },
-  data() {
-    return {
-      width,
-      height,
-      margin,
+);
 
-      // scales
-      x: scaleLinear(),
-      y: scaleLinear(),
-      xAxis: null,
-      yMax: 0.5,
-      // yAxis: null,
-      // refs
-      svg: null,
-      chart: null,
-      // methods
-      line: null,
-    };
+watch(
+  () => props.slope2,
+  () => {
+    updatePlot();
   },
-  watch: {
-    slope1() {
-      this.updatePlot();
-    },
-    slope2() {
-      this.updatePlot();
-    },
-  },
-  mounted() {
-    this.setupPlot();
-    this.updatePlot();
-  },
-  methods: {
-    updatePlot() {
-      this.updateScales();
-      this.drawSlopes();
-    },
-    setupPlot() {
-      this.svg = select('svg.slope-comparison');
-      this.chart = this.svg.select('.slopes');
-    },
-    updateScales() {
-      this.x = this.x
-        .range([0, this.width - this.margin.left - this.margin.right])
-        .domain([0, 1]);
+);
 
-      this.y = scaleLinear()
-        .range([this.height - this.margin.top - this.margin.bottom, 0])
-        .domain([0, this.yMax]);
-
-      this.xAxis = axisBottom(this.x).ticks(0).tickSizeOuter(0);
-
-      select(this.$refs.xAxis).call(this.xAxis);
-
-      // this.yAxis = axisLeft(this.y).ticks(this.numYTicks);
-
-      // select(this.$refs.yAxis).call(this.yAxis);
-    },
-    drawSlopes() {
-      // --- poly fill and swoopy arrow ---
-      this.chart
-        .selectAll('.fit-diff')
-        .data(
-          this.slope1 && this.slope2
-            ? [
-                {
-                  slope1: this.slope1,
-                  slope2: this.slope2,
-                },
-              ]
-            : [],
-        )
-        .join(
-          (enter) =>
-            enter
-              .append('polygon')
-              .attr('class', (d) =>
-                this.slope1 < this.slope2
-                  ? 'fit-diff worse'
-                  : 'fit-diff better',
-              )
-              .attr(
-                'points',
-                (d) =>
-                  `${this.x(0)},${this.y(0)} ${this.x(1)},${this.y(
-                    d.slope1,
-                  )} ${this.x(1)},${this.y(d.slope2)}`,
-              ),
-          (update) =>
-            update.attr(
-              'points',
-              (d) =>
-                `${this.x(0)},${this.y(0)} ${this.x(1)},${this.y(
-                  d.slope1,
-                )} ${this.x(1)},${this.y(d.slope2)}`,
-            ),
-          (exit) => exit.call((exit) => exit.remove()),
-        );
-
-      this.chart
-        .selectAll('.swoopy-arrow')
-        .data(
-          this.slope1 && this.slope2
-            ? [
-                {
-                  slope1: this.slope1,
-                  slope2: this.slope2,
-                },
-              ]
-            : [],
-        )
-        .join(
-          (enter) =>
-            enter
-              .append('path')
-              .attr('transform', 'translate(15, 0)')
-              .attr('marker-end', 'url(#arrowhead)')
-              .attr(
-                'd',
-                (d) =>
-                  `M${this.x(1)} ${this.y(d.slope1)} C ${
-                    this.x(1) + 10
-                  } ${this.y(d.slope1)}, ${this.x(1) + 10} ${this.y(
-                    d.slope2,
-                  )}, ${this.x(1) - 4} ${this.y(d.slope2)}`,
-              )
-              .attr('class', (d) =>
-                d.slope1 < d.slope2
-                  ? 'swoopy-arrow worse'
-                  : 'swoopy-arrow better',
-              ),
-          (update) =>
-            update
-              .attr(
-                'd',
-                (d) =>
-                  `M${this.x(1)} ${this.y(d.slope1)} C ${
-                    this.x(1) + 10
-                  } ${this.y(d.slope1)}, ${this.x(1) + 10} ${this.y(
-                    d.slope2,
-                  )}, ${this.x(1) - 4} ${this.y(d.slope2)}`,
-              )
-              .attr('class', (d) =>
-                d.slope1 < d.slope2
-                  ? 'swoopy-arrow worse'
-                  : 'swoopy-arrow better',
-              ),
-          (exit) => exit.call((exit) => exit.remove()),
-        );
-
-      // --- slope lines ---
-      this.chart
-        .selectAll('.recent-slope')
-        .data(this.slope2 ? [this.slope2] : [])
-        .join(
-          (enter) =>
-            enter
-              .append('line')
-              .attr('x1', this.x(0))
-              .attr('y1', this.y(0))
-              .attr('x2', this.x(1))
-              .attr('y2', (d) => this.y(d))
-              .attr('class', 'recent-slope'),
-          (update) =>
-            update
-              .attr('x1', this.x(0))
-              .attr('y1', this.y(0))
-              .attr('x2', this.x(1))
-              .attr('y2', (d) => this.y(d)),
-          (exit) => exit.call((exit) => exit.remove()),
-        );
-
-      this.chart
-        .selectAll('.penultimate-slope')
-        .data(this.slope1 ? [this.slope1] : [])
-        .join(
-          (enter) =>
-            enter
-              .append('line')
-              .attr('x1', this.x(0))
-              .attr('y1', this.y(0))
-              .attr('x2', this.x(1))
-              .attr('y2', (d) => this.y(d))
-              .attr('class', 'penultimate-slope'),
-          (update) =>
-            update
-              .attr('x1', this.x(0))
-              .attr('y1', this.y(0))
-              .attr('x2', this.x(1))
-              .attr('y2', (d) => this.y(d)),
-          (exit) => exit.call((exit) => exit.remove()),
-        );
-
-      // --- circles ---
-      this.chart
-        .selectAll('.recent-slope-end')
-        .data(this.slope2 ? [this.slope2] : [])
-        .join(
-          (enter) =>
-            enter
-              .append('circle')
-              .attr('r', 3)
-              .attr('cx', this.x(1))
-              .attr('cy', (d) => this.y(d))
-              .attr('class', 'recent-slope-end'),
-          (update) => update.attr('cx', this.x(1)).attr('cy', (d) => this.y(d)),
-          (exit) => exit.call((exit) => exit.remove()),
-        );
-
-      this.chart
-        .selectAll('.penultimate-slope-end')
-        .data(this.slope1 ? [this.slope1] : [])
-        .join(
-          (enter) =>
-            enter
-              .append('circle')
-              .attr('r', 3)
-              .attr('cx', this.x(1))
-              .attr('cy', (d) => this.y(d))
-              .attr('class', 'penultimate-slope-end'),
-          (update) => update.attr('cx', this.x(1)).attr('cy', (d) => this.y(d)),
-          (exit) => exit.call((exit) => exit.remove()),
-        );
-    },
-  },
+onMounted(() => {
+  setupPlot();
+  updatePlot();
 });
 </script>
 

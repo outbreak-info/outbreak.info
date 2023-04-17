@@ -61,32 +61,20 @@
   </div>
 </template>
 
-<script>
-import Vue from 'vue';
+<script setup>
+import { computed, ref } from 'vue';
 
-export default Vue.extend({
-  name: 'TrialType',
-  components: {},
-  props: {
-    design: Object,
-    arms: Array,
-  },
-  data() {
-    return {
-      phaseWidth: 37,
-      triangleWidth: 10,
-      allPhases: [1, 2, 3, 4],
-      spacer: 7,
-      height: 17,
-    };
-  },
-  computed: {
-    width() {
-      return this.phaseWidth * 5 + this.spacer * 4;
-    },
-  },
-  watch: {},
-  methods: {},
+const props = defineProps({
+  design: Object,
+  arms: Array,
+});
+
+const phaseWidth = ref(37);
+const spacer = ref(7);
+const height = ref(17);
+
+const width = computed(() => {
+  return phaseWidth.value * 5 + spacer.value * 4;
 });
 </script>
 

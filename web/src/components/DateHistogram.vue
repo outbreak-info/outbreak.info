@@ -13,7 +13,7 @@
       />
     </svg>
     <svg
-      :hidden="!filterable"
+      :class="{ hidden: !filterable }"
       :width="width + margin.left + margin.right"
       height="38"
     >
@@ -63,9 +63,9 @@
   </div>
 </template>
 
-<script>
-import Vue from 'vue';
-
+<script setup>
+import { computed, nextTick, onMounted, ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import { nest } from 'd3-collection';
 import { axisBottom } from 'd3-axis';
 import { min, max, sum, extent } from 'd3-array';
@@ -75,234 +75,242 @@ import { scaleLinear, scaleTime } from 'd3-scale';
 import { timeWeek } from 'd3-time';
 import { timeFormat, timeParse, isoParse } from 'd3-time-format';
 
-export default Vue.extend({
-  name: 'DateHistogram',
-  props: {
-    data: Array,
-    id: String,
-    minVal: Date,
-    maxVal: Date,
-    filterable: {
-      type: Boolean,
-      default: true,
-    },
-    width: {
-      type: Number,
-      default: 125,
-    },
-    height: {
-      type: Number,
-      default: 60,
-    },
+const props = defineProps({
+  data: Array,
+  id: String,
+  minVal: Date,
+  maxVal: Date,
+  filterable: {
+    type: Boolean,
+    default: true,
   },
-  data() {
-    return {
-      margin: {
-        top: 5,
-        bottom: 25,
-        left: 15,
-        right: 15,
-      },
-      // data
-      bins: null,
-      // axes,
-      x: null,
-      y: null,
-      xAxis: null,
-      // filters
-      selectedMin: null,
-      selectedMax: null,
-      // refs
-      svg: null,
-      xAxisRef: null,
-      // methods
-    };
+  width: {
+    type: Number,
+    default: 125,
   },
-  computed: {
-    sliderRight() {
-      return this.x && this.selectedMax ? this.x(this.selectedMax) : 8;
-    },
-    sliderLeft() {
-      return this.x && this.selectedMin ? this.x(this.selectedMin) : 0;
-    },
+  height: {
+    type: Number,
+    default: 60,
   },
-  watch: {
-    data() {
-      if (this.data) {
-        if (this.filterable) {
-          this.setSliders();
-        }
-        this.updatePlot();
+});
+
+// instead of this.$route
+const route = useRoute();
+// instead of this.$router
+const router = useRouter();
+
+const margin = ref({
+  top: 5,
+  bottom: 25,
+  left: 15,
+  right: 15,
+});
+// data
+const bins = ref(null);
+// axes
+const x = ref(null);
+const y = ref(null);
+const xAxis = ref(null);
+// filters
+const selectedMin = ref(null);
+const selectedMax = ref(null);
+// refs
+const svg = ref(null);
+const xAxisRef = ref(null);
+// below variables to replace this.$refs
+const hist = ref(null);
+const x_axis = ref(null);
+const slider_left = ref(null);
+const slider_right = ref(null);
+
+const sliderRight = computed(() => {
+  return x.value && selectedMax.value ? x.value(selectedMax.value) : 8;
+});
+
+const sliderLeft = computed(() => {
+  return x.value && selectedMin.value ? x.value(selectedMin.value) : 0;
+});
+
+const formatLimit = (val) => {
+  return timeFormat('%d %b %Y')(val);
+};
+
+const formatDate = (val) => {
+  return timeFormat('%Y-%m-%d')(val);
+};
+
+const parseDate = (val) => {
+  return timeParse('%Y-%m-%d')(val);
+};
+
+const setupPlot = () => {
+  svg.value = select(hist.value);
+  xAxisRef.value = select(x_axis.value);
+};
+
+const updatePlot = () => {
+  if (props.data && props.width) {
+    updateAxes();
+    drawPlot();
+  }
+};
+
+const updateAxes = () => {
+  const dateRange = extent(props.data, (d) => d.date);
+
+  // x-axis
+  // Add 1 week pad on either side of the histogram to pad the ends
+  x.value = scaleTime()
+    .range([0, props.width])
+    .domain([
+      timeWeek.offset(dateRange[0], -1),
+      timeWeek.offset(dateRange[1], 1),
+    ])
+    .clamp(true);
+
+  xAxis.value = axisBottom(x.value).tickSizeOuter(0).ticks(2);
+  xAxisRef.value.call(xAxis.value);
+
+  selectAll('.axis').call(xAxis.value);
+
+  // calculate bins
+  // rolled up to every week
+  bins.value = nest()
+    .key((d) => timeWeek(d.date))
+    .rollup((values) => sum(values, (d) => d.count))
+    .entries(props.data);
+
+  // gotta reconvert dates from strings
+  bins.value.forEach((d) => {
+    d['date'] = isoParse(d.key);
+  });
+
+  // // y-axis
+  y.value = scaleLinear()
+    .range([props.height, 0])
+    .domain([0, max(bins.value, (d) => d.value)]);
+};
+
+const changeFilters = () => {
+  // renamed it to avoid duplicated declare since route is already defined
+  const routeObj = route.query;
+
+  router.push({
+    name: 'Resources',
+    state: {
+      disableScroll: true,
+    },
+    query: {
+      q: routeObj.q,
+      page: routeObj.page,
+      size: routeObj.size,
+      filter: routeObj.filter,
+      sort: routeObj.sort,
+      dateMin: formatDate(selectedMin.value),
+      dateMax: formatDate(selectedMax.value),
+    },
+  });
+};
+
+const setSliders = () => {
+  selectedMin.value = route.query.dateMin
+    ? parseDate(route.query.dateMin)
+    : min(
+        props.data.filter((d) => d.count),
+        (x) => x.date,
+      );
+  selectedMax.value = route.query.dateMax
+    ? parseDate(route.query.dateMax)
+    : max(
+        props.data.filter((d) => d.count),
+        (x) => x.date,
+      );
+};
+
+const setupDrag = () => {
+  // draggable filters
+  select(slider_left.value).call(
+    drag()
+      .on('drag', () => updateDrag('left'))
+      .on('end', () => changeFilters()),
+  );
+  select(slider_right.value).call(
+    drag()
+      .on('drag', () => updateDrag('right'))
+      .on('end', () => changeFilters()),
+  );
+};
+
+const updateDrag = (side) => {
+  const newVal = x.value.invert(event.x);
+  if (side === 'left') {
+    selectedMin.value = newVal;
+    select(slider_left.value).attr(
+      'transform',
+      `translate(${x.value(selectedMin.value)},0)`,
+    );
+  } else {
+    selectedMax.value = newVal;
+
+    select(slider_right.value).attr(
+      'transform',
+      `translate(${x.value(selectedMax.value) - 8},0)`,
+    );
+  }
+};
+
+const drawPlot = () => {
+  const barSelector = svg.value.selectAll('rect').data(bins.value);
+
+  barSelector.join(
+    (enter) => {
+      enter
+        .append('rect')
+        .attr('class', 'date-bar')
+        .style('fill', '#66c2a5')
+        // .style("fill", d => d.date <= this.selectedMax && d.date >= this.selectedMin ? "#66c2a5" : "#bababa")
+        .attr('x', (d) => x.value(d.date))
+        .attr(
+          'width',
+          (d) => (x.value(timeWeek.offset(d.date, 1)) - x.value(d.date)) * 0.9,
+        )
+        .attr('y', (d) => y.value(d.value))
+        .attr('height', (d) => y.value(0) - y.value(d.value));
+    },
+    (update) =>
+      update
+        .style('fill', '#66c2a5')
+        .attr('x', (d) => x.value(d.date))
+        .attr(
+          'width',
+          (d) => (x.value(timeWeek.offset(d.date, 1)) - x.value(d.date)) * 0.9,
+        )
+        .attr('y', (d) => y.value(d.value))
+        .attr('height', (d) => y.value(0) - y.value(d.value)),
+  );
+};
+
+watch(
+  () => props.data,
+  () => {
+    if (props.data) {
+      if (props.filterable) {
+        setSliders();
       }
-    },
-  },
-  mounted() {
-    this.setupPlot();
-    this.updatePlot();
-    if (this.filterable) {
-      this.setSliders();
-      this.$nextTick(() => this.setupDrag());
+      updatePlot();
     }
   },
-  methods: {
-    formatLimit(val) {
-      return timeFormat('%d %b %Y')(val);
-    },
-    formatDate(val) {
-      return timeFormat('%Y-%m-%d')(val);
-    },
-    parseDate(val) {
-      return timeParse('%Y-%m-%d')(val);
-    },
-    updateFilterLimits() {
-      this.selectedMin = new Date(2020, 3, 1);
-      // selectedMax: new Date(2020,8,1),this.minVal ;
-      this.selectedMax = new Date(2020, 6, 1);
-    },
-    setupPlot() {
-      this.svg = select(this.$refs.hist);
-      this.xAxisRef = select(this.$refs.x_axis);
-    },
-    updatePlot() {
-      if (this.data && this.width) {
-        this.updateAxes();
-        this.drawPlot();
-      }
-    },
-    updateAxes() {
-      const dateRange = extent(this.data, (d) => d.date);
+  { deep: true },
+);
 
-      // x-axis
-      // Add 1 week pad on either side of the histogram to pad the ends
-      this.x = scaleTime()
-        .range([0, this.width])
-        .domain([
-          timeWeek.offset(dateRange[0], -1),
-          timeWeek.offset(dateRange[1], 1),
-        ])
-        .clamp(true);
-
-      this.xAxis = axisBottom(this.x).tickSizeOuter(0).ticks(2);
-      this.xAxisRef.call(this.xAxis);
-
-      selectAll('.axis').call(this.xAxis);
-
-      // calculate bins
-      // rolled up to every week
-      this.bins = nest()
-        .key((d) => timeWeek(d.date))
-        .rollup((values) => sum(values, (d) => d.count))
-        .entries(this.data);
-
-      // gotta reconvert dates from strings
-      this.bins.forEach((d) => {
-        d['date'] = isoParse(d.key);
-      });
-
-      // // y-axis
-      this.y = scaleLinear()
-        .range([this.height, 0])
-        .domain([0, max(this.bins, (d) => d.value)]);
-    },
-    changeFilters() {
-      const route = this.$route.query;
-
-      this.$router.push({
-        name: 'Resources',
-        params: {
-          disableScroll: true,
-        },
-        query: {
-          q: route.q,
-          page: route.page,
-          size: route.size,
-          filter: route.filter,
-          sort: route.sort,
-          dateMin: this.formatDate(this.selectedMin),
-          dateMax: this.formatDate(this.selectedMax),
-        },
-      });
-    },
-    setSliders() {
-      this.selectedMin = this.$route.query.dateMin
-        ? this.parseDate(this.$route.query.dateMin)
-        : min(
-            this.data.filter((d) => d.count),
-            (x) => x.date,
-          );
-      this.selectedMax = this.$route.query.dateMax
-        ? this.parseDate(this.$route.query.dateMax)
-        : max(
-            this.data.filter((d) => d.count),
-            (x) => x.date,
-          );
-    },
-    setupDrag() {
-      // draggable filters
-      select(this.$refs.slider_left).call(
-        drag()
-          .on('drag', () => this.updateDrag('left'))
-          .on('end', () => this.changeFilters()),
-      );
-      select(this.$refs.slider_right).call(
-        drag()
-          .on('drag', () => this.updateDrag('right'))
-          .on('end', () => this.changeFilters()),
-      );
-    },
-    updateDrag(side) {
-      const newVal = this.x.invert(event.x);
-      if (side === 'left') {
-        this.selectedMin = newVal;
-        select(this.$refs.slider_left).attr(
-          'transform',
-          `translate(${this.x(this.selectedMin)},0)`,
-        );
-      } else {
-        this.selectedMax = newVal;
-
-        select(this.$refs.slider_right).attr(
-          'transform',
-          `translate(${this.x(this.selectedMax) - 8},0)`,
-        );
-      }
-
-      // selectAll(".date-histogram")
-      // .style("fill", d => d.date <= this.selectedMax && d.date >= this.selectedMin ? "#66c2a5" : "#bababa")
-    },
-    drawPlot() {
-      const barSelector = this.svg.selectAll('rect').data(this.bins);
-
-      barSelector.join(
-        (enter) => {
-          enter
-            .append('rect')
-            .attr('class', 'date-bar')
-            .style('fill', '#66c2a5')
-            // .style("fill", d => d.date <= this.selectedMax && d.date >= this.selectedMin ? "#66c2a5" : "#bababa")
-            .attr('x', (d) => this.x(d.date))
-            .attr(
-              'width',
-              (d) =>
-                (this.x(timeWeek.offset(d.date, 1)) - this.x(d.date)) * 0.9,
-            )
-            .attr('y', (d) => this.y(d.value))
-            .attr('height', (d) => this.y(0) - this.y(d.value));
-        },
-        (update) =>
-          update
-            .style('fill', '#66c2a5')
-            .attr('x', (d) => this.x(d.date))
-            .attr(
-              'width',
-              (d) =>
-                (this.x(timeWeek.offset(d.date, 1)) - this.x(d.date)) * 0.9,
-            )
-            .attr('y', (d) => this.y(d.value))
-            .attr('height', (d) => this.y(0) - this.y(d.value)),
-      );
-    },
-  },
+onMounted(() => {
+  setupPlot();
+  updatePlot();
+  if (props.filterable) {
+    setSliders();
+    // this.$nextTick in optionsAPI
+    nextTick(() => setupDrag());
+  }
 });
 </script>
 

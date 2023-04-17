@@ -6,11 +6,14 @@ import { nest } from 'd3-collection';
 import { timeParse } from 'd3-time-format';
 
 import { getAll } from '@/api/biothings.js';
+import { adminStore } from '@/stores/adminStore';
+import { geoStore } from '@/stores/geoStore';
 
-import store from '@/store';
+const store = adminStore();
+const storeGeo = geoStore();
 
 export const getStackedRegions = (apiUrl) => {
-  store.state.admin.loading = true;
+  store.$patch({ loading: true });
   const parseDate = timeParse('%Y-%m-%d');
 
   return from(
@@ -50,7 +53,7 @@ export const getStackedRegions = (apiUrl) => {
 
         // loop over each region for those values
         // looping over dict rather than values themselves to make sure I get 0s for everywhere.
-        store.state.geo.regionDict.forEach((region) => {
+        storeGeo.regionDict.forEach((region) => {
           const filtered = d.values.filter((d) => d.key === region.region);
           if (filtered.length === 1) {
             objC[filtered[0].key] = filtered[0].value.confirmed;
@@ -78,12 +81,12 @@ export const getStackedRegions = (apiUrl) => {
       console.log(e);
       return from([]);
     }),
-    finalize(() => (store.state.admin.loading = false)),
+    finalize(() => store.$patch({ loading: false })),
   );
 };
 
 export const getCountryData = (apiUrl, region, variable) => {
-  store.state.admin.loading = true;
+  store.$patch({ loading: true });
   const parseDate = timeParse('%Y-%m-%d');
 
   return forkJoin([
@@ -136,6 +139,6 @@ export const getCountryData = (apiUrl, region, variable) => {
       console.log(e);
       return from([]);
     }),
-    finalize(() => (store.state.admin.loading = false)),
+    finalize(() => store.$patch({ loading: false })),
   );
 };

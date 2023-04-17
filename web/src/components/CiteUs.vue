@@ -1,21 +1,15 @@
 <template>
   <div>
-    <h5 id="citing">
-      Please cite the authors and curators of the data:
-    </h5>
+    <h5 id="citing">Please cite the authors and curators of the data:</h5>
 
     <div id="outbreakinfo-citation" class="mb-2 py-3 border-top border-bottom">
       <div class="my-32">
-        <h5 class="m-0 mb-1">
-          outbreak.info Genomics Reports
-        </h5>
+        <h5 class="m-0 mb-1">outbreak.info Genomics Reports</h5>
         <span v-html="genomicsCitation" />
       </div>
 
       <div class="my-3">
-        <h5 class="m-0 mb-1">
-          outbreak.info Research Library
-        </h5>
+        <h5 class="m-0 mb-1">outbreak.info Research Library</h5>
         <span v-html="resourcesCitation" />
       </div>
 
@@ -40,9 +34,7 @@
     </div>
 
     <div id="epi-citation" class="mb-2 py-3 border-bottom">
-      <h6 class="m-0">
-        COVID-19 Cases &amp; Deaths data
-      </h6>
+      <h6 class="m-0">COVID-19 Cases &amp; Deaths data</h6>
       <div
         v-for="(source, eIdx) in sources"
         :key="eIdx"
@@ -50,7 +42,7 @@
       >
         <span class="text-highlight">{{ source.scope }}:</span>
         <span v-html="source.citation" />
-        <small v-if="source.license" class="d-block  mt-1">
+        <small v-if="source.license" class="d-block mt-1">
           <span class="font-weight-700">data license</span>
           :
           <a
@@ -68,9 +60,7 @@
     </div>
 
     <div id="genomics-citation" class="mb-2 py-3 border-bottom">
-      <h6 class="m-0">
-        Genomic data
-      </h6>
+      <h6 class="m-0">Genomic data</h6>
       <div v-for="(source, gIdx) in genomicSources" :key="gIdx">
         <span class="text-highlight">{{ source.name }}:</span>
         <span v-html="source.citation" />
@@ -92,14 +82,12 @@
     </div>
 
     <div id="resources-citation" class="mb-2 py-3 border-bottom">
-      <h6 class="m-0">
-        Research Library
-      </h6>
+      <h6 class="m-0">Research Library</h6>
       <div v-for="(sourceGroup, rIdx) in resources" :key="rIdx">
         <div
           v-for="(source, sIdx) in sourceGroup.sources"
           :key="sIdx"
-          class="mb-4  line-height-1"
+          class="mb-4 line-height-1"
         >
           <span class="text-highlight">{{ source.name }}:</span>
           <span v-html="source.citation" />
@@ -123,22 +111,18 @@
   </div>
 </template>
 
-<script>
-import Vue from 'vue';
-import { mapState } from 'vuex';
+<script setup>
+import { storeToRefs } from 'pinia';
+import { adminStore } from '@/stores/adminStore';
 
-export default Vue.extend({
-  name: 'CiteUs',
-  components: {},
-  computed: {
-    ...mapState('admin', [
-      'genomicsCitation',
-      'resourcesCitation',
-      'sources',
-      'geoSources',
-      'resources',
-      'genomicSources',
-    ]),
-  },
-});
+const store = adminStore();
+
+const {
+  genomicsCitation,
+  resourcesCitation,
+  sources,
+  geoSources,
+  resources,
+  genomicSources,
+} = storeToRefs(store);
 </script>

@@ -40,95 +40,95 @@
   </div>
 </template>
 
-<script>
-import Vue from 'vue';
-import { mapState } from 'vuex';
+<script setup>
+import { computed, ref } from 'vue';
+import { useRoute } from 'vue-router';
+import { event } from 'vue-gtag';
 import { timeFormat } from 'd3-time-format';
 
 import { getPng } from '@/js/get_svg.js';
 import { lazyLoad } from '@/js/lazy-load';
+import { adminStore } from '@/stores/adminStore';
 
-export default Vue.extend({
-  name: 'DataSource',
-  components: {
-    DownloadData: lazyLoad('DownloadData'),
-    DataUpdated: lazyLoad('DataUpdated'),
-  },
-  props: {
-    ids: Array,
-    data: Array,
-    dataType: String,
-    numSvgs: {
-      type: Number,
-      default: 1,
-    },
-    figureRef: String,
-  },
-  data() {
-    return {
-      showSnackbar: false,
-      snackbarText: 'copying figure to the clipboard',
-      copyThreshold: 9,
-    };
-  },
-  computed: {
-    ...mapState('admin', ['sources']),
-    filteredSources() {
-      if (this.ids && this.ids.length) {
-        return this.sources.filter((d) => this.ids.includes(d.id));
-      } else {
-        return this.sources;
-      }
-    },
-    copyable() {
-      return (
-        this.numSvgs <= this.copyThreshold && typeof ClipboardItem == 'function'
-      );
-    },
-    sourceString() {
-      return (
-        this.filteredSources
-          .map((d) => (d.scope ? `${d.name} (${d.scope})` : `${d.name}`))
-          .join('; ') + ', updated daily'
-      );
-    },
-    todayFormatted() {
-      return this.formatDate();
-    },
-  },
-  watch: {},
-  methods: {
-    formatDate(formatString = '%d %b %Y') {
-      const dateString = new Date();
-      const formatDate = timeFormat(formatString);
-      return formatDate(dateString);
-    },
-    copyPng() {
-      this.showSnackbar = true;
-      this.snackbarText = 'copying figure to the clipboard';
-      this.$gtag.event('copy_vis', {
-        event_category: `${this.dataType}_${this.figureRef}_vis`,
-        event_label: `copying |${this.figureRef}| {vis} from [${this.$route.fullPath}]`,
-      });
+const DownloadData = lazyLoad('DownloadData');
+const DataUpdated = lazyLoad('DataUpdated');
 
-      getPng(`svg.${this.figureRef}`, this.sourceString, this.todayFormatted)
-        .then((msg) => {
-          this.snackbarText = msg;
-          setTimeout(() => {
-            this.showSnackbar = false;
-          }, 3000);
-        })
-        .catch((error) => {
-          console.log(error);
-          this.snackbarText = 'Error copying image';
-          setTimeout(() => {
-            this.showSnackbar = false;
-          }, 3000);
-          console.log('Error: in copying that image');
-        });
-    },
+const props = defineProps({
+  ids: Array,
+  data: Array,
+  dataType: String,
+  numSvgs: {
+    type: Number,
+    default: 1,
   },
+  figureRef: String,
 });
+
+// instead of this.$route
+const route = useRoute();
+
+const showSnackbar = ref(false);
+const snackbarText = ref('copying figure to the clipboard');
+const copyThreshold = ref(9);
+
+const store = adminStore();
+
+const filteredSources = computed(() => {
+  if (props.ids && props.ids.length) {
+    return store.$state.sources.filter((d) => props.ids.includes(d.id));
+  } else {
+    return store.$state.sources;
+  }
+});
+
+const copyable = computed(() => {
+  return (
+    props.numSvgs <= copyThreshold.value && typeof ClipboardItem == 'function'
+  );
+});
+
+const sourceString = computed(() => {
+  return (
+    filteredSources.value
+      .map((d) => (d.scope ? `${d.name} (${d.scope})` : `${d.name}`))
+      .join('; ') + ', updated daily'
+  );
+});
+
+const todayFormatted = computed(() => {
+  return formatDate();
+});
+
+const formatDate = (formatString = '%d %b %Y') => {
+  const dateString = new Date();
+  const formatDate = timeFormat(formatString);
+  return formatDate(dateString);
+};
+
+const copyPng = () => {
+  showSnackbar.value = true;
+  snackbarText.value = 'copying figure to the clipboard';
+  event('copy_vis', {
+    event_category: `${props.dataType}_${props.figureRef}_vis`,
+    event_label: `copying |${props.figureRef}| {vis} from [${route.fullPath}]`,
+  });
+
+  getPng(`svg.${props.figureRef}`, sourceString.value, todayFormatted.value)
+    .then((msg) => {
+      snackbarText.value = msg;
+      setTimeout(() => {
+        showSnackbar.value = false;
+      }, 3000);
+    })
+    .catch((error) => {
+      console.log(error);
+      snackbarText.value = 'Error copying image';
+      setTimeout(() => {
+        showSnackbar.value = false;
+      }, 3000);
+      console.log('Error: in copying that image');
+    });
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

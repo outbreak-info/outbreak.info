@@ -28,7 +28,7 @@
             required
           />
           <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
-          <div style="position: absolute; left: -5000px;" aria-hidden="true">
+          <div style="position: absolute; left: -5000px" aria-hidden="true">
             <input
               type="text"
               name="b_4e2de78c4d7538511404a841b_103e6134e0"
@@ -52,16 +52,13 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'EmailSubscription',
-  props: {
-    isFooter: {
-      type: Boolean,
-      default: false,
-    },
+<script setup>
+const props = defineProps({
+  isFooter: {
+    type: Boolean,
+    default: false,
   },
-};
+});
 </script>
 
 <style lang="scss">

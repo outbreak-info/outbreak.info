@@ -24,27 +24,18 @@
   </div>
 </template>
 
-<script>
-import tippy from 'tippy.js';
-
+<script setup>
 import { lazyLoad } from '@/js/lazy-load';
 
 import 'tippy.js/themes/light.css';
 
-export default {
-  name: 'ClinicalTrialSummary',
-  components: {
-    TrialPhase: lazyLoad('TrialPhase'),
-    TrialStatus: lazyLoad('TrialStatus'),
-    TrialType: lazyLoad('TrialType'),
-  },
-  props: {
-    data: Object,
-  },
-  data() {
-    return {};
-  },
-};
+const TrialPhase = lazyLoad('TrialPhase');
+const TrialStatus = lazyLoad('TrialStatus');
+const TrialType = lazyLoad('TrialType');
+
+const props = defineProps({
+  data: Object,
+});
 </script>
 
 <style lang="scss" scoped></style>

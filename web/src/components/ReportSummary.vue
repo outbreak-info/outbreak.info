@@ -210,68 +210,62 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { nextTick, onMounted, ref } from 'vue';
 import tippy from 'tippy.js';
 
 import { lazyLoad } from '@/js/lazy-load';
 
 import 'tippy.js/themes/light.css';
 
-export default {
-  name: 'ReportSummary',
-  components: {
-    CountryMap: lazyLoad('CountryMap'),
-    Warning: lazyLoad('Warning'),
-  },
-  props: {
-    selected: String,
-    dateUpdated: String,
-    locationQueryParams: Object,
-    routeTo: {
-      type: String,
-      default: 'MutationReport',
-    },
-    totalLineage: String,
-    mutationName: String,
-    reportType: String,
-    locationTotals: Array,
-    countries: Array,
-    states: Array,
-  },
-  data() {
-    return {
-      // sizes
-      summaryWidth: 400,
-    };
-  },
-  mounted() {
-    this.setDims();
+const CountryMap = lazyLoad('CountryMap');
+const Warning = lazyLoad('Warning');
 
-    this.$nextTick(() => {
-      window.addEventListener('resize', this.setDims);
-    });
+const props = defineProps({
+  selected: String,
+  dateUpdated: String,
+  locationQueryParams: Object,
+  routeTo: {
+    type: String,
+    default: 'MutationReport',
+  },
+  totalLineage: String,
+  mutationName: String,
+  reportType: String,
+  locationTotals: Array,
+  countries: Array,
+  states: Array,
+});
 
-    tippy('.no-estimate', {
-      content: 'Loading...',
-      maxWidth: '200px',
-      placement: 'bottom',
-      animation: 'fade',
-      theme: 'light',
-      onShow(instance) {
-        let info = instance.reference.dataset.tippyInfo;
-        instance.setContent(info);
-      },
-    });
-  },
-  methods: {
-    setDims() {
-      const summaryFraction = 0.95;
-      this.summaryWidth = document.getElementById('geo-summary')
-        ? document.getElementById('geo-summary').offsetWidth * summaryFraction
-        : 400;
-    },
-  },
+const summaryWidth = ref(400);
+
+const setDims = () => {
+  const summaryFraction = 0.95;
+  summaryWidth.value = document.getElementById('geo-summary')
+    ? document.getElementById('geo-summary').offsetWidth * summaryFraction
+    : 400;
 };
+
+onMounted(() => {
+  setDims();
+
+  // this.$nextTick in optionsAPI
+  nextTick(() => {
+    window.addEventListener('resize', setDims);
+  });
+
+  tippy('.no-estimate', {
+    content: 'Loading...',
+    maxWidth: '200px',
+    placement: 'bottom',
+    animation: 'fade',
+    theme: 'light',
+    onShow(instance) {
+      let info = instance.reference.dataset.tippyInfo;
+      instance.setContent(info);
+    },
+  });
+});
 </script>
 
 <style lang="scss" scoped>

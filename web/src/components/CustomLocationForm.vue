@@ -18,7 +18,7 @@
           placeholder="Select location"
           totalLabel="total sequences"
           :removeOnSelect="false"
-          @click.prevent="submitQuery"
+          @click.prevent.self="submitQuery"
         />
       </div>
       <button
@@ -83,117 +83,109 @@
   </div>
 </template>
 
-<script>
-import Vue from 'vue';
+<script setup>
+import { computed, onMounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
 import uniq from 'lodash/uniq';
 
 import { findLocation } from '@/api/genomics.js';
 import { lazyLoad } from '@/js/lazy-load';
 
-export default {
-  name: 'CustomLocationForm',
-  components: {
-    TypeaheadSelect: lazyLoad('TypeaheadSelect'),
-    // VariantForm,
-  },
-  props: {
-    curated: Array,
-  },
-  data() {
-    return {
-      queryLocation: null,
-      location: null,
-      selectedLineage: null,
-      selectedMutations: [],
-      pango: [],
-      variant: [],
-      muts: [],
-      variantArr: [],
-      submitLabel: null,
-      submitCount: 0,
-    };
-  },
-  computed: {
-    formValid() {
-      return (
-        (this.selectedMutations.length > 0 ||
-          this.selectedLineage ||
-          this.pango.length ||
-          this.variant.length ||
-          this.muts.length) &&
-        this.location
-      );
-    },
-  },
-  mounted() {
-    this.queryLocation = findLocation;
-  },
-  methods: {
-    clearSelection() {
-      this.submitCount += 1;
-    },
-    addVariant() {
-      if (this.selectedLineage && this.selectedMutations.length) {
-        this.variant.push({
-          label: `${this.selectedLineage} + ${this.selectedMutations
-            .map((d) => d.mutation)
-            .join(', ')}`,
-          qParam: `${this.selectedLineage}|${this.selectedMutations
-            .map((d) => d.mutation)
-            .join(',')}`,
-          mutation_string: `(${
-            this.selectedLineage
-          }) AND (${this.selectedMutations
-            .map((d) => d.mutation)
-            .join(' AND ')})`,
-        });
-      } else if (this.selectedLineage) {
-        this.pango.push({
-          label: this.selectedLineage,
-          qParam: this.selectedLineage,
-          mutation_string: this.selectedLineage,
-        });
-      } else if (this.selectedMutations.length) {
-        this.muts.push({
-          label: `${this.selectedMutations.map((d) => d.mutation).join(', ')} ${
-            this.selectedMutations.length === 1 ? 'mutation' : 'variant'
-          }`,
-          qParam: this.selectedMutations.map((d) => d.mutation).join(' AND '),
-          mutation_string: this.selectedMutations
-            .map((d) => d.mutation)
-            .join(' AND '),
-        });
-      }
+const TypeaheadSelect = lazyLoad('TypeaheadSelect');
+// VariantForm,
 
-      this.submitCount += 1;
-    },
-    deleteVariant(idx, variantArr) {
-      variantArr.splice(idx, 1);
-    },
-    submitQuery() {
-      this.addVariant();
-      const pango = uniq(this.pango.map((d) => d.qParam));
-      const variant = uniq(this.variant.map((d) => d.qParam));
-      const muts = uniq(this.muts.map((d) => d.qParam));
+const props = defineProps({
+  curated: Array,
+});
 
-      this.$router.push({
-        name: 'LocationReport',
-        query: {
-          loc: this.location.id,
-          pango: pango,
-          variant: variant,
-          muts: muts,
-          selected: pango.concat(variant, muts).filter((d) => d.length),
-        },
-      });
-    },
-    updateLocation(location) {
-      if (location && location.id) {
-        this.location = location;
-      }
-    },
-  },
+// instead of this.$router
+const router = useRouter();
+
+const queryLocation = ref(null);
+const location = ref(null);
+const selectedLineage = ref(null);
+const selectedMutations = ref([]);
+const pango = ref([]);
+const variant = ref([]);
+const muts = ref([]);
+const submitCount = ref(0);
+
+const formValid = computed(() => {
+  return (
+    (selectedMutations.value.length > 0 ||
+      selectedLineage.value ||
+      pango.value.length ||
+      variant.value.length ||
+      muts.value.length) &&
+    location.value
+  );
+});
+
+const addVariant = () => {
+  if (selectedLineage.value && selectedMutations.value.length) {
+    variant.value.push({
+      label: `${selectedLineage.value} + ${selectedMutations.value
+        .map((d) => d.mutation)
+        .join(', ')}`,
+      qParam: `${selectedLineage.value}|${selectedMutations.value
+        .map((d) => d.mutation)
+        .join(',')}`,
+      mutation_string: `(${
+        selectedLineage.value
+      }) AND (${selectedMutations.value.map((d) => d.mutation).join(' AND ')})`,
+    });
+  } else if (selectedLineage.value) {
+    pango.value.push({
+      label: selectedLineage.value,
+      qParam: selectedLineage.value,
+      mutation_string: selectedLineage.value,
+    });
+  } else if (selectedMutations.value.length) {
+    muts.value.push({
+      label: `${selectedMutations.value.map((d) => d.mutation).join(', ')} ${
+        selectedMutations.value.length === 1 ? 'mutation' : 'variant'
+      }`,
+      qParam: selectedMutations.value.map((d) => d.mutation).join(' AND '),
+      mutation_string: selectedMutations.value
+        .map((d) => d.mutation)
+        .join(' AND '),
+    });
+  }
+
+  submitCount.value += 1;
 };
+
+const submitQuery = () => {
+  addVariant();
+  // renamed for below variables: since pango, variant, musts are already declared
+  const newPango = uniq(pango.value.map((d) => d.qParam));
+  const newVariant = uniq(variant.value.map((d) => d.qParam));
+  const newMuts = uniq(muts.value.map((d) => d.qParam));
+
+  if (location.value) {
+    router.push({
+      name: 'LocationReport',
+      query: {
+        loc: location.value.id,
+        pango: newPango,
+        variant: newVariant,
+        muts: newMuts,
+        selected: newPango.concat(newVariant, newMuts).filter((d) => d.length),
+      },
+    });
+  }
+};
+
+// param renamed as locationV to avoid duplication error
+const updateLocation = (locationV) => {
+  if (locationV && locationV.id) {
+    location.value = locationV;
+  }
+};
+
+onMounted(() => {
+  queryLocation.value = findLocation;
+});
 </script>
 
 <style lang="scss" scoped>

@@ -5,11 +5,11 @@
       <g>
         <polygon
           class="polygon-phase"
-          :points="
-            `0,0 ${phaseWidth - 2 * triangleWidth},0 ${phaseWidth -
-              triangleWidth},${height / 2} ${phaseWidth -
-              2 * triangleWidth},${height} 0,${height}`
-          "
+          :points="`0,0 ${phaseWidth - 2 * triangleWidth},0 ${
+            phaseWidth - triangleWidth
+          },${height / 2} ${
+            phaseWidth - 2 * triangleWidth
+          },${height} 0,${height}`"
         />
         <text
           class="text-phase"
@@ -23,19 +23,17 @@
         v-for="(phase, idx) in allPhases"
         :key="idx"
         :class="{ 'current-phase': phases.includes(phase) }"
-        :transform="
-          `translate(${(phaseWidth - triangleWidth + spacer) * (idx + 1) -
-            triangleWidth},0)`
-        "
+        :transform="`translate(${
+          (phaseWidth - triangleWidth + spacer) * (idx + 1) - triangleWidth
+        },0)`"
       >
         <polygon
           class="polygon-phase"
-          :points="
-            `0,0 ${phaseWidth - triangleWidth},0 ${phaseWidth},${height /
-              2} ${phaseWidth -
-              triangleWidth},${height} 0,${height} ${triangleWidth},${height /
-              2}`
-          "
+          :points="`0,0 ${phaseWidth - triangleWidth},0 ${phaseWidth},${
+            height / 2
+          } ${
+            phaseWidth - triangleWidth
+          },${height} 0,${height} ${triangleWidth},${height / 2}`"
         />
         <text class="text-phase" :x="phaseWidth / 2" :y="height / 2">
           {{ phase }}
@@ -45,39 +43,30 @@
   </div>
 </template>
 
-<script>
-import Vue from 'vue';
+<script setup>
+import { computed, ref } from 'vue';
 
-export default Vue.extend({
-  name: 'TrialPhase',
-  props: {
-    phases: Array,
-    includeLabel: {
-      type: Boolean,
-      default: true,
-    },
+const props = defineProps({
+  phases: Array,
+  includeLabel: {
+    type: Boolean,
+    default: true,
   },
-  data() {
-    return {
-      phaseWidth: 55,
-      triangleWidth: 10,
-      allPhases: [1, 2, 3, 4],
-      spacer: 7,
-      height: 22,
-    };
-  },
-  computed: {
-    width() {
-      return this.phaseWidth * 4 + this.spacer * 5;
-    },
-  },
-  watch: {},
-  methods: {},
+});
+
+const phaseWidth = ref(55);
+const triangleWidth = ref(10);
+const allPhases = ref([1, 2, 3, 4]);
+const spacer = ref(7);
+const height = ref(22);
+
+const width = computed(() => {
+  return phaseWidth.value * 4 + spacer.value * 5;
 });
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="scss">
+<style lang="scss" scoped>
 .polygon-phase {
   fill: $grey-40;
   stroke: $grey-70;

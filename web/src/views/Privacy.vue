@@ -178,11 +178,4 @@
   </div>
 </template>
 
-<script>
-import Vue from 'vue';
-
-export default Vue.extend({
-  name: 'Privacy',
-  components: {},
-});
-</script>
+<script setup></script>

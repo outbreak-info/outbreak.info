@@ -73,16 +73,9 @@
   </div>
 </template>
 
-<script>
-import Vue from 'vue';
-
+<script setup>
 import { lazyLoad } from '@/js/lazy-load';
 
-export default Vue.extend({
-  name: 'Terms',
-  components: {
-    DataUsage: lazyLoad('DataUsage'),
-    CiteUs: lazyLoad('CiteUs'),
-  },
-});
+const DataUsage = lazyLoad('DataUsage');
+const CiteUs = lazyLoad('CiteUs');
 </script>

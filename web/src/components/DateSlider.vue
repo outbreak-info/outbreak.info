@@ -43,7 +43,7 @@
           :r="radius"
         />
         <g
-          ref="xAxis"
+          ref="xAxisRef"
           :transform="`translate(${margin.left}, ${height + margin.top})`"
           class="slider-axis axis--x"
         />
@@ -79,8 +79,11 @@
   </div>
 </template>
 
-<script>
-import Vue from 'vue';
+<script setup>
+import { computed, onMounted, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+// can import gtag event only, but already event from d3-selection
+import * as gtag from 'vue-gtag';
 import { axisBottom } from 'd3-axis';
 import { drag } from 'd3-drag';
 import { timeParse, timeFormat } from 'd3-time-format';
@@ -88,179 +91,186 @@ import { select, event } from 'd3-selection';
 import { timeDay } from 'd3-time';
 import { scaleTime } from 'd3-scale';
 
-export default Vue.extend({
-  name: 'DateSlider',
-  components: {},
-  props: {
-    min: Date,
-    max: Date,
-    date: String,
-    adminLevel: String,
-  },
-  data() {
-    return {
-      width: 150,
-      margin: {
-        left: 10,
-        right: 10,
-        top: 10,
-        bottom: 20,
-      },
-      height: 6,
-      radius: 7,
-      selectedDate: null,
-      minDate: new Date('2020-01-22 0:0'),
-      xDate: null,
-      x: null,
-      xAxis: null,
-      isPlaying: false,
-    };
-  },
-  computed: {
-    hideBack7() {
-      return (this.selectedDate - this.minDate) / (1000 * 60 * 60 * 24) < 7;
-    },
-    hideBack1() {
-      return (this.selectedDate - this.minDate) / (1000 * 60 * 60 * 24) < 1;
-    },
-    hideForward7() {
-      return (this.max - this.selectedDate) / (1000 * 60 * 60 * 24) < 7;
-    },
-    hideForward1() {
-      return (this.max - this.selectedDate) / (1000 * 60 * 60 * 24) < 1;
-    },
-    formattedDate() {
-      return this.formatDate(this.selectedDate, '%d %B %Y');
-    },
-  },
-  watch: {
-    date() {
-      this.updateAxis();
-    },
-  },
-  mounted() {
-    this.updateAxis();
-    this.setupDrag();
-  },
-  methods: {
-    play() {
-      this.isPlaying = !this.isPlaying;
+const props = defineProps({
+  min: Date,
+  max: Date,
+  date: String,
+  adminLevel: String,
+});
 
-      const dayGap = this.adminLevel === '0' || this.adminLevel === '1' ? 3 : 7; // parameter for how many days between
+// instead of this.$route
+const route = useRoute();
+// instead of this.$router
+const router = useRouter();
 
-      if ((this.max - this.selectedDate) / (1000 * 60 * 60 * 24) < dayGap) {
-        this.selectedDate = this.minDate;
-      }
+const width = ref(150);
+const margin = ref({
+  left: 10,
+  right: 10,
+  top: 10,
+  bottom: 20,
+});
+const height = ref(6);
+const radius = ref(7);
+const selectedDate = ref(null);
+const minDate = ref(new Date('2020-01-22 0:0'));
+const xDate = ref(null);
+const x = ref(null);
+const xAxis = ref(null);
+const isPlaying = ref(false);
+// below variables to replace this.$refs
+const drag_circle = ref(null);
+const xAxisRef = ref(null);
 
-      if (this.isPlaying) {
-        this.$gtag.event('map_play', {
-          event_category: `map_play`,
-          event_label: `playing map starting from [${this.$route.fullPath}])`,
-        });
+const hideBack7 = computed(() => {
+  return (selectedDate.value - minDate.value) / (1000 * 60 * 60 * 24) < 7;
+});
 
-        this.start(dayGap);
-      }
-    },
-    start(dayGap) {
-      if (
-        timeDay.offset(this.selectedDate, dayGap) <= this.max &&
-        this.isPlaying
-      ) {
-        setTimeout(() => {
-          this.changeDate(dayGap, false);
-          this.start(dayGap);
-        }, 500);
-      } else {
-        this.isPlaying = false;
-      }
-    },
-    changeDate(dayShift, animate = true) {
-      this.selectedDate = timeDay.offset(this.selectedDate, dayShift);
-      // update dot position
-      select(this.$refs.drag_circle).attr('cx', this.x(this.selectedDate));
+const hideBack1 = computed(() => {
+  return (selectedDate.value - minDate.value) / (1000 * 60 * 60 * 24) < 1;
+});
 
-      const route = this.$route.query;
-      this.$router.replace({
-        path: 'maps',
-        name: 'Maps',
-        params: {
-          disableScroll: true,
-        },
-        query: {
-          location: route.location,
-          admin_level: route.admin_level,
-          variable: route.variable,
-          date: this.formatDate(this.selectedDate),
-          min: route.min,
-          max: route.max,
-          animate: animate,
-        },
-      });
-    },
-    parseDate(dateStr, format = '%Y-%m-%d') {
-      return timeParse(format)(dateStr);
-    },
-    formatDate(dateNum, format = '%Y-%m-%d') {
-      return timeFormat(format)(dateNum);
-    },
-    setupDrag() {
-      select('#slider-date').call(
-        drag()
-          // .on("start", this.dragstarted)
-          .on('drag', this.dragged)
-          .on('end', this.dragended),
-      );
-    },
-    dragCallback() {
-      return (
-        drag()
-          // .on("start", this.dragstarted)
-          .on('drag', this.dragged)
-          .on('end', this.dragended)
-      );
-    },
-    dragged(d) {
-      // update position of circle
-      const newX =
-        event.x < 0 ? 0 : event.x > this.width ? this.width : event.x;
-      select(this.$refs.drag_circle).attr('cx', newX);
-      // update date displayed
-      this.selectedDate = this.x.invert(event.x);
-    },
-    dragended(d) {
-      this.selectedDate = this.x.invert(event.x);
+const hideForward7 = computed(() => {
+  return (props.max - selectedDate.value) / (1000 * 60 * 60 * 24) < 7;
+});
 
-      const route = this.$route.query;
-      this.$router.push({
-        path: 'maps',
-        query: {
-          location: route.location,
-          admin_level: route.admin_level,
-          variable: route.variable,
-          date: this.formatDate(this.selectedDate),
-          min: route.min,
-          max: route.max,
-        },
-      });
+const hideForward1 = computed(() => {
+  return (props.max - selectedDate.value) / (1000 * 60 * 60 * 24) < 1;
+});
+
+const formattedDate = computed(() => {
+  return formatDate(selectedDate.value, '%d %B %Y');
+});
+
+const play = () => {
+  isPlaying.value = !isPlaying.value;
+
+  const dayGap = props.adminLevel === '0' || props.adminLevel === '1' ? 3 : 7; // parameter for how many days between
+
+  if ((props.max - selectedDate.value) / (1000 * 60 * 60 * 24) < dayGap) {
+    selectedDate.value = minDate.value;
+  }
+
+  if (isPlaying.value) {
+    gtag.event('map_play', {
+      event_category: `map_play`,
+      event_label: `playing map starting from [${route.fullPath}])`,
+    });
+
+    start(dayGap);
+  }
+};
+
+const start = (dayGap) => {
+  if (
+    timeDay.offset(selectedDate.value, dayGap) <= props.max &&
+    isPlaying.value
+  ) {
+    setTimeout(() => {
+      changeDate(dayGap, false);
+      start(dayGap);
+    }, 500);
+  } else {
+    isPlaying.value = false;
+  }
+};
+
+const changeDate = (dayShift, animate = true) => {
+  selectedDate.value = timeDay.offset(selectedDate.value, dayShift);
+  // update dot position
+  select(drag_circle.value).attr('cx', x.value(selectedDate.value));
+
+  const routeObj = route.query;
+  router.replace({
+    path: 'maps',
+    name: 'Maps',
+    state: {
+      disableScroll: true,
     },
-    updateAxis() {
-      this.x = scaleTime()
-        .clamp(true)
-        .range([0, this.width])
-        .domain([this.min, this.max]);
-
-      this.xAxis = axisBottom(this.x).ticks(2).tickSizeOuter(0);
-
-      select(this.$refs.xAxis).call(this.xAxis);
-
-      this.selectedDate = this.parseDate(this.date);
-
-      // update dot position
-      select(this.$refs.drag_circle).attr('cx', this.x(this.selectedDate));
-
-      this.xDate = this.x(this.selectedDate);
+    query: {
+      location: routeObj.location,
+      admin_level: routeObj.admin_level,
+      variable: routeObj.variable,
+      date: formatDate(selectedDate.value),
+      min: routeObj.min,
+      max: routeObj.max,
+      animate: animate,
     },
-  },
+  });
+};
+
+const parseDate = (dateStr, format = '%Y-%m-%d') => {
+  return timeParse(format)(dateStr);
+};
+
+const formatDate = (dateNum, format = '%Y-%m-%d') => {
+  return timeFormat(format)(dateNum);
+};
+
+const setupDrag = () => {
+  select('#slider-date').call(
+    drag()
+      // .on("start", this.dragstarted)
+      .on('drag', dragged)
+      .on('end', dragended),
+  );
+};
+
+const dragCallback = () => {
+  return (
+    drag()
+      // .on("start", this.dragstarted)
+      .on('drag', dragged)
+      .on('end', dragended)
+  );
+};
+
+const dragged = (d) => {
+  // update position of circle
+  const newX = event.x < 0 ? 0 : event.x > width.value ? width.value : event.x;
+  select(drag_circle.value).attr('cx', newX);
+  // update date displayed
+  selectedDate.value = x.value.invert(event.x);
+};
+
+const dragended = (d) => {
+  selectedDate.value = x.value.invert(event.x);
+
+  const routeObj = route.query;
+  router.push({
+    path: 'maps',
+    query: {
+      location: routeObj.location,
+      admin_level: routeObj.admin_level,
+      variable: routeObj.variable,
+      date: formatDate(selectedDate.value),
+      min: routeObj.min,
+      max: routeObj.max,
+    },
+  });
+};
+
+const updateAxis = () => {
+  x.value = scaleTime()
+    .clamp(true)
+    .range([0, width.value])
+    .domain([props.min, props.max]);
+
+  xAxis.value = axisBottom(x.value).ticks(2).tickSizeOuter(0);
+
+  select(xAxisRef.value).call(xAxis.value);
+
+  selectedDate.value = parseDate(props.date);
+
+  // update dot position
+  select(drag_circle.value).attr('cx', x.value(selectedDate.value));
+
+  xDate.value = x.value(selectedDate.value);
+};
+
+onMounted(() => {
+  updateAxis();
+  setupDrag();
 });
 </script>
 

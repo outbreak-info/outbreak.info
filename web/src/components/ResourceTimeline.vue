@@ -4,12 +4,12 @@
     <small class="text-accent text-right">7 day rolling average</small>
     <svg ref="timeline" :width="width" :height="height" class="epi-sparkline">
       <g
-        ref="xAxis"
+        ref="xAxisRef"
         :transform="`translate(${margin.left}, ${height - margin.bottom + 3})`"
         class="resource-timeline-axis axis--x"
       />
       <g
-        ref="yAxis"
+        ref="yAxisRef"
         :transform="`translate(${margin.left}, ${margin.top})`"
         class="resource-timeline-axis axis--y"
       />
@@ -17,187 +17,173 @@
   </div>
 </template>
 
-<script>
-import Vue from 'vue';
+<script setup>
+import { onMounted, ref } from 'vue';
 import { max, extent, min, sum } from 'd3-array';
 import { axisLeft, axisBottom } from 'd3-axis';
 import { scaleLinear, scaleTime, scaleBand } from 'd3-scale';
 import { select } from 'd3-selection';
 import { line } from 'd3-shape';
-import { timeDay, timeWeek } from 'd3-time';
+import { timeDay } from 'd3-time';
 import { timeFormat } from 'd3-time-format';
 
-export default Vue.extend({
-  name: 'ResourceTimeline',
-  components: {},
-  props: {
-    data: Array,
-    width: {
-      type: Number,
-      default: 400,
-    },
-    height: {
-      type: Number,
-      default: 225,
-    },
+const props = defineProps({
+  data: Array,
+  width: {
+    type: Number,
+    default: 400,
   },
-  data() {
-    return {
-      margin: {
-        top: 10,
-        right: 20,
-        bottom: 25,
-        left: 25,
-      },
-      // data
-      plotted: null,
-      // axes
-      y: scaleLinear(),
-      x: scaleTime(),
-      xBand: scaleBand(),
-      xAxis: null,
-      yAxis: null,
-      // refs
-      chart: null,
-      // methods
-      area: null,
-    };
+  height: {
+    type: Number,
+    default: 225,
   },
-  mounted() {
-    this.updatePlot();
-  },
-  methods: {
-    prepData() {
-      const movingAverage = (date, values, firstDate, lastDate, N = 3) => {
-        const lowDate = Math.max(timeDay.offset(date, -1 * N), firstDate);
-        const highDate = Math.min(timeDay.offset(date, N), lastDate);
-        const filtered = values.filter(
-          (d) => d.date <= highDate && d.date >= lowDate,
-        );
-        const daySpan =
-          Math.round((highDate - lowDate) / (24 * 3600 * 1000)) + 1;
-        return sum(filtered, (d) => d.count) / daySpan;
-      };
+});
 
-      const weeklySum = (date, values, N = 3) => {
-        const dateRange = timeDay.range(
-          timeWeek.floor(date),
-          timeWeek.ceil(date),
-        );
-        const lowDate = dateRange[0];
-        const highDate = dateRange[1];
-        const filtered = values.filter(
-          (d) => d.date <= highDate && d.date >= lowDate,
-        );
-        return sum(filtered, (d) => d.count);
-      };
+const margin = ref({
+  top: 10,
+  right: 20,
+  bottom: 25,
+  left: 25,
+});
 
-      const firstDate = min(this.data, (d) => d.date);
-      const lastDate = max(this.data, (d) => d.date);
+// data
+const plotted = ref(null);
+// axes
+const y = ref(scaleLinear());
+const x = ref(scaleTime());
+const xBand = ref(scaleBand());
+const xAxis = ref(null);
+const yAxis = ref(null);
+// refs
+const chart = ref(null);
+const svg = ref(null);
+// methods
+const areaF = ref(null);
+// instead of this.$refs
+const xAxisRef = ref(null);
+const yAxisRef = ref(null);
+const timeline = ref(null);
 
-      this.data.forEach((d) => {
-        d['avg'] = movingAverage(d.date, this.data, firstDate, lastDate);
-      });
+const prepData = () => {
+  const movingAverage = (date, values, firstDate, lastDate, N = 3) => {
+    const lowDate = Math.max(timeDay.offset(date, -1 * N), firstDate);
+    const highDate = Math.min(timeDay.offset(date, N), lastDate);
+    const filtered = values.filter(
+      (d) => d.date <= highDate && d.date >= lowDate,
+    );
+    const daySpan = Math.round((highDate - lowDate) / (24 * 3600 * 1000)) + 1;
+    return sum(filtered, (d) => d.count) / daySpan;
+  };
 
-      this.data.sort((a, b) => a.date - b.date);
+  const firstDate = min(props.data, (d) => d.date);
+  const lastDate = max(props.data, (d) => d.date);
 
-      // Filter out ridiculous dates
-      this.plotted = this.data.filter((d) => d.date > new Date('2019-12-01'));
-    },
-    setupPlot() {
-      this.svg = select(this.$refs.timeline);
+  props.data.forEach((d) => {
+    d['avg'] = movingAverage(d.date, props.data, firstDate, lastDate);
+  });
 
-      this.chart = this.svg
-        .append('g')
-        .attr('class', 'resource-timeline')
-        .attr(
-          'transform',
-          `translate(${this.margin.left}, ${this.margin.top})`,
-        );
+  props.data.sort((a, b) => a.date - b.date);
 
-      // this.line = area()
-      //   .x(d => this.x(d.date))
-      //   .y0(d => this.y(0))
-      //   .y1(d => this.y(d.avg));
-      this.area = line()
-        .x((d) => this.x(d.date))
-        .y((d) => this.y(d.avg));
-    },
-    updatePlot() {
-      if (this.data) {
-        this.prepData();
-        this.setupPlot();
-        this.updateScales();
-        this.drawPlot();
-      }
-    },
-    updateScales() {
-      const dateRange = extent(this.plotted, (d) => d.date);
+  // Filter out ridiculous dates
+  plotted.value = props.data.filter((d) => d.date > new Date('2019-12-01'));
+};
 
-      this.x = this.x
-        .range([0, this.width - this.margin.left - this.margin.right])
-        .domain(extent(this.plotted, (d) => d.date));
+const setupPlot = () => {
+  svg.value = select(timeline.value);
 
-      this.xBand = this.xBand
-        .range([0, this.width - this.margin.left - this.margin.right])
-        .domain(timeDay.range(dateRange[0], timeDay.offset(dateRange[1], 1)));
+  chart.value = svg.value
+    .append('g')
+    .attr('class', 'resource-timeline')
+    .attr('transform', `translate(${margin.value.left}, ${margin.value.top})`);
 
-      this.y = this.y
-        .range([this.height - this.margin.top - this.margin.bottom, 0])
-        .domain([0, max(this.plotted, (d) => d.count)]);
+  // this.line = area()
+  //   .x(d => this.x(d.date))
+  //   .y0(d => this.y(0))
+  //   .y1(d => this.y(d.avg));
+  areaF.value = line()
+    .x((d) => x.value(d.date))
+    .y((d) => y.value(d.avg));
+};
 
-      this.xAxis = axisBottom(this.x)
-        .tickSizeOuter(0)
-        .ticks(4)
-        // .tickValues(
-        //   this.x.domain().filter(function(d, i) {
-        //     return !(i % 28);
-        //   })
-        // )
-        .tickFormat(timeFormat('%d %b'));
+const updateScales = () => {
+  const dateRange = extent(plotted.value, (d) => d.date);
 
-      this.yAxis = axisLeft(this.y)
-        .tickSizeOuter(0)
-        .tickSize(-(this.width - this.margin.left - this.margin.right))
-        .ticks(6);
+  x.value = x.value
+    .range([0, props.width - margin.value.left - margin.value.right])
+    .domain(extent(plotted.value, (d) => d.date));
 
-      select(this.$refs.xAxis).call(this.xAxis);
-      select(this.$refs.yAxis).call(this.yAxis);
-    },
-    drawPlot() {
-      const sparkSelector = this.chart
-        .selectAll('.sparkline')
-        .data([this.plotted]);
+  xBand.value = xBand.value
+    .range([0, props.width - margin.value.left - margin.value.right])
+    .domain(timeDay.range(dateRange[0], timeDay.offset(dateRange[1], 1)));
 
-      const barSelector = this.chart
-        .append('g')
-        .attr('class', 'timeline-count-group')
-        .selectAll('rect')
-        .data(this.plotted);
+  y.value = y.value
+    .range([props.height - margin.value.top - margin.value.bottom, 0])
+    .domain([0, max(plotted.value, (d) => d.count)]);
 
-      barSelector.join((enter) => {
-        enter
-          .append('rect')
-          .attr('class', 'resource-timeline-bar')
-          .attr('x', (d) => this.xBand(d.date))
-          .attr('y', (d) => this.y(d.count))
-          .attr('width', this.xBand.bandwidth())
-          .attr('height', (d) => this.y(0) - this.y(d.count));
-      });
+  xAxis.value = axisBottom(x.value)
+    .tickSizeOuter(0)
+    .ticks(4)
+    // .tickValues(
+    //   this.x.domain().filter(function(d, i) {
+    //     return !(i % 28);
+    //   })
+    // )
+    .tickFormat(timeFormat('%d %b'));
 
-      const sparkEnter = sparkSelector
-        .enter()
-        .append('path')
-        .attr('class', 'sparkline');
+  yAxis.value = axisLeft(y.value)
+    .tickSizeOuter(0)
+    .tickSize(-(props.width - margin.value.left - margin.value.right))
+    .ticks(6);
 
-      // merge
-      sparkSelector
-        .merge(sparkEnter)
-        .datum((d) => d)
-        .join('path')
-        .attr('d', this.area);
-    },
-  },
+  select(xAxisRef.value).call(xAxis.value);
+  select(yAxisRef.value).call(yAxis.value);
+};
+
+const drawPlot = () => {
+  const sparkSelector = chart.value
+    .selectAll('.sparkline')
+    .data([plotted.value]);
+
+  const barSelector = chart.value
+    .append('g')
+    .attr('class', 'timeline-count-group')
+    .selectAll('rect')
+    .data(plotted.value);
+
+  barSelector.join((enter) => {
+    enter
+      .append('rect')
+      .attr('class', 'resource-timeline-bar')
+      .attr('x', (d) => xBand.value(d.date))
+      .attr('y', (d) => y.value(d.count))
+      .attr('width', xBand.value.bandwidth())
+      .attr('height', (d) => y.value(0) - y.value(d.count));
+  });
+
+  const sparkEnter = sparkSelector
+    .enter()
+    .append('path')
+    .attr('class', 'sparkline');
+
+  // merge
+  sparkSelector
+    .merge(sparkEnter)
+    .datum((d) => d)
+    .join('path')
+    .attr('d', areaF.value);
+};
+
+const updatePlot = () => {
+  if (props.data) {
+    prepData();
+    setupPlot();
+    updateScales();
+    drawPlot();
+  }
+};
+
+onMounted(() => {
+  updatePlot();
 });
 </script>
 <style lang="scss">

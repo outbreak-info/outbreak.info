@@ -16,68 +16,47 @@
     </section>
   </div>
 </template>
-<script>
-import { mapState } from 'vuex';
+<script setup>
+import { inject, onMounted, onUnmounted, ref } from 'vue';
+import { storeToRefs } from 'pinia';
 
 import { getEpiTable } from '@/api/epi-traces.js';
 import { lazyLoad } from '@/js/lazy-load';
-import store from '@/store';
+import { adminStore } from '@/stores/adminStore';
+import { colorsStore } from '@/stores/colorsStore';
 
-export default {
-  name: 'Home',
-  components: {
-    DataSource: lazyLoad('DataSource'),
-    EpiTable: lazyLoad('EpiTable'),
-  },
-  data() {
-    return {
-      stackedWidth: 500,
-      stackedHeight: 250,
-      data: null,
-      dataSubscription: null,
-      tableSubscription: null,
-      nestedData: null,
-      selectedVariable: 'confirmed',
-      variableOptions: [
-        {
-          label: 'Cases',
-          value: 'confirmed',
-        },
-        {
-          label: 'Recoveries',
-          value: 'recovered',
-        },
-        {
-          label: 'Deaths',
-          value: 'dead',
-        },
-      ],
-      searchQuery: '',
-    };
-  },
-  computed: {
-    ...mapState('admin', ['loading']),
-  },
-  watch: {},
-  mounted() {
-    this.tableSubscription = getEpiTable(
-      this.$apiurl,
-      null,
-      [0, 1, 2],
-      '-confirmed',
-      10,
-      0,
-    ).subscribe((_) => null);
-  },
-  destroyed() {
-    this.tableSubscription.unsubscribe();
-  },
-  methods: {
-    regionColorScale(location) {
-      const scale = store.getters['colors/getRegionColorFromLocation'];
-      return scale(location);
-    },
-  },
+const DataSource = lazyLoad('DataSource');
+const EpiTable = lazyLoad('EpiTable');
+
+// global variable - equivalent with this.$apiurl
+const apiUrl = inject('apiUrl');
+
+const data = ref(null);
+const dataSubscription = ref(null);
+const tableSubscription = ref(null);
+
+const storeAdmin = adminStore();
+const storeColor = colorsStore();
+
+const { loading } = storeToRefs(storeAdmin);
+
+onMounted(() => {
+  tableSubscription.value = getEpiTable(
+    apiUrl,
+    null,
+    [0, 1, 2],
+    '-confirmed',
+    10,
+    0,
+  ).subscribe((_) => null);
+});
+
+onUnmounted(() => {
+  tableSubscription.value.unsubscribe();
+});
+
+const regionColorScale = (location) => {
+  return storeColor.getRegionColorFromLocation(location);
 };
 </script>
 

@@ -5,8 +5,11 @@ import { sum } from 'd3-array';
 import { nest } from 'd3-collection';
 
 import { getAll } from '@/api/biothings.js';
+import { adminStore } from '@/stores/adminStore';
+import { geoStore } from '@/stores/geoStore';
 
-import store from '@/store';
+const storeAdmin = adminStore();
+const storeGeo = geoStore();
 
 export const lookupEpiLocations = (apiUrl, locationArr) => {
   if (locationArr.length) {
@@ -80,9 +83,9 @@ export const findEpiLocation = (apiUrl, query, num2Return = 5) => {
 };
 
 export const getLocations = (apiUrl) => {
-  store.state.admin.loading = true;
+  storeAdmin.$patch({ loading: true });
 
-  if (store.state.geo.allPlaces.length === 0) {
+  if (storeGeo.allPlaces.length === 0) {
     return getAll(
       apiUrl,
       `mostRecent:true&fields=location_id,name,country_name,admin1,wb_region,admin_level`,
@@ -124,7 +127,7 @@ export const getLocations = (apiUrl) => {
 
         places = places.concat(regions).concat(countries);
         places.sort((a, b) => (a.admin_level < b.admin_level ? -1 : 1));
-        store.state.geo.allPlaces = places;
+        storeGeo.$patch({ allPlaces: places });
         return places;
       }),
       catchError((e) => {
@@ -132,11 +135,11 @@ export const getLocations = (apiUrl) => {
         console.log(e);
         return from([]);
       }),
-      finalize(() => (store.state.admin.loading = false)),
+      finalize(() => storeAdmin.$patch({ loading: false })),
     );
   } else {
-    store.state.admin.loading = false;
-    return from(store.state.geo.allPlaces);
+    storeAdmin.$patch({ loading: false });
+    return from(storeGeo.allPlaces);
   }
 };
 
@@ -157,30 +160,8 @@ const getLabel = (entry) => {
   return entry.name;
 };
 
-export const getMostCases = (apiUrl, num2Return = 5) => {
-  store.state.admin.loading = true;
-
-  return from(
-    axios.get(
-      `${apiUrl}query?q=mostRecent:true AND admin_level:0&fields=location_id,name&sort=-confirmed&size=${num2Return}`,
-    ),
-  ).pipe(
-    pluck('data', 'hits'),
-    tap((results) => {
-      store.state.epidata.mostCases = results;
-      return results;
-    }),
-    catchError((e) => {
-      console.log('%c Error in getting highest case counts!', 'color: red');
-      console.log(e);
-      return from([]);
-    }),
-    finalize(() => (store.state.admin.loading = false)),
-  );
-};
-
 export const getSummary = (apiUrl, caseThreshold) => {
-  store.state.admin.loading = true;
+  storeAdmin.$patch({ loading: true });
   return forkJoin([
     getTotals(apiUrl),
     countCountries(apiUrl),
@@ -198,7 +179,7 @@ export const getSummary = (apiUrl, caseThreshold) => {
       console.log(e);
       return from([]);
     }),
-    finalize(() => (store.state.admin.loading = false)),
+    finalize(() => storeAdmin.$patch({ loading: false })),
   );
 };
 

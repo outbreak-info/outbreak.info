@@ -29,7 +29,7 @@ When naming your project: Don't use hyphens in repo/source names. These repos wi
 
 ## General Process
 ### requirements.txt
- * Create a file containing the package requirements for the parser.py file, including versions, which can be installed via `pip install -r requirements.txt`
+* Create a file containing the package requirements for the parser.py file, including versions, which can be installed via `pip install -r requirements.txt`
 
 ## **Init**
 
@@ -132,7 +132,7 @@ An example of a regular dumper is:
 
 `SRC_NAME` corresponds to the name of the source and convention is to name your repo the same name as your source.
 
- `__metadata__` corresponds to the information about that source's author, license, repo, url, etc..
+`__metadata__` corresponds to the information about that source's author, license, repo, url, etc..
 
 `SRC_ROOT_FOLDER` is used by the hub when locating the downloaded file.
 
@@ -235,7 +235,7 @@ IF your parser does not download a file via the dumper you must omit these argum
 ## **Upload & Mapping**
 
 
-We use a communal mapping file and specifies the fields we want to use. Take a look at this example of a complete `upload.py` file.  
+We use a communal mapping file and specifies the fields we want to use. Take a look at this example of a complete `upload.py` file.
 
     import os
     import biothings.hub.dataload.uploader

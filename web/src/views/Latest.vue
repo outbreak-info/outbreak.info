@@ -65,7 +65,7 @@
 
           <div class="update-container">
             <div
-              v-for="(update, idx) in updates"
+              v-for="(update, idx) in updatesData"
               :key="idx"
               class="d-flex mb-4"
             >
@@ -97,48 +97,49 @@
   </div>
 </template>
 
-<script>
-import Vue from 'vue';
-import { mapState } from 'vuex';
+<script setup>
+import { onMounted, ref, inject, onUnmounted } from 'vue';
 import { timeFormat } from 'd3-time-format';
 
 import { getSourcesUpdated } from '@/api/metadata.js';
+import { adminStore } from '@/stores/adminStore';
 
-export default Vue.extend({
-  name: 'Latest',
-  components: {},
-  data() {
-    return {
-      updateSubscription: null,
-      lastUpdated: null,
-    };
-  },
-  computed: {
-    ...mapState('admin', ['updates']),
-  },
-  mounted() {
-    this.updateSubscription = getSourcesUpdated(
-      this.$genomicsurl,
-      this.$resourceurl,
-      this.$apiurl,
-    ).subscribe((results) => {
-      this.lastUpdated = results;
-    });
+const store = adminStore();
 
-    this.updates.sort((a, b) => b.date - a.date);
-  },
-  destroyed() {
-    if (this.updateSubscription) {
-      this.updateSubscription.unsubscribe();
-    }
-  },
-  methods: {
-    formatDate(date) {
-      const dateFormatter = timeFormat('%d %B %Y');
-      return dateFormatter(date);
-    },
-  },
+// global variable - equivalent with this.$apiurl
+const apiUrl = inject('apiUrl');
+// global variable - equivalent with this.$genomicsurl
+const genomicsUrl = inject('genomicsUrl');
+// global variable - equivalent with this.$resourceurl
+const resourceUrl = inject('resourceUrl');
+
+const updateSubscription = ref(null);
+const lastUpdated = ref(null);
+const updatesData = ref(null);
+
+onMounted(() => {
+  updateSubscription.value = getSourcesUpdated(
+    genomicsUrl,
+    resourceUrl,
+    apiUrl,
+  ).subscribe((results) => {
+    lastUpdated.value = results;
+  });
+  updatesData.value = store.$state.updates;
+
+  updatesData.value.sort((a, b) => b.date - a.date);
 });
+
+onUnmounted(() => {
+  if (updateSubscription.value) {
+    updateSubscription.value.unsubscribe();
+  }
+});
+
+const formatDate = (date) => {
+  const dateFormatter = timeFormat('%d %B %Y');
+  return dateFormatter(date);
+};
 </script>
 
 <style lang="scss" scoped>

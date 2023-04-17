@@ -8,7 +8,7 @@
 
     <div
       v-if="newPubs"
-      class="col-sm-6 col-md-3 col-sm-6 pr-4  d-flex flex-column"
+      class="col-sm-6 col-md-3 col-sm-6 pr-4 d-flex flex-column"
     >
       <router-link
         :to="{
@@ -102,49 +102,49 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { inject, onBeforeUnmount, onMounted, ref } from 'vue';
 import { getMostRecentGroup } from '@/api/resources.js';
 import { lazyLoad } from '@/js/lazy-load';
 
-export default {
-  name: 'WhatsNew',
-  components: {
-    NewList: lazyLoad('NewList'),
+const NewList = lazyLoad('NewList');
+
+const props = defineProps({
+  query: String,
+  numResults: {
+    type: Number,
+    default: 5,
   },
-  props: {
-    query: String,
-    numResults: {
-      type: Number,
-      default: 5,
-    },
-  },
-  data() {
-    return {
-      newPubs: [],
-      newDatasets: [],
-      newTrials: [],
-      newProtocols: [],
-      recentSubscription: null,
-    };
-  },
-  mounted() {
-    this.recentSubscription = getMostRecentGroup(
-      this.$resourceurl,
-      this.query,
-      '-date',
-      this.numResults,
-    ).subscribe((results) => {
-      // console.log(results)
-      this.newPubs = results['Publication'];
-      this.newDatasets = results['Dataset'];
-      this.newTrials = results['ClinicalTrial'];
-      this.newProtocols = results['Protocol'];
-    });
-  },
-  beforeDestroy() {
-    this.recentSubscription.unsubscribe();
-  },
-};
+});
+
+// global variable - equivalent with this.$resourceurl
+const resourceUrl = inject('resourceUrl');
+
+const newPubs = ref([]);
+const newDatasets = ref([]);
+const newTrials = ref([]);
+const newProtocols = ref([]);
+const recentSubscription = ref(null);
+
+onMounted(() => {
+  recentSubscription.value = getMostRecentGroup(
+    resourceUrl,
+    props.query,
+    '-date',
+    props.numResults,
+  ).subscribe((results) => {
+    newPubs.value = results['Publication'];
+    newDatasets.value = results['Dataset'];
+    newTrials.value = results['ClinicalTrial'];
+    newProtocols.value = results['Protocol'];
+  });
+});
+
+onBeforeUnmount(() => {
+  if (recentSubscription.value) {
+    recentSubscription.value.unsubscribe();
+  }
+});
 </script>
 
 <style lang="scss" scoped></style>

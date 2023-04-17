@@ -50,14 +50,10 @@
   </div>
 </template>
 
-<script>
-import Vue from 'vue';
-import { mapState } from 'vuex';
+<script setup>
+import { storeToRefs } from 'pinia';
+import { adminStore } from '@/stores/adminStore';
 
-export default Vue.extend({
-  name: 'ReportAcknowledgements',
-  computed: {
-    ...mapState('admin', ['funding']),
-  },
-});
+const store = adminStore();
+const { funding } = storeToRefs(store);
 </script>

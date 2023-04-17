@@ -54,40 +54,34 @@
   </div>
 </template>
 
-<script>
-import Vue from 'vue';
+<script setup>
+import { onMounted, ref } from 'vue';
 import { nest } from 'd3-collection';
 import { tsv } from 'd3-fetch';
 
-export default Vue.extend({
-  name: 'TopicDefinitions',
-  data() {
-    return {
-      topicUrl:
-        'https://raw.githubusercontent.com/outbreak-info/outbreak.info-resources/master/covid_topic_categories.tsv',
-      topicArr: [],
-    };
-  },
-  mounted() {
-    this.getTopics();
-  },
-  methods: {
-    getTopics() {
-      tsv(this.topicUrl).then((data) => {
-        this.topicArr = nest()
-          .key((d) => d.category)
-          .rollup((values) => {
-            return {
-              description: values.filter((d) => d.subcategory === 'false')[0][
-                'description'
-              ],
-              subcats: values.filter((d) => d.subcategory === 'true'),
-            };
-          })
-          .entries(data)
-          .sort((a, b) => (a.key < b.key ? -1 : 1));
-      });
-    },
-  },
+const topicUrl = ref(
+  'https://raw.githubusercontent.com/outbreak-info/outbreak.info-resources/master/covid_topic_categories.tsv',
+);
+const topicArr = ref([]);
+
+const getTopics = () => {
+  tsv(topicUrl.value).then((data) => {
+    topicArr.value = nest()
+      .key((d) => d.category)
+      .rollup((values) => {
+        return {
+          description: values.filter((d) => d.subcategory === 'false')[0][
+            'description'
+          ],
+          subcats: values.filter((d) => d.subcategory === 'true'),
+        };
+      })
+      .entries(data)
+      .sort((a, b) => (a.key < b.key ? -1 : 1));
+  });
+};
+
+onMounted(() => {
+  getTopics();
 });
 </script>

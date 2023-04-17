@@ -16,7 +16,7 @@
             </h3>
 
             <!-- one group -->
-            <template v-if="Array.isArray(faq[group])">
+            <div v-if="Array.isArray(faq[group])">
               <ol :id="'group' + gIdx" class="collapse">
                 <li
                   v-for="(question, qIdx) in faq[group]"
@@ -29,7 +29,7 @@
                   <div class="font-size-normal" v-html="question.a" />
                 </li>
               </ol>
-            </template>
+            </div>
 
             <!-- subgroups -->
             <div v-else :id="'group' + gIdx" class="collapse ml-4">
@@ -65,23 +65,16 @@
 </template>
 
 <!-- Javascript code to import variables, manipulate them, etc. -->
-<script>
-import Vue from 'vue';
-
+<script setup>
+import { ref, onMounted } from 'vue';
 import FAQ from '@/assets/faq.json';
 
-export default Vue.extend({
-  name: 'Faq',
-  data() {
-    return {
-      faq: null,
-      faqGroups: null,
-    };
-  },
-  mounted() {
-    this.faq = FAQ;
-    this.faqGroups = Object.keys(this.faq);
-  },
+const faq = ref(null);
+const faqGroups = ref(null);
+
+onMounted(() => {
+  faq.value = FAQ;
+  faqGroups.value = Object.keys(faq.value);
 });
 </script>
 
