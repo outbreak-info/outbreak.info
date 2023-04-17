@@ -57,6 +57,10 @@ export const adminStore = defineStore('admin', {
         img: 'marco.jpg',
       },
       {
+        name: 'Leandro Collares',
+        img: 'leandro.jpg',
+      },
+      {
         name: 'Karthik Gangavarapu',
         img: 'karthik.jpg',
         email: 'gkarthik@scripps.edu',
