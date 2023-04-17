@@ -1,5 +1,11 @@
 <template>
   <div>
+    <img
+      src="@/assets/resources/aquaria.svg"
+      style="width: 35px"
+      class="ml-2"
+      alt="aquaria-svg"
+    />
     <div class="bg-main__darker mutation-banner border-top py-4">
       <h1 class="m-0 text-grey">SARS-CoV-2 (hCoV-19) Mutation Reports</h1>
       <h2 class="m-0 mutation-header font-weight-bold">
