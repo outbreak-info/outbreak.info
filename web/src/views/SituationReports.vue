@@ -137,7 +137,7 @@
                   class="b-contain d-flex align-items-center pr-4 m-0"
                 >
                   <img
-                    :src="`src/assets/${curator.src}`"
+                    :src="`/src/assets/${curator.src}`"
                     class="variant-logo mr-1"
                   />
                   <span>{{ curator.label }}</span>
@@ -160,7 +160,7 @@
                   class="b-contain d-flex align-items-center pr-4 m-0"
                 >
                   <img
-                    :src="`src/assets/${curator.src}`"
+                    :src="`/src/assets/${curator.src}`"
                     class="variant-logo mr-1"
                   />
                   <span>{{ curator.label }}</span>
@@ -179,7 +179,7 @@
                 <small class="text-muted mr-2">MOC classified by:</small>
                 <label class="b-contain d-flex align-items-center pr-4 m-0">
                   <img
-                    :src="`src/assets/icon-01.svg`"
+                    :src="`/src/assets/icon-01.svg`"
                     class="variant-logo mr-1"
                     alt="variant-logo"
                   />
@@ -199,7 +199,7 @@
                 <small class="text-muted mr-2">MOI classified by:</small>
                 <label class="b-contain d-flex align-items-center pr-4 m-0">
                   <img
-                    :src="`src/assets/icon-01.svg`"
+                    :src="`/src/assets/icon-01.svg`"
                     class="variant-logo mr-1"
                   />
                   <span>outbreak.info</span>
@@ -291,7 +291,7 @@
                   class="b-contain d-flex align-items-center pr-4 m-0"
                 >
                   <img
-                    :src="`src/assets/${curator.src}`"
+                    :src="`/src/assets/${curator.src}`"
                     class="variant-logo mr-1"
                     alt="curator"
                   />
@@ -671,7 +671,7 @@
                                 :key="cIdx + 'table'"
                               >
                                 <img
-                                  :src="`src/assets/${curator.src}`"
+                                  :src="`/src/assets/${curator.src}`"
                                   class="variant-logo"
                                 />
                               </th>
@@ -1085,7 +1085,7 @@
                 </small>
                 <label class="b-contain d-flex align-items-center pr-4 m-0">
                   <img
-                    :src="`src/assets/icon-01.svg`"
+                    :src="`/src/assets/icon-01.svg`"
                     class="variant-logo mr-1"
                   />
                   <span>outbreak.info</span>
