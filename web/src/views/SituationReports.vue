@@ -143,7 +143,7 @@
                   class="b-contain d-flex align-items-center pr-4 m-0"
                 >
                   <img
-                    :src="`/src/assets/${curator.src}`"
+                    :src="`/assets/${curator.src}`"
                     class="variant-logo mr-1"
                   />
                   <span>{{ curator.label }}</span>
@@ -166,7 +166,7 @@
                   class="b-contain d-flex align-items-center pr-4 m-0"
                 >
                   <img
-                    :src="`/src/assets/${curator.src}`"
+                    :src="`/assets/${curator.src}`"
                     class="variant-logo mr-1"
                   />
                   <span>{{ curator.label }}</span>
@@ -679,6 +679,7 @@
                                 <img
                                   :src="`/src/assets/${curator.src}`"
                                   class="variant-logo"
+                                  :alt="curator.src"
                                 />
                               </th>
                             </tr>
