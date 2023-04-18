@@ -148,7 +148,7 @@ import { select, selectAll } from 'd3-selection';
 import { timeDay } from 'd3-time';
 import { timeFormat, timeParse } from 'd3-time-format';
 import cloneDeep from 'lodash/cloneDeep';
-import * as PIXI from 'pixi.js';
+import { Application, Rectangle } from 'pixi.js';
 import { SmoothGraphics } from '@pixi/graphics-smooth';
 
 const props = defineProps({
@@ -260,7 +260,7 @@ const setupPlot = () => {
 
 const setupBarChart = () => {
   wrapper.value = barchart_wrapper.value;
-  pixiApp.value = new PIXI.Application({
+  pixiApp.value = new Application({
     backgroundAlpha: 0,
     width: 650,
     height: props.height,
@@ -569,7 +569,7 @@ const drawBarchart = () => {
       .forEach((d) => {
         let barchart = new SmoothGraphics();
         if (d.confirmed_numIncrease > d.confirmed_rolling) {
-          barchart.hitArea = new PIXI.Rectangle(
+          barchart.hitArea = new Rectangle(
             x.value(d.date),
 
             y.value(d[variable.value.replace('_numIncrease', '_rolling')]) -
@@ -580,9 +580,8 @@ const drawBarchart = () => {
                 100),
           );
         } else {
-          barchart.hitArea = new PIXI.Rectangle(
+          barchart.hitArea = new Rectangle(
             x.value(d.date),
-
             y.value(d[variable.value.replace('_numIncrease', '_rolling')]) -
               100,
             x.value.bandwidth(),
@@ -592,13 +591,14 @@ const drawBarchart = () => {
           );
         }
         barchart.beginFill(0x507ea3, 0.55);
-        let bar = barchart.lineStyle(0.9, 0x507ea3, 0, 0.5).drawRect(
-          x.value(d.date),
-          y.value(d[variable.value]),
-          x.value.bandwidth(),
-
-          y.value(yMin.value) - y.value(d[variable.value]),
-        );
+        let bar = barchart
+          .lineStyle(0.9, 0x507ea3, 0, 0.5)
+          .drawRect(
+            x.value(d.date),
+            y.value(d[variable.value]),
+            x.value.bandwidth(),
+            y.value(yMin.value) - y.value(d[variable.value]),
+          );
 
         barchart.endFill();
         if (props.includeTooltips) {

@@ -68,14 +68,14 @@
           <img
             v-if="source.img_lg"
             class="ml-3"
-            :src="`/src/assets/resources/${source.img_lg}`"
+            :src="`/assets/resources/${source.img_lg}`"
             :alt="source.name"
             height="32"
           />
           <img
             v-else-if="source.img"
             class="ml-3"
-            :src="`/src/assets/resources/${source.img}`"
+            :src="`/assets/resources/${source.img}`"
             :alt="source.name"
             height="32"
           />

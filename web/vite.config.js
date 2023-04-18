@@ -29,7 +29,7 @@ export default defineConfig({
   },
   build: {
     rollupOptions: {
-      external: ['pixi.js'],
+      external: ['pixi'],
     },
   },
   assetsInclude: ['**/*.svg', '**/*.png', '**/*.jpg'],

@@ -30,7 +30,7 @@
         >
           <div class="d-flex align-items-center">
             <img
-              :src="`/src/assets/press/${article.img}`"
+              :src="`/assets/press/${article.img}`"
               class="article-logo mr-3"
               :alt="`${article.img}`"
             />
