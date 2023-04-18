@@ -185,7 +185,7 @@
                 <small class="text-muted mr-2">MOC classified by:</small>
                 <label class="b-contain d-flex align-items-center pr-4 m-0">
                   <img
-                    :src="`/src/assets/icon-01.svg`"
+                    :src="`/assets/icon-01.svg`"
                     class="variant-logo mr-1"
                     alt="variant-logo"
                   />
@@ -204,10 +204,7 @@
               <div class="d-flex flex-wrap align-items-center my-3">
                 <small class="text-muted mr-2">MOI classified by:</small>
                 <label class="b-contain d-flex align-items-center pr-4 m-0">
-                  <img
-                    :src="`/src/assets/icon-01.svg`"
-                    class="variant-logo mr-1"
-                  />
+                  <img :src="`/assets/icon-01.svg`" class="variant-logo mr-1" />
                   <span>outbreak.info</span>
                   <input
                     id="outbreak.info"
@@ -297,7 +294,7 @@
                   class="b-contain d-flex align-items-center pr-4 m-0"
                 >
                   <img
-                    :src="`/src/assets/${curator.src}`"
+                    :src="`/assets/${curator.src}`"
                     class="variant-logo mr-1"
                     alt="curator"
                   />
@@ -677,7 +674,7 @@
                                 :key="cIdx + 'table'"
                               >
                                 <img
-                                  :src="`/src/assets/${curator.src}`"
+                                  :src="`/assets/${curator.src}`"
                                   class="variant-logo"
                                   :alt="curator.src"
                                 />
@@ -1091,10 +1088,7 @@
                   include {{ group.id.toUpperCase() }}s classified by:
                 </small>
                 <label class="b-contain d-flex align-items-center pr-4 m-0">
-                  <img
-                    :src="`/src/assets/icon-01.svg`"
-                    class="variant-logo mr-1"
-                  />
+                  <img :src="`/assets/icon-01.svg`" class="variant-logo mr-1" />
                   <span>outbreak.info</span>
                   <input
                     v-if="group.id === 'moc'"
