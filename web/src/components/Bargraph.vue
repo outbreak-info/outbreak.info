@@ -148,8 +148,10 @@ import { select, selectAll } from 'd3-selection';
 import { timeDay } from 'd3-time';
 import { timeFormat, timeParse } from 'd3-time-format';
 import cloneDeep from 'lodash/cloneDeep';
-import { Application, Rectangle } from 'pixi.js';
+import { Application } from '@pixi/app';
+import { Rectangle } from '@pixi/core';
 import { SmoothGraphics } from '@pixi/graphics-smooth';
+import '@pixi/events';
 
 const props = defineProps({
   data: Array,
@@ -602,9 +604,7 @@ const drawBarchart = () => {
 
         barchart.endFill();
         if (props.includeTooltips) {
-          bar.interactive = true;
-
-          bar.on('pointerover', (event) => {
+          bar.on('pointermove', (event) => {
             const ttip = selectAll(`.${props.tooltipIdx}`)
               .selectAll('.tooltip')
               .style(
