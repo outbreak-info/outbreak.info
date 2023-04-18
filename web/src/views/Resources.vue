@@ -568,7 +568,7 @@
                         }"
                       >
                         <img
-                          :src="`/src/assets/resources/${getLogo(
+                          :src="`/assets/resources/${getLogo(
                             item.curatedBy.name,
                           )}`"
                           :alt="item.curatedBy.name"
