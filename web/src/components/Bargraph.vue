@@ -151,7 +151,6 @@ import cloneDeep from 'lodash/cloneDeep';
 import { Application } from '@pixi/app';
 import { Rectangle } from '@pixi/core';
 import { SmoothGraphics } from '@pixi/graphics-smooth';
-import '@pixi/events';
 
 const props = defineProps({
   data: Array,
@@ -604,7 +603,7 @@ const drawBarchart = () => {
 
         barchart.endFill();
         if (props.includeTooltips) {
-          bar.on('pointermove', (event) => {
+          bar.on('pointerover', (event) => {
             const ttip = selectAll(`.${props.tooltipIdx}`)
               .selectAll('.tooltip')
               .style(
@@ -614,7 +613,6 @@ const drawBarchart = () => {
               )
               .style('left', event.data.global.x + 'px')
               .style('opacity', 1);
-
             ttip.select('.country-name').text(d.name);
             ttip.select('.date').text(timeFormat('%d %b %Y')(d.date));
             ttip
@@ -635,7 +633,6 @@ const drawBarchart = () => {
                   )}`,
                 );
             }
-
             hoverLine.alpha = 1;
             hoverLine.position.set(
               x.value(d.date),
@@ -644,7 +641,6 @@ const drawBarchart = () => {
             hoverLine.height =
               y.value(yMin.value) -
               y.value(d[variable.value.replace('_numIncrease', '_rolling')]);
-
             hoverCircle.alpha = 1;
             let circ_x = x.value(d.date) + x.value.bandwidth() / 2;
             hoverCircle.position.set(
