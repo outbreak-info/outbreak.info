@@ -1,6 +1,21 @@
 <template>
   <div>
     <h2>{{ title }}</h2>
+    <div class="wrapper" v-for="loc in selectedLocations" :key="loc">
+      <GrowthRatesScatterplot 
+        :loc="loc" 
+        :data="filteredData.filter(element => element.location == loc)"
+        :xAccessor="xAccessor"
+        :yAccessor="yAccessor"
+        :xScale="xScale"
+        :yScale="yScale"
+        :colorScale="colorScale"
+        :margin="margin"
+        :width="width"
+        :innerWidth="innerWidth"
+        :innerHeight="innerHeight"
+      />
+    </div>
   </div>
 </template>
 
@@ -9,9 +24,12 @@
   import { quantile, min, max } from 'd3-array';
   import { scaleBand, scaleLinear, scaleDiverging } from 'd3-scale';
   import { interpolateRdYlBu } from 'd3-scale-chromatic';
+  import GrowthRatesScatterplot from '@/components/GrowthRatesScatterplot.vue';
 
   const props = defineProps({
     data: Array,
+    selectedLineage: String,
+    selectedLocations: Array,
   });
 
   console.log("data received by child component", props.data);
@@ -20,6 +38,12 @@
 
   const xAccessor = d => d.date;
   const yAccessor = d => d.growth_rate;
+  const locationAccessor = d => d.location;
+
+  const selectedLocations = computed(() => Array.from(new Set(props.data.map(locationAccessor))).sort());
+
+
+  console.log("selectedLocations", selectedLocations.value);
 
   const lowerBound = computed(() => quantile(props.data, 0.1, yAccessor));
   const upperBound = computed(() => quantile(props.data, 0.9, yAccessor));
@@ -81,3 +105,11 @@
 
   console.log("colorScale range", colorScale.value.range());  
 </script>
+
+<style>
+  .wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 700px;
+  }
+</style>
