@@ -2633,7 +2633,7 @@
       - FJ.1
       - FK.1
       - FK.1.1
-      - FK.1.1
+      - FK.1.2
       - FM.1
       - FM.2
       - FN.1
@@ -5072,7 +5072,7 @@
       - FJ.1
       - FK.1
       - FK.1.1
-      - FK.1.1
+      - FK.1.2
       - FM.1
       - FM.2
       - FN.1
@@ -6574,7 +6574,7 @@
       - FJ.1
       - FK.1
       - FK.1.1
-      - FK.1.1
+      - FK.1.2
       - FM.1
       - FM.2
       - FN.1
@@ -10550,7 +10550,7 @@
       - FJ.1
       - FK.1
       - FK.1.1
-      - FK.1.1
+      - FK.1.2
       - FM.1
       - FM.2
       - FN.1
@@ -11253,7 +11253,7 @@
       - FJ.1
       - FK.1
       - FK.1.1
-      - FK.1.1
+      - FK.1.2
       - FR.1
       - FS.1
   parent: B.1.1.529
@@ -12322,7 +12322,7 @@
       - FJ.1
       - FK.1
       - FK.1.1
-      - FK.1.1
+      - FK.1.2
       - FR.1
       - FS.1
   parent: BA.2
@@ -12530,7 +12530,7 @@
       - FJ.1
       - FK.1
       - FK.1.1
-      - FK.1.1
+      - FK.1.2
       - FS.1
   parent: BA.2.75
 - name: BM.1
@@ -12718,7 +12718,7 @@
       - FJ.1
       - FK.1
       - FK.1.1
-      - FK.1.1
+      - FK.1.2
       - FS.1
   parent: BA.2.75.3
 - name: BM.4.1
@@ -12764,7 +12764,7 @@
       - FJ.1
       - FK.1
       - FK.1.1
-      - FK.1.1
+      - FK.1.2
       - FS.1
   parent: BM.4
 - name: BM.4.1.1
@@ -12809,7 +12809,7 @@
       - FJ.1
       - FK.1
       - FK.1.1
-      - FK.1.1
+      - FK.1.2
       - FS.1
   parent: BM.4.1
 - name: CH.1
@@ -12850,7 +12850,7 @@
       - FJ.1
       - FK.1
       - FK.1.1
-      - FK.1.1
+      - FK.1.2
       - FS.1
   parent: BM.4.1.1
 - name: CH.1.1
@@ -12890,7 +12890,7 @@
       - FJ.1
       - FK.1
       - FK.1.1
-      - FK.1.1
+      - FK.1.2
       - FS.1
   parent: CH.1
 - name: CH.1.1.1
@@ -13029,19 +13029,24 @@
       - CH.1.1.17
       - FK.1
       - FK.1.1
-      - FK.1.1
+      - FK.1.2
   parent: CH.1.1
 - name: FK.1
   alias: B.1.1.529.2.75.3.4.1.1.1.1.17.1
   children:
       - FK.1
       - FK.1.1
-      - FK.1.1
+      - FK.1.2
   parent: CH.1.1.17
 - name: FK.1.1
   alias: B.1.1.529.2.75.3.4.1.1.1.1.17.1.1
   children:
       - FK.1.1
+  parent: FK.1
+- name: FK.1.2
+  alias: B.1.1.529.2.75.3.4.1.1.1.1.17.1.2
+  children:
+      - FK.1.2
   parent: FK.1
 - name: CH.1.1.18
   alias: B.1.1.529.2.75.3.4.1.1.1.1.18
@@ -25268,6 +25273,8 @@
       - XBB.1.5.42
       - XBB.1.5.43
       - XBB.1.5.44
+      - XBB.1.5.45
+      - XBB.1.5.46
       - XBB.1.6
       - XBB.1.7
       - XBB.1.8
@@ -25433,6 +25440,8 @@
       - XBB.1.5.42
       - XBB.1.5.43
       - XBB.1.5.44
+      - XBB.1.5.45
+      - XBB.1.5.46
       - XBB.1.6
       - XBB.1.7
       - XBB.1.8
@@ -25570,6 +25579,8 @@
       - XBB.1.5.42
       - XBB.1.5.43
       - XBB.1.5.44
+      - XBB.1.5.45
+      - XBB.1.5.46
   parent: XBB.1
 - name: XBB.1.5.1
   alias: XBB.1.5.1
@@ -25889,6 +25900,16 @@
   alias: XBB.1.5.44
   children:
       - XBB.1.5.44
+  parent: XBB.1.5
+- name: XBB.1.5.45
+  alias: XBB.1.5.45
+  children:
+      - XBB.1.5.45
+  parent: XBB.1.5
+- name: XBB.1.5.46
+  alias: XBB.1.5.46
+  children:
+      - XBB.1.5.46
   parent: XBB.1.5
 - name: XBB.1.6
   alias: XBB.1.6
