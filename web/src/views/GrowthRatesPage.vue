@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="rates">
     <h1>Growth rates</h1>
       <GrowthRatesCharts 
         v-if="growthData.length > 0" 
@@ -18,7 +18,8 @@
   let growthData = ref([]);
   
   let selectedLocation = 'United States';
-  let selectedLineage = 'BA.5.1.18';
+  // let selectedLineage = 'BA.5.1.18';
+  let selectedLineage = 'XBB.1.5.15';
   
   csv('../../data/mockData.csv').then(data => {
       data.forEach(d => {
@@ -49,4 +50,15 @@
       console.log("afterAssignment", growthData.value);
   });
 </script>
+
+<style>
+  .rates {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    user-select: none; 
+  }
+</style>
   

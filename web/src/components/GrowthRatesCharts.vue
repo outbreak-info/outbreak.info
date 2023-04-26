@@ -12,6 +12,7 @@
         :colorScale="colorScale"
         :margin="margin"
         :width="width"
+        :height="height"
         :innerWidth="innerWidth"
         :innerHeight="innerHeight"
       />
@@ -41,7 +42,6 @@
   const locationAccessor = d => d.location;
 
   const selectedLocations = computed(() => Array.from(new Set(props.data.map(locationAccessor))).sort());
-
 
   console.log("selectedLocations", selectedLocations.value);
 
