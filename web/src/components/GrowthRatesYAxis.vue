@@ -64,6 +64,7 @@
   .axis__line {
     stroke: #999999;
   }
+  
   .axis__tick {
     stroke: #999999;
   }

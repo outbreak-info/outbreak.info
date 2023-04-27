@@ -16,6 +16,19 @@
         :innerWidth="innerWidth"
         :innerHeight="innerHeight"
       />
+      <GrowthRatesLineChart
+        :loc="loc"
+        :data="filteredData.filter(element => element.location == loc)"
+        :xAccessor="xAccessor"
+        :yAccessor="yAccessorLine"
+        :xScale="xScale"
+        :colorScale="colorScale"
+        :margin="marginLine"
+        :width="width"
+        :height="heightLine"
+        :innerWidth="innerWidth"
+        :innerHeight="innerHeightLine"
+      />
     </div>
   </div>
 </template>
@@ -26,6 +39,7 @@
   import { scaleBand, scaleLinear, scaleDiverging } from 'd3-scale';
   import { interpolateRdYlBu } from 'd3-scale-chromatic';
   import GrowthRatesScatterplot from '@/components/GrowthRatesScatterplot.vue';
+  import GrowthRatesLineChart from '@/components/GrowthRatesLineChart.vue';
 
   const props = defineProps({
     data: Array,
@@ -40,6 +54,7 @@
   const xAccessor = d => d.date;
   const yAccessor = d => d.growth_rate;
   const locationAccessor = d => d.location;
+  const yAccessorLine = d => d.prevalence;
 
   const selectedLocations = computed(() => Array.from(new Set(props.data.map(locationAccessor))).sort());
 
@@ -64,11 +79,22 @@
     left: 60,
   };
 
+  const marginLine = {
+    top: 5,
+    right: 120,
+    bottom: 25,
+    left: 60,
+  };
+
   let width = 700;
   let height = 250;
 
   const innerWidth = computed(() => width - margin.left - margin.right);
   let innerHeight = height - margin.top - margin.bottom;
+
+  let heightLine = 60;
+
+  let innerHeightLine = heightLine - marginLine.top - marginLine.bottom;
 
   const padExtent = ([min, max], paddingFactor) => {
     const delta = Math.abs(max - min);

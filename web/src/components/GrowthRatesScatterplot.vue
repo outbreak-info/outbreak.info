@@ -1,5 +1,5 @@
 <template>
-   <div class="scatterplot" v-if="data.length > 0">
+  <div class="scatterplot" v-if="data.length > 0">
     <svg class="chart" :width="width" :height="height">
       <g :transform="`translate(${margin.left}, ${margin.top})`">
         <GrowthRatesYAxis 
