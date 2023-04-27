@@ -2,8 +2,12 @@
    <div class="scatterplot" v-if="data.length > 0">
     <svg class="chart" :width="width" :height="height">
       <g :transform="`translate(${margin.left}, ${margin.top})`">
+        <GrowthRatesYAxis 
+          :yScale="yScale"
+          :innerWidth="innerWidth"
+        />
         <circle 
-          v-for="(dataPoint, index) in data" :key="'point -'+index"
+          v-for="(dataPoint, index) in data" :key="'point-' + index"
             :r="xScale.bandwidth() / 2"
             :cx="xAccessorScaled(dataPoint)"
             :cy="yAccessorScaled(dataPoint)"
@@ -19,6 +23,7 @@
 
 <script setup>
   import { computed } from 'vue'
+  import GrowthRatesYAxis from '@/components/GrowthRatesYAxis.vue';
 
   const props = defineProps({
     loc: String,
@@ -48,7 +53,6 @@
 
   const xAccessorScaled = computed(() => d => props.xScale(props.xAccessor(d)));
   const yAccessorScaled = computed(() => d => props.yScale(props.yAccessor(d)));
-
 </script>
 
 
