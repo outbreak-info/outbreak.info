@@ -1,6 +1,9 @@
 <template>
   <div>
     <h2>{{ title }}</h2>
+    <GrowthRatesLegend
+      :colorScale="colorScale"
+    />
     <div class="wrapper" v-for="loc in selectedLocations" :key="loc">
       <GrowthRatesScatterplot 
         :loc="loc" 
@@ -38,6 +41,7 @@
   import { quantile, min, max } from 'd3-array';
   import { scaleBand, scaleLinear, scaleDiverging } from 'd3-scale';
   import { interpolateRdYlBu } from 'd3-scale-chromatic';
+  import GrowthRatesLegend from './GrowthRatesLegend.vue';
   import GrowthRatesScatterplot from '@/components/GrowthRatesScatterplot.vue';
   import GrowthRatesLineChart from '@/components/GrowthRatesLineChart.vue';
 
