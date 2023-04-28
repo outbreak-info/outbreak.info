@@ -10,6 +10,11 @@
             :height="innerHeight"
             :fill="colorScale(dataPoint.growth_rate)"
           />  
+          <GrowthRatesXAxis
+            :xScale="xScale"
+            :innerWidth="innerWidth"
+            :innerHeight="innerHeight"
+          />
           <path
             v-for="(attribute, index) in lineAttributes" :key="'line-' + index" 
             class="line"
@@ -30,6 +35,7 @@
   import { max } from 'd3-array';
   import { scaleLinear } from 'd3-scale';
   import { line, curveMonotoneX } from 'd3-shape';
+  import GrowthRatesXAxis from '@/components/GrowthRatesXAxis.vue';
 
   const props = defineProps({
     loc: String,
