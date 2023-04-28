@@ -24,6 +24,13 @@
             fill="none"
             stroke-linecap="round"
           />
+          <GrowthRatesAnnotations 
+            :data="data"
+            :xAccessor="xAccessor"
+            :yAccessor="yAccessor"
+            :xScale="xScale"
+            :yScale="yScale"
+          />
         </g>
       </svg>
     
@@ -36,6 +43,7 @@
   import { scaleLinear } from 'd3-scale';
   import { line, curveMonotoneX } from 'd3-shape';
   import GrowthRatesXAxis from '@/components/GrowthRatesXAxis.vue';
+  import GrowthRatesAnnotations from './GrowthRatesAnnotations.vue';
 
   const props = defineProps({
     loc: String,
