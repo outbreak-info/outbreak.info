@@ -2,6 +2,14 @@
     <div class="line-chart" v-if="data.length > 0">
       <svg class="chart" :width="width" :height="height">
         <g :transform="`translate(${margin.left}, ${margin.top})`">
+          <rect 
+            v-for="(dataPoint, index) in data" :key="'stripe-' + index"
+            :x="xAccessorScaled(dataPoint) - xScale.bandwidth() / 2"
+            :y="0"
+            :width="xScale.bandwidth()"
+            :height="innerHeight"
+            :fill="colorScale(dataPoint.growth_rate)"
+          />  
           <path 
             class="line" 
             :d="prevalenceLine"

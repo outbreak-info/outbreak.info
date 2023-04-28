@@ -8,13 +8,13 @@
         />
         <circle 
           v-for="(dataPoint, index) in data" :key="'point-' + index"
-            :r="xScale.bandwidth() / 2"
-            :cx="xAccessorScaled(dataPoint)"
-            :cy="yAccessorScaled(dataPoint)"
-            :fill="colorScale(dataPoint.growth_rate)"
-            stroke="#2c3e50"
-            stroke-width="1px"
-          />
+          :r="xScale.bandwidth() / 2"
+          :cx="xAccessorScaled(dataPoint)"
+          :cy="yAccessorScaled(dataPoint)"
+          :fill="colorScale(dataPoint.growth_rate)"
+          stroke="#2c3e50"
+          stroke-width="1px"
+        />
       </g>
     </svg>
   </div>
