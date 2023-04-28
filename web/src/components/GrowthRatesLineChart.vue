@@ -10,9 +10,14 @@
             :height="innerHeight"
             :fill="colorScale(dataPoint.growth_rate)"
           />  
-          <path 
-            class="line" 
+          <path
+            v-for="(attribute, index) in lineAttributes" :key="'line-' + index" 
+            class="line"
             :d="prevalenceLine"
+            :stroke="attribute.color"
+            :stroke-width="attribute.strokeWidth"
+            fill="none"
+            stroke-linecap="round"
           />
         </g>
       </svg>
@@ -61,19 +66,14 @@
   );
 
   const prevalenceLine = lineGenerator.value(props.data);
-
+  
+  const lineAttributes = [{color: "#ffffff", strokeWidth: "6px"}, 
+                          {color: "#2c3e50", strokeWidth: "2px"}];
 </script>
 
 <style>
   .line-chart {
     margin-top: 0px;
     margin-bottom: 20px;
-  }
-
-  .line {
-    fill: none;
-    stroke: #2c3e50;
-    stroke-width: 2px;
-    stroke-linecap: round;
-  }  
+  } 
 </style>
