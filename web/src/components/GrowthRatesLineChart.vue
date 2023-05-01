@@ -79,7 +79,7 @@
     .curve(curveMonotoneX)
   );
 
-  const prevalenceLine = lineGenerator.value(props.data);
+  const prevalenceLine = computed(() => lineGenerator.value(props.data));
   
   const lineAttributes = [{color: "#ffffff", strokeWidth: "6px"}, 
                           {color: "#2c3e50", strokeWidth: "2px"}];

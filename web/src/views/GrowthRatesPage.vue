@@ -49,6 +49,7 @@
       growthData.value = data;
       console.log("afterAssignment", growthData.value);
   });
+
 </script>
 
 <style>

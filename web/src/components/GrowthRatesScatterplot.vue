@@ -54,5 +54,3 @@
   const xAccessorScaled = computed(() => d => props.xScale(props.xAccessor(d)));
   const yAccessorScaled = computed(() => d => props.yScale(props.yAccessor(d)));
 </script>
-
-

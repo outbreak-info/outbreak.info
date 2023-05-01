@@ -4,7 +4,11 @@
     <GrowthRatesLegend
       :colorScale="colorScale"
     />
-    <div class="wrapper" v-for="loc in selectedLocations" :key="loc">
+    <div 
+      class="wrapper" 
+      :style="{ 'width': width + 'px' }"
+      v-for="loc in selectedLocations" :key="loc"
+      >
       <GrowthRatesScatterplot 
         :loc="loc" 
         :data="filteredData.filter(element => element.location == loc)"
@@ -37,7 +41,7 @@
 </template>
 
 <script setup>
-  import { computed } from 'vue'
+  import { computed, onMounted, onUnmounted, ref } from 'vue'
   import { quantile, min, max } from 'd3-array';
   import { scaleBand, scaleLinear, scaleDiverging } from 'd3-scale';
   import { interpolateRdYlBu } from 'd3-scale-chromatic';
@@ -45,6 +49,28 @@
   import GrowthRatesScatterplot from '@/components/GrowthRatesScatterplot.vue';
   import GrowthRatesLineChart from '@/components/GrowthRatesLineChart.vue';
 
+  const width = ref(700);
+  let height = 250;
+  let heightLine = 60;
+
+  onMounted(() => {
+    window.addEventListener('resize', handleResize);
+  });
+
+  onUnmounted(() => {
+    window.removeEventListener('resize', handleResize);
+  });
+
+  const handleResize = () => {
+    if (window.innerWidth >= 900) {
+      width.value = 700;
+    }
+    else {
+      width.value = window.innerWidth;
+    } 
+    console.log(">>>>", width.value);
+  }
+  
   const props = defineProps({
     data: Array,
     selectedLineage: String,
@@ -90,14 +116,8 @@
     left: 60,
   };
 
-  let width = 700;
-  let height = 250;
-
-  const innerWidth = computed(() => width - margin.left - margin.right);
+  const innerWidth = computed(() => width.value - margin.left - margin.right);
   let innerHeight = height - margin.top - margin.bottom;
-
-  let heightLine = 60;
-
   let innerHeightLine = heightLine - marginLine.top - marginLine.bottom;
 
   const padExtent = ([min, max], paddingFactor) => {
