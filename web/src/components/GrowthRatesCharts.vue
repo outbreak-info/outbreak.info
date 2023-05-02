@@ -93,9 +93,6 @@
   const lowerBound = computed(() => quantile(props.data, 0.1, yAccessor));
   const upperBound = computed(() => quantile(props.data, 0.9, yAccessor));
 
-  console.log("lowerBound", lowerBound.value);
-  console.log("upperBound", upperBound.value);
-
   const filteredData = computed(() => props.data.filter(
     d => d.growth_rate >= lowerBound.value && d.growth_rate <= upperBound.value,
   ));
@@ -143,17 +140,12 @@
     .nice()
   );
 
-  console.log("xScale domain", xScale.value.domain());
-  console.log("yScale domain", yScale.value.domain());
-
   const interpolator = t => interpolateRdYlBu(1 - t);
 
   const colorScale = computed(() => scaleDiverging(
     [min(filteredData.value, yAccessor), 0, max(filteredData.value, yAccessor)],
     interpolator,
-  ));
-
-  console.log("colorScale range", colorScale.value.range());  
+  ));  
 </script>
 
 <style>

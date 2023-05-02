@@ -57,15 +57,8 @@
 
   const colors = computed(() => schemeRdYlBu[11].reverse());
 
-  console.log(colors.value);
-
-  console.log(props.colorScale.domain());
-
   const minValue = computed(() => props.colorScale.domain()[0]);
   const maxValue = computed(() => props.colorScale.domain()[2]);
-  
-  console.log("minv", minValue.value);
-  console.log("maxv", maxValue.value);
 </script>
 
 <style>

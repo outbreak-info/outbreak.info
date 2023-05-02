@@ -36,9 +36,6 @@
   }
 
   const ticksToBeRendered = computed(() => filterTicks(props.innerWidth));
-  
-  console.log("xaxis, allticks", allTicks.value);
-  console.log("xaxis, filterTicks", ticksToBeRendered.value);
 </script>
 
 <style>

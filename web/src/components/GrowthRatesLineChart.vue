@@ -59,8 +59,6 @@
     innerHeight: Number,
   });
 
-  console.log("prev", props.loc)
-
   const yScale = computed(() => scaleLinear()
     .domain([0, max(props.data, props.yAccessor)])
     .range([props.innerHeight, 0])

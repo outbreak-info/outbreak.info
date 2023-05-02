@@ -47,8 +47,6 @@
     innerWidth: Number,
   });
 
-  console.log("yAxis, range", props.yScale.range())
-
   const numberOfTicks = (pixelsAvailable, pixelsPerTick = 30) =>
     Math.floor(Math.abs(pixelsAvailable) / pixelsPerTick);
 
