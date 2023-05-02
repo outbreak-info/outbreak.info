@@ -2,6 +2,15 @@
   <div class="scatterplot" v-if="data.length > 0">
     <svg class="chart" :width="width" :height="height">
       <g :transform="`translate(${margin.left}, ${margin.top})`">
+        <text
+          :y="-40"
+          :x="-60"
+          text-anchor="start"
+          fill="#2c3e50"
+          font-weight="bold"
+        >
+          {{ loc }}
+        </text>
         <GrowthRatesYAxis 
           :yScale="yScale"
           :innerWidth="innerWidth"
@@ -18,7 +27,6 @@
       </g>
     </svg>
   </div>
-  <p>{{ loc }}</p>
 </template>
 
 <script setup>

@@ -79,7 +79,7 @@
 
   console.log("data received by child component", props.data);
 
-  const title = `${props.data[0].lineage} grow rates in the ${props.data[0].location}`;
+  const title = `${props.data[0].lineage} grow rates in selected locations`;
 
   const xAccessor = d => d.date;
   const yAccessor = d => d.growth_rate;
@@ -106,7 +106,7 @@
     top: 60,
     right: 120,
     bottom: 5,
-    left: 60,
+    left: 65,
   };
 
   const marginLine = {
