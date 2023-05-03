@@ -142,8 +142,11 @@
 
   const interpolator = t => interpolateRdYlBu(1 - t);
 
+  const extremeValue = computed(() => Math.max(Math.abs(min(filteredData.value, yAccessor)),
+                                  Math.abs(max(filteredData.value, yAccessor))));  
+
   const colorScale = computed(() => scaleDiverging(
-    [min(filteredData.value, yAccessor), 0, max(filteredData.value, yAccessor)],
+    [-Math.ceil(extremeValue.value), 0, Math.ceil(extremeValue.value)],
     interpolator,
   ));  
 </script>

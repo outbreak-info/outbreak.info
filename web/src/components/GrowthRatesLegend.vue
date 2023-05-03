@@ -50,7 +50,7 @@
     colorScale: Function,
   });
 
-  const formatGrowthRate = format(',.2f');
+  const formatGrowthRate = format(',.1f');
 
   const width = 250;
   const height = 50;
