@@ -110,7 +110,7 @@
     top: 5,
     right: 120,
     bottom: 25,
-    left: 60,
+    left: 65,
   };
 
   const innerWidth = computed(() => width.value - margin.left - margin.right);
