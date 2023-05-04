@@ -32,6 +32,12 @@
       <span class="data end-block">{{ formatSequence(hoveredPoint.totalSequences) }}</span>
       <span>Ratio over background</span>
       <span class="data">{{ `1 : ${formatSequence(ratio)}` }}</span>
+      <span 
+        class="ci-alert"
+        v-if="wasCIClipped"
+      >
+        CI bar has been cut off
+      </span>
     </div>
     <div>
       <span
@@ -48,14 +54,16 @@
   import { format } from 'd3-format';
   
   const props = defineProps({
-      loc: String,
-      hoveredPoint: Object,
-      xAccessor: Function,
-      yAccessor: Function,
-      xScale: Function,
-      yScale: Function,
-      colorScale: Function,
-      margin: Object,
+    loc: String,
+    hoveredPoint: Object,
+    xAccessor: Function,
+    yAccessor: Function,
+    xScale: Function,
+    yScale: Function,
+    colorScale: Function,
+    margin: Object,
+    minGrowthRate: Number,
+    maxGrowthRate: Number,
   });
   
   const formatTime = timeFormat('%b %e, %Y');
@@ -69,6 +77,14 @@
   const ratio = computed(() => Math.trunc(
     (props.hoveredPoint.totalSequences - props.hoveredPoint.sequences) / props.hoveredPoint.sequences, 
   ));
+
+  const ci95 = computed(() => props.hoveredPoint.intervals[props.hoveredPoint.intervals.length - 1]);
+
+  const wasCIClipped = computed(() => 
+    props.hoveredPoint.growth_rate + ci95.value > props.maxGrowthRate ||
+    props.hoveredPoint.growth_rate - ci95.value < props.minGrowthRate ||
+    (props.hoveredPoint.growth_rate + ci95.value > props.maxGrowthRate &&
+      props.hoveredPoint.growth_rate - ci95.value < props.minGrowthRate));
 </script>
   
 <style>
@@ -124,6 +140,10 @@
 
   .end-block {
     margin-bottom: 8px;
+  }
+
+  .ci-alert {
+    margin-top: 8px;
   }
 </style>
   

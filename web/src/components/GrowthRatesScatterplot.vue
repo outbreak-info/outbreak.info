@@ -76,6 +76,8 @@
     :yScale="yScale"
     :colorScale="colorScale"
     :margin="margin"  
+    :minGrowthRate="minGrowthRate"
+    :maxGrowthRate="maxGrowthRate"
   />
 </template>
 
