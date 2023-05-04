@@ -17,6 +17,7 @@
         :xScale="xScale"
         :yScale="yScale"
         :colorScale="colorScale"
+        :greyScale="greyScale"
         :margin="margin"
         :width="width"
         :height="height"
@@ -41,7 +42,7 @@
 </template>
 
 <script setup>
-  import { computed, onMounted, onUnmounted, ref } from 'vue'
+  import { computed, onMounted, onUnmounted, ref } from 'vue';
   import { quantile, min, max } from 'd3-array';
   import { scaleBand, scaleLinear, scaleDiverging } from 'd3-scale';
   import { interpolateRdYlBu } from 'd3-scale-chromatic';
@@ -85,6 +86,7 @@
   const yAccessor = d => d.growth_rate;
   const locationAccessor = d => d.location;
   const yAccessorLine = d => d.prevalence;
+  const greyAccessor = d => d.invUncertainty;
 
   const selectedLocations = computed(() => Array.from(new Set(props.data.map(locationAccessor))).sort());
 
@@ -133,7 +135,7 @@
     .domain(
       padExtent(
         [min(filteredData.value, yAccessor), max(filteredData.value, yAccessor)],
-        0.05,
+        0.07,
       )
     )
     .range([innerHeight, 0])
@@ -149,6 +151,14 @@
     [-Math.ceil(extremeValue.value), 0, Math.ceil(extremeValue.value)],
     interpolator,
   ));  
+
+  const greyScale = computed(() => scaleLinear()
+    .domain([
+      min(filteredData.value, greyAccessor),
+      max(filteredData.value, greyAccessor),
+    ])
+    .range([0.1, 0.4])
+  );
 </script>
 
 <style>

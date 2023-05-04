@@ -56,7 +56,7 @@
       yScale: Function,
       colorScale: Function,
       margin: Object,
-    });
+  });
   
   const formatTime = timeFormat('%b %e, %Y');
   const parseTime = timeParse('%Y-%m-%d');

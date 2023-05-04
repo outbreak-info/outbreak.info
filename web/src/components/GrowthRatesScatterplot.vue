@@ -15,6 +15,26 @@
           :yScale="yScale"
           :innerWidth="innerWidth"
         />
+        <GrowthRatesTopCIs
+          v-for="(dataPoint, index) in data" :key="'topCI-' + index"
+          :dataPoint="dataPoint"
+          :xAccessor="xAccessor"
+          :xScale="xScale"
+          :yScale="yScale"
+          :greyScale="greyScale"
+          :minGrowthRate="minGrowthRate"
+          :maxGrowthRate="maxGrowthRate"
+         />
+         <GrowthRatesBottomCIs
+          v-for="(dataPoint, index) in data" :key="'bottomCI-' + index"
+          :dataPoint="dataPoint"
+          :xAccessor="xAccessor"
+          :xScale="xScale"
+          :yScale="yScale"
+          :greyScale="greyScale"
+          :minGrowthRate="minGrowthRate"
+          :maxGrowthRate="maxGrowthRate"
+         />
         <rect
           :width="innerWidth"
           :height="innerHeight"
@@ -62,6 +82,8 @@
 <script setup>
   import { computed, ref } from 'vue'
   import GrowthRatesYAxis from '@/components/GrowthRatesYAxis.vue';
+  import GrowthRatesTopCIs from '@/components/GrowthRatesTopCIs.vue';
+  import GrowthRatesBottomCIs from '@/components/GrowthRatesBottomCIs.vue';
   import GrowthRatesTooltip from '@/components/GrowthRatesTooltip.vue';
   import { quadtree } from "https://cdn.skypack.dev/d3-quadtree@3";
 
@@ -73,6 +95,7 @@
     xScale: Function,
     yScale: Function,
     colorScale: Function,
+    greyScale: Function,
     margin: Object,
     width: Number,
     height: Number,
@@ -103,4 +126,7 @@
   const handleMouseLeave = () => {
     hoveredPoint.value = null;
   }
+
+  const minGrowthRate = computed(() => props.yScale.domain()[0]);
+  const maxGrowthRate = computed(() => props.yScale.domain()[1]);
 </script>
