@@ -46,11 +46,23 @@
       </g>
     </svg>
   </div>
+  <GrowthRatesTooltip
+    v-if="hoveredPoint"
+    :loc="loc"
+    :hoveredPoint="hoveredPoint"
+    :xAccessor="xAccessor"
+    :yAccessor="yAccessor"
+    :xScale="xScale"
+    :yScale="yScale"
+    :colorScale="colorScale"
+    :margin="margin"  
+  />
 </template>
 
 <script setup>
   import { computed, ref } from 'vue'
   import GrowthRatesYAxis from '@/components/GrowthRatesYAxis.vue';
+  import GrowthRatesTooltip from '@/components/GrowthRatesTooltip.vue';
   import { quadtree } from "https://cdn.skypack.dev/d3-quadtree@3";
 
   const props = defineProps({
@@ -86,7 +98,6 @@
     const xPosition = e.offsetX - props.margin.left;
     const yPosition = e.offsetY - props.margin.top;
     hoveredPoint.value = quadtreeInstance.value.find(xPosition, yPosition);
-    console.log("hoveredPoint", hoveredPoint.value);
   }
 
   const handleMouseLeave = () => {
