@@ -901,7 +901,11 @@
             <h4>Previously Circulating Variants of Concern</h4>
             <div class="text-muted">
               These former VOCs have been de-escalated by public health agencies
-              as the variant is no longer circulating.
+              as the variant is no longer circulating. Note that <b>Omicron is
+              still circulating and is still classified as a Variant of Concern</b>,
+              but monitoring is broken down into its individual sublineages
+              since the variant has evolved substantially from the B.1.1.529
+              parent lineage.
             </div>
 
             <div
