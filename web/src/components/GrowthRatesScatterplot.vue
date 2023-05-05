@@ -76,6 +76,7 @@
     :yScale="yScale"
     :colorScale="colorScale"
     :margin="margin"  
+    :innerWidth="innerWidth"
     :minGrowthRate="minGrowthRate"
     :maxGrowthRate="maxGrowthRate"
   />

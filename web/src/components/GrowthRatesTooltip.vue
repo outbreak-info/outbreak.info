@@ -2,9 +2,10 @@
   <div
     class="gr-tooltip"
     :style='{
-      top: `${y + 10}px`,
-      left: `${x}px`,
-    }'
+      top: `${yPosition}px`,
+      left: `${xPosition}px`,
+      width: `${tooltipWidth}px`,
+    }'   
   >
     <div 
       class="title"
@@ -49,7 +50,7 @@
 </template>
   
 <script setup>
-  import { computed} from 'vue';
+  import { computed } from 'vue';
   import { timeFormat, timeParse } from 'd3-time-format';
   import { format } from 'd3-format';
   
@@ -62,6 +63,7 @@
     yScale: Function,
     colorScale: Function,
     margin: Object,
+    innerWidth: Number,
     minGrowthRate: Number,
     maxGrowthRate: Number,
   });
@@ -70,9 +72,14 @@
   const parseTime = timeParse('%Y-%m-%d');
   const formatGrowthRate = format(',.2f');
   const formatSequence = format(',.0f');
+
+  const tooltipWidth = 240;
+
+  const xNudge = 60;
+  const yNudge = 205;
     
-  const x = computed(() => props.xScale(props.xAccessor(props.hoveredPoint)) + props.margin.left);  
-  const y = computed(() => props.yScale(props.yAccessor(props.hoveredPoint)) + props.margin.top);
+  const x = computed(() => props.xScale(props.xAccessor(props.hoveredPoint))); 
+  const y = computed(() => props.yScale(props.yAccessor(props.hoveredPoint)));
 
   const ratio = computed(() => Math.trunc(
     (props.hoveredPoint.totalSequences - props.hoveredPoint.sequences) / props.hoveredPoint.sequences, 
@@ -84,7 +91,11 @@
     props.hoveredPoint.growth_rate + ci95.value > props.maxGrowthRate ||
     props.hoveredPoint.growth_rate - ci95.value < props.minGrowthRate ||
     (props.hoveredPoint.growth_rate + ci95.value > props.maxGrowthRate &&
-      props.hoveredPoint.growth_rate - ci95.value < props.minGrowthRate));
+      props.hoveredPoint.growth_rate - ci95.value < props.minGrowthRate)
+  );
+
+  const xPosition = computed(() => (x.value + tooltipWidth) >= props.innerWidth ? x.value - xNudge : x.value + xNudge);
+  const yPosition = computed(() => y.value - yNudge);
 </script>
   
 <style>
@@ -98,7 +109,7 @@
     text-align: left;
     font-size: 14px;
     line-height: 18px;
-    z-index: 1;
+    z-index: 1;    
   }
 
   .title {
