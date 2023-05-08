@@ -23,6 +23,8 @@
         :height="height"
         :innerWidth="innerWidth"
         :innerHeight="innerHeight"
+        :hoveredLinePoint="hoveredLinePoint"
+        @scatterplot-hovered="handleScatterplotHovered"
       />
       <GrowthRatesLineChart
         :loc="loc"
@@ -36,6 +38,8 @@
         :height="heightLine"
         :innerWidth="innerWidth"
         :innerHeight="innerHeightLine"
+        :hoveredScatterplotPoint="hoveredScatterplotPoint"
+        @line-hovered="handleLineHovered"
       />
     </div>
   </div>
@@ -51,6 +55,9 @@
   import GrowthRatesLineChart from '@/components/GrowthRatesLineChart.vue';
 
   const width = ref(700);
+  const hoveredScatterplotPoint = ref(null);
+  const hoveredLinePoint = ref(null);
+
   let height = 250;
   let heightLine = 60;
 
@@ -70,6 +77,14 @@
       width.value = window.innerWidth;
     } 
     console.log(">>>>", width.value);
+  }
+
+  const handleScatterplotHovered = (point) => {
+    hoveredScatterplotPoint.value = point;
+  }
+
+  const handleLineHovered = (point) => {
+    hoveredLinePoint.value = point;
   }
   
   const props = defineProps({

@@ -63,6 +63,15 @@
           stroke="#2c3e50"
           stroke-width="2px"
         />
+        <circle
+          v-if="hoveredLinePoint && hoveredLinePoint.location == loc"
+          :r="(xScale.bandwidth() / 2) + 3"
+          :cx="xAccessorScaled(hoveredLinePoint)"
+          :cy="yAccessorScaled(hoveredLinePoint)"
+          fill="none" 
+          stroke="#2c3e50"
+          stroke-width="2px"
+        />
       </g>
     </svg>
   </div>
@@ -70,6 +79,20 @@
     v-if="hoveredPoint"
     :loc="loc"
     :hoveredPoint="hoveredPoint"
+    :xAccessor="xAccessor"
+    :yAccessor="yAccessor"
+    :xScale="xScale"
+    :yScale="yScale"
+    :colorScale="colorScale"
+    :margin="margin"  
+    :innerWidth="innerWidth"
+    :minGrowthRate="minGrowthRate"
+    :maxGrowthRate="maxGrowthRate"
+  />
+  <GrowthRatesTooltip
+    v-if="hoveredLinePoint && hoveredLinePoint.location == loc"
+    :loc="loc"
+    :hoveredPoint="hoveredLinePoint"
     :xAccessor="xAccessor"
     :yAccessor="yAccessor"
     :xScale="xScale"
@@ -104,8 +127,11 @@
     height: Number,
     innerWidth: Number,
     innerHeight: Number,
+    hoveredLinePoint: Object,
   });
 
+  const emit = defineEmits(['scatterplot-hovered']);
+  
   console.log("scatter loc", props.loc);
   console.log("scatter data", props.data);
 
@@ -124,10 +150,12 @@
     const xPosition = e.offsetX - props.margin.left;
     const yPosition = e.offsetY - props.margin.top;
     hoveredPoint.value = quadtreeInstance.value.find(xPosition, yPosition);
+    emit('scatterplot-hovered', hoveredPoint.value);
   }
 
   const handleMouseLeave = () => {
     hoveredPoint.value = null;
+    emit('scatterplot-hovered', null);
   }
 
   const minGrowthRate = computed(() => props.yScale.domain()[0]);

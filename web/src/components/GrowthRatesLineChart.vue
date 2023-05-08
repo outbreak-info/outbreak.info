@@ -1,44 +1,63 @@
 <template>
-    <div class="line-chart" v-if="data.length > 0">
-      <svg class="chart" :width="width" :height="height">
-        <g :transform="`translate(${margin.left}, ${margin.top})`">
-          <rect 
-            v-for="(dataPoint, index) in data" :key="'stripe-' + index"
-            :x="xAccessorScaled(dataPoint) - xScale.bandwidth() / 2"
-            :y="0"
-            :width="xScale.bandwidth()"
-            :height="innerHeight"
-            :fill="colorScale(dataPoint.growth_rate)"
-          />  
-          <GrowthRatesXAxis
-            :xScale="xScale"
-            :innerWidth="innerWidth"
-            :innerHeight="innerHeight"
-          />
-          <path
-            v-for="(attribute, index) in lineAttributes" :key="'line-' + index" 
-            class="line"
-            :d="prevalenceLine"
-            :stroke="attribute.color"
-            :stroke-width="attribute.strokeWidth"
-            fill="none"
-            stroke-linecap="round"
-          />
-          <GrowthRatesAnnotations 
-            :data="data"
-            :xAccessor="xAccessor"
-            :yAccessor="yAccessor"
-            :xScale="xScale"
-            :yScale="yScale"
-          />
-        </g>
-      </svg>
-    
-    </div>
+  <div class="line-chart" v-if="data.length > 0">
+    <svg class="chart" :width="width" :height="height">
+      <g :transform="`translate(${margin.left}, ${margin.top})`">
+        <rect 
+          v-for="(dataPoint, index) in data" :key="'stripe-' + index"
+          :x="xAccessorScaled(dataPoint) - xScale.bandwidth() / 2"
+          :y="0"
+          :width="xScale.bandwidth()"
+          :height="innerHeight"
+          :fill="colorScale(dataPoint.growth_rate)"
+          @mousemove="handleMouseMove"
+          @mouseleave="handleMouseLeave"
+        />  
+        <GrowthRatesXAxis
+          :xScale="xScale"
+          :innerWidth="innerWidth"
+          :innerHeight="innerHeight"
+        />
+        <path
+          v-for="(attribute, index) in lineAttributes" :key="'line-' + index" 
+          class="line"
+          :d="prevalenceLine"
+          :stroke="attribute.color"
+          :stroke-width="attribute.strokeWidth"
+          fill="none"
+          stroke-linecap="round"
+        />
+        <GrowthRatesAnnotations 
+          :data="data"
+          :xAccessor="xAccessor"
+          :yAccessor="yAccessor"
+          :xScale="xScale"
+          :yScale="yScale"
+        />
+        <circle 
+          v-if="hoveredPoint"
+          :r="(xScale.bandwidth() / 2)"
+          :cx="xAccessorScaled(hoveredPoint)"
+          :cy="yAccessorScaled(hoveredPoint)"
+          fill="#2c3e50"
+          stroke="#ffffff"
+          stroke-width="2px"
+        />
+        <circle 
+          v-if="hoveredScatterplotPoint && hoveredScatterplotPoint.location == loc"
+          :r="(xScale.bandwidth() / 2)"
+          :cx="xAccessorScaled(hoveredScatterplotPoint)"
+          :cy="yAccessorScaled(hoveredScatterplotPoint)"
+          fill="#2c3e50"
+          stroke="#ffffff"
+          stroke-width="2px"  
+        />
+      </g>
+    </svg>
+  </div>
 </template>
 
 <script setup>
-  import { computed } from 'vue';
+  import { computed, ref } from 'vue';
   import { max } from 'd3-array';
   import { scaleLinear } from 'd3-scale';
   import { line, curveMonotoneX } from 'd3-shape';
@@ -57,7 +76,12 @@
     height: Number,
     innerWidth: Number,
     innerHeight: Number,
+    hoveredScatterplotPoint: Object,
   });
+
+  const emit = defineEmits(['line-hovered']);
+
+  const hoveredPoint = ref(null);
 
   const yScale = computed(() => scaleLinear()
     .domain([0, max(props.data, props.yAccessor)])
@@ -81,6 +105,19 @@
   
   const lineAttributes = [{color: "#ffffff", strokeWidth: "6px"}, 
                           {color: "#2c3e50", strokeWidth: "2px"}];
+
+  const handleMouseMove = (e) => {
+    const step = props.xScale.step();
+    const domainIndex = Math.round((e.offsetX - props.margin.left) / step)
+    const dateString = props.xScale.domain()[domainIndex];
+    hoveredPoint.value = props.data.find(item => item.date === dateString);
+    emit('line-hovered', hoveredPoint.value);
+  }
+
+  const handleMouseLeave = () => {
+    hoveredPoint.value = null;
+    emit('line-hovered', hoveredPoint.value);
+  }
 </script>
 
 <style>
