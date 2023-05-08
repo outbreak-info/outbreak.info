@@ -1,12 +1,11 @@
 <template>
   <div class="rates">
-    <h1>Growth rates</h1>
-      <GrowthRatesCharts 
-        v-if="growthData.length > 0" 
-        :data="growthData.filter((d => d.location == selectedLocation) && (d => d.lineage == selectedLineage))"
-        :selectedLocation="selectedLocation"
-        :selectedLineage="selectedLineage"
-      />
+    <GrowthRatesCharts 
+      v-if="growthData.length > 0" 
+      :data="growthData.filter((d => d.location == selectedLocation) && (d => d.lineage == selectedLineage))"
+      :selectedLocation="selectedLocation"
+      :selectedLineage="selectedLineage"
+    />
   </div>
 </template>
   

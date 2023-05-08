@@ -1,6 +1,8 @@
 <template>
   <div>
-    <h2>{{ title }}</h2>
+    <div id="header">
+     <h3>{{ title }}</h3>
+    </div>
     <GrowthRatesLegend
       :colorScale="colorScale"
     />
@@ -95,7 +97,7 @@
 
   console.log("data received by child component", props.data);
 
-  const title = `${props.data[0].lineage} grow rates in selected locations`;
+  const title = `${props.data[0].lineage} growth rates in selected locations`;
 
   const xAccessor = d => d.date;
   const yAccessor = d => d.growth_rate;
@@ -177,6 +179,13 @@
 </script>
 
 <style>
+  #header {
+    margin-top: 30px;
+    margin-bottom: 30px;
+    margin-left: 5px;
+    text-align: left;
+  }
+  
   .wrapper {
     position: relative;
     width: 100%;
