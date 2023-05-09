@@ -1,6 +1,12 @@
 <template>
   <div class="line-chart" v-if="data.length > 0">
-    <svg class="chart" :width="width" :height="height">
+    <svg 
+      role="img"
+      class="chart"
+      :aria-label="ariaLabel" 
+      :width="width" 
+      :height="height"
+    >
       <g :transform="`translate(${margin.left}, ${margin.top})`">
         <rect 
           v-for="(dataPoint, index) in data" :key="'stripe-' + index"
@@ -66,6 +72,7 @@
 
   const props = defineProps({
     loc: String,
+    lineage: String,
     data: Array,
     xAccessor: Function,
     yAccessor: Function,
@@ -118,6 +125,8 @@
     hoveredPoint.value = null;
     emit('line-hovered', hoveredPoint.value);
   }
+
+  const ariaLabel = computed(() => `Line chart of ${props.lineage} prevalence in ${props.loc}`);
 </script>
 
 <style>

@@ -13,6 +13,7 @@
       >
       <GrowthRatesScatterplot 
         :loc="loc" 
+        :lineage="selectedLineage"
         :data="filteredData.filter(element => element.location == loc)"
         :xAccessor="xAccessor"
         :yAccessor="yAccessor"
@@ -30,6 +31,7 @@
       />
       <GrowthRatesLineChart
         :loc="loc"
+        :lineage="selectedLineage"
         :data="filteredData.filter(element => element.location == loc)"
         :xAccessor="xAccessor"
         :yAccessor="yAccessorLine"

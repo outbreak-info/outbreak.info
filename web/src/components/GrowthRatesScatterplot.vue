@@ -1,6 +1,12 @@
 <template>
   <div class="scatterplot" v-if="data.length > 0">
-    <svg class="chart" :width="width" :height="height">
+    <svg 
+      role="img"
+      class="chart"
+      :aria-label="ariaLabel"
+      :width="width" 
+      :height="height"
+    >
       <g :transform="`translate(${margin.left}, ${margin.top})`">
         <text
           :y="-40"
@@ -115,6 +121,7 @@
 
   const props = defineProps({
     loc: String,
+    lineage: String,
     data: Array,
     xAccessor: Function,
     yAccessor: Function,
@@ -160,4 +167,6 @@
 
   const minGrowthRate = computed(() => props.yScale.domain()[0]);
   const maxGrowthRate = computed(() => props.yScale.domain()[1]);
+
+  const ariaLabel = computed(() => `Scatterplot of ${props.lineage} growth rates in ${props.loc}`);
 </script>
