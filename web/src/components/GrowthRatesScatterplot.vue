@@ -138,9 +138,6 @@
   });
 
   const emit = defineEmits(['scatterplot-hovered']);
-  
-  console.log("scatter loc", props.loc);
-  console.log("scatter data", props.data);
 
   const hoveredPoint = ref(null);
  

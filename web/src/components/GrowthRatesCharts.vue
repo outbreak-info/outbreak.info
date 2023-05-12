@@ -97,8 +97,6 @@
     selectedLocations: Array,
   });
 
-  console.log("data received by child component", props.data);
-
   const title = `${props.data[0].lineage} growth rates in selected locations`;
 
   const xAccessor = d => d.date;
@@ -109,16 +107,12 @@
 
   const selectedLocations = computed(() => Array.from(new Set(props.data.map(locationAccessor))).sort());
 
-  console.log("selectedLocations", selectedLocations.value);
-
   const lowerBound = computed(() => quantile(props.data, 0.1, yAccessor));
   const upperBound = computed(() => quantile(props.data, 0.9, yAccessor));
 
   const filteredData = computed(() => props.data.filter(
     d => d.growth_rate >= lowerBound.value && d.growth_rate <= upperBound.value,
   ));
-
-  console.log("filteredData", filteredData.value);
 
   const margin = {
     top: 60,

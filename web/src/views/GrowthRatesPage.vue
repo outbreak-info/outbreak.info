@@ -46,7 +46,6 @@
         d.totalSequences = d.deltaN_7;
       });
       growthData.value = data;
-      console.log("afterAssignment", growthData.value);
   });
 
 </script>
