@@ -1,53 +1,53 @@
 <template>
   <div class="rates">
-    <GrowthRatesCharts 
-      v-if="growthData.length > 0" 
-      :data="growthData.filter((d => d.location == selectedLocation) && (d => d.lineage == selectedLineage))"
-      :selectedLocation="selectedLocation"
-      :selectedLineage="selectedLineage"
+    <GrowthRatesCharts
+      v-if="flatData.length > 0"
+      :data="flatData"
     />
   </div>
 </template>
   
 <script setup>
-  import { csv } from 'd3-fetch';
-  import { ref } from 'vue'
+  import { ref, onMounted } from 'vue';
+  import axios from 'axios';
+  import _ from 'lodash';
   import GrowthRatesCharts from '@/components/GrowthRatesCharts.vue';
-  
-  let growthData = ref([]);
-  
-  let selectedLocation = 'United States';
-  // let selectedLineage = 'BA.5.1.18';
-  let selectedLineage = 'XBB.1.5.15';
-  
-  csv('../../data/mockData.csv').then(data => {
-      data.forEach(d => {
-        d.growth_rate = d.growth_rate * 100;
-        d.uncertainty = d.uncertainty * 100;
-        d.invUncertainty = +d.invUncertainty;
-        d.uncertainty95 = d.uncertainty95 * 100;
-        d.uncertainty80 = d.uncertainty80 * 100;
-        d.uncertainty65 = d.uncertainty65 * 100;
-        d.uncertainty50 = d.uncertainty50 * 100;
-        d.uncertainty35 = d.uncertainty35 * 100;
-        d.uncertainty20 = d.uncertainty20 * 100;
-        d.uncertainty5 = d.uncertainty5 * 100;
-        d.intervals = [
-          d.uncertainty5,
-          d.uncertainty20,
-          d.uncertainty35,
-          d.uncertainty50,
-          d.uncertainty65,
-          d.uncertainty80,
-          d.uncertainty95,
-        ];
-        d.prevalence = d.Prevalence_7 * 100;
-        d.sequences = d.N_7;
-        d.totalSequences = d.deltaN_7;
-      });
-      growthData.value = data;
+
+  let apiData = ref([]);
+  const flatData = ref([]);
+
+  axios.interceptors.request.use(
+    (config) => {
+      config.headers.Authorization = `Bearer ${
+        import.meta.env.VITE_APP_API_ACCESS
+      }`;
+      return config;
+    },
+    (error) => {
+      return Promise.reject(error);
+    },
+  );
+
+  const host = "https://api.outbreak.info/";
+  const prefix = "growth_rate/";
+  const hardLineage = "XBB.1.5.15";
+  const hardLocations = "(CAN OR GBR OR NLD OR USA)";
+  const url = `${host}${prefix}query?q=lineage:${hardLineage} AND location:${hardLocations}`;
+
+  onMounted(() => {
+    axios
+      .get(url)
+      .then((response) => {
+        apiData.value = response.data.hits;
+        flatData.value = flattenArray(apiData.value);
+      })
   });
 
+  const flattenArray = (nestedArray) => {
+    const result = _.flatMap(nestedArray, ({ _id, _score, lineage, location, values }) =>
+    _.map(values, value => ({ _id, _score, lineage, location, ...value })));
+    return result;
+  }
 </script>
 
 <style>

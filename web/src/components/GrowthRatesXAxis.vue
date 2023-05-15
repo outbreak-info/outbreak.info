@@ -11,22 +11,22 @@
     </g>    
   </g>
 </template>
-
+  
 <script setup>
   import { computed } from 'vue';
   import { timeFormat, timeParse } from 'd3-time-format';
-
+  
   const parseTime = timeParse('%Y-%m-%d');
   const formatTime = timeFormat('%b %e');
-  
+    
   const props = defineProps({
     xScale: Function,
     innerWidth: Number,
     innerHeight: Number,
   });
-
+  
   const allTicks = computed(() => props.xScale.domain());
-
+  
   const filterTicks = (width) => {
     if (width > 450)
       return allTicks.value.filter((d, i) => !(i % 7));
@@ -34,12 +34,13 @@
       return allTicks.value.filter((d, i) => !(i % 10));
     else return allTicks.value.filter((d, i) => !(i % 14));
   }
-
+  
   const ticksToBeRendered = computed(() => filterTicks(props.innerWidth));
 </script>
-
+  
 <style>
   .axis__tick {
     stroke: #999999;
   }
 </style>
+  

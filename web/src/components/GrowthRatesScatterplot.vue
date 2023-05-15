@@ -30,8 +30,8 @@
           :greyScale="greyScale"
           :minGrowthRate="minGrowthRate"
           :maxGrowthRate="maxGrowthRate"
-         />
-         <GrowthRatesBottomCIs
+        />
+        <GrowthRatesBottomCIs
           v-for="(dataPoint, index) in data" :key="'bottomCI-' + index"
           :dataPoint="dataPoint"
           :xAccessor="xAccessor"
@@ -40,7 +40,7 @@
           :greyScale="greyScale"
           :minGrowthRate="minGrowthRate"
           :maxGrowthRate="maxGrowthRate"
-         />
+        />
         <rect
           :width="innerWidth"
           :height="innerHeight"
@@ -56,7 +56,7 @@
           :r="xScale.bandwidth() / 2"
           :cx="xAccessorScaled(dataPoint)"
           :cy="yAccessorScaled(dataPoint)"
-          :fill="colorScale(dataPoint.growth_rate)"
+          :fill="colorScale(dataPoint.G_7_linear)"
           stroke="#2c3e50"
           stroke-width="1px"
         />
@@ -110,7 +110,7 @@
     :maxGrowthRate="maxGrowthRate"
   />
 </template>
-
+  
 <script setup>
   import { computed, ref } from 'vue'
   import GrowthRatesYAxis from '@/components/GrowthRatesYAxis.vue';
@@ -118,7 +118,7 @@
   import GrowthRatesBottomCIs from '@/components/GrowthRatesBottomCIs.vue';
   import GrowthRatesTooltip from '@/components/GrowthRatesTooltip.vue';
   import { quadtree } from "https://cdn.skypack.dev/d3-quadtree@3";
-
+  
   const props = defineProps({
     loc: String,
     lineage: String,
@@ -136,34 +136,35 @@
     innerHeight: Number,
     hoveredLinePoint: Object,
   });
-
+  
   const emit = defineEmits(['scatterplot-hovered']);
-
+  
   const hoveredPoint = ref(null);
- 
+   
   const xAccessorScaled = computed(() => d => props.xScale(props.xAccessor(d)));
   const yAccessorScaled = computed(() => d => props.yScale(props.yAccessor(d)));
-
+  
   const quadtreeInstance = computed (() => quadtree()
     .x(d => props.xScale(props.xAccessor(d)))
     .y(d => props.yScale(props.yAccessor(d)))
     .addAll(props.data)
   );
-
+  
   const handleMouseMove = (e) => {
     const xPosition = e.offsetX - props.margin.left;
     const yPosition = e.offsetY - props.margin.top;
     hoveredPoint.value = quadtreeInstance.value.find(xPosition, yPosition);
     emit('scatterplot-hovered', hoveredPoint.value);
   }
-
+  
   const handleMouseLeave = () => {
     hoveredPoint.value = null;
     emit('scatterplot-hovered', null);
   }
-
+  
   const minGrowthRate = computed(() => props.yScale.domain()[0]);
   const maxGrowthRate = computed(() => props.yScale.domain()[1]);
-
+  
   const ariaLabel = computed(() => `Scatterplot of ${props.lineage} growth rates in ${props.loc}`);
 </script>
+  

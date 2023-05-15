@@ -33,37 +33,38 @@
         fill="#2c3e50"
         font-size="13px"
       >
-       {{ tick }} 
+        {{ tick }} 
       </text>
     </g>
   </g>
 </template>
-
+  
 <script setup>
   import { computed } from 'vue'
-
+  
   const props = defineProps({
     yScale: Function,
     innerWidth: Number,
   });
-
+  
   const numberOfTicks = (pixelsAvailable, pixelsPerTick = 30) =>
     Math.floor(Math.abs(pixelsAvailable) / pixelsPerTick);
-
+  
   // const [yMin, yMax] = computed(() => props.yScale.range());
-
+  
   const yMin = computed(() => props.yScale.range()[0]);
   const yMax = computed(() => props.yScale.range()[1]);
-  
+    
   const ticks = computed(() => props.yScale.ticks(numberOfTicks(yMax.value - yMin.value)));
 </script>
-
+  
 <style>
   .axis__tick {
     stroke: #999999;
   }
-
+  
   .axis__line {
     stroke: #999999;
   }
 </style>
+  

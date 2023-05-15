@@ -19,11 +19,11 @@
     {{ `${formatPrevalence(yAccessor(endPoint))}% prevalence` }}
   </text>
 </template>
-
+  
 <script setup>
   import { computed } from 'vue';
   import { format } from 'd3-format';
-
+  
   const props = defineProps({
     data: Array,
     xAccessor: Function,
@@ -31,13 +31,13 @@
     xScale: Function,
     yScale: Function,
   });
-
+  
   const formatPrevalence = format(',.2f');
-
+  
   const startPoint = computed(() => props.data[0]);
   const endPoint = computed(() => props.data[props.data.length - 1]);
 </script>
-
+  
 <style>
   .annotation {
     fill: "#2c3e50";

@@ -11,7 +11,7 @@
       :style="{ 'width': width + 'px' }"
       v-for="loc in selectedLocations" :key="loc"
       >
-      <GrowthRatesScatterplot 
+      <GrowthRatesScatterplot
         :loc="loc" 
         :lineage="selectedLineage"
         :data="filteredData.filter(element => element.location == loc)"
@@ -54,9 +54,9 @@
   import { quantile, min, max } from 'd3-array';
   import { scaleBand, scaleLinear, scaleDiverging } from 'd3-scale';
   import { interpolateRdYlBu } from 'd3-scale-chromatic';
-  import GrowthRatesLegend from './GrowthRatesLegend.vue';
   import GrowthRatesScatterplot from '@/components/GrowthRatesScatterplot.vue';
   import GrowthRatesLineChart from '@/components/GrowthRatesLineChart.vue';
+  import GrowthRatesLegend from './GrowthRatesLegend.vue';
 
   const width = ref(700);
   const hoveredScatterplotPoint = ref(null);
@@ -93,17 +93,17 @@
   
   const props = defineProps({
     data: Array,
-    selectedLineage: String,
-    selectedLocations: Array,
   });
 
-  const title = `${props.data[0].lineage} growth rates in selected locations`;
+  const selectedLineage = computed(() => props.data[0].lineage);
+
+  const title = `${selectedLineage.value} growth rates in selected locations`;
 
   const xAccessor = d => d.date;
-  const yAccessor = d => d.growth_rate;
+  const yAccessor = d => d.G_7_linear;
   const locationAccessor = d => d.location;
-  const yAccessorLine = d => d.prevalence;
-  const greyAccessor = d => d.invUncertainty;
+  const yAccessorLine = d => d.Prevalence_7_percentage;
+  const greyAccessor = d => d.invDeltaG_7;
 
   const selectedLocations = computed(() => Array.from(new Set(props.data.map(locationAccessor))).sort());
 
@@ -111,7 +111,7 @@
   const upperBound = computed(() => quantile(props.data, 0.9, yAccessor));
 
   const filteredData = computed(() => props.data.filter(
-    d => d.growth_rate >= lowerBound.value && d.growth_rate <= upperBound.value,
+    d => d.G_7_linear >= lowerBound.value && d.G_7_linear <= upperBound.value,
   ));
 
   const margin = {
@@ -158,7 +158,7 @@
   const interpolator = t => interpolateRdYlBu(1 - t);
 
   const extremeValue = computed(() => Math.max(Math.abs(min(filteredData.value, yAccessor)),
-                                  Math.abs(max(filteredData.value, yAccessor))));  
+    Math.abs(max(filteredData.value, yAccessor))));  
 
   const colorScale = computed(() => scaleDiverging(
     [-Math.ceil(extremeValue.value), 0, Math.ceil(extremeValue.value)],

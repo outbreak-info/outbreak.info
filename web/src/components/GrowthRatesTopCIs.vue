@@ -3,14 +3,14 @@
     v-for="(interval, index) in intervals" :key="'top-' + index"
     :x1="xScale(xAccessor(dataPoint))"
     :x2="xScale(xAccessor(dataPoint))"
-    :y1="yScale(dataPoint.growth_rate + interval > maxGrowthRate ? maxGrowthRate : dataPoint.growth_rate + interval)"
-    :y2="yScale(dataPoint.growth_rate)"
+    :y1="yScale(dataPoint.G_7_linear + interval > maxGrowthRate ? maxGrowthRate : dataPoint.G_7_linear + interval)"
+    :y2="yScale(dataPoint.G_7_linear)"
     stroke="#979797"
     :stroke-width="xScale.bandwidth()"
-    :stroke-opacity="greyScale(dataPoint.invUncertainty)"
+    :stroke-opacity="greyScale(dataPoint.invDeltaG_7)"
   />
   <line
-    v-if="intervals[intervals.length - 1] && dataPoint.growth_rate + intervals[intervals.length - 1] > maxGrowthRate"
+    v-if="intervals[intervals.length - 1] && dataPoint.G_7_linear + intervals[intervals.length - 1] > maxGrowthRate"
     :x1="xScale(xAccessor(dataPoint))"
     :x2="xScale(xAccessor(dataPoint))"
     :y1="yScale(maxGrowthRate)"
@@ -20,10 +20,10 @@
     stroke-opacity="1"
   />
 </template>
-
+  
 <script setup>
   import { computed } from 'vue';
-
+  
   const props = defineProps({
     dataPoint: Object,
     xAccessor: Function,
@@ -33,6 +33,15 @@
     minGrowthRate: Number,
     maxGrowthRate: Number,
   });
-
-  const intervals = computed(() => props.dataPoint.intervals);
+  
+  const intervals = computed(() => [
+    props.dataPoint.confidenceInterval5,
+    props.dataPoint.confidenceInterval20,
+    props.dataPoint.confidenceInterval35,
+    props.dataPoint.confidenceInterval50,
+    props.dataPoint.confidenceInterval65,
+    props.dataPoint.confidenceInterval80,
+    props.dataPoint.confidenceInterval95,
+  ]);
 </script>
+  

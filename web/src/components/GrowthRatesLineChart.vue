@@ -14,7 +14,7 @@
           :y="0"
           :width="xScale.bandwidth()"
           :height="innerHeight"
-          :fill="colorScale(dataPoint.growth_rate)"
+          :fill="colorScale(dataPoint.G_7_linear)"
           @mousemove="handleMouseMove"
           @mouseleave="handleMouseLeave"
         />  
@@ -61,7 +61,7 @@
     </svg>
   </div>
 </template>
-
+  
 <script setup>
   import { computed, ref } from 'vue';
   import { max } from 'd3-array';
@@ -69,7 +69,7 @@
   import { line, curveMonotoneX } from 'd3-shape';
   import GrowthRatesXAxis from '@/components/GrowthRatesXAxis.vue';
   import GrowthRatesAnnotations from './GrowthRatesAnnotations.vue';
-
+  
   const props = defineProps({
     loc: String,
     lineage: String,
@@ -85,34 +85,34 @@
     innerHeight: Number,
     hoveredScatterplotPoint: Object,
   });
-
+  
   const emit = defineEmits(['line-hovered']);
-
+  
   const hoveredPoint = ref(null);
-
+  
   const yScale = computed(() => scaleLinear()
     .domain([0, max(props.data, props.yAccessor)])
     .range([props.innerHeight, 0])
     .nice()
   );
-
+  
   const xAccessorScaled = computed(() => d => props.xScale(props.xAccessor(d)));
   const yAccessorScaled = computed(() => d => yScale.value(props.yAccessor(d)));
-
+  
   const lineGenerator = computed(() => line()
     .x(xAccessorScaled.value)
     .y(yAccessorScaled.value)
     .defined(function (d) {
-      return !Number.isNaN(d.prevalence);
+      return !Number.isNaN(d.Prevalence_7_percentage);
     })
     .curve(curveMonotoneX)
   );
-
-  const prevalenceLine = computed(() => lineGenerator.value(props.data));
   
+  const prevalenceLine = computed(() => lineGenerator.value(props.data));
+    
   const lineAttributes = [{color: "#ffffff", strokeWidth: "6px"}, 
-                          {color: "#2c3e50", strokeWidth: "2px"}];
-
+    {color: "#2c3e50", strokeWidth: "2px"}];
+  
   const handleMouseMove = (e) => {
     const step = props.xScale.step();
     const domainIndex = Math.round((e.offsetX - props.margin.left) / step)
@@ -120,18 +120,19 @@
     hoveredPoint.value = props.data.find(item => item.date === dateString);
     emit('line-hovered', hoveredPoint.value);
   }
-
+  
   const handleMouseLeave = () => {
     hoveredPoint.value = null;
     emit('line-hovered', hoveredPoint.value);
   }
-
-  const ariaLabel = computed(() => `Line chart of ${props.lineage} prevalence in ${props.loc}`);
+  
+    const ariaLabel = computed(() => `Line chart of ${props.lineage} prevalence in ${props.loc}`);
 </script>
-
+  
 <style>
   .line-chart {
     margin-top: 0px;
     margin-bottom: 30px;
   } 
 </style>
+  
