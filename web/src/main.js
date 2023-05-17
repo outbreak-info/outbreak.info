@@ -152,7 +152,7 @@ const app = createApp({
     VueGtag,
     {
       config: {
-        id: 'UA-159949707-1',
+        id: 'G-H3QB0DV85N',
       },
       // fix via https://github.com/MatteoGabriele/vue-gtag/issues/229 to track query params in GA
       pageTrackerSkipSamePath: false,
