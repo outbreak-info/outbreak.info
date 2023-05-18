@@ -67,6 +67,7 @@
 
   onMounted(() => {
     window.addEventListener('resize', handleResize);
+    handleResize();
   });
 
   onUnmounted(() => {
