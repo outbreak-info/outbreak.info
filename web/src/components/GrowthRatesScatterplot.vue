@@ -112,12 +112,12 @@
 </template>
   
 <script setup>
-  import { computed, ref } from 'vue'
+  import { computed, ref } from 'vue';
+  import { quadtree } from 'd3-quadtree';
   import GrowthRatesYAxis from '@/components/GrowthRatesYAxis.vue';
   import GrowthRatesTopCIs from '@/components/GrowthRatesTopCIs.vue';
   import GrowthRatesBottomCIs from '@/components/GrowthRatesBottomCIs.vue';
   import GrowthRatesTooltip from '@/components/GrowthRatesTooltip.vue';
-  import { quadtree } from "https://cdn.skypack.dev/d3-quadtree@3";
   
   const props = defineProps({
     loc: String,
