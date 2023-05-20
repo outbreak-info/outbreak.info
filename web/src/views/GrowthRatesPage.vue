@@ -1,20 +1,142 @@
 <template>
-  <div class="rates">
-    <GrowthRatesCharts
-      v-if="flatData.length > 0"
-      :data="flatData"
-    />
+  <div>
+    <n-space vertical>
+      <n-select 
+        v-model:value="selectedLineage"
+        size="large"
+        filterable
+        placeholder="Select lineage"
+        :options="lineageOptions" 
+      />
+      <n-select 
+        v-model:value="selectedLocations"
+        size="large"
+        filterable
+        multiple
+        placeholder="Select location(s)"
+        :options="locationOptions" 
+      />
+      <n-button 
+        :disabled="!isClearButtonActive"
+        @click="handleClearButtonClick"
+      >
+        Clear selection
+      </n-button>
+      <n-button 
+        :disabled="!isQueryButtonActive"
+        @click="handleQueryButtonClick"
+      >
+        Build charts
+      </n-button>
+    </n-space>
+    <div class="rates">
+      <GrowthRatesCharts
+        v-if="flatData.length > 0"
+        :data="flatData"
+      />
+    </div>
   </div>
 </template>
   
 <script setup>
-  import { ref, onMounted } from 'vue';
+  import { ref, onMounted, computed } from 'vue';
   import axios from 'axios';
   import _ from 'lodash';
   import GrowthRatesCharts from '@/components/GrowthRatesCharts.vue';
+  import { NSpace, NSelect, NButton} from 'naive-ui'
 
-  let apiData = ref([]);
+  const props = defineProps({
+    pango: {
+      type: String,
+      default: 'XBB.1.5.15',
+    },
+    locations: {
+      type: Array,
+      default() {
+        return ['CAN', 'GBR', 'USA'];
+      },
+    }
+  });
+
+  const host = "https://api.outbreak.info/";
+  const prefix = "growth_rate/";
+
+  const apiData = ref([]);
   const flatData = ref([]);
+
+  const selectedLineage = ref(props.pango);
+  const selectedLocations = ref(props.locations);
+
+  const isClearButtonActive = computed(() => setClearButtonStatus(selectedLineage.value, selectedLocations.value));
+  const isQueryButtonActive = computed(() => setQueryButtonStatus(selectedLineage.value, selectedLocations.value));
+  
+  const setClearButtonStatus = (lineage, locations) => {
+    if (lineage || locations.length > 0) {
+      return true;
+    }
+    else return false;
+  }
+
+  const setQueryButtonStatus = (lineage, locations) => {
+    if (lineage && locations.length > 0) {
+      return true;
+    }
+    else return false;
+  }
+
+  const handleClearButtonClick = () => {
+    selectedLineage.value = null;
+    selectedLocations.value = [];
+  }
+
+  const handleQueryButtonClick = () => {
+    getGrowthRateData(selectedLineage.value, selectedLocations.value);
+  }
+
+  const getGrowthRateData = () => {
+    const locationString = `(${selectedLocations.value.join(' OR ')})`;
+    const url = `${host}${prefix}query?q=lineage:${selectedLineage.value} AND location:${locationString}`;
+    axios
+      .get(url)
+      .then((response) => {
+        apiData.value = response.data.hits;
+        flatData.value = flattenArray(apiData.value);
+      });
+  }
+
+  const lineageOptions = [
+    {
+      label: "CH.1.1",
+      value: "CH.1.1",
+    },
+    {
+      label: "XBB.1.5.15",
+      value: "XBB.1.5.15"
+    },
+    {
+      label: "XBB.1.5.16",
+      value: "XBB.1.5.16"
+    },
+  ];
+
+  const locationOptions = [
+    {
+      label: "CAN",
+      value: "CAN",
+    },
+    {
+      label: "GBR",
+      value: "GBR"
+    },
+    {
+      label: "NLD",
+      value: "NLD"
+    },
+    {
+      label: "USA",
+      value: "USA"
+    },
+  ];
 
   axios.interceptors.request.use(
     (config) => {
@@ -27,20 +149,9 @@
       return Promise.reject(error);
     },
   );
-
-  const host = "https://api.outbreak.info/";
-  const prefix = "growth_rate/";
-  const hardLineage = "XBB.1.5.15";
-  const hardLocations = "(CAN OR GBR OR NLD OR USA)";
-  const url = `${host}${prefix}query?q=lineage:${hardLineage} AND location:${hardLocations}`;
-
+  
   onMounted(() => {
-    axios
-      .get(url)
-      .then((response) => {
-        apiData.value = response.data.hits;
-        flatData.value = flattenArray(apiData.value);
-      })
+    getGrowthRateData();
   });
 
   const flattenArray = (nestedArray) => {

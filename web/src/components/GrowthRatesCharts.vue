@@ -98,7 +98,7 @@
 
   const selectedLineage = computed(() => props.data[0].lineage);
 
-  const title = `${selectedLineage.value} growth rates in selected locations`;
+  const title = computed(() => `${selectedLineage.value} growth rates in selected locations`);
 
   const xAccessor = d => d.date;
   const yAccessor = d => d.G_7_linear;
