@@ -96,7 +96,7 @@
     :maxGrowthRate="maxGrowthRate"
   />
   <GrowthRatesTooltip
-    v-if="hoveredLinePoint && hoveredLinePoint.location == loc"
+    v-if="hoveredLinePoint && hoveredLinePoint.label == loc"
     :loc="loc"
     :hoveredPoint="hoveredLinePoint"
     :xAccessor="xAccessor"

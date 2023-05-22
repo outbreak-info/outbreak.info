@@ -10,7 +10,7 @@
     <div 
       class="title"
     >
-      {{ hoveredPoint.lineage }}  &#183; {{ loc }}
+      {{ hoveredPoint.lineage }}  &#183; {{ hoveredPoint.label }}
     </div>
     <div class="date">
       {{ formatTime(parseTime(hoveredPoint.date)) }}

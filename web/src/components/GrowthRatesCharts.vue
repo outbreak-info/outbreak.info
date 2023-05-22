@@ -14,7 +14,7 @@
       <GrowthRatesScatterplot
         :loc="loc" 
         :lineage="selectedLineage"
-        :data="filteredData.filter(element => element.location == loc)"
+        :data="filteredData.filter(element => element.label == loc)"
         :xAccessor="xAccessor"
         :yAccessor="yAccessor"
         :xScale="xScale"
@@ -32,7 +32,7 @@
       <GrowthRatesLineChart
         :loc="loc"
         :lineage="selectedLineage"
-        :data="filteredData.filter(element => element.location == loc)"
+        :data="filteredData.filter(element => element.label == loc)"
         :xAccessor="xAccessor"
         :yAccessor="yAccessorLine"
         :xScale="xScale"
@@ -102,7 +102,7 @@
 
   const xAccessor = d => d.date;
   const yAccessor = d => d.G_7_linear;
-  const locationAccessor = d => d.location;
+  const locationAccessor = d => d.label;
   const yAccessorLine = d => d.Prevalence_7_percentage;
   const greyAccessor = d => d.invDeltaG_7;
 
