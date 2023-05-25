@@ -32,7 +32,7 @@
       <span>Total sequences</span>
       <span class="data end-block">{{ formatSequence(hoveredPoint.deltaN_7) }}</span>
       <span>Ratio over background</span>
-      <span class="data">{{ `1 : ${formatSequence(ratio)}` }}</span>
+      <span class="data">{{ ratioOverBackground }}</span>
       <span 
         class="ci-alert"
         v-if="wasCIClipped"
@@ -84,6 +84,10 @@
   const ratio = computed(() => Math.trunc(
     (props.hoveredPoint.deltaN_7 - props.hoveredPoint.N_7) / props.hoveredPoint.N_7, 
   ));
+
+  const ratioOverBackground = computed(() =>
+    ratio.value !== ratio.value ? 'N/A' : `1 : ${formatSequence(ratio.value)}`
+  );
   
   const ci95 = computed(() => props.hoveredPoint.confidenceInterval95);
   
