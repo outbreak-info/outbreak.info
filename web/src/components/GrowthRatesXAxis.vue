@@ -26,13 +26,15 @@
   });
   
   const allTicks = computed(() => props.xScale.domain());
-  
+
   const filterTicks = (width) => {
-    if (width > 450)
+    if (width > 700)
       return allTicks.value.filter((d, i) => !(i % 7));
-    else if (width > 350 && width <= 450)
+    else if (width > 550 && width <= 700)
       return allTicks.value.filter((d, i) => !(i % 10));
-    else return allTicks.value.filter((d, i) => !(i % 14));
+    else if (width > 400 && width <= 550)
+      return allTicks.value.filter((d, i) => !(i % 14));
+    else return allTicks.value.filter((d, i) => !(i % 30));
   }
   
   const ticksToBeRendered = computed(() => filterTicks(props.innerWidth));

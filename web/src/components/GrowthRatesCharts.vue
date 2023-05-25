@@ -50,7 +50,7 @@
 </template>
 
 <script setup>
-  import { computed, onMounted, onUnmounted, ref } from 'vue';
+  import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
   import { quantile, min, max } from 'd3-array';
   import { scaleBand, scaleLinear, scaleDiverging } from 'd3-scale';
   import { interpolateRdYlBu } from 'd3-scale-chromatic';
@@ -58,7 +58,7 @@
   import GrowthRatesLineChart from '@/components/GrowthRatesLineChart.vue';
   import GrowthRatesLegend from './GrowthRatesLegend.vue';
 
-  const width = ref(700);
+  const width = ref(900);
   const hoveredScatterplotPoint = ref(null);
   const hoveredLinePoint = ref(null);
 
@@ -75,13 +75,12 @@
   });
 
   const handleResize = () => {
-    if (window.innerWidth >= 900) {
-      width.value = 700;
+    if (window.innerWidth >= 1000) {
+      width.value = 900;
     }
     else {
       width.value = window.innerWidth;
     } 
-    console.log(">>>>", width.value);
   }
 
   const handleScatterplotHovered = (point) => {
@@ -139,11 +138,23 @@
     return [min - padding, max + padding];
   };
 
+  const now = new Date();
+  const length = 111;
+ 
+  const dates = Array.from({ length }, (_, days) => {
+    let day = new Date(now); 
+    day.setDate(now.getDate() - days); 
+    return day;
+  })
+
+  const formattedDates = (dates.map((day) => 
+    day.toISOString().split("T")[0])).reverse(); 
+
   const xScale = computed(() => scaleBand()
-    .domain(filteredData.value.map(xAccessor).sort())
+    .domain(formattedDates)
     .range([0, innerWidth.value])
     .padding(0)
-  ); 
+  );
 
   const yScale = computed(() => scaleLinear()
     .domain(
@@ -186,6 +197,6 @@
   .wrapper {
     position: relative;
     width: 100%;
-    max-width: 700px;
+    max-width: 900px;
   }
 </style>
