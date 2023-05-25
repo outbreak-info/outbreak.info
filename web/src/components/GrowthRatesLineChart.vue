@@ -49,7 +49,7 @@
           stroke-width="2px"
         />
         <circle 
-          v-if="hoveredScatterplotPoint && hoveredScatterplotPoint.location == loc"
+          v-if="hoveredScatterplotPoint && hoveredScatterplotPoint.label == loc"
           :r="(xScale.bandwidth() / 2)"
           :cx="xAccessorScaled(hoveredScatterplotPoint)"
           :cy="yAccessorScaled(hoveredScatterplotPoint)"

@@ -70,7 +70,7 @@
           stroke-width="2px"
         />
         <circle
-          v-if="hoveredLinePoint && hoveredLinePoint.location == loc"
+          v-if="hoveredLinePoint && hoveredLinePoint.label == loc"
           :r="(xScale.bandwidth() / 2) + 3"
           :cx="xAccessorScaled(hoveredLinePoint)"
           :cy="yAccessorScaled(hoveredLinePoint)"
