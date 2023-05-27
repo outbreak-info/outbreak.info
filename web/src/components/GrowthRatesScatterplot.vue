@@ -21,7 +21,7 @@
           :yScale="yScale"
           :innerWidth="innerWidth"
         />
-        <GrowthRatesTopCIs
+        <GrowthRatesTopCI95
           v-for="(dataPoint, index) in data" :key="'topCI-' + index"
           :dataPoint="dataPoint"
           :xAccessor="xAccessor"
@@ -31,7 +31,7 @@
           :minGrowthRate="minGrowthRate"
           :maxGrowthRate="maxGrowthRate"
         />
-        <GrowthRatesBottomCIs
+        <GrowthRatesBottomCI95
           v-for="(dataPoint, index) in data" :key="'bottomCI-' + index"
           :dataPoint="dataPoint"
           :xAccessor="xAccessor"
@@ -115,8 +115,8 @@
   import { computed, ref } from 'vue';
   import { quadtree } from 'd3-quadtree';
   import GrowthRatesYAxis from '@/components/GrowthRatesYAxis.vue';
-  import GrowthRatesTopCIs from '@/components/GrowthRatesTopCIs.vue';
-  import GrowthRatesBottomCIs from '@/components/GrowthRatesBottomCIs.vue';
+  import GrowthRatesTopCI95 from '@/components/GrowthRatesTopCI95.vue';
+  import GrowthRatesBottomCI95 from '@/components/GrowthRatesBottomCI95.vue';
   import GrowthRatesTooltip from '@/components/GrowthRatesTooltip.vue';
   
   const props = defineProps({
