@@ -50,7 +50,7 @@
 </template>
 
 <script setup>
-  import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
+  import { computed, onMounted, onUnmounted, ref } from 'vue';
   import { quantile, min, max } from 'd3-array';
   import { scaleBand, scaleLinear, scaleDiverging } from 'd3-scale';
   import { interpolateRdYlBu } from 'd3-scale-chromatic';
@@ -58,6 +58,19 @@
   import GrowthRatesLineChart from '@/components/GrowthRatesLineChart.vue';
   import GrowthRatesLegend from './GrowthRatesLegend.vue';
 
+  const props = defineProps({
+    data: Array,
+  });
+
+  const xAccessor = d => d.date;
+  const yAccessor = d => d.G_7_linear;
+  const locationAccessor = d => d.label;
+  const yAccessorLine = d => d.Prevalence_7_percentage;
+  const greyAccessor = d => d.invDeltaG_7;
+
+  const firstDay = computed(() => props.data.map(xAccessor).sort()[0]);
+  const dayArray = computed(() => createDayArray(firstDay.value));
+  
   const width = ref(900);
   const hoveredScatterplotPoint = ref(null);
   const hoveredLinePoint = ref(null);
@@ -90,20 +103,10 @@
   const handleLineHovered = (point) => {
     hoveredLinePoint.value = point;
   }
-  
-  const props = defineProps({
-    data: Array,
-  });
 
   const selectedLineage = computed(() => props.data[0].lineage);
 
   const title = computed(() => `${selectedLineage.value} growth rates in selected locations`);
-
-  const xAccessor = d => d.date;
-  const yAccessor = d => d.G_7_linear;
-  const locationAccessor = d => d.label;
-  const yAccessorLine = d => d.Prevalence_7_percentage;
-  const greyAccessor = d => d.invDeltaG_7;
 
   const selectedLocations = computed(() => Array.from(new Set(props.data.map(locationAccessor))).sort());
 
@@ -138,20 +141,19 @@
     return [min - padding, max + padding];
   };
 
-  const now = new Date();
-  const length = 111;
- 
-  const dates = Array.from({ length }, (_, days) => {
-    let day = new Date(now); 
-    day.setDate(now.getDate() - days); 
-    return day;
-  })
-
-  const formattedDates = (dates.map((day) => 
-    day.toISOString().split("T")[0])).reverse(); 
+  const createDayArray = (startDay) => {
+    const tempArray = [];
+    const lastDay = new Date();
+    const day = new Date(startDay);
+    while (day <= lastDay) {
+      tempArray.push(day.toISOString().split("T")[0]);
+      day.setUTCDate(day.getUTCDate() + 1);
+    } 
+    return tempArray;
+  };
 
   const xScale = computed(() => scaleBand()
-    .domain(formattedDates)
+    .domain(dayArray.value)
     .range([0, innerWidth.value])
     .padding(0)
   );
