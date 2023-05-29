@@ -1,30 +1,42 @@
 <template>
   <div>
-    <n-space vertical>
-      <n-select
-        v-model:value="selectedLineage"
-        filterable
-        placeholder="Type to select lineages"
-        :options="lineageOptions"
-        :loading="lineageLoading"
-        clearable
-        remote
-        :clear-filter-after-select="true"
-        @search="handleLineageSearch"
-      />
-      <n-select
-        v-model:value="selectedLocations"
-        @update:value="handleLocationUpdate"
-        filterable
-        multiple
-        placeholder="Type to select locations"
-        :options="locationOptions"
-        :loading="locationLoading"
-        clearable
-        remote
-        :clear-filter-after-select="true"
-        @search="handleLocationSearch"
-      />
+    <div class="selector-container">
+      <n-form-item
+        label="Lineage" 
+        class="lineage"
+     >
+        <n-select
+          v-model:value="selectedLineage"
+          filterable
+          placeholder="Type to search"
+          :options="lineageOptions"
+          :loading="lineageLoading"
+          clearable
+          remote
+          :clear-filter-after-select="true"
+          @search="handleLineageSearch"
+        />
+      </n-form-item>
+      <n-form-item 
+        label="Location(s)"
+        class="location"
+      >
+        <n-select
+          v-model:value="selectedLocations"
+          @update:value="handleLocationUpdate"
+          filterable
+          multiple
+          placeholder="Type to search"
+          :options="locationOptions"
+          :loading="locationLoading"
+          clearable
+          remote
+          :clear-filter-after-select="true"
+          @search="handleLocationSearch"
+        />
+      </n-form-item>
+    </div>
+    <div class="button-container">
       <n-button 
         :disabled="!isClearButtonActive"
         @click="handleClearButtonClick"
@@ -37,7 +49,7 @@
       >
         Build charts
       </n-button>
-    </n-space>
+    </div>
     <div class="rates">
       <GrowthRatesCharts
         v-if="flatData.length > 0"
@@ -51,7 +63,7 @@
   import { ref, onMounted, computed } from 'vue';
   import axios from 'axios';
   import _ from 'lodash';
-  import { NSpace, NSelect, NButton} from 'naive-ui'
+  import { NFormItem, NSelect, NButton} from 'naive-ui'
   import { findPangolin, findLocation } from '@/api/genomics.js';
   import GrowthRatesCharts from '@/components/GrowthRatesCharts.vue';
  
@@ -216,6 +228,29 @@
 </script>
 
 <style>
+  .selector-container {
+    display: flex; 
+    flex-flow: row wrap;
+    margin: 20px 50px 0px 50px;
+    gap: 15px;
+  }
+
+  .lineage {
+    flex: 1 1 auto; 
+    text-align: left;
+  }
+
+  .location {
+    flex: 8 1 auto; 
+  }
+
+  .button-container {
+    display: flex; 
+    flex-flow: row wrap;
+    justify-content: center;
+    gap: 15px;
+  }
+  
   .rates {
     display: flex;
     flex-direction: column;
