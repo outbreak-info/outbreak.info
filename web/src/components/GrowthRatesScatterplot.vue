@@ -21,19 +21,9 @@
           :yScale="yScale"
           :innerWidth="innerWidth"
         />
-        <GrowthRatesTopCI95
-          v-for="(dataPoint, index) in data" :key="'topCI-' + index"
-          :dataPoint="dataPoint"
-          :xAccessor="xAccessor"
-          :xScale="xScale"
-          :yScale="yScale"
-          :greyScale="greyScale"
-          :minGrowthRate="minGrowthRate"
-          :maxGrowthRate="maxGrowthRate"
-        />
-        <GrowthRatesBottomCI95
-          v-for="(dataPoint, index) in data" :key="'bottomCI-' + index"
-          :dataPoint="dataPoint"
+        <GrowthRatesCI95 
+          v-if="isCIShown"
+          :data="data"
           :xAccessor="xAccessor"
           :xScale="xScale"
           :yScale="yScale"
@@ -115,13 +105,13 @@
   import { computed, ref } from 'vue';
   import { quadtree } from 'd3-quadtree';
   import GrowthRatesYAxis from '@/components/GrowthRatesYAxis.vue';
-  import GrowthRatesTopCI95 from '@/components/GrowthRatesTopCI95.vue';
-  import GrowthRatesBottomCI95 from '@/components/GrowthRatesBottomCI95.vue';
+  import GrowthRatesCI95 from '@/components/GrowthRatesCI95.vue';
   import GrowthRatesTooltip from '@/components/GrowthRatesTooltip.vue';
   
   const props = defineProps({
     loc: String,
     lineage: String,
+    isCIShown: Boolean,
     data: Array,
     xAccessor: Function,
     yAccessor: Function,
@@ -166,5 +156,6 @@
   const maxGrowthRate = computed(() => props.yScale.domain()[1]);
   
   const ariaLabel = computed(() => `Scatterplot of ${props.lineage} growth rates in ${props.loc}`);
+
 </script>
   

@@ -6,6 +6,17 @@
     <GrowthRatesLegend
       :colorScale="colorScale"
     />
+    <div class="switch-container">
+      <n-form-item
+        label="Show confidence intervals" 
+        class="confidence-interval"
+      >
+        <n-switch 
+          v-model:value="isCIShown"
+          @update:value="handleSwitchChange" 
+        />
+      </n-form-item>
+    </div>
     <div 
       class="wrapper" 
       :style="{ 'width': width + 'px' }"
@@ -14,6 +25,7 @@
       <GrowthRatesScatterplot
         :loc="loc" 
         :lineage="selectedLineage"
+        :isCIShown="isCIShown"
         :data="filteredData.filter(element => element.label == loc)"
         :xAccessor="xAccessor"
         :yAccessor="yAccessor"
@@ -51,6 +63,7 @@
 
 <script setup>
   import { computed, onMounted, onUnmounted, ref } from 'vue';
+  import { NFormItem, NSwitch} from 'naive-ui'
   import { quantile, min, max } from 'd3-array';
   import { scaleBand, scaleLinear, scaleDiverging } from 'd3-scale';
   import { interpolateRdYlBu } from 'd3-scale-chromatic';
@@ -61,6 +74,8 @@
   const props = defineProps({
     data: Array,
   });
+
+  const isCIShown = ref(true);
 
   const xAccessor = d => d.date;
   const yAccessor = d => d.G_7_linear;
@@ -94,6 +109,10 @@
     else {
       width.value = window.innerWidth;
     } 
+  }
+
+  const handleSwitchChange = (value) => {
+    isCIShown.value = value;
   }
 
   const handleScatterplotHovered = (point) => {
