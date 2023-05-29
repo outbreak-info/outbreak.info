@@ -1,72 +1,83 @@
 <template>
-  <div>
-    <div class="selector-container">
-      <n-form-item
-        label="Lineage" 
-        class="lineage"
-     >
-        <n-select
-          v-model:value="selectedLineage"
-          filterable
-          placeholder="Type to search"
-          :options="lineageOptions"
-          :loading="lineageLoading"
-          clearable
-          remote
-          :clear-filter-after-select="true"
-          @search="handleLineageSearch"
+  <n-config-provider :theme-overrides="themeOverrides">
+    <div>
+      <div class="selector-container">
+        <n-form-item
+          label="Lineage" 
+          class="lineage"
+      >
+          <n-select
+            v-model:value="selectedLineage"
+            filterable
+            placeholder="Type to search"
+            :options="lineageOptions"
+            :loading="lineageLoading"
+            clearable
+            remote
+            :clear-filter-after-select="true"
+            @search="handleLineageSearch"
+          />
+        </n-form-item>
+        <n-form-item 
+          label="Location(s)"
+          class="location"
+        >
+          <n-select
+            v-model:value="selectedLocations"
+            @update:value="handleLocationUpdate"
+            filterable
+            multiple
+            placeholder="Type to search"
+            :options="locationOptions"
+            :loading="locationLoading"
+            clearable
+            remote
+            :clear-filter-after-select="true"
+            @search="handleLocationSearch"
+          />
+        </n-form-item>
+      </div>
+      <div class="button-container">
+        <n-button 
+          strong secondary type="primary"
+          :disabled="!isClearButtonActive"
+          @click="handleClearButtonClick"
+        >
+          Clear selections
+        </n-button>
+        <n-button 
+          type="primary"
+          :disabled="!isQueryButtonActive"
+          @click="handleQueryButtonClick"
+        >
+          Build charts
+        </n-button>
+      </div>
+      <div class="rates">
+        <GrowthRatesCharts
+          v-if="flatData.length > 0"
+          :data="flatData"
         />
-      </n-form-item>
-      <n-form-item 
-        label="Location(s)"
-        class="location"
-      >
-        <n-select
-          v-model:value="selectedLocations"
-          @update:value="handleLocationUpdate"
-          filterable
-          multiple
-          placeholder="Type to search"
-          :options="locationOptions"
-          :loading="locationLoading"
-          clearable
-          remote
-          :clear-filter-after-select="true"
-          @search="handleLocationSearch"
-        />
-      </n-form-item>
+      </div> 
     </div>
-    <div class="button-container">
-      <n-button 
-        :disabled="!isClearButtonActive"
-        @click="handleClearButtonClick"
-      >
-        Clear selections
-      </n-button>
-      <n-button 
-        :disabled="!isQueryButtonActive"
-        @click="handleQueryButtonClick"
-      >
-        Build charts
-      </n-button>
-    </div>
-    <div class="rates">
-      <GrowthRatesCharts
-        v-if="flatData.length > 0"
-        :data="flatData"
-      />
-    </div>
-  </div>
+  </n-config-provider>
 </template>
   
 <script setup>
   import { ref, onMounted, computed } from 'vue';
   import axios from 'axios';
   import _ from 'lodash';
-  import { NFormItem, NSelect, NButton} from 'naive-ui'
+  import { NConfigProvider, NFormItem, NSelect, NButton} from 'naive-ui'
   import { findPangolin, findLocation } from '@/api/genomics.js';
   import GrowthRatesCharts from '@/components/GrowthRatesCharts.vue';
  
+  const themeOverrides = {
+    common: {
+      primaryColor: '#D13B62',
+      primaryColorHover: '#86203A' 
+    },
+  };
+
   const props = defineProps({
     pango: {
       type: String,
