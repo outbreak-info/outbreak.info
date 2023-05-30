@@ -2503,6 +2503,7 @@
       - CM.6
       - CM.6.1
       - CM.7
+      - CM.7.1
       - CM.8
       - CM.8.1
       - CM.8.1.1
@@ -4965,6 +4966,7 @@
       - CM.6
       - CM.6.1
       - CM.7
+      - CM.7.1
       - CM.8
       - CM.8.1
       - CM.8.1.1
@@ -6490,6 +6492,7 @@
       - CM.6
       - CM.6.1
       - CM.7
+      - CM.7.1
       - CM.8
       - CM.8.1
       - CM.8.1.1
@@ -10493,6 +10496,7 @@
       - CM.6
       - CM.6.1
       - CM.7
+      - CM.7.1
       - CM.8
       - CM.8.1
       - CM.8.1.1
@@ -11323,6 +11327,7 @@
       - CM.6
       - CM.6.1
       - CM.7
+      - CM.7.1
       - CM.8
       - CM.8.1
       - CM.8.1.1
@@ -11421,6 +11426,7 @@
       - CM.6
       - CM.6.1
       - CM.7
+      - CM.7.1
       - CM.8
       - CM.8.1
       - CM.8.1.1
@@ -11566,6 +11572,7 @@
       - CM.6
       - CM.6.1
       - CM.7
+      - CM.7.1
       - CM.8
       - CM.8.1
       - CM.8.1.1
@@ -11642,7 +11649,13 @@
   alias: B.1.1.529.2.3.20.7
   children:
       - CM.7
+      - CM.7.1
   parent: BA.2.3.20
+- name: CM.7.1
+  alias: B.1.1.529.2.3.20.7.1
+  children:
+      - CM.7.1
+  parent: CM.7
 - name: CM.8
   alias: B.1.1.529.2.3.20.8
   children:
@@ -25635,6 +25648,7 @@
       - FL.13.1
       - FL.14
       - FL.15
+      - FL.16
       - FP.1
       - FP.2
       - FP.2.1
@@ -25770,6 +25784,7 @@
       - XBB.1.16.6
       - XBB.1.16.7
       - XBB.1.16.8
+      - XBB.1.16.9
       - XBB.1.17
       - XBB.1.17.1
       - XBB.1.17.2
@@ -25829,6 +25844,7 @@
       - XBB.2.7.1
       - XBB.2.8
       - XBB.2.9
+      - XBB.2.10
       - XBB.3
       - XBB.3.1
       - XBB.3.2
@@ -25911,6 +25927,7 @@
       - FL.13.1
       - FL.14
       - FL.15
+      - FL.16
       - FP.1
       - FP.2
       - FP.2.1
@@ -26044,6 +26061,7 @@
       - XBB.1.16.6
       - XBB.1.16.7
       - XBB.1.16.8
+      - XBB.1.16.9
       - XBB.1.17
       - XBB.1.17.1
       - XBB.1.17.2
@@ -26800,6 +26818,7 @@
       - FL.13.1
       - FL.14
       - FL.15
+      - FL.16
       - GD.1
       - XBB.1.9
       - XBB.1.9.1
@@ -26840,6 +26859,7 @@
       - FL.13.1
       - FL.14
       - FL.15
+      - FL.16
       - XBB.1.9.1
   parent: XBB.1.9
 - name: FL.1
@@ -26994,6 +27014,11 @@
   alias: XBB.1.9.1.15
   children:
       - FL.15
+  parent: XBB.1.9.1
+- name: FL.16
+  alias: XBB.1.9.1.16
+  children:
+      - FL.16
   parent: XBB.1.9.1
 - name: XBB.1.9.2
   alias: XBB.1.9.2
@@ -27197,6 +27222,7 @@
       - XBB.1.16.6
       - XBB.1.16.7
       - XBB.1.16.8
+      - XBB.1.16.9
   parent: XBB.1
 - name: XBB.1.16.1
   alias: XBB.1.16.1
@@ -27249,6 +27275,11 @@
   alias: XBB.1.16.8
   children:
       - XBB.1.16.8
+  parent: XBB.1.16
+- name: XBB.1.16.9
+  alias: XBB.1.16.9
+  children:
+      - XBB.1.16.9
   parent: XBB.1.16
 - name: XBB.1.17
   alias: XBB.1.17
@@ -27583,6 +27614,7 @@
       - XBB.2.7.1
       - XBB.2.8
       - XBB.2.9
+      - XBB.2.10
   parent: XBB
 - name: XBB.2.1
   alias: XBB.2.1
@@ -27707,6 +27739,11 @@
   alias: XBB.2.9
   children:
       - XBB.2.9
+  parent: XBB.2
+- name: XBB.2.10
+  alias: XBB.2.10
+  children:
+      - XBB.2.10
   parent: XBB.2
 - name: XBB.3
   alias: XBB.3
