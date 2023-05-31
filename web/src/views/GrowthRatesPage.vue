@@ -1,14 +1,21 @@
 <template>
   <n-config-provider :theme-overrides="themeOverrides">
-    <GrowthRatesForm 
-      @query-button-clicked="handleQueryButtonClick"
-    />
-    <div class="rates">
-      <GrowthRatesCharts
-        v-if="flatData.length > 0"
-        :data="flatData"
+    <n-notification-provider>
+      <GrowthRatesForm 
+        @query-button-clicked="handleQueryButtonClick"
       />
-    </div> 
+      <div class="rates">
+        <GrowthRatesCharts
+          v-if="flatData.length > 0"
+          :data="flatData"
+        />
+      </div> 
+      <GrowthRatesWarning
+        v-if="locationsWithoutApiData.length > 0"
+        :lineage="chosenLineage"
+        :data="locationsWithoutApiData"
+      />
+    </n-notification-provider>
   </n-config-provider>
 </template>
   
@@ -16,9 +23,10 @@
   import { ref, onMounted } from 'vue';
   import axios from 'axios';
   import _ from 'lodash';
-  import { NConfigProvider } from 'naive-ui'
+  import { NConfigProvider, NNotificationProvider } from 'naive-ui'
   import GrowthRatesForm from '@/components/GrowthRatesForm.vue';
   import GrowthRatesCharts from '@/components/GrowthRatesCharts.vue';
+  import GrowthRatesWarning from '@/components/GrowthRatesWarning.vue';
  
   const themeOverrides = {
     common: {
@@ -56,7 +64,9 @@
   const growthRateApiUrl = "https://api.outbreak.info/growth_rate/";
    
   const apiData = ref([]);
+  const apiDataWithLabels = ref([]);
   const flatData = ref([]);
+  const locationsWithoutApiData = ref([]);
 
   axios.interceptors.request.use(
     (config) => {
@@ -91,6 +101,7 @@
   }
 
   const getGrowthRateData = () => {
+    locationsWithoutApiData.value = [];
     const locationString = `(${chosenLocations.value.join(' OR ')})`;
     const url = `${growthRateApiUrl}query?q=lineage:${chosenLineage.value} AND location:${locationString}`;
     axios
@@ -98,17 +109,31 @@
       .then((response) => {
         apiData.value = response.data.hits;
         flatData.value = flattenArray(apiData.value);
+        locationsWithoutApiData.value = findLocationsWithoutData(apiData.value);
       });
   }
  
   const flattenArray = (nestedArray) => {
-    const arrayWithLabels = nestedArray.map(x => {
+    apiDataWithLabels.value = nestedArray.map(x => {
       return { ...x, label: chosenLocationInfo.value.find(y => x.location === y.value)?.label }
     });
-    const result = _.flatMap(arrayWithLabels, ({ _id, _score, lineage, location, label, values }) =>
+    
+    const result = _.flatMap(apiDataWithLabels.value, ({ _id, _score, lineage, location, label, values }) =>
       _.map(values, value => ({ _id, _score, lineage, location, label, ...value })));  
     return result;
   }
+
+  const findLocationsWithoutData = () => {
+    const locationsWithData = apiDataWithLabels.value.map(obj => {
+      return {
+        label: obj.label,
+        value: obj.location,
+      }
+    })
+    const locationsWithoutData = chosenLocationInfo.value.filter(({ value: id1 }) => !locationsWithData.some(({ value: id2 }) => id2 === id1));
+    return locationsWithoutData;
+  }
+
 </script>
 
 <style>
