@@ -3,6 +3,7 @@ import VueGtag from 'vue-gtag';
 import VueCookies from 'vue-cookies';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { createPinia } from 'pinia';
+import { createHead } from "@unhead/vue";
 import 'd3-transition';
 
 // free regular svg icons
@@ -140,6 +141,8 @@ library.add(
 
 const pinia = createPinia();
 
+const head = createHead();
+
 const app = createApp({
   render() {
     return h(App);
@@ -147,6 +150,7 @@ const app = createApp({
 })
   .use(router)
   .use(pinia)
+  .use(head)
   .use(VueCookies)
   .use(
     VueGtag,
