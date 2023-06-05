@@ -3,9 +3,9 @@
     <div id="header">
      <h3>{{ title }}</h3>
     </div>
-    <GrowthRatesLegend
+    <!-- <GrowthRatesLegend
       :colorScale="colorScale"
-    />
+    /> -->
     <div class="switch-container">
       <n-form-item
         label="Show confidence intervals" 
@@ -57,6 +57,11 @@
         :hoveredScatterplotPoint="hoveredScatterplotPoint"
         @line-hovered="handleLineHovered"
       />
+      <GrowthRatesVisLegend
+        :loc="loc"
+        :colorScale="colorScale" 
+        :legendPoint="legendPoint"
+      />
     </div>
   </div>
 </template>
@@ -69,7 +74,7 @@
   import { interpolateRdYlBu } from 'd3-scale-chromatic';
   import GrowthRatesScatterplot from '@/components/GrowthRatesScatterplot.vue';
   import GrowthRatesLineChart from '@/components/GrowthRatesLineChart.vue';
-  import GrowthRatesLegend from './GrowthRatesLegend.vue';
+  import GrowthRatesVisLegend from './GrowthRatesVisLegend.vue';
 
   const props = defineProps({
     data: Array,
@@ -117,10 +122,14 @@
 
   const handleScatterplotHovered = (point) => {
     hoveredScatterplotPoint.value = point;
+    if (hoveredScatterplotPoint.value) 
+      legendPoint.value = hoveredScatterplotPoint.value;
   }
 
   const handleLineHovered = (point) => {
     hoveredLinePoint.value = point;
+    if (hoveredLinePoint.value) 
+      legendPoint.value = hoveredLinePoint.value;
   }
 
   const selectedLineage = computed(() => props.data[0].lineage);
@@ -205,6 +214,8 @@
     ])
     .range([0.1, 0.4])
   );
+
+  const legendPoint = ref(null);
 </script>
 
 <style>

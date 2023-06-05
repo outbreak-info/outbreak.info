@@ -132,7 +132,7 @@
 <style>
   .line-chart {
     margin-top: 0px;
-    margin-bottom: 30px;
+    margin-bottom: 15px;
   } 
 </style>
   
