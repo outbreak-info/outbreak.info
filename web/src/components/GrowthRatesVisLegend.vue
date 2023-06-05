@@ -47,7 +47,6 @@
 <script setup>
   import { computed } from 'vue';
   import { scaleLinear } from 'd3-scale';
-  import { schemeRdYlBu } from 'd3-scale-chromatic';
 
   const props = defineProps({
     loc: String,
@@ -65,7 +64,9 @@
 
   const innerWidth = width - margin.left - margin.right;
 
-  const colors = computed(() => schemeRdYlBu[11].reverse());
+  const colors = [
+    '#313695', '#4575b4', '#74add1', '#abd9e9', '#e0f3f8', '#ffffbf',
+    '#fee090', '#fdae61', '#f46d43', '#d73027', '#a50026'];
 
   const minValue = computed(() => props.colorScale.domain()[0]);
   const maxValue = computed(() => props.colorScale.domain()[2]);
