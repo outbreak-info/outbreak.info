@@ -15,6 +15,11 @@
         :lineage="chosenLineage"
         :data="locationsWithoutApiData"
       />
+      <n-back-top :right="100">
+        <div class="back-top">
+          Back to top
+        </div>
+      </n-back-top>
     </n-notification-provider>
   </n-config-provider>
 </template>
@@ -23,7 +28,7 @@
   import { ref, onMounted } from 'vue';
   import axios from 'axios';
   import _ from 'lodash';
-  import { NConfigProvider, NNotificationProvider } from 'naive-ui'
+  import { NConfigProvider, NNotificationProvider, NBackTop } from 'naive-ui'
   import GrowthRatesForm from '@/components/GrowthRatesForm.vue';
   import GrowthRatesCharts from '@/components/GrowthRatesCharts.vue';
   import GrowthRatesWarning from '@/components/GrowthRatesWarning.vue';
@@ -145,6 +150,16 @@
     height: 100%;
     width: 100%;
     user-select: none; 
+  }
+
+  .back-top {
+    width: 150px;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    font-family: 'DM Sans', 'Avenir', 'Helvetica', 'Arial', sans-serif;
+    font-size: 14px;
+    color: #2c3e50;
   }
 </style>
   
