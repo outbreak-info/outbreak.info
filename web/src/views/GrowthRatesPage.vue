@@ -31,7 +31,8 @@
   const themeOverrides = {
     common: {
       primaryColor: '#D13B62',
-      primaryColorHover: '#86203A' 
+      primaryColorHover: '#86203A',
+      primaryColorPressed: '#86203A', 
     },
   };
 
