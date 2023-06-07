@@ -1,6 +1,7 @@
 <template>
   <n-config-provider :theme-overrides="themeOverrides">
     <n-notification-provider>
+      <GrowthRatesIntro />
       <GrowthRatesForm 
         @query-button-clicked="handleQueryButtonClick"
       />
@@ -32,12 +33,19 @@
   import GrowthRatesForm from '@/components/GrowthRatesForm.vue';
   import GrowthRatesCharts from '@/components/GrowthRatesCharts.vue';
   import GrowthRatesWarning from '@/components/GrowthRatesWarning.vue';
+  import GrowthRatesIntro from '@/components/GrowthRatesIntro.vue'
  
   const themeOverrides = {
     common: {
       primaryColor: '#D13B62',
       primaryColorHover: '#86203A',
       primaryColorPressed: '#86203A', 
+    },
+    Collapse: {
+      titleFontSize: '16px',
+      fontSize: '16px',
+      titleTextColor: '#D13B62',
+      arrowColor: '#D13B62',
     },
   };
 
