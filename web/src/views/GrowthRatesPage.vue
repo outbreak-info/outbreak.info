@@ -21,6 +21,7 @@
           Back to top
         </div>
       </n-back-top>
+      <GrowthRatesAcknowledgements />
     </n-notification-provider>
   </n-config-provider>
 </template>
@@ -34,6 +35,7 @@
   import GrowthRatesCharts from '@/components/GrowthRatesCharts.vue';
   import GrowthRatesWarning from '@/components/GrowthRatesWarning.vue';
   import GrowthRatesIntro from '@/components/GrowthRatesIntro.vue'
+  import GrowthRatesAcknowledgements from '@/components/GrowthRatesAcknowledgements.vue';
  
   const themeOverrides = {
     common: {
