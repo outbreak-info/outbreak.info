@@ -51,6 +51,9 @@
       titleTextColor: '#D13B62',
       arrowColor: '#D13B62',
     },
+    Form: {
+      labelHeightMedium: '22px',
+    },
   };
 
   const props = defineProps({

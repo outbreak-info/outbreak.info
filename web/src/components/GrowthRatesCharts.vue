@@ -131,7 +131,7 @@
 
   const selectedLineage = computed(() => props.data[0].lineage);
 
-  const title = computed(() => `${selectedLineage.value} growth rates in selected locations`);
+  const title = computed(() => `${selectedLineage.value} growth rates`);
 
   const selectedLocations = computed(() => Array.from(new Set(props.data.map(locationAccessor))).sort());
 
@@ -225,7 +225,7 @@
   }
 
   .chart-header {
-    margin: 30px 50px 30px 50px;
+    margin: 20px 50px 15px 50px;
     text-align: left;
   }
 

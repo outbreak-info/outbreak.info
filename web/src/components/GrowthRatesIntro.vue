@@ -39,9 +39,12 @@
     text-align: left;
   }
   .intro-copy {
-    margin: 20px 50px 0px 50px;
+    margin: 30px 50px 0px 50px;
   }
   .bold {
     font-weight: 700;
+  }
+  h1 {
+    margin-bottom: 20px;
   }
 </style>
