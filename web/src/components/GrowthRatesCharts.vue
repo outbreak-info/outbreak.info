@@ -1,11 +1,8 @@
 <template>
-  <div>
-    <div id="header">
+  <div class="gr-charts">
+    <div class="chart-header">
      <h3>{{ title }}</h3>
     </div>
-    <!-- <GrowthRatesLegend
-      :colorScale="colorScale"
-    /> -->
     <div class="switch-container">
       <n-form-item
         label="Show confidence intervals" 
@@ -18,7 +15,7 @@
       </n-form-item>
     </div>
     <div 
-      class="wrapper" 
+      class="chart-wrapper" 
       :style="{ 'width': width + 'px' }"
       v-for="loc in selectedLocations" :key="loc"
       >
@@ -109,7 +106,7 @@
 
   const handleResize = () => {
     if (window.innerWidth >= 1000) {
-      width.value = 900;
+      width.value = 1000;
     }
     else {
       width.value = window.innerWidth;
@@ -218,17 +215,31 @@
   const legendPoint = ref(null);
 </script>
 
-<style>
-  #header {
-    margin-top: 30px;
-    margin-bottom: 30px;
-    margin-left: 5px;
+<style scoped>
+  .gr-charts {
+    display: flex;
+    flex-direction: column;
+    max-width: 1000px;
+    width: 100%;
+    text-align: left;
+  }
+
+  .chart-header {
+    margin: 30px 50px 30px 50px;
+    text-align: left;
+  }
+
+  .switch-container {
+    margin-left: 50px;
+    margin-right: 50px;
     text-align: left;
   }
   
-  .wrapper {
+  .chart-wrapper {
     position: relative;
     width: 100%;
-    max-width: 900px;
+    max-width: 1000px;
+    margin-left: 50px;
+    margin-right: 50px;
   }
 </style>

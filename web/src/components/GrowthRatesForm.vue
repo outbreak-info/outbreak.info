@@ -1,10 +1,10 @@
 <template>
-  <div>
+  <div class="gr-form">
     <div class="selector-container">
       <n-form-item
         label="Lineage" 
         class="lineage"
-    >
+      >
         <n-select
           v-model:value="selectedLineage"
           filterable
@@ -156,28 +156,33 @@
   }
 </script>
 
-<style>
+<style scoped>
+  .gr-form {
+    display: flex;
+    flex-direction: column;
+    max-width: 1000px;
+    width: 100%;
+    text-align: left;
+  }
   .selector-container {
     display: flex; 
     flex-flow: row wrap;
-    margin: 20px 50px 0px 50px;
-    gap: 15px;
+    margin-left: 50px;
+    margin-right: 50px;
+    gap: 10px;
   }
-
   .lineage {
     flex: 1 1 auto; 
     text-align: left;
   }
-
   .location {
     flex: 8 1 auto; 
   }
-
   .button-container {
     display: flex; 
     flex-flow: row wrap;
     justify-content: center;
-    gap: 15px;
+    gap: 10px;
   }
 </style>
   

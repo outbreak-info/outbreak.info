@@ -1,15 +1,19 @@
 <template>
   <div class="legend" v-if="ticks.length > 0">
-    <div class="legend-title">
-      <span>growth rate (%)</span>
-    </div>
     <svg :width="width" :height="height">
-      <g :transform="`translate(${margin.left}, 5)`">
+      <g :transform="`translate(${margin.left}, 10)`">
+        <text
+          text-anchor="start"
+          fill="#2c3e50" 
+          font-size="13px"
+        >
+          growth rate (%)
+        </text>
         <circle
           v-if="legendPoint && legendPoint.label == loc"
           r="4"
           :cx="legendXScale(legendPoint.G_7_linear)"
-          :cy="0"
+          :cy="10"
           fill="#2c3e50"
         />
         <defs>
@@ -22,17 +26,17 @@
           </linearGradient>
         </defs>
         <rect
-          :y="10"
+          :y="20"
           :width="innerWidth"
-          :height="20"
+          :height="15"
           fill="url(#linear-gradient)"
           stroke="#2c3e50"
           stroke-width="0.25"
         />
-        <g :transform="`translate(0 40)`">
+        <g :transform="`translate(0 35)`">
           <g 
             v-for="(tick, index) in ticks" :key="'tick-' + index"
-            :transform="`translate(${legendXScale(tick)} 0)`"
+            :transform="`translate(${legendXScale(tick)} 10)`"
           >
             <text :y="6" text-anchor="middle" fill="#2c3e50" font-size="13px">
               {{ tick }}
@@ -54,12 +58,12 @@
     legendPoint: Object,
   });
 
-  const width = 290;
-  const height = 60;
+  const width = 250;
+  const height = 65;
 
   const margin = {
-    right: 20,
-    left: 20,
+    right: 15,
+    left: 65,
   };
 
   const innerWidth = width - margin.left - margin.right;
@@ -80,14 +84,9 @@
   const ticks = computed(() => legendXScale.value.domain());
 </script>
 
-<style>
+<style scoped>
   .legend {
-    margin-bottom: 20px;
-  }
-
-  .legend-title {
-    margin-bottom: 2px;
-    text-align: center;
-    font-size: 14px;
+    text-align: left;
+    margin-bottom: 30px;
   }
 </style>

@@ -1,27 +1,29 @@
 <template>
   <n-config-provider :theme-overrides="themeOverrides">
     <n-notification-provider>
-      <GrowthRatesIntro />
-      <GrowthRatesForm 
-        @query-button-clicked="handleQueryButtonClick"
-      />
-      <div class="rates">
-        <GrowthRatesCharts
+      <div class="page-wrapper">
+        <GrowthRatesIntro />
+        <GrowthRatesForm 
+          @query-button-clicked="handleQueryButtonClick"
+        />
+        <!-- <div class="rates"> -->
+          <GrowthRatesCharts
           v-if="flatData.length > 0"
           :data="flatData"
+          />
+        <!-- </div>  -->
+        <GrowthRatesWarning
+          v-if="locationsWithoutApiData.length > 0"
+          :lineage="chosenLineage"
+          :data="locationsWithoutApiData"
         />
-      </div> 
-      <GrowthRatesWarning
-        v-if="locationsWithoutApiData.length > 0"
-        :lineage="chosenLineage"
-        :data="locationsWithoutApiData"
-      />
-      <n-back-top :right="100">
-        <div class="back-top">
-          Back to top
-        </div>
-      </n-back-top>
-      <GrowthRatesAcknowledgements />
+        <GrowthRatesAcknowledgements />
+        <n-back-top :right="100">
+          <div class="back-top">
+            Back to top
+          </div>
+        </n-back-top>
+      </div>
     </n-notification-provider>
   </n-config-provider>
 </template>
@@ -152,7 +154,16 @@
 
 </script>
 
-<style>
+<style scoped>
+  .page-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    user-select: none;
+  }
+
   .rates {
     display: flex;
     flex-direction: column;

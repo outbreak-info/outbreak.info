@@ -102,7 +102,7 @@
   const yPosition = computed(() => y.value - yNudge);
 </script>
     
-<style>
+<style scoped>
   .gr-tooltip {
     background: #ffffff;
     box-shadow: 1px 2px 7px rgba(0, 0, 0, 0.2);
@@ -115,36 +115,30 @@
     line-height: 18px;
     z-index: 1;    
   }
-  
   .title {
     font-weight: 700;
     font-size: 15px;
     line-height: 16px;
   }
-  
   .date {
     font-size: 12px;
     text-transform: uppercase;
   }
-  
   .divider {
     border-top: 1px solid rgba(0, 0, 0, 0.1);
     border-bottom: 1px solid rgba(255, 255, 255, 0.3);
     margin-top: 5px;
     margin-bottom: 5px;
   }
-  
   .grid {
     display: grid;
     grid-template-columns: 1fr auto;
     column-gap: 20px;
     font-weight: 400;
   }
-  
   .data {
     text-align: right;
   }
-  
   .bar {
     position: absolute;
     height: 7px;
@@ -152,11 +146,9 @@
     bottom: 0;
     left: 0;
   }
-  
   .end-block {
     margin-bottom: 8px;
   }
-  
   .ci-alert {
     margin-top: 8px;
   }

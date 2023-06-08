@@ -10,7 +10,7 @@
       <g :transform="`translate(${margin.left}, ${margin.top})`">
         <text
           :y="-40"
-          :x="-60"
+          :x="-65"
           text-anchor="start"
           fill="#2c3e50"
           font-weight="bold"
@@ -156,6 +156,5 @@
   const maxGrowthRate = computed(() => props.yScale.domain()[1]);
   
   const ariaLabel = computed(() => `Scatterplot of ${props.lineage} growth rates in ${props.loc}`);
-
 </script>
   
