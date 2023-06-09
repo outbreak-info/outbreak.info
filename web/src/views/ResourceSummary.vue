@@ -111,6 +111,8 @@ import { useRouter } from 'vue-router';
 import { getSourceSummary } from '@/api/resources.js';
 import RESOURCEEXAMPLES from '@/assets/examples/resources_examples.json';
 import { lazyLoad } from '@/js/lazy-load';
+import { useMetadataStore } from '@/stores/metadataStore'
+import { useSeoMeta } from 'unhead';
 
 const WhatsNew = lazyLoad('WhatsNew');
 const CirclePacking = lazyLoad('CirclePacking');
@@ -135,6 +137,10 @@ onMounted(() => {
       counts.value = results;
     },
   );
+
+  const metadataStore = useMetadataStore();
+  const metadata = metadataStore.resourceSummaryMetadata;
+  useSeoMeta(metadata);
 });
 
 const onEnter = () => {

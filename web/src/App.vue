@@ -693,6 +693,7 @@
 <script setup>
 import { onMounted, ref } from 'vue';
 import { lazyLoad } from '@/js/lazy-load';
+import { useMetadataStore } from '@/stores/metadataStore';
 import { useSeoMeta } from 'unhead';
 
 const EmailSubscription = lazyLoad('EmailSubscription');
@@ -700,35 +701,12 @@ const Logos = lazyLoad('Logos');
 
 const year = ref(null);
 
-useSeoMeta({
-  charset: 'utf-8',
-  xUaCompatible: 'IE=edge',
-  ogLocale: 'en_US',
-  viewport: 'width=device-width,initial-scale=1.0',
-  title: 'outbreak.info SARS-CoV-2 data explorer',
-  description: 'Outbreak.info explores COVID-19 and SARS-CoV-2 data with variant surveillance reports, data on cases and deaths, and a searchable research library.',
-  ogUrl: 'https://outbreak.info/',
-  ogSiteName: 'outbreak.info',
-  ogTitle: 'outbreak.info SARS-CoV-2 data explorer',
-  ogImage: 'https://i.postimg.cc/d0NwNjjs/featured-copy.jpg',
-  ogImageType: 'image/jpg',
-  ogImageWidth: '1200',
-  ogImageHeight: '630',
-  ogType: 'website',
-  ogDescription: 'Outbreak.info explores COVID-19 and SARS-CoV-2 data with variant surveillance reports, data on cases and deaths, and a searchable research library.',
-  fbApp_id: '',
-  twitterTitle: 'outbreak.info SARS-CoV-2 data explorer',
-  twitterImage: 'https://i.postimg.cc/d0NwNjjs/featured-copy.jpg',
-  twitterDescription: 'Outbreak.info explores COVID-19 and SARS-CoV-2 data with variant surveillance reports, data on cases and deaths, and a searchable research library.',
-  twitterUrl: 'https://outbreak.info/',
-  twitterCard: '',
-  msapplicationTileColor: '#126b93',
-  msapplicationConfig: '@/assets/browserconfig.xml',
-  themeColor: '#ffffff',
-});
-
 onMounted(() => {
   year.value = new Date().getFullYear();
+  
+  const metadataStore = useMetadataStore();
+  const metadata = metadataStore.defaultMetadata;
+  useSeoMeta(metadata);
 });
 </script>
 

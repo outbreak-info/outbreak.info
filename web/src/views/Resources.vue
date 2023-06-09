@@ -693,6 +693,8 @@ import { getResources } from '@/api/resources.js';
 import { lazyLoad } from '@/js/lazy-load';
 import 'tippy.js/themes/light.css';
 import { adminStore } from '@/stores/adminStore';
+import { useMetadataStore } from '@/stores/metadataStore';
+import { useSeoMeta } from 'unhead';
 
 const StripeAccent = lazyLoad('StripeAccent');
 const TrialPhase = lazyLoad('TrialPhase');
@@ -799,6 +801,10 @@ const showSearchHelper = computed(() => {
 
 onMounted(() => {
   resources.value = store.$state.resources;
+
+  const metadataStore = useMetadataStore();
+  const metadata = metadataStore.resourceMetadata;
+  useSeoMeta(metadata);
 });
 
 onBeforeUnmount(() => {
