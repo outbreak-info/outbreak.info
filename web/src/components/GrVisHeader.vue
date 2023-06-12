@@ -4,7 +4,12 @@
       {{  loc  }}
     </div>
     <div class="legend" v-if="ticks.length > 0">
-      <svg :width="width" :height="height">
+      <svg 
+        role="img"
+        :aria-label="ariaLabel"
+        :width="width" 
+        :height="height"
+      >
         <g :transform="`translate(${margin.left}, ${margin.top})`">
           <text
             text-anchor="start"
@@ -85,11 +90,12 @@
   const legendXScale = computed(() => scaleLinear()
     .domain([minValue.value, maxValue.value])
     .range([0, innerWidth])
-    .nice()
   );
 
   const ticks = computed(() => legendXScale.value.domain());
   console.log(ticks.value);
+
+  const ariaLabel = computed(() => `Legend for the growth rate color scale. The color scale varies from dark blue (${ticks.value[0]}%) to dark red (${ticks.value[1]}%).`)
 </script>
 
 <style scoped>
