@@ -93,6 +93,8 @@ import { storeToRefs } from 'pinia';
 import { getLocationBasics } from '@/api/genomics.js';
 import { lazyLoad } from '@/js/lazy-load';
 import { adminStore } from '@/stores/adminStore';
+import { useMetadataStore } from '@/stores/metadataStore';
+import { useSeoMeta } from 'unhead';
 
 const ReportAcknowledgements = lazyLoad('ReportAcknowledgements');
 const CustomLocationForm = lazyLoad('CustomLocationForm');
@@ -116,6 +118,10 @@ onMounted(() => {
       total.value = results.total;
     },
   );
+
+  const metadataStore = useMetadataStore();
+  const metadata = metadataStore.defaultMetadata;
+  useSeoMeta(metadata);
 });
 
 onBeforeUnmount(() => {

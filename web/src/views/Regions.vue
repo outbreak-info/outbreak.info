@@ -229,6 +229,8 @@ import { lazyLoad } from '@/js/lazy-load';
 import { adminStore } from '@/stores/adminStore';
 import { colorsStore } from '@/stores/colorsStore';
 import { geoStore } from '@/stores/geoStore';
+import { useMetadataStore } from '@/stores/metadataStore';
+import { useSeoMeta } from 'unhead'
 
 const EpiStacked = lazyLoad('EpiStacked');
 const Bargraph = lazyLoad('Bargraph');
@@ -368,6 +370,10 @@ onMounted(() => {
     // set initial dimensions for the stacked area plots.
     setDims();
   });
+
+  const metadataStore = useMetadataStore();
+  const metadata = metadataStore.defaultMetadata;
+  useSeoMeta(metadata);
 });
 
 onUnmounted(() => {

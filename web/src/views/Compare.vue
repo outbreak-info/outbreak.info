@@ -162,7 +162,7 @@
 </template>
 
 <script setup>
-import { ref, inject, onBeforeUnmount, watch } from 'vue';
+import { ref, inject, onBeforeUnmount, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
 import { format } from 'd3-format';
@@ -173,6 +173,8 @@ import { findSimilar } from '@/api/find-similar.js';
 import { lazyLoad } from '@/js/lazy-load';
 import { colorsStore } from '@/stores/colorsStore';
 import { adminStore } from '@/stores/adminStore';
+import { useMetadataStore } from '@/stores/metadataStore';
+import { useSeoMeta } from 'unhead';
 
 const MiniLocation = lazyLoad('MiniLocation');
 const LineComparison = lazyLoad('LineComparison');
@@ -343,6 +345,12 @@ onBeforeUnmount(() => {
   if (dataSubscription.value) {
     dataSubscription.value.unsubscribe();
   }
+});
+
+onMounted(() => {
+  const metadataStore = useMetadataStore();
+  const metadata = metadataStore.defaultMetadata;
+  useSeoMeta(metadata);
 });
 </script>
 

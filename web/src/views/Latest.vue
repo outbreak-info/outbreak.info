@@ -103,6 +103,8 @@ import { timeFormat } from 'd3-time-format';
 
 import { getSourcesUpdated } from '@/api/metadata.js';
 import { adminStore } from '@/stores/adminStore';
+import { useMetadataStore } from '@/stores/metadataStore';
+import { useSeoMeta } from 'unhead';
 
 const store = adminStore();
 
@@ -128,6 +130,10 @@ onMounted(() => {
   updatesData.value = store.$state.updates;
 
   updatesData.value.sort((a, b) => b.date - a.date);
+
+  const metadataStore = useMetadataStore();
+  const metadata = metadataStore.defaultMetadata;
+  useSeoMeta(metadata);
 });
 
 onUnmounted(() => {

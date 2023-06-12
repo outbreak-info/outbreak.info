@@ -836,6 +836,8 @@ import RESOURCEEXAMPLES from '@/assets/examples/resources_examples.json';
 import GENOMICSEXAMPLES from '@/assets/examples/genomics_examples.json';
 import { lazyLoad } from '@/js/lazy-load';
 import { adminStore } from '@/stores/adminStore';
+import { useMetadataStore } from '@/stores/metadataStore';
+import { useSeoMeta } from 'unhead';
 
 const SearchBar = lazyLoad('SearchBar');
 const CustomReportForm = lazyLoad('CustomReportForm');
@@ -859,6 +861,10 @@ onMounted(() => {
 
   queryPangolin.value = findPangolin;
   queryLocation.value = findLocation;
+
+  const metadataStore = useMetadataStore();
+  const metadata = metadataStore.defaultMetadata;
+  useSeoMeta(metadata);
 });
 
 const submitLocation = (selected) => {

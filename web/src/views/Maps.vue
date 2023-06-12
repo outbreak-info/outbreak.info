@@ -152,6 +152,8 @@ import debounce from 'lodash/debounce';
 import { getComparisonData } from '@/api/epi-comparison.js';
 import { lazyLoad } from '@/js/lazy-load';
 import { adminStore } from '@/stores/adminStore';
+import { useMetadataStore } from '@/stores/metadataStore';
+import { useSeoMeta } from 'unhead';
 
 const Choropleth = lazyLoad('Choropleth');
 const DataSource = lazyLoad('DataSource');
@@ -312,6 +314,10 @@ watch(
 
 onMounted(() => {
   getData();
+
+  const metadataStore = useMetadataStore();
+  const metadata = metadataStore.defaultMetadata;
+  useSeoMeta(metadata);
 });
 
 onBeforeUnmount(() => {

@@ -251,6 +251,8 @@ import { getResourceTotal } from '@/api/resources.js';
 import { getSequenceCount } from '@/api/genomics.js';
 import { lazyLoad } from '@/js/lazy-load';
 import { adminStore } from '@/stores/adminStore';
+import { useMetadataStore } from '@/stores/metadataStore';
+import { useSeoMeta } from 'unhead';
 
 const Jobs = lazyLoad('Jobs');
 const EmailSubscription = lazyLoad('EmailSubscription');
@@ -287,6 +289,10 @@ onMounted(() => {
   ).subscribe((total) => {
     gisaidCount.value = total;
   });
+
+  const metadataStore = useMetadataStore();
+  const metadata = metadataStore.defaultMetadata;
+  useSeoMeta(metadata);
 });
 
 onUnmounted(() => {

@@ -68,6 +68,8 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import FAQ from '@/assets/faq.json';
+import { useMetadataStore } from '@/stores/metadataStore';
+import { useSeoMeta } from 'unhead';
 
 const faq = ref(null);
 const faqGroups = ref(null);
@@ -75,6 +77,10 @@ const faqGroups = ref(null);
 onMounted(() => {
   faq.value = FAQ;
   faqGroups.value = Object.keys(faq.value);
+
+  const metadataStore = useMetadataStore();
+  const metadata = metadataStore.defaultMetadata;
+  useSeoMeta(metadata);
 });
 </script>
 

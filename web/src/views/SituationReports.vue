@@ -1328,6 +1328,8 @@ import { adminStore } from '@/stores/adminStore';
 
 import 'tippy.js/themes/light.css';
 import { genomicsStore } from '@/stores/genomicsStore';
+import { useMetadataStore } from '@/stores/metadataStore';
+import { useSeoMeta } from 'unhead';
 
 const CustomReportForm = lazyLoad('CustomReportForm');
 const ReportAcknowledgements = lazyLoad('ReportAcknowledgements');
@@ -1811,6 +1813,10 @@ onMounted(() => {
       total.value = totals;
     },
   );
+
+  const metadataStore = useMetadataStore();
+  const metadata = metadataStore.defaultMetadata;
+  useSeoMeta(metadata);
 });
 
 onBeforeUnmount(() => {
