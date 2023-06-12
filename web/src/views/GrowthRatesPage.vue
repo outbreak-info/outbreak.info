@@ -2,22 +2,22 @@
   <n-config-provider :theme-overrides="themeOverrides">
     <n-notification-provider>
       <div class="page-wrapper">
-        <GrowthRatesIntro />
-        <GrowthRatesForm 
+        <GrIntro />
+        <GrForm 
           @query-button-clicked="handleQueryButtonClick"
         />
         <!-- <div class="rates"> -->
-          <GrowthRatesCharts
+          <GrChart
           v-if="flatData.length > 0"
           :data="flatData"
           />
         <!-- </div>  -->
-        <GrowthRatesWarning
+        <GrWarning
           v-if="locationsWithoutApiData.length > 0"
           :lineage="chosenLineage"
           :data="locationsWithoutApiData"
         />
-        <GrowthRatesAcknowledgements />
+        <GrAcknowledgements />
         <n-back-top :right="100">
           <div class="back-top">
             Back to top
@@ -33,11 +33,11 @@
   import axios from 'axios';
   import _ from 'lodash';
   import { NConfigProvider, NNotificationProvider, NBackTop } from 'naive-ui'
-  import GrowthRatesForm from '@/components/GrowthRatesForm.vue';
-  import GrowthRatesCharts from '@/components/GrowthRatesCharts.vue';
-  import GrowthRatesWarning from '@/components/GrowthRatesWarning.vue';
-  import GrowthRatesIntro from '@/components/GrowthRatesIntro.vue'
-  import GrowthRatesAcknowledgements from '@/components/GrowthRatesAcknowledgements.vue';
+  import GrForm from '@/components/GrForm.vue';
+  import GrChart from '@/components/GrCharts.vue';
+  import GrWarning from '@/components/GrWarning.vue';
+  import GrIntro from '@/components/GrIntro.vue'
+  import GrAcknowledgements from '@/components/GrAcknowledgements.vue';
  
   const themeOverrides = {
     common: {

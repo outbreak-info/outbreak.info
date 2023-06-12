@@ -1,5 +1,5 @@
 <template>
-  <GrowthRatesCI95Top
+  <GrCI95Top
     v-for="(dataPoint, index) in data" :key="'topCI-' + index"
     :dataPoint="dataPoint"
     :xAccessor="xAccessor"
@@ -9,7 +9,7 @@
     :minGrowthRate="minGrowthRate"
     :maxGrowthRate="maxGrowthRate"
   />
-  <GrowthRatesCI95Bottom
+  <GrCI95Bottom
     v-for="(dataPoint, index) in data" :key="'topCI-' + index"
     :dataPoint="dataPoint"
     :xAccessor="xAccessor"
@@ -22,8 +22,8 @@
 </template>
 
 <script setup>
-  import GrowthRatesCI95Top from '@/components/GrowthRatesCI95Top.vue';
-  import GrowthRatesCI95Bottom from '@/components/GrowthRatesCI95Bottom.vue';
+  import GrCI95Top from '@/components/GrCI95Top.vue';
+  import GrCI95Bottom from '@/components/GrCI95Bottom.vue';
 
   const props = defineProps({
     data: Array,

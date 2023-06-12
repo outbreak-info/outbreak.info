@@ -17,11 +17,11 @@
         >
           {{ loc }}
         </text>
-        <GrowthRatesYAxis 
+        <GrYAxis 
           :yScale="yScale"
           :innerWidth="innerWidth"
         />
-        <GrowthRatesCI95 
+        <GrCI95 
           v-if="isCIShown"
           :data="data"
           :xAccessor="xAccessor"
@@ -71,7 +71,7 @@
       </g>
     </svg>
   </div>
-  <GrowthRatesTooltip
+  <GrTooltip
     v-if="hoveredPoint"
     :loc="loc"
     :hoveredPoint="hoveredPoint"
@@ -85,7 +85,7 @@
     :minGrowthRate="minGrowthRate"
     :maxGrowthRate="maxGrowthRate"
   />
-  <GrowthRatesTooltip
+  <GrTooltip
     v-if="hoveredLinePoint && hoveredLinePoint.label == loc"
     :loc="loc"
     :hoveredPoint="hoveredLinePoint"
@@ -104,9 +104,9 @@
 <script setup>
   import { computed, ref } from 'vue';
   import { quadtree } from 'd3-quadtree';
-  import GrowthRatesYAxis from '@/components/GrowthRatesYAxis.vue';
-  import GrowthRatesCI95 from '@/components/GrowthRatesCI95.vue';
-  import GrowthRatesTooltip from '@/components/GrowthRatesTooltip.vue';
+  import GrYAxis from '@/components/GrYAxis.vue';
+  import GrCI95 from '@/components/GrCI95.vue';
+  import GrTooltip from '@/components/GrTooltip.vue';
   
   const props = defineProps({
     loc: String,

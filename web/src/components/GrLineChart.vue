@@ -18,7 +18,7 @@
           @mousemove="handleMouseMove"
           @mouseleave="handleMouseLeave"
         />  
-        <GrowthRatesXAxis
+        <GrXAxis
           :xScale="xScale"
           :innerWidth="innerWidth"
           :innerHeight="innerHeight"
@@ -32,7 +32,7 @@
           fill="none"
           stroke-linecap="round"
         />
-        <GrowthRatesAnnotations 
+        <GrAnnotations 
           :data="data"
           :xAccessor="xAccessor"
           :yAccessor="yAccessor"
@@ -67,8 +67,8 @@
   import { max } from 'd3-array';
   import { scaleLinear } from 'd3-scale';
   import { line, curveMonotoneX } from 'd3-shape';
-  import GrowthRatesXAxis from '@/components/GrowthRatesXAxis.vue';
-  import GrowthRatesAnnotations from './GrowthRatesAnnotations.vue';
+  import GrXAxis from '@/components/GrXAxis.vue';
+  import GrAnnotations from './GrAnnotations.vue';
   
   const props = defineProps({
     loc: String,

@@ -19,7 +19,7 @@
       :style="{ 'width': width + 'px' }"
       v-for="loc in selectedLocations" :key="loc"
       >
-      <GrowthRatesScatterplot
+      <GrScatterplot
         :loc="loc" 
         :lineage="selectedLineage"
         :isCIShown="isCIShown"
@@ -38,7 +38,7 @@
         :hoveredLinePoint="hoveredLinePoint"
         @scatterplot-hovered="handleScatterplotHovered"
       />
-      <GrowthRatesLineChart
+      <GrLineChart
         :loc="loc"
         :lineage="selectedLineage"
         :data="filteredData.filter(element => element.label == loc)"
@@ -54,7 +54,7 @@
         :hoveredScatterplotPoint="hoveredScatterplotPoint"
         @line-hovered="handleLineHovered"
       />
-      <GrowthRatesVisLegend
+      <GrVisLegend
         :loc="loc"
         :colorScale="colorScale" 
         :legendPoint="legendPoint"
@@ -69,9 +69,9 @@
   import { quantile, min, max } from 'd3-array';
   import { scaleBand, scaleLinear, scaleDiverging } from 'd3-scale';
   import { interpolateRdYlBu } from 'd3-scale-chromatic';
-  import GrowthRatesScatterplot from '@/components/GrowthRatesScatterplot.vue';
-  import GrowthRatesLineChart from '@/components/GrowthRatesLineChart.vue';
-  import GrowthRatesVisLegend from './GrowthRatesVisLegend.vue';
+  import GrScatterplot from '@/components/GrScatterplot.vue';
+  import GrLineChart from '@/components/GrLineChart.vue';
+  import GrVisLegend from './GrVisLegend.vue';
 
   const props = defineProps({
     data: Array,
