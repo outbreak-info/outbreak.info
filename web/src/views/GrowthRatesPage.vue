@@ -33,11 +33,13 @@
   import axios from 'axios';
   import _ from 'lodash';
   import { NConfigProvider, NNotificationProvider, NBackTop } from 'naive-ui'
-  import GrForm from '@/components/GrForm.vue';
-  import GrChart from '@/components/GrCharts.vue';
-  import GrWarning from '@/components/GrWarning.vue';
-  import GrIntro from '@/components/GrIntro.vue'
-  import GrAcknowledgements from '@/components/GrAcknowledgements.vue';
+  import { lazyLoad } from '@/js/lazy-load';
+
+  const GrIntro = lazyLoad('GrIntro');
+  const GrForm = lazyLoad('GrForm');
+  const GrChart = lazyLoad('GrCharts');
+  const GrWarning = lazyLoad('GrWarning');
+  const GrAcknowledgements = lazyLoad('GrAcknowledgements');
  
   const themeOverrides = {
     common: {

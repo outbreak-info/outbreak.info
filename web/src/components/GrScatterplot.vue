@@ -104,9 +104,11 @@
 <script setup>
   import { computed, ref } from 'vue';
   import { quadtree } from 'd3-quadtree';
-  import GrYAxis from '@/components/GrYAxis.vue';
-  import GrCI95 from '@/components/GrCI95.vue';
-  import GrTooltip from '@/components/GrTooltip.vue';
+  import { lazyLoad } from '@/js/lazy-load';
+
+  const GrYAxis = lazyLoad('GrYAxis');
+  const GrCI95 = lazyLoad('GrCI95');
+  const GrTooltip = lazyLoad('GrTooltip');
   
   const props = defineProps({
     loc: String,

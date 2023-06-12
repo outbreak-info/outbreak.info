@@ -67,8 +67,10 @@
   import { max } from 'd3-array';
   import { scaleLinear } from 'd3-scale';
   import { line, curveMonotoneX } from 'd3-shape';
-  import GrXAxis from '@/components/GrXAxis.vue';
-  import GrAnnotations from './GrAnnotations.vue';
+  import { lazyLoad } from '@/js/lazy-load';
+
+  const GrXAxis = lazyLoad('GrXAxis');
+  const GrAnnotations = lazyLoad('GrAnnotations');
   
   const props = defineProps({
     loc: String,

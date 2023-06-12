@@ -22,8 +22,10 @@
 </template>
 
 <script setup>
-  import GrCI95Top from '@/components/GrCI95Top.vue';
-  import GrCI95Bottom from '@/components/GrCI95Bottom.vue';
+  import { lazyLoad } from '@/js/lazy-load';
+
+  const GrCI95Top = lazyLoad('GrCI95Top');
+  const GrCI95Bottom = lazyLoad('GrCI95Bottom');
 
   const props = defineProps({
     data: Array,

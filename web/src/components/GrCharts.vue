@@ -69,9 +69,11 @@
   import { quantile, min, max } from 'd3-array';
   import { scaleBand, scaleLinear, scaleDiverging } from 'd3-scale';
   import { interpolateRdYlBu } from 'd3-scale-chromatic';
-  import GrScatterplot from '@/components/GrScatterplot.vue';
-  import GrLineChart from '@/components/GrLineChart.vue';
-  import GrVisLegend from './GrVisLegend.vue';
+  import { lazyLoad } from '@/js/lazy-load';
+
+  const GrScatterplot = lazyLoad('GrScatterplot');
+  const GrLineChart = lazyLoad('GrLineChart');
+  const GrVisLegend = lazyLoad('GrVisLegend');
 
   const props = defineProps({
     data: Array,
