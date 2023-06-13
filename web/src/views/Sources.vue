@@ -104,6 +104,9 @@ import { getIndivSourcesUpdated } from '@/api/metadata.js';
 import { lazyLoad } from '@/js/lazy-load';
 import { adminStore } from '@/stores/adminStore';
 
+import { useMetadataStore } from '@/stores/metadataStore';
+import { useSeoMeta } from 'unhead';
+
 const SourceDescription = lazyLoad('SourceDescription');
 const DownloadData = lazyLoad('DownloadData');
 
@@ -129,6 +132,10 @@ onMounted(() => {
   ).subscribe((results) => {
     sourceMetadata.value = results;
   });
+
+  const metadataStore = useMetadataStore();
+  const metadata = metadataStore.defaultMetadata;
+  useSeoMeta(metadata);
 });
 
 onUnmounted(() => {

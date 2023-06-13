@@ -48,6 +48,8 @@
 <script setup>
 import { onMounted, ref } from 'vue';
 import { pressStore } from '@/stores/pressStore';
+import { useMetadataStore } from '@/stores/metadataStore';
+import { useSeoMeta } from 'unhead';
 
 const currentYear = ref(new Date().getFullYear());
 const year = ref(null);
@@ -75,6 +77,10 @@ onMounted(() => {
   const numYears = year.value - 2021 + 1;
   yearOptions.value = Array.from({ length: numYears }, (v, k) => k + 2021);
   updatePress();
+
+  const metadataStore = useMetadataStore();
+  const metadata = metadataStore.defaultMetadata;
+  useSeoMeta(metadata);
 });
 </script>
 

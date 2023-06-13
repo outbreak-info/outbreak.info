@@ -11,8 +11,17 @@
 </template>
 
 <script setup>
+import { onMounted } from 'vue';
 import { lazyLoad } from '@/js/lazy-load';
+import { useMetadataStore } from '@/stores/metadataStore';
+import { useSeoMeta } from 'unhead';
 
 const CiteUs = lazyLoad('CiteUs');
 const DataUsage = lazyLoad('DataUsage');
+
+onMounted(() => {
+  const metadataStore = useMetadataStore();
+  const metadata = metadataStore.defaultMetadata;
+  useSeoMeta(metadata);
+});
 </script>

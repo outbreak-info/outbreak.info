@@ -265,6 +265,8 @@ import { lazyLoad } from '@/js/lazy-load';
 import { adminStore } from '@/stores/adminStore';
 import { geoStore } from '@/stores/geoStore';
 import { colorsStore } from '@/stores/colorsStore';
+import { useMetadataStore } from '@/stores/metadataStore';
+import { useSeoMeta } from 'unhead';
 
 const DataSource = lazyLoad('DataSource');
 const Warning = lazyLoad('Warning');
@@ -681,6 +683,10 @@ onMounted(() => {
     // set initial dimensions for the stacked area plots.
     setDims();
   });
+
+  const metadataStore = useMetadataStore();
+  const metadata = metadataStore.defaultMetadata;
+  useSeoMeta(metadata);
 });
 </script>
 

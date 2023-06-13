@@ -180,9 +180,11 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import { adminStore } from '@/stores/adminStore';
+import { useMetadataStore } from '@/stores/metadataStore';
+import { useSeoMeta } from 'unhead';
 
 const store = adminStore();
 const { resources } = storeToRefs(store); // extract admin store state variables
@@ -217,6 +219,12 @@ const types = ref([
     id: 'Publication',
   },
 ]);
+
+onMounted(() => {
+  const metadataStore = useMetadataStore();
+  const metadata = metadataStore.defaultMetadata;
+  useSeoMeta(metadata);
+});
 </script>
 
 <style lang="scss">

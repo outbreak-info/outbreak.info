@@ -693,6 +693,8 @@
 <script setup>
 import { onMounted, ref } from 'vue';
 import { lazyLoad } from '@/js/lazy-load';
+import { useMetadataStore } from '@/stores/metadataStore';
+import { useSeoMeta } from 'unhead';
 
 const EmailSubscription = lazyLoad('EmailSubscription');
 const Logos = lazyLoad('Logos');
@@ -701,6 +703,10 @@ const year = ref(null);
 
 onMounted(() => {
   year.value = new Date().getFullYear();
+  
+  const metadataStore = useMetadataStore();
+  const metadata = metadataStore.defaultMetadata;
+  useSeoMeta(metadata);
 });
 </script>
 

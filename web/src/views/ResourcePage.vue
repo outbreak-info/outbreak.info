@@ -396,6 +396,7 @@ import { timeFormat, timeParse } from 'd3-time-format';
 import { getResourceMetadata } from '@/api/resources.js';
 import { lazyLoad } from '@/js/lazy-load';
 import { adminStore } from '@/stores/adminStore';
+import { useSeoMeta } from 'unhead';
 
 const ResourceDescription = lazyLoad('ResourceDescription');
 const ResourceSidebar = lazyLoad('ResourceSidebar');
@@ -451,6 +452,9 @@ const anchors = ref({
 });
 const resultsSubscription = ref(null);
 
+const maxDescriptionLength = 160;
+const researchPageMetadata = ref(null);
+
 const anchorsArr = computed(() => {
   if (Object.keys(anchors.value).includes(type.value)) {
     return anchors.value[type.value];
@@ -471,6 +475,7 @@ const getData = (id) => {
       if (data.value) {
         type.value = data.value['@type'];
         dateModified.value = formatDate(data.value.date);
+        addMetadata(data.value);
       } else {
         type.value = null;
         dateModified.value = null;
@@ -478,6 +483,28 @@ const getData = (id) => {
     },
   );
 };
+
+const addMetadata = (resource) => {
+  const title = resource.name;
+
+  const description = 'description' in resource ? resource.description : 'abstract' in resource ? resource.abstract : resource.name;
+
+  const strippedDescription = description.replace(/(<([^>]+)>)/gi, "");
+
+  const truncatedDescription = strippedDescription.length > maxDescriptionLength ? `${strippedDescription.substring(0, maxDescriptionLength)}…` : strippedDescription;
+
+  researchPageMetadata.value = {
+    title: title,
+    description: truncatedDescription,
+    ogTitle: title,
+    ogDescription: truncatedDescription,
+    twitterTitle: title,
+    twitterDescription: truncatedDescription,
+    keywords: '',
+  }
+
+  useSeoMeta(researchPageMetadata.value);
+}
 
 onMounted(() => {
   id.value = route.params.id;

@@ -24,6 +24,8 @@ import { getEpiTable } from '@/api/epi-traces.js';
 import { lazyLoad } from '@/js/lazy-load';
 import { adminStore } from '@/stores/adminStore';
 import { colorsStore } from '@/stores/colorsStore';
+import { useMetadataStore } from '@/stores/metadataStore';
+import { useSeoMeta } from 'unhead';
 
 const DataSource = lazyLoad('DataSource');
 const EpiTable = lazyLoad('EpiTable');
@@ -49,6 +51,10 @@ onMounted(() => {
     10,
     0,
   ).subscribe((_) => null);
+
+  const metadataStore = useMetadataStore();
+  const metadata = metadataStore.defaultMetadata;
+  useSeoMeta(metadata);
 });
 
 onUnmounted(() => {
