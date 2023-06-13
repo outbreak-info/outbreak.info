@@ -94,7 +94,9 @@
   const greyAccessor = d => d.invDeltaG_7;
 
   const firstDay = computed(() => props.data.map(xAccessor).sort()[0]);
-  const dayArray = computed(() => createDayArray(firstDay.value));
+  const lastDay = computed(() => props.data.map(xAccessor).sort()[props.data.length - 1]);
+
+  const xScaleDomain = computed(() => createDayArray(firstDay.value, lastDay.value));
   
   const width = ref(900);
   const hoveredScatterplotPoint = ref(null);
@@ -174,19 +176,22 @@
     return [min - padding, max + padding];
   };
 
-  const createDayArray = (startDay) => {
+  const createDayArray = (first, last) => {
     const tempArray = [];
-    const lastDay = new Date();
-    const day = new Date(startDay);
-    while (day <= lastDay) {
-      tempArray.push(day.toISOString().split("T")[0]);
-      day.setUTCDate(day.getUTCDate() + 1);
+    const aDayInMs = 24 * 60 * 60 * 1000; 
+    const firstDate = new Date(first);
+    const lastDate = new Date(last);
+    const numberOfDays = Math.round(Math.abs((lastDate - firstDate) / aDayInMs));
+    const xScaleFirstDate = numberOfDays == 90 ? firstDate : new Date(lastDate - 90 * aDayInMs);
+    while (xScaleFirstDate <= lastDate) {
+      tempArray.push(xScaleFirstDate.toISOString().split("T")[0]);
+      xScaleFirstDate.setUTCDate(xScaleFirstDate.getUTCDate() + 1);
     } 
     return tempArray;
-  };
+  }
 
   const xScale = computed(() => scaleBand()
-    .domain(dayArray.value)
+    .domain(xScaleDomain.value)
     .range([0, innerWidth.value])
     .padding(0)
   );
