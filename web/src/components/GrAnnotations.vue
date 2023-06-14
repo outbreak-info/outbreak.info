@@ -32,7 +32,7 @@
     yScale: Function,
   });
   
-  const formatPrevalence = format(',.2f');
+  const formatPrevalence = format(',.1f');
   
   const startPoint = computed(() => props.data[0]);
   const endPoint = computed(() => props.data[props.data.length - 1]);
