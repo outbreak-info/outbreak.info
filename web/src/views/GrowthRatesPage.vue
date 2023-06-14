@@ -2,6 +2,7 @@
   <n-config-provider :theme-overrides="themeOverrides">
     <n-notification-provider>
       <div class="page-wrapper">
+        <GrHeader />
         <GrIntro />
         <GrForm 
           @query-button-clicked="handleQueryButtonClick"
@@ -35,6 +36,7 @@
   import { NConfigProvider, NNotificationProvider, NBackTop } from 'naive-ui'
   import { lazyLoad } from '@/js/lazy-load';
 
+  const GrHeader = lazyLoad('GrHeader');
   const GrIntro = lazyLoad('GrIntro');
   const GrForm = lazyLoad('GrForm');
   const GrChart = lazyLoad('GrCharts');
