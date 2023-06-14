@@ -154,16 +154,16 @@
 
   const margin = {
     top: 30,
-    right: 120,
+    right: 200,
     bottom: 5,
-    left: 65,
+    left: 45,
   };
 
   const marginLine = {
     top: 5,
-    right: 120,
+    right: 200,
     bottom: 25,
-    left: 65,
+    left: 45,
   };
 
   const innerWidth = computed(() => width.value - margin.left - margin.right);
