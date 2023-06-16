@@ -1,17 +1,16 @@
 <template>
   <div class="introduction">
     <div class="intro-copy">
-      <h2>About growth rates</h2>
       <p>
-        The relative <span class="bold"> growth rate </span> of a lineage shows if said lineage is growing or shrinking compared to the background in a location, averaged over seven days. A significantly positive relative growth rate indicates that a lineage may have a competitive advantage, and could eventually become a variant of interest or concern.
-      </p>
-      <p>
-        For each lineage-location pair, we employ a visualization comprised of a <span class="bold">scatterplot</span> and a <span class="bold">line-stripe chart</span> to display growth rate data. 
+        The relative <span class="bold"> growth rate </span> of a lineage shows if said lineage is growing or shrinking compared to the background in a location, averaged over seven days. A positive relative growth rate indicates that a lineage may have a competitive advantage, and could eventually become a variant of interest.
       </p>
       <n-collapse arrow-placement="right">
         <n-collapse-item title="Read more" name="1">
           <div>
-            <h3>The visualization</h3>
+            <h2>Growth rate visualizations</h2>
+            <p>
+              For each lineage-location pair, we employ a visualization comprised of a <span class="bold">scatterplot</span> and a <span class="bold">line-stripe chart</span> to display growth rate data. 
+            </p>
             <p>
               A diverging <span class="bold">color scale</span> encodes growth rates. Shades of <span class="bold">yellow</span> correspond to mid-range growth rates, whereas dark <span class="bold">blue</span> and dark <span class="bold">red</span> are associated with low and high extremes, respectively. The middle value of the scale is 0%.
             </p> 
@@ -19,7 +18,7 @@
               For each location and lineage, the <span class="bold">scatterplot</span> presents growth rates over time. Its dots are filled according to the color scale.
             </p>
             <p>
-              Growth rates measurements are statistical estimates and their precision varies with data conditions. <span class="bold">95% confidence intervals</span>, depicted as grey vertical bars in the scatterplot, present information on the uncertainty associated with said measurements.
+              Growth rates measurements are statistical estimates and their precision varies with data conditions. <span class="bold">95% confidence intervals (CIs)</span>, depicted as grey vertical bars in the scatterplot, present information on the uncertainty associated with said measurements. <span class="bold">Horizontal dark grey lines</span> indicate that the CI bar has been cut off. 
             </p>
             <p>
               The <span class="bold">line-stripe chart</span> shows both lineage prevalence and growth rates over time. The line conveys prevalence variation. Stripes, colored according to the diverging scale, present growth rates.
@@ -27,6 +26,8 @@
             <p>
               Scatterplots help visitors compare growth rates visually, whereas stripes illuminate data trends. 
             </p>
+            <h2>How growth rates are calculated</h2>
+            <h2>Data gaps</h2>
           </div>
         </n-collapse-item>
       </n-collapse>
@@ -55,5 +56,24 @@
   }
   h1 {
     margin-bottom: 20px;
+  }
+  .image-container {
+    display: block;
+    margin: 0 auto 15px auto;
+  } 
+  .small {
+    max-width: 250px;
+  }
+  .medium {
+    max-width: 500px;
+  }
+  .large {
+    max-width: 560px;
+  }
+  img {
+    max-width: 95%;
+    height: auto;
+    display: table;
+    margin: 0 auto;
   }
 </style>
