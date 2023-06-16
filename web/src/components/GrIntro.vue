@@ -57,23 +57,4 @@
   h1 {
     margin-bottom: 20px;
   }
-  .image-container {
-    display: block;
-    margin: 0 auto 15px auto;
-  } 
-  .small {
-    max-width: 250px;
-  }
-  .medium {
-    max-width: 500px;
-  }
-  .large {
-    max-width: 560px;
-  }
-  img {
-    max-width: 95%;
-    height: auto;
-    display: table;
-    margin: 0 auto;
-  }
 </style>
