@@ -1,8 +1,7 @@
 <template>
   <div class="gr-header">
     <div class="hero">
-      <h1>Growth Rates</h1>
-      <p class="subheading">SARS-CoV-2 (hCoV-19) Mutation Reports</p>
+      <h1>SARS-CoV-2 Growth Rates</h1>
     </div>
     <div class="statistics">
       <div>
@@ -64,16 +63,7 @@
     text-align: left;
   }
   .hero {
-    margin: 35px 50px 0px 50px;
-  }
-  .hero h1 {
-    line-height: 30px;
-  }
-  .subheading {
-    font-size: 24px;
-    color: #999999;
-    margin-bottom: 12px;
-    line-height: 28px;
+    margin: 25px 50px 0px 50px;
   }
   .statistics {
     display: flex;

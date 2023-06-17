@@ -49,7 +49,7 @@
     text-align: left;
   }
   .intro-copy {
-    margin: 30px 50px 0px 50px;
+    margin: 10px 50px 0px 50px;
   }
   .bold {
     font-weight: 700;
