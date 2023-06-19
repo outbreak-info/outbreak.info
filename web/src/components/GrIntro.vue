@@ -9,23 +9,33 @@
           <div>
             <h2>Growth rate visualizations</h2>
             <p>
-              For each lineage-location pair, we employ a visualization comprised of a <span class="bold">scatterplot</span> and a <span class="bold">line-stripe chart</span> to display growth rate data. 
+              For each lineage-location pair, we employ a visualization comprised of a <span class="bold">scatterplot</span> and a <span class="bold">line-stripe chart</span> to display growth rate data. Scatterplots help visitors compare growth rates visually, whereas stripes illuminate data trends. 
             </p>
+            <GrImage 
+              image="grVis"
+              altText="Growth rate chart comprising a scatterplot and a line-stripe chart"
+            />
             <p>
               A diverging <span class="bold">color scale</span> encodes growth rates. Shades of <span class="bold">yellow</span> correspond to mid-range growth rates, whereas dark <span class="bold">blue</span> and dark <span class="bold">red</span> are associated with low and high extremes, respectively. The middle value of the scale is 0%.
             </p> 
+            <GrImage 
+              image="colorScale"
+              altText="Growth rate chart in which the color scale is highlighted"
+            />
             <p>
-              For each location and lineage, the <span class="bold">scatterplot</span> presents growth rates over time. Its dots are filled according to the color scale.
+              For each location and lineage, the <span class="bold">scatterplot</span> presents growth rates over time. Its dots are filled according to the color scale. Growth rates measurements are statistical estimates and their precision varies with data conditions. <span class="bold">95% confidence intervals (CIs)</span>, depicted as grey vertical bars in the scatterplot, present information on the uncertainty associated with said measurements. <span class="bold">Horizontal dark grey lines</span> indicate that the CI bar has been cut off. 
             </p>
-            <p>
-              Growth rates measurements are statistical estimates and their precision varies with data conditions. <span class="bold">95% confidence intervals (CIs)</span>, depicted as grey vertical bars in the scatterplot, present information on the uncertainty associated with said measurements. <span class="bold">Horizontal dark grey lines</span> indicate that the CI bar has been cut off. 
-            </p>
+            <GrImage 
+              image="scatterplot"
+              altText="Growth rate chart in which the color scale and the scatterplot are highlighted. Text labels show one CI bar and one clipped CI bar."
+            />
             <p>
               The <span class="bold">line-stripe chart</span> shows both lineage prevalence and growth rates over time. The line conveys prevalence variation. Stripes, colored according to the diverging scale, present growth rates.
             </p>
-            <p>
-              Scatterplots help visitors compare growth rates visually, whereas stripes illuminate data trends. 
-            </p>
+            <GrImage 
+              image="lineStripeChart"
+              altText="Growth rate chart in which the color scale and the line-stripe chart are highlighted"
+            />
             <h2>How growth rates are calculated</h2>
             <h2>Data gaps</h2>
           </div>
@@ -37,7 +47,11 @@
 </template>
 
 <script setup>
-  import { NCollapse, NCollapseItem, NDivider } from 'naive-ui'
+  import { NCollapse, NCollapseItem, NDivider } from 'naive-ui';
+  import { lazyLoad } from '@/js/lazy-load';
+
+  const GrImage = lazyLoad('GrImage');
+  
 </script>
 
 <style scoped>
