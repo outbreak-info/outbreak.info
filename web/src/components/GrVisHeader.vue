@@ -93,7 +93,6 @@
   );
 
   const ticks = computed(() => legendXScale.value.domain());
-  console.log(ticks.value);
 
   const ariaLabel = computed(() => `Legend for the growth rate color scale. The color scale varies from dark blue (${ticks.value[0]}%) to dark red (${ticks.value[1]}%).`)
 </script>
