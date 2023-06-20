@@ -18,6 +18,15 @@
           @mousemove="handleMouseMove"
           @mouseleave="handleMouseLeave"
         />  
+        <text
+          x="0"
+          :y="yMax - 40"
+          text-anchor="middle"
+          fill="#2c3e50"
+          font-size="13px"
+        >
+          prevalence (%)
+        </text>
         <GrXAxis
           :xScale="xScale"
           :innerWidth="innerWidth"
@@ -97,6 +106,8 @@
     .range([props.innerHeight, 0])
     .nice()
   );
+
+  const yMax = computed(() => yScale.value.range()[0]);
   
   const xAccessorScaled = computed(() => d => props.xScale(props.xAccessor(d)));
   const yAccessorScaled = computed(() => d => yScale.value(props.yAccessor(d)));
@@ -128,7 +139,7 @@
     emit('line-hovered', hoveredPoint.value);
   }
   
-    const ariaLabel = computed(() => `Line chart of ${props.lineage} prevalence in ${props.loc}`);
+  const ariaLabel = computed(() => `Line chart of ${props.lineage} prevalence in ${props.loc}`);
 </script>
   
 <style>

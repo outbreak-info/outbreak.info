@@ -103,7 +103,7 @@
   const hoveredLinePoint = ref(null);
 
   let height = 250;
-  let heightLine = 60;
+  let heightLine = 85;
 
   onMounted(() => {
     window.addEventListener('resize', handleResize);
@@ -154,14 +154,14 @@
 
   const margin = {
     top: 30,
-    right: 200,
+    right: 125,
     bottom: 5,
     left: 45,
   };
 
   const marginLine = {
-    top: 5,
-    right: 200,
+    top: 30,
+    right: 125,
     bottom: 25,
     left: 45,
   };

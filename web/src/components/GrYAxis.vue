@@ -1,8 +1,8 @@
 <template>
-  <g>
+  <g :transform="`translate(${-xScale.bandwidth() / 2}, 0)`">
     <line class="axis__line" :x1="0" :x2="0" :y1="yMin" :y2="yMax" />
     <text
-      :x="0"
+      :x="5"
       :y="yMax - 15"
       text-anchor="middle"
       fill="#2c3e50"
@@ -43,6 +43,7 @@
   import { computed } from 'vue'
   
   const props = defineProps({
+    xScale: Function,
     yScale: Function,
     innerWidth: Number,
   });

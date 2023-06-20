@@ -8,16 +8,8 @@
       :height="height"
     >
       <g :transform="`translate(${margin.left}, ${margin.top})`">
-        <!-- <text
-          :y="-40"
-          :x="-65"
-          text-anchor="start"
-          fill="#2c3e50"
-          font-weight="bold"
-        >
-          {{ loc }}
-        </text> -->
         <GrYAxis 
+          :xScale="xScale"
           :yScale="yScale"
           :innerWidth="innerWidth"
         />

@@ -7,7 +7,7 @@
     text-anchor="end"
     dy="0.34em"
   >
-    {{ `${formatPrevalence(yAccessor(startPoint))}%` }}
+    {{ `${formatPrevalence(yAccessor(startPoint))}` }}
   </text>
   <text
     class="annotation"
@@ -16,7 +16,7 @@
     text-anchor="start"
     dy="0.34em"
   >
-    {{ `${formatPrevalence(yAccessor(endPoint))}% prevalence` }}
+    {{ `${formatPrevalence(yAccessor(endPoint))}` }}
   </text>
 </template>
   
