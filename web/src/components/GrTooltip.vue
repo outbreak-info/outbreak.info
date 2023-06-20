@@ -35,7 +35,7 @@
       <span class="data">{{ ratioOverBackground }}</span>
       <span 
         class="ci-alert"
-        v-if="wasCIClipped"
+        v-if="isCIClipped"
       >
         CI bar has been cut off
       </span>
@@ -75,7 +75,8 @@
   
   const tooltipWidth = 240;
   
-  const xNudge = 60;
+  const rightNudge = 60;
+  const leftNudge = 110;
   const yNudge = 205;
       
   const x = computed(() => props.xScale(props.xAccessor(props.hoveredPoint))); 
@@ -91,14 +92,14 @@
   
   const ci95 = computed(() => props.hoveredPoint.confidenceInterval95);
   
-  const wasCIClipped = computed(() => 
+  const isCIClipped = computed(() => 
     props.hoveredPoint.G_7_linear + ci95.value > props.maxGrowthRate ||
     props.hoveredPoint.G_7_linear - ci95.value < props.minGrowthRate ||
     (props.hoveredPoint.G_7_linear + ci95.value > props.maxGrowthRate &&
       props.hoveredPoint.G_7_linear - ci95.value < props.minGrowthRate)
   );
   
-  const xPosition = computed(() => (x.value + tooltipWidth) >= props.innerWidth ? x.value - xNudge : x.value + xNudge);
+  const xPosition = computed(() => (x.value + tooltipWidth) >= props.innerWidth ? x.value - leftNudge : x.value + rightNudge);
   const yPosition = computed(() => y.value - yNudge);
 </script>
     
