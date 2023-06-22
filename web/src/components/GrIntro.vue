@@ -4,6 +4,10 @@
       <p>
         The relative <span class="bold"> growth rate </span> of a lineage shows if said lineage is growing or shrinking compared to the background in a location, averaged over seven days. A positive relative growth rate indicates that a lineage may have a competitive advantage, and could eventually become a variant of interest.
       </p>
+      <GrImage 
+        image="grVisWithAnnotations"
+        altText="Growth rate chart comprising a scatterplot and a line-stripe chart"
+      />
       <n-collapse arrow-placement="right">
         <n-collapse-item title="Read more" name="1">
           <div>
