@@ -31,6 +31,7 @@
   
 <script setup>
   import { ref, onMounted } from 'vue';
+  import { useRouter } from 'vue-router';
   import axios from 'axios';
   import _ from 'lodash';
   import { NConfigProvider, NNotificationProvider, NBackTop } from 'naive-ui'
@@ -61,30 +62,32 @@
   };
 
   const props = defineProps({
-    pango: {
+    lin: {
       type: String,
       default: 'XBB.1.5.15',
     },
-    locations: {
+    loc: {
       type: Array,
-      default() {
-        return [
-          {
-            label: 'Canada',
-            value: 'CAN',
-          },
-          {
-            label: 'United States',
-            value: 'USA'
-          }
-        ];  
-      },
-    }
+      default: () => ['CAN', 'USA'],
+    },
   });
 
-  const chosenLineage = ref(props.pango);
-  const chosenLocations = ref(props.locations.map(obj => obj.label))
-  const chosenLocationInfo = ref(props.locations);
+  const router = useRouter();
+
+  const initialLocations = [
+    {
+      label: 'Canada',
+      value: 'CAN',
+    },
+    {
+      label: 'United States',
+      value: 'USA'
+    }
+  ];
+
+  const chosenLineage = ref(props.lin);
+  const chosenLocations = ref(props.loc);
+  const chosenLocationInfo = ref(initialLocations);
     
   const growthRateApiUrl = "https://api.outbreak.info/growth_rate/";
    
@@ -106,7 +109,7 @@
   );
   
   onMounted(() => {
-    const locationString = `(${props.locations.map(obj => obj.value).join(' OR ')})`
+    const locationString = `(${initialLocations.map(obj => obj.value).join(' OR ')})`
     const url = `${growthRateApiUrl}query?q=lineage:${chosenLineage.value} AND location:${locationString}`;
     axios
       .get(url)
@@ -114,6 +117,7 @@
         apiData.value = response.data.hits;
         flatData.value = flattenArray(apiData.value);
       });
+    changeUrl();
     chosenLineage.value = null;
     chosenLocations.value = [];
   });
@@ -136,6 +140,7 @@
         flatData.value = flattenArray(apiData.value);
         locationsWithoutApiData.value = findLocationsWithoutData(apiData.value);
       });
+    changeUrl();
   }
  
   const flattenArray = (nestedArray) => {
@@ -159,6 +164,15 @@
     return locationsWithoutData;
   }
 
+  const changeUrl = () => {
+    router.push({
+      path: 'growth-rates',
+      query: {
+        lin: chosenLineage.value,
+        loc: chosenLocations.value,
+      }
+    })
+  };
 </script>
 
 <style scoped>

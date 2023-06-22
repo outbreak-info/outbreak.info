@@ -289,8 +289,8 @@ export default [
     path: '/growth-rates',
     name: 'GrowthRatesPage',
     props: (route) => ({
-      pango: route.query.pango,
-      locations: route.query.locations,
+      lin: route.query.lin,
+      loc: route.query.loc,
     }),
     component: () => import('../views/GrowthRatesPage.vue'),
   },
