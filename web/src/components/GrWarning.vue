@@ -17,11 +17,9 @@
 
   const titleString = `No data for ${locationCount.value} ${locationCount.value > 1 ? "locations" : "location"}`;
 
-  const locationNamesArray = ref((props.data.map(obj => obj.label)).sort());
-
   const locationNamesString = locationCount.value > 1 ?
-    `${locationNamesArray.value.slice(0,-1).join(', ')} and ${locationNamesArray.value.slice(-1)}`
-    : locationNamesArray.value.toString();
+    `${props.data.slice(0,-1).join(', ')} and ${props.data.slice(-1)}`
+    : props.data.toString();
     
   const contentString = `${props.lineage} growth rates not available for ${locationNamesString}. Sequence counts by variant, case and death counts and population are used to compute growth rates. These data sources are not always available.`;
  

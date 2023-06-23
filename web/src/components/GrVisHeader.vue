@@ -1,5 +1,5 @@
 <template>
-  <div class="vis-header">
+  <div class="vis-header" v-if="!nanInArray">
     <div class="location-name">
       {{  loc  }}
     </div>
@@ -93,6 +93,12 @@
   );
 
   const ticks = computed(() => legendXScale.value.domain());
+
+  const nanInArray = computed(() => ticks.value.includes(NaN));
+
+  // const ratioOverBackground = computed(() =>
+  //   ratio.value !== ratio.value ? 'N/A' : `1 : ${formatSequence(ratio.value)}`
+  // );
 
   const ariaLabel = computed(() => `Legend for the growth rate color scale. The color scale varies from dark blue (${ticks.value[0]}%) to dark red (${ticks.value[1]}%).`)
 </script>

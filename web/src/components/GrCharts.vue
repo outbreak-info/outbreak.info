@@ -28,7 +28,7 @@
         :loc="loc" 
         :lineage="selectedLineage"
         :isCIShown="isCIShown"
-        :data="filteredData.filter(element => element.label == loc)"
+        :data="data.filter(element => element.label == loc)"
         :xAccessor="xAccessor"
         :yAccessor="yAccessor"
         :xScale="xScale"
@@ -46,7 +46,7 @@
       <GrLineChart
         :loc="loc"
         :lineage="selectedLineage"
-        :data="filteredData.filter(element => element.label == loc)"
+        :data="data.filter(element => element.label == loc)"
         :xAccessor="xAccessor"
         :yAccessor="yAccessorLine"
         :xScale="xScale"
@@ -71,7 +71,7 @@
 <script setup>
   import { computed, onMounted, onUnmounted, ref } from 'vue';
   import { NFormItem, NSwitch} from 'naive-ui'
-  import { quantile, min, max } from 'd3-array';
+  import { min, max } from 'd3-array';
   import { scaleBand, scaleLinear, scaleDiverging } from 'd3-scale';
   import { interpolateRdYlBu } from 'd3-scale-chromatic';
   import { lazyLoad } from '@/js/lazy-load';
@@ -145,13 +145,6 @@
 
   const selectedLocations = computed(() => Array.from(new Set(props.data.map(locationAccessor))).sort());
 
-  const lowerBound = computed(() => quantile(props.data, 0.1, yAccessor));
-  const upperBound = computed(() => quantile(props.data, 0.9, yAccessor));
-
-  const filteredData = computed(() => props.data.filter(
-    d => d.G_7_linear >= lowerBound.value && d.G_7_linear <= upperBound.value,
-  ));
-
   const margin = {
     top: 30,
     right: 125,
@@ -199,7 +192,7 @@
   const yScale = computed(() => scaleLinear()
     .domain(
       padExtent(
-        [min(filteredData.value, yAccessor), max(filteredData.value, yAccessor)],
+        [min(props.data, yAccessor), max(props.data, yAccessor)],
         0.07,
       )
     )
@@ -209,8 +202,8 @@
 
   const interpolator = t => interpolateRdYlBu(1 - t);
 
-  const extremeValue = computed(() => Math.max(Math.abs(min(filteredData.value, yAccessor)),
-    Math.abs(max(filteredData.value, yAccessor))));  
+  const extremeValue = computed(() => Math.max(Math.abs(min(props.data, yAccessor)),
+    Math.abs(max(props.data, yAccessor))));  
 
   const colorScale = computed(() => scaleDiverging(
     [-Math.ceil(extremeValue.value), 0, Math.ceil(extremeValue.value)],
@@ -219,8 +212,8 @@
 
   const greyScale = computed(() => scaleLinear()
     .domain([
-      min(filteredData.value, greyAccessor),
-      max(filteredData.value, greyAccessor),
+      min(props.data, greyAccessor),
+      max(props.data, greyAccessor),
     ])
     .range([0.1, 0.4])
   );

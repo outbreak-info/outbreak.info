@@ -9,14 +9,14 @@
         />
         <!-- <div class="rates"> -->
           <GrChart
-          v-if="flatData.length > 0"
-          :data="flatData"
+          v-if="filteredData.length > 0"
+          :data="filteredData"
           />
         <!-- </div>  -->
         <GrWarning
-          v-if="locationsWithoutApiData.length > 0"
+          v-if="locationsWithoutData.length > 0"
           :lineage="chosenLineage"
-          :data="locationsWithoutApiData"
+          :data="locationsWithoutData"
         />
         <GrAcknowledgements />
         <n-back-top :right="100">
@@ -34,6 +34,7 @@
   import { useRouter } from 'vue-router';
   import axios from 'axios';
   import _ from 'lodash';
+  import { quantile } from 'd3-array';
   import { NConfigProvider, NNotificationProvider, NBackTop } from 'naive-ui'
   import { lazyLoad } from '@/js/lazy-load';
 
@@ -93,8 +94,14 @@
    
   const apiData = ref([]);
   const apiDataWithLabels = ref([]);
-  const flatData = ref([]);
-  const locationsWithoutApiData = ref([]);
+
+  const filteredData = ref([]);
+  
+  const locationsWithData = ref([]);
+  const locationsWithoutData = ref([]);
+ 
+  const lowPercentile = 0.1;
+  const highPercentile = 0.9;
 
   axios.interceptors.request.use(
     (config) => {
@@ -115,7 +122,8 @@
       .get(url)
       .then((response) => {
         apiData.value = response.data.hits;
-        flatData.value = flattenArray(apiData.value);
+        filteredData.value = flattenandFilterArray(apiData.value);
+        locationsWithoutData.value = findLocationsWithoutData(apiData.value);
       });
     changeUrl();
     chosenLineage.value = null;
@@ -130,38 +138,45 @@
   }
 
   const getGrowthRateData = () => {
-    locationsWithoutApiData.value = [];
+    locationsWithoutData.value = [];
     const locationString = `(${chosenLocations.value.join(' OR ')})`;
     const url = `${growthRateApiUrl}query?q=lineage:${chosenLineage.value} AND location:${locationString}`;
     axios
       .get(url)
       .then((response) => {
         apiData.value = response.data.hits;
-        flatData.value = flattenArray(apiData.value);
-        locationsWithoutApiData.value = findLocationsWithoutData(apiData.value);
+        filteredData.value = flattenandFilterArray(apiData.value);
+        locationsWithoutData.value = findLocationsWithoutData(apiData.value);
       });
     changeUrl();
   }
- 
-  const flattenArray = (nestedArray) => {
+
+  const flattenandFilterArray = (nestedArray) => {
     apiDataWithLabels.value = nestedArray.map(x => {
       return { ...x, label: chosenLocationInfo.value.find(y => x.location === y.value)?.label }
     });
     
-    const result = _.flatMap(apiDataWithLabels.value, ({ _id, _score, lineage, location, label, values }) =>
+    const flatArray = _.flatMap(apiDataWithLabels.value, ({ _id, _score, lineage, location, label, values }) =>
       _.map(values, value => ({ _id, _score, lineage, location, label, ...value })));  
-    return result;
+
+    const lowerBound = quantile(flatArray, lowPercentile, d => d.G_7_linear);
+    const upperBound = quantile(flatArray, highPercentile, d => d.G_7_linear);
+
+    const filteredArray = flatArray.filter(
+      d => d.G_7_linear >= lowerBound && d.G_7_linear <= upperBound,
+    );
+
+    locationsWithData.value = [...new Set(filteredArray.map(obj => obj.label)) ];
+    
+    return filteredArray;
   }
 
-  const findLocationsWithoutData = () => {
-    const locationsWithData = apiDataWithLabels.value.map(obj => {
-      return {
-        label: obj.label,
-        value: obj.location,
-      }
-    })
-    const locationsWithoutData = chosenLocationInfo.value.filter(({ value: id1 }) => !locationsWithData.some(({ value: id2 }) => id2 === id1));
-    return locationsWithoutData;
+  const findLocationsWithoutData = () => { 
+    const chosenLocationNames = chosenLocationInfo.value.map(obj => obj.label);
+
+    const locationsWithoutDataArray = (chosenLocationNames.filter(element => !locationsWithData.value.includes(element)));
+
+    return locationsWithoutDataArray;
   }
 
   const changeUrl = () => {
