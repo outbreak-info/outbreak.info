@@ -16,6 +16,7 @@
           :lineage="chosenLineage"
           :data="locationsWithoutData"
         />
+        <GrNotes />
         <GrAcknowledgements />
         <n-back-top :right="100">
           <div class="back-top">
@@ -41,6 +42,7 @@
   const GrForm = lazyLoad('GrForm');
   const GrChart = lazyLoad('GrCharts');
   const GrWarning = lazyLoad('GrWarning');
+  const GrNotes = lazyLoad('GrNotes');
   const GrAcknowledgements = lazyLoad('GrAcknowledgements');
  
   const themeOverrides = {
