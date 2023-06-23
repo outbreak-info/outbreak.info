@@ -7,12 +7,10 @@
         <GrForm 
           @query-button-clicked="handleQueryButtonClick"
         />
-        <!-- <div class="rates"> -->
-          <GrChart
+        <GrChart
           v-if="filteredData.length > 0"
           :data="filteredData"
-          />
-        <!-- </div>  -->
+        />
         <GrWarning
           v-if="locationsWithoutData.length > 0"
           :lineage="chosenLineage"
@@ -35,7 +33,7 @@
   import axios from 'axios';
   import _ from 'lodash';
   import { quantile } from 'd3-array';
-  import { NConfigProvider, NNotificationProvider, NBackTop } from 'naive-ui'
+  import { NConfigProvider, NNotificationProvider, NBackTop } from 'naive-ui';
   import { lazyLoad } from '@/js/lazy-load';
 
   const GrHeader = lazyLoad('GrHeader');
@@ -199,16 +197,6 @@
     width: 100%;
     user-select: none;
   }
-
-  .rates {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    height: 100%;
-    width: 100%;
-    user-select: none; 
-  }
-
   .back-top {
     width: 150px;
     height: 40px;

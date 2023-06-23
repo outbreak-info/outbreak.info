@@ -59,18 +59,13 @@
         :hoveredScatterplotPoint="hoveredScatterplotPoint"
         @line-hovered="handleLineHovered"
       />
-      <!-- <GrVisLegend
-        :loc="loc"
-        :colorScale="colorScale" 
-        :legendPoint="legendPoint"
-      /> -->
     </div>
   </div>
 </template>
 
 <script setup>
   import { computed, onMounted, onUnmounted, ref } from 'vue';
-  import { NFormItem, NSwitch} from 'naive-ui'
+  import { NFormItem, NSwitch} from 'naive-ui';
   import { min, max } from 'd3-array';
   import { scaleBand, scaleLinear, scaleDiverging } from 'd3-scale';
   import { interpolateRdYlBu } from 'd3-scale-chromatic';
@@ -79,7 +74,6 @@
   const GrVisHeader = lazyLoad('GrVisHeader');
   const GrScatterplot = lazyLoad('GrScatterplot');
   const GrLineChart = lazyLoad('GrLineChart');
- // const GrVisLegend = lazyLoad('GrVisLegend');
 
   const props = defineProps({
     data: Array,
@@ -229,18 +223,15 @@
     width: 100%;
     text-align: left;
   }
-
   .chart-header {
     margin: 20px 50px 15px 50px;
     text-align: left;
   }
-
   .switch-container {
     margin-left: 50px;
     margin-right: 50px;
     text-align: left;
   }
-  
   .chart-wrapper {
     position: relative;
     width: 100%;
