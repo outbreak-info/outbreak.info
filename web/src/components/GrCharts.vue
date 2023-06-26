@@ -4,17 +4,17 @@
       <div class="title-container">
         <h2>{{ title }}</h2>
       </div>
-      <div class="switch-container">
-        <n-form-item
-          label="confidence intervals"
-        >
-          <n-switch
-            v-model:value="isCIShown"
-            @update:value="handleSwitchChange" 
-            size="small"
-           />
-        </n-form-item>
-      </div>
+      <n-form-item
+        label="show 95% confidence intervals"
+        label-placement="left"
+        class="switch-container"
+      >
+        <n-switch
+          v-model:value="isCIShown"
+          @update:value="handleSwitchChange" 
+          size="small"
+         />
+      </n-form-item>
     </div>
     <div 
       class="chart-wrapper" 
@@ -226,25 +226,23 @@
     text-align: left;
     margin-top: 25px;
   }
-  .gr-charts h2 {
+  .chart-info {
+    display: flex; 
+    flex-flow: row wrap;
+    margin-left: 50px;
+    margin-right: 50px;
+    gap: 10px;
+  }
+  .title-container {
+    flex: 200 1 auto; 
+    text-align: left;
+  }
+  .title-container h2 {
     font-size: 24px;
     font-weight: 500;
   }
-  .chart-info {
-    display: flex;
-    flex-direction: row wrap;
-    justify-content: space-between;
-    max-width: 1000px;
-  }
-  .title-container {
-    margin: 0px 50px 15px 50px;
-    text-align: left;
-  }
   .switch-container {
-    margin-top: 0px;
-    margin-left: 50px;
-    margin-right: 50px;
-    text-align: left;
+    flex: 1 1 auto; 
   }
   .chart-wrapper {
     position: relative;
