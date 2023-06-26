@@ -1,18 +1,20 @@
 <template>
   <div class="gr-charts">
-    <div class="chart-header">
-     <h2>{{ title }}</h2>
-    </div>
-    <div class="switch-container">
-      <n-form-item
-        label="Show confidence intervals" 
-        class="confidence-interval"
-      >
-        <n-switch 
-          v-model:value="isCIShown"
-          @update:value="handleSwitchChange" 
-        />
-      </n-form-item>
+    <div class="chart-info">
+      <div class="title-container">
+        <h2>{{ title }}</h2>
+      </div>
+      <div class="switch-container">
+        <n-form-item
+          label="confidence intervals"
+        >
+          <n-switch
+            v-model:value="isCIShown"
+            @update:value="handleSwitchChange" 
+            size="small"
+           />
+        </n-form-item>
+      </div>
     </div>
     <div 
       class="chart-wrapper" 
@@ -222,16 +224,24 @@
     max-width: 1000px;
     width: 100%;
     text-align: left;
+    margin-top: 25px;
   }
   .gr-charts h2 {
     font-size: 24px;
     font-weight: 500;
   }
-  .chart-header {
-    margin: 20px 50px 15px 50px;
+  .chart-info {
+    display: flex;
+    flex-direction: row wrap;
+    justify-content: space-between;
+    max-width: 1000px;
+  }
+  .title-container {
+    margin: 0px 50px 15px 50px;
     text-align: left;
   }
   .switch-container {
+    margin-top: 0px;
     margin-left: 50px;
     margin-right: 50px;
     text-align: left;
