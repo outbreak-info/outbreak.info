@@ -3,7 +3,6 @@
     <n-notification-provider>
       <div class="page-wrapper">
         <GrHeader />
-        <GrIntro />
         <GrForm 
           @query-button-clicked="handleQueryButtonClick"
         />
@@ -38,7 +37,6 @@
   import { lazyLoad } from '@/js/lazy-load';
 
   const GrHeader = lazyLoad('GrHeader');
-  const GrIntro = lazyLoad('GrIntro');
   const GrForm = lazyLoad('GrForm');
   const GrChart = lazyLoad('GrCharts');
   const GrWarning = lazyLoad('GrWarning');

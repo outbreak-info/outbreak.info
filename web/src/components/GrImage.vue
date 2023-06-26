@@ -36,6 +36,6 @@
   .image-container {
     display: flex;
     justify-content: center;
-    margin: 0 auto 20px auto;
+    margin: 0 auto 35px auto;
   }
 </style>
