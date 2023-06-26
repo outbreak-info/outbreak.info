@@ -24,6 +24,10 @@
     width: 100%;
     text-align: left;
   }
+  .notes h2 {
+    font-size: 24px;
+    font-weight: 500;
+  }
   .notes-copy {
     margin: 10px 50px 0px 50px;
   }

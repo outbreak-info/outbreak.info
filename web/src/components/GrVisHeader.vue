@@ -1,7 +1,7 @@
 <template>
   <div class="vis-header" v-if="!nanInArray">
     <div class="location-name">
-      {{  loc  }}
+      <h3>{{ loc }}</h3>
     </div>
     <div class="legend" v-if="ticks.length > 0">
       <svg 
@@ -106,8 +106,9 @@
     justify-content: space-between;
     max-width: 1000px;
   }
-  .location-name {
-    font-weight: 700;
+  .vis-header h3 {
+    font-size: 18px;
+    font-weight: 500;
   }
   .legend {
     width: 100%;

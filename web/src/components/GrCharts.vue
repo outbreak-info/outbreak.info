@@ -1,7 +1,7 @@
 <template>
   <div class="gr-charts">
     <div class="chart-header">
-     <h3>{{ title }}</h3>
+     <h2>{{ title }}</h2>
     </div>
     <div class="switch-container">
       <n-form-item
@@ -222,6 +222,10 @@
     max-width: 1000px;
     width: 100%;
     text-align: left;
+  }
+  .gr-charts h2 {
+    font-size: 24px;
+    font-weight: 500;
   }
   .chart-header {
     margin: 20px 50px 15px 50px;

@@ -62,6 +62,10 @@
     width: 100%;
     text-align: left;
   }
+  .gr-header h1 {
+    font-size: 30px;
+    font-weight: 700;
+  }
   .hero {
     margin: 25px 50px 0px 50px;
   }
