@@ -57,6 +57,7 @@
     },
     Form: {
       labelHeightMedium: '22px',
+      feedbackHeightMedium: '0px',
     },
   };
 

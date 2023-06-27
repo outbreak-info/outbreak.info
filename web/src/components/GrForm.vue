@@ -35,24 +35,34 @@
           @search="handleLocationSearch"
         />
       </n-form-item>
+      <div class="query-buttons">
+        <n-button 
+          strong secondary type="primary"
+          :disabled="!isClearButtonActive"
+          @click="handleClearButtonClick"
+        >
+          Clear selections
+        </n-button>
+        <n-button 
+          type="primary"
+          :disabled="!isQueryButtonActive"
+          @click="handleQueryButtonClick"
+        >
+          Build charts
+        </n-button>
+      </div>
     </div>
-    <div class="button-container">
+    <div class="suggestion-container">
+      <span>Suggested lineages</span>
       <n-button 
-        strong secondary type="primary"
-        :disabled="!isClearButtonActive"
-        @click="handleClearButtonClick"
+        v-for="lin in significantLineages.sort()" :key="lin"
+        type="tertiary"
+        @click="handleSuggestionButtonClick(lin)"
       >
-        Clear selections
-      </n-button>
-      <n-button 
-        type="primary"
-        :disabled="!isQueryButtonActive"
-        @click="handleQueryButtonClick"
-      >
-        Build charts
+        {{ lin }}
       </n-button>
     </div>
-  </div>
+   </div>
 </template>
   
 <script setup>
@@ -76,6 +86,8 @@
   const locationLoading = ref(false);
   const locationQuerySubscription = ref(null);  
   const locationMatches = ref([]);
+
+  const significantLineages = ['XBB.1.5', 'XBB.1.9.1', 'XBB.1.16', 'XBB.1.16.2', 'XBB.2.3', 'EG.1', 'FL.4', 'FU.1'];
 
   const genomicsApiUrl = "https://api.outbreak.info/genomics/";
 
@@ -151,6 +163,10 @@
     });
   }
 
+  const handleSuggestionButtonClick = (suggestion) => {
+    selectedLineage.value = suggestion;
+  }
+
   const handleLocationUpdate = (ids, countryInfo) => {
     selectedCountryInfo.value = countryInfo;
   }
@@ -163,12 +179,15 @@
     max-width: 1000px;
     width: 100%;
     text-align: left;
+    margin-bottom: 10px;
   }
   .selector-container {
     display: flex; 
     flex-flow: row wrap;
+    align-items: flex-end;
     margin-left: 50px;
     margin-right: 50px;
+    margin-bottom: 15px;
     gap: 10px;
   }
   .lineage {
@@ -178,11 +197,17 @@
   .location {
     flex: 8 1 auto; 
   }
-  .button-container {
+  .suggestion-container {
     display: flex; 
     flex-flow: row wrap;
-    justify-content: center;
-    gap: 10px;
+    margin-left: 50px;
+    margin-right: 50px;
+    gap: 5px;
+    font-size: 14px;
+  }
+  .suggestion-container span {
+    margin-top: 7px;
+    margin-right: 10px;
   }
 </style>
   
