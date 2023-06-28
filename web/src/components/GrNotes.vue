@@ -74,12 +74,13 @@
   }
   .notes h2 {
     font-size: 24px;
-    font-weight: 500;
-    margin-bottom: 25px;
+    font-weight: 700;
+    margin-bottom: 20px;
   }
   .notes h3 {
     font-size: 20px;
-    font-weight: 500;
+    font-weight: 700;
+    margin-top: 25px;
     margin-bottom: 15px;
   }
   .notes-copy {

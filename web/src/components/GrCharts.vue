@@ -230,7 +230,7 @@
   }
   .title-container h2 {
     font-size: 24px;
-    font-weight: 500;
+    font-weight: 700;
   }
   .switch-container {
     flex: 1 1 auto; 
