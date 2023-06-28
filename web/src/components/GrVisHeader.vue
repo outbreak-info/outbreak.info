@@ -19,13 +19,15 @@
           >
             growth rate (%)
           </text>
-          <circle
-            v-if="legendPoint && legendPoint.label == loc"
-            r="4"
-            :cx="legendXScale(legendPoint.G_7_linear)"
-            :cy="12"
-            fill="#2c3e50"
-          />
+          <g 
+            v-if="legendPointer && legendPointer.label == loc"
+            :transform="`translate(${legendXScale(legendPointer.G_7_linear)}, 12)rotate(-180)`"
+          >
+            <path 
+              :d="trianglePath"
+              fill="#2c3e50"
+            />
+          </g>
           <defs>
             <linearGradient id="linear-gradient" x1="0" x2="1" y1="0" y2="0">
               <stop 
@@ -62,11 +64,12 @@
 <script setup>
   import { computed } from 'vue';
   import { scaleLinear } from 'd3-scale';
+  import { symbol, symbolTriangle } from 'd3-shape';
 
   const props = defineProps({
     loc: String,
     colorScale: Function,
-    legendPoint: Object,
+    legendPointer: Object,
   });
 
   const width = 200;
@@ -83,6 +86,9 @@
   const colors = [
     '#313695', '#4575b4', '#74add1', '#abd9e9', '#e0f3f8', '#ffffbf',
     '#fee090', '#fdae61', '#f46d43', '#d73027', '#a50026'];
+
+  const triangleSymbol = symbol().type(symbolTriangle).size(40);
+  const trianglePath = triangleSymbol();
 
   const minValue = computed(() => props.colorScale.domain()[0]);
   const maxValue = computed(() => props.colorScale.domain()[2]);

@@ -24,7 +24,7 @@
       <GrVisHeader 
         :loc="loc" 
         :colorScale="colorScale"
-        :legendPoint="legendPoint"
+        :legendPointer="legendPointer"
       />
       <GrScatterplot
         :loc="loc" 
@@ -125,13 +125,13 @@
   const handleScatterplotHovered = (point) => {
     hoveredScatterplotPoint.value = point;
     if (hoveredScatterplotPoint.value) 
-      legendPoint.value = hoveredScatterplotPoint.value;
+      legendPointer.value = hoveredScatterplotPoint.value;
   }
 
   const handleLineHovered = (point) => {
     hoveredLinePoint.value = point;
     if (hoveredLinePoint.value) 
-      legendPoint.value = hoveredLinePoint.value;
+      legendPointer.value = hoveredLinePoint.value;
   }
 
   const selectedLineage = computed(() => props.data[0].lineage);
@@ -205,7 +205,7 @@
     interpolator,
   ));  
 
-  const legendPoint = ref(null);
+  const legendPointer = ref(null);
 </script>
 
 <style scoped>
