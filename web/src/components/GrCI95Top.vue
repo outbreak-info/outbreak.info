@@ -28,7 +28,6 @@
     xAccessor: Function,
     xScale: Function,
     yScale: Function,
-    greyScale: Function,
     minGrowthRate: Number,
     maxGrowthRate: Number,
   });

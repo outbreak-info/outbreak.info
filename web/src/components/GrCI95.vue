@@ -5,7 +5,6 @@
     :xAccessor="xAccessor"
     :xScale="xScale"
     :yScale="yScale"
-    :greyScale="greyScale"
     :minGrowthRate="minGrowthRate"
     :maxGrowthRate="maxGrowthRate"
   />
@@ -15,7 +14,6 @@
     :xAccessor="xAccessor"
     :xScale="xScale"
     :yScale="yScale"
-    :greyScale="greyScale"
     :minGrowthRate="minGrowthRate"
     :maxGrowthRate="maxGrowthRate"
   />
@@ -32,7 +30,6 @@
     xAccessor: Function,
     xScale: Function,
     yScale: Function,
-    greyScale: Function,
     minGrowthRate: Number,
     maxGrowthRate: Number,
   });

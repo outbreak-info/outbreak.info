@@ -19,7 +19,6 @@
           :xAccessor="xAccessor"
           :xScale="xScale"
           :yScale="yScale"
-          :greyScale="greyScale"
           :minGrowthRate="minGrowthRate"
           :maxGrowthRate="maxGrowthRate"
         />
@@ -112,7 +111,6 @@
     xScale: Function,
     yScale: Function,
     colorScale: Function,
-    greyScale: Function,
     margin: Object,
     width: Number,
     height: Number,

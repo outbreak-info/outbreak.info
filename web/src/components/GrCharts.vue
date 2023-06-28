@@ -36,7 +36,6 @@
         :xScale="xScale"
         :yScale="yScale"
         :colorScale="colorScale"
-        :greyScale="greyScale"
         :margin="margin"
         :width="width"
         :height="height"
@@ -205,14 +204,6 @@
     [-Math.ceil(extremeValue.value), 0, Math.ceil(extremeValue.value)],
     interpolator,
   ));  
-
-  const greyScale = computed(() => scaleLinear()
-    .domain([
-      min(props.data, greyAccessor),
-      max(props.data, greyAccessor),
-    ])
-    .range([0.1, 0.4])
-  );
 
   const legendPoint = ref(null);
 </script>
