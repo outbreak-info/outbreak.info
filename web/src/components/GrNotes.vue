@@ -1,5 +1,5 @@
 <template>
-  <div class="notes">
+  <div id="notes" class="notes">
     <div class="notes-copy">
       <h2>About growth rates</h2>
       <p>

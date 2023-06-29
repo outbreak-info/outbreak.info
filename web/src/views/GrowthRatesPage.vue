@@ -59,6 +59,11 @@
       labelHeightMedium: '22px',
       feedbackHeightMedium: '0px',
     },
+    Anchor : {
+      linkFontSize: '14px',
+      railColor: '#D13B62',
+      linkTextColor: '#2c3e50',
+    }
   };
 
   const props = defineProps({
