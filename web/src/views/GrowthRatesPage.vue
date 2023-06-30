@@ -49,12 +49,6 @@
       primaryColorHover: '#86203A',
       primaryColorPressed: '#86203A', 
     },
-    Collapse: {
-      titleFontSize: '16px',
-      fontSize: '16px',
-      titleTextColor: '#D13B62',
-      arrowColor: '#D13B62',
-    },
     Form: {
       labelHeightMedium: '22px',
       feedbackHeightMedium: '0px',
