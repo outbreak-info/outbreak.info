@@ -33,6 +33,8 @@
       <span class="data end-block">{{ formatSequence(hoveredPoint.deltaN_7) }}</span>
       <span>Ratio over background</span>
       <span class="data">{{ ratioOverBackground }}</span>
+      <span>Gr-to-uncertainty ratio</span>
+      <span class="data">{{ formatSnr(hoveredPoint.snr) }}</span>
       <span 
         class="ci-alert"
         v-if="isCIClipped"
@@ -72,6 +74,7 @@
   const parseTime = timeParse('%Y-%m-%d');
   const formatGrowthRate = format(',.2f');
   const formatSequence = format(',.0f');
+  const formatSnr = format(',.1f');
   
   const tooltipWidth = 240;
   

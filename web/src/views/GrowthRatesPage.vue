@@ -166,11 +166,9 @@
 
     locationsWithData.value = [...new Set(filteredArray.map(obj => obj.label)) ];
 
-    const filteredArrayWitSnr = filteredArray.map(obj => ({...obj, snr: Math.abs(obj.G_7_linear / obj.deltaG_7_linear)}));
-
-    console.log("snr", filteredArrayWitSnr);
+    const filteredArrayWithSnr = filteredArray.map(obj => ({...obj, snr: Math.abs(obj.G_7_linear / obj.deltaG_7_linear)}));
     
-    return filteredArray;
+    return filteredArrayWithSnr;
   }
 
   const findLocationsWithoutData = () => { 

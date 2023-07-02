@@ -16,6 +16,9 @@
          />
       </n-form-item>
     </div>
+    <GrSlider 
+      @slider-value-updated="handleSnrUpdate"
+    />
     <div 
       class="chart-wrapper" 
       :style="{ 'width': width + 'px' }"
@@ -43,6 +46,7 @@
         :innerHeight="innerHeight"
         :hoveredLinePoint="hoveredLinePoint"
         @scatterplot-hovered="handleScatterplotHovered"
+        :snrThreshold="snrThreshold"
       />
       <GrLineChart
         :loc="loc"
@@ -59,6 +63,7 @@
         :innerHeight="innerHeightLine"
         :hoveredScatterplotPoint="hoveredScatterplotPoint"
         @line-hovered="handleLineHovered"
+        :snrThreshold="snrThreshold"
       />
     </div>
   </div>
@@ -75,12 +80,15 @@
   const GrVisHeader = lazyLoad('GrVisHeader');
   const GrScatterplot = lazyLoad('GrScatterplot');
   const GrLineChart = lazyLoad('GrLineChart');
+  const GrSlider = lazyLoad('GrSlider');
 
   const props = defineProps({
     data: Array,
   });
 
   const isCIShown = ref(true);
+
+  const snrThreshold = ref(0);
 
   const xAccessor = d => d.date;
   const yAccessor = d => d.G_7_linear;
@@ -132,6 +140,10 @@
     hoveredLinePoint.value = point;
     if (hoveredLinePoint.value) 
       legendPointer.value = hoveredLinePoint.value;
+  }
+
+  const handleSnrUpdate = (threshold) => {
+    snrThreshold.value = threshold;
   }
 
   const selectedLineage = computed(() => props.data[0].lineage);
