@@ -59,7 +59,7 @@
   
 <style scoped>
   .stripe-chart {
-    margin-top: 20px;
+    margin-top: 20px;   
   }
 </style>
   

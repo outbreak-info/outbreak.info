@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="stripe">
     <svg 
        role="img"
        class="chart"
@@ -33,7 +33,7 @@
 </template>
 
 <script setup>
-  import { computed } from 'vue';
+  import { computed, ref } from 'vue';
 
   const props = defineProps({
     location: String,
@@ -47,5 +47,13 @@
     snrThreshold: Number,
   });
 
+  const divHeight = ref(`${props.stripeHeight}px`);
+
   const xAccessorScaled = computed(() => d => props.xScale(props.xAccessor(d)));
 </script>
+
+<style>
+  .stripe {
+    height: v-bind(divHeight);
+  }
+</style>
