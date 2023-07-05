@@ -2,7 +2,7 @@
   <div class="slider-container">
     <n-form-item
       label="min gr-uncertainty ratio"
-      label-placement="top"
+      label-placement="left"
     >
       <n-slider 
         v-model:value="sliderSelectedValue" 
@@ -40,12 +40,11 @@
 </script>
 
 <style>
-.slider-container {
-  display: flex; 
-  flex-flow: row wrap;
-  margin-left: 50px;
-  margin-right: 50px;
-  margin-bottom: 20px;
-  font-size: 13px;
-}
+  .slider-container {
+    max-width: 345px;
+    margin-left: 50px;
+    margin-right: 30px;
+    margin-bottom: 20px;
+    font-size: 13px;
+  }
 </style>
