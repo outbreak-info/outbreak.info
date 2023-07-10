@@ -22,27 +22,6 @@
     <div 
       class="chart-wrapper" 
       :style="{ 'width': width + 'px' }"
-    >
-      <GrVisHeader 
-        :loc="'Summary'" 
-        :colorScale="colorScale"
-        :legendPointer="legendPointer"
-      />
-      <GrStripeChart
-        v-if="data.length > 0"
-        :lineage="selectedLineage"
-        :locations="selectedLocations"
-        :data="data"
-        :xScaleDomain="xScaleDomain"
-        :xAccessor="xAccessor"
-        :colorScale="colorScale"
-        :snrThreshold="snrThreshold"
-        :width="width"
-      />
-    </div>
-    <div 
-      class="chart-wrapper" 
-      :style="{ 'width': width + 'px' }"
       v-for="loc in selectedLocations" :key="loc"
     >
       <GrVisHeader 
