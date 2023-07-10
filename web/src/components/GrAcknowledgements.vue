@@ -2,6 +2,7 @@
   <div class="acknowledgements">
     <div class="ack-copy">
     <n-divider />
+    <h2>Acknowledgements</h2>
     <p>
       We are grateful to the data contributors who shared the data used in this Web Application via the GISAID Initiative: the Authors, the Originating Laboratories responsible for obtaining the specimens, and the Submitting Laboratories that generated the genetic sequences and metadata. All data in GISAID are subject to GISAID’s <a href='https://www.gisaid.org/registration/terms-of-use/' target='_blank'>Terms and Conditions</a>.
     </p>
@@ -24,7 +25,11 @@
     width: 100%;
     text-align: left;
   }
-
+  .acknowledgements h2 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 20px;
+  }
   .ack-copy {
     margin: 20px 50px 20px 50px;
     font-size: 14px;
