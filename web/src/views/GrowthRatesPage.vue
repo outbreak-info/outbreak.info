@@ -54,7 +54,7 @@
       feedbackHeightMedium: '0px',
     },
     Anchor : {
-      linkFontSize: '14px',
+      linkFontSize: '16px',
       railColor: '#D13B62',
       linkTextColor: '#2c3e50',
     }
