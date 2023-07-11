@@ -22,8 +22,8 @@
         For each lineage-location pair, we employ a visualization comprised of a <span class="bold">scatterplot</span> and a <span class="bold">line-stripe chart</span> to display growth rate data. Scatterplots help visitors compare growth rates visually, whereas stripes illuminate data trends. 
       </p>
       <GrImage 
-        image="grVis"
-        altText="Growth rate chart comprising a scatterplot and a line-stripe chart"
+        image="grVisWithAnnotations"
+        altText="Growth rate chart comprising a scatterplot and a line-stripe chart. Chart elements are annotated."
       />
       <p>
         A diverging <span class="bold">color scale</span> encodes growth rates. Shades of <span class="bold">yellow</span> correspond to mid-range growth rates, whereas dark <span class="bold">blue</span> and dark <span class="bold">red</span> are associated with low and high extremes, respectively. The middle value of the scale is 0%.
