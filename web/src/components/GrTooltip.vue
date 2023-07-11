@@ -33,7 +33,7 @@
       <span class="data end-block">{{ formatSequence(hoveredPoint.deltaN_7) }}</span>
       <span>Ratio over background</span>
       <span class="data">{{ ratioOverBackground }}</span>
-      <span>Gr-to-uncertainty ratio</span>
+      <span>Gr-uncertainty ratio</span>
       <span class="data">{{ formatSnr(hoveredPoint.snr) }}</span>
       <span 
         class="ci-alert"
