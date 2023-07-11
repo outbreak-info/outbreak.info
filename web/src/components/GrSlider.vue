@@ -9,8 +9,8 @@
         @update:value="handleSnrUpdate"
         :marks="sliderMarks"
         :min="0"
-        :max="15"
-        :step="0.5" 
+        :max="5"
+        :step="0.25" 
       />
    </n-form-item>
 </div>
@@ -26,12 +26,11 @@
 
   const sliderMarks = {
     0: '0',
-    2.5: '2.5',
+    1: '1',
+    2: '2',
+    3: '3',
+    4: '4',
     5: '5',
-    7.5: '7.5',
-    10: '10',
-    12.5: '12.5',
-    15: '15',
   }
 
   const handleSnrUpdate = () => {
