@@ -1,6 +1,5 @@
 <template>
   <line
-    v-if="dataPoint.snr >= snrThreshold"
     :x1="xScale(xAccessor(dataPoint))"
     :x2="xScale(xAccessor(dataPoint))"
     :y1="yScale(dataPoint.G_7_linear)"
@@ -10,7 +9,7 @@
     stroke-opacity="0.25"
   />
   <line
-    v-if="dataPoint.G_7_linear - ci95 < minGrowthRate && dataPoint.snr >= snrThreshold"
+    v-if="dataPoint.G_7_linear - ci95 < minGrowthRate"
     :x1="xScale(xAccessor(dataPoint))"
     :x2="xScale(xAccessor(dataPoint))"
     :y1="yScale(minGrowthRate) + 2"
@@ -31,7 +30,6 @@
     yScale: Function,
     minGrowthRate: Number,
     maxGrowthRate: Number,
-    snrThreshold: Number,
   });
   
   const ci95 = computed(() => props.dataPoint.confidenceInterval95);

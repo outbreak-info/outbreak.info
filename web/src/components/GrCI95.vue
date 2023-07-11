@@ -7,7 +7,6 @@
     :yScale="yScale"
     :minGrowthRate="minGrowthRate"
     :maxGrowthRate="maxGrowthRate"
-    :snrThreshold="snrThreshold"
   />
   <GrCI95Bottom
     v-for="(dataPoint, index) in data" :key="'topCI-' + index"
@@ -17,7 +16,6 @@
     :yScale="yScale"
     :minGrowthRate="minGrowthRate"
     :maxGrowthRate="maxGrowthRate"
-    :snrThreshold="snrThreshold"
   />
 </template>
 
@@ -34,6 +32,5 @@
     yScale: Function,
     minGrowthRate: Number,
     maxGrowthRate: Number,
-    snrThreshold: Number,
   });
 </script>

@@ -21,7 +21,6 @@
           :yScale="yScale"
           :minGrowthRate="minGrowthRate"
           :maxGrowthRate="maxGrowthRate"
-          :snrThreshold="snrThreshold"
         />
         <rect
           :width="innerWidth"
@@ -33,9 +32,9 @@
           @mousemove="handleMouseMove"
           @mouseleave="handleMouseLeave"
         />
-        <g v-for="(dataPoint, index) in data" :key="'point-' + index">
+        <g>
           <circle 
-            v-if="dataPoint.snr >= snrThreshold"
+            v-for="(dataPoint, index) in data" :key="'point-' + index"
             :r="xScale.bandwidth() / 2"
             :cx="xAccessorScaled(dataPoint)"
             :cy="yAccessorScaled(dataPoint)"
@@ -92,7 +91,6 @@
     :innerWidth="innerWidth"
     :minGrowthRate="minGrowthRate"
     :maxGrowthRate="maxGrowthRate"
-    :snrThreshold="snrThreshold"
   />
 </template>
   
@@ -121,7 +119,6 @@
     innerWidth: Number,
     innerHeight: Number,
     hoveredLinePoint: Object,
-    snrThreshold: Number,
   });
   
   const emit = defineEmits(['scatterplot-hovered']);

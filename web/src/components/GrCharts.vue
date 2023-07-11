@@ -33,7 +33,7 @@
         :loc="loc" 
         :lineage="selectedLineage"
         :isCIShown="isCIShown"
-        :data="data.filter(element => element.label == loc)"
+        :data="data.filter(element => element.label == loc && element.snr >= snrThreshold)"
         :xAccessor="xAccessor"
         :yAccessor="yAccessor"
         :xScale="xScale"
@@ -46,12 +46,11 @@
         :innerHeight="innerHeight"
         :hoveredLinePoint="hoveredLinePoint"
         @scatterplot-hovered="handleScatterplotHovered"
-        :snrThreshold="snrThreshold"
       />
       <GrLineChart
         :loc="loc"
         :lineage="selectedLineage"
-        :data="data.filter(element => element.label == loc)"
+        :data="data.filter(element => element.label == loc && element.snr >= snrThreshold)"
         :xAccessor="xAccessor"
         :yAccessor="yAccessorLine"
         :xScale="xScale"
@@ -63,7 +62,6 @@
         :innerHeight="innerHeightLine"
         :hoveredScatterplotPoint="hoveredScatterplotPoint"
         @line-hovered="handleLineHovered"
-        :snrThreshold="snrThreshold"
       />
     </div>
   </div>

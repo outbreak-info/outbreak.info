@@ -8,9 +8,9 @@
       :height="height"
     >
       <g :transform="`translate(${margin.left}, ${margin.top})`">
-        <g v-for="(dataPoint, index) in data" :key="'stripe-' + index">
+        <g>
           <rect 
-            v-if="dataPoint.snr >= snrThreshold"
+            v-for="(dataPoint, index) in data" :key="'stripe-' + index"
             :x="xAccessorScaled(dataPoint) - xScale.bandwidth() / 2"
             :y="0"
             :width="xScale.bandwidth()"
@@ -97,7 +97,6 @@
     innerWidth: Number,
     innerHeight: Number,
     hoveredScatterplotPoint: Object,
-    snrThreshold: Number,
   });
   
   const emit = defineEmits(['line-hovered']);
