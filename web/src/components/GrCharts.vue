@@ -79,7 +79,6 @@
   const GrScatterplot = lazyLoad('GrScatterplot');
   const GrLineChart = lazyLoad('GrLineChart');
   const GrSlider = lazyLoad('GrSlider');
-  const GrStripeChart = lazyLoad('GrStripeChart');
 
   const props = defineProps({
     data: Array,
@@ -93,7 +92,6 @@
   const yAccessor = d => d.G_7_linear;
   const locationAccessor = d => d.label;
   const yAccessorLine = d => d.Prevalence_7_percentage;
-  const greyAccessor = d => d.invDeltaG_7;
 
   const firstDay = computed(() => props.data.map(xAccessor).sort()[0]);
   const lastDay = computed(() => props.data.map(xAccessor).sort()[props.data.length - 1]);
