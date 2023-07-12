@@ -37,7 +37,7 @@
       </n-form-item>
       <div class="query-buttons">
         <n-button 
-          strong secondary type="primary"
+          type="primary"
           :disabled="!isClearButtonActive"
           @click="handleClearButtonClick"
         >
@@ -55,8 +55,8 @@
     <div class="suggestion-container">
       <span>Suggested lineages</span>
       <n-button 
-        v-for="lin in significantLineages.sort()" :key="lin"
         type="tertiary"
+        v-for="lin in significantLineages.sort()" :key="lin"
         @click="handleSuggestionButtonClick(lin)"
       >
         {{ lin }}
@@ -207,6 +207,10 @@
   }
   .location {
     flex: 8 1 auto; 
+  }
+  .query-buttons {
+    display: flex; 
+    gap: 5px;
   }
   .suggestion-container {
     display: flex; 
