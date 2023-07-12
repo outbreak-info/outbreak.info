@@ -20,8 +20,6 @@
   const locationNamesString = locationCount.value > 1 ?
     `${props.data.slice(0,-1).join(', ')} and ${props.data.slice(-1)}`
     : props.data.toString();
-    
-  // const contentString = `${props.lineage} growth rates not available for ${locationNamesString}. Sequence counts by variant, case and death counts and population are used to compute growth rates. These data sources are not always available.`;
 
   const contentString = `${props.lineage} growth rates visualizations for ${locationNamesString} could not be built. Please refer to the growth rates page for further information.`
  

@@ -51,8 +51,6 @@
   const numberOfTicks = (pixelsAvailable, pixelsPerTick = 30) =>
     Math.floor(Math.abs(pixelsAvailable) / pixelsPerTick);
   
-  // const [yMin, yMax] = computed(() => props.yScale.range());
-  
   const yMin = computed(() => props.yScale.range()[0]);
   const yMax = computed(() => props.yScale.range()[1]);
     
