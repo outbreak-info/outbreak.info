@@ -35,6 +35,7 @@
   import { quantile } from 'd3-array';
   import { NConfigProvider, NNotificationProvider, NBackTop } from 'naive-ui';
   import { lazyLoad } from '@/js/lazy-load';
+  import { themeOverrides } from '@/assets/growth-rates/naiveThemeVariables.js';
 
   const GrHeader = lazyLoad('GrHeader');
   const GrForm = lazyLoad('GrForm');
@@ -42,23 +43,6 @@
   const GrWarning = lazyLoad('GrWarning');
   const GrNotes = lazyLoad('GrNotes');
   const GrAcknowledgements = lazyLoad('GrAcknowledgements');
- 
-  const themeOverrides = {
-    common: {
-      primaryColor: '#D13B62',
-      primaryColorHover: '#86203A',
-      primaryColorPressed: '#86203A', 
-    },
-    Form: {
-      labelHeightMedium: '22px',
-      feedbackHeightMedium: '0px',
-    },
-    Anchor : {
-      linkFontSize: '16px',
-      railColor: '#D13B62',
-      linkTextColor: '#2c3e50',
-    }
-  };
 
   const props = defineProps({
     lin: {
