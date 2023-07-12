@@ -36,6 +36,7 @@
   import { NConfigProvider, NNotificationProvider, NBackTop } from 'naive-ui';
   import { lazyLoad } from '@/js/lazy-load';
   import { themeOverrides } from '@/assets/growth-rates/naiveThemeVariables.js';
+import { from } from 'rxjs';
 
   const GrHeader = lazyLoad('GrHeader');
   const GrForm = lazyLoad('GrForm');
@@ -123,6 +124,10 @@
         apiData.value = response.data.hits;
         filteredData.value = flattenandFilterArray(apiData.value);
         locationsWithoutData.value = findLocationsWithoutData(apiData.value);
+      })
+      .catch((e) => {
+        console.log('%c Error in getting growth rate data!', 'color: red');
+        console.log(e);
       });
     changeUrl();
   }
