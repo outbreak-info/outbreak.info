@@ -100,13 +100,7 @@
   onMounted(() => {
     const locationString = `(${initialLocations.map(obj => obj.value).join(' OR ')})`
     const url = `${growthRateApiUrl}query?q=lineage:${chosenLineage.value} AND location:${locationString}`;
-    axios
-      .get(url)
-      .then((response) => {
-        apiData.value = response.data.hits;
-        filteredData.value = flattenandFilterArray(apiData.value);
-        locationsWithoutData.value = findLocationsWithoutData(apiData.value);
-      });
+    getGrowthRateData(url);
     changeUrl();
     chosenLineage.value = null;
     chosenLocations.value = [];
@@ -116,13 +110,13 @@
     chosenLineage.value = lineage;
     chosenLocations.value = locations;
     chosenLocationInfo.value = locationsInfo;
-    getGrowthRateData();
-  }
-
-  const getGrowthRateData = () => {
     locationsWithoutData.value = [];
     const locationString = `(${chosenLocations.value.join(' OR ')})`;
     const url = `${growthRateApiUrl}query?q=lineage:${chosenLineage.value} AND location:${locationString}`;
+    getGrowthRateData(url);
+  }
+
+  const getGrowthRateData = (url) => {
     axios
       .get(url)
       .then((response) => {
