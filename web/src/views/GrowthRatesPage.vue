@@ -30,12 +30,12 @@
 <script setup>
   import { ref, onMounted } from 'vue';
   import { useRouter } from 'vue-router';
-  import axios from 'axios';
   import _ from 'lodash';
   import { quantile } from 'd3-array';
   import { NConfigProvider, NNotificationProvider, NBackTop } from 'naive-ui';
   import { lazyLoad } from '@/js/lazy-load';
   import { themeOverrides } from '@/assets/growth-rates/naiveThemeVariables.js';
+  import { getGrowthRatesByLocation } from '@/api/growth-rates.js';
 
   const GrHeader = lazyLoad('GrHeader');
   const GrForm = lazyLoad('GrForm');
@@ -85,22 +85,10 @@
   const lowPercentile = 0.1;
   const highPercentile = 0.9;
 
-  axios.interceptors.request.use(
-    (config) => {
-      config.headers.Authorization = `Bearer ${
-        import.meta.env.VITE_APP_API_ACCESS
-      }`;
-      return config;
-    },
-    (error) => {
-      return Promise.reject(error);
-    },
-  );
-  
   onMounted(() => {
     const locationString = `(${initialLocations.map(obj => obj.value).join(' OR ')})`
     const url = `${growthRateApiUrl}query?q=lineage:${chosenLineage.value} AND location:${locationString}`;
-    getGrowthRateData(url);
+    getData(url);
     changeUrl();
     chosenLineage.value = null;
     chosenLocations.value = [];
@@ -113,12 +101,12 @@
     locationsWithoutData.value = [];
     const locationString = `(${chosenLocations.value.join(' OR ')})`;
     const url = `${growthRateApiUrl}query?q=lineage:${chosenLineage.value} AND location:${locationString}`;
-    getGrowthRateData(url);
+    getData(url);
+    changeUrl();
   }
 
-  const getGrowthRateData = (url) => {
-    axios
-      .get(url)
+  const getData = (url) => {
+    getGrowthRatesByLocation(url)
       .then((response) => {
         apiData.value = response.data.hits;
         filteredData.value = flattenandFilterArray(apiData.value);
@@ -128,7 +116,6 @@
         console.log('%c Error in getting growth rate data!', 'color: red');
         console.log(e);
       });
-    changeUrl();
   }
 
   const flattenandFilterArray = (nestedArray) => {
