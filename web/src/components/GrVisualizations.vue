@@ -1,6 +1,6 @@
 <template>
-  <div class="gr-charts">
-    <div class="chart-info">
+  <div class="gr-visualizations">
+    <div class="visualization-info">
       <div class="title-container">
         <h2>{{ title }}</h2>
       </div>
@@ -20,7 +20,7 @@
       @slider-value-updated="handleSnrUpdate"
     />
     <div 
-      class="chart-wrapper" 
+      class="visualization-wrapper" 
       :style="{ 'width': width + 'px' }"
       v-for="loc in selectedLocations" :key="loc"
     >
@@ -35,15 +35,15 @@
         :isCIShown="isCIShown"
         :data="data.filter(element => element.label == loc && element.snr >= snrThreshold)"
         :xAccessor="xAccessor"
-        :yAccessor="yAccessor"
+        :yAccessor="scatterplotYAccessor"
         :xScale="xScale"
-        :yScale="yScale"
+        :yScale="scatterplotYScale"
         :colorScale="colorScale"
-        :margin="margin"
+        :margin="scatterplotMargin"
         :width="width"
-        :height="height"
+        :height="scatterplotHeight"
         :innerWidth="innerWidth"
-        :innerHeight="innerHeight"
+        :innerHeight="scatterplotInnerHeight"
         :hoveredLinePoint="hoveredLinePoint"
         @scatterplot-hovered="handleScatterplotHovered"
       />
@@ -52,14 +52,14 @@
         :lineage="selectedLineage"
         :data="data.filter(element => element.label == loc && element.snr >= snrThreshold)"
         :xAccessor="xAccessor"
-        :yAccessor="yAccessorLine"
+        :yAccessor="lineChartYAccessor"
         :xScale="xScale"
         :colorScale="colorScale"
-        :margin="marginLine"
+        :margin="lineChartMargin"
         :width="width"
-        :height="heightLine"
+        :height="lineChartHeight"
         :innerWidth="innerWidth"
-        :innerHeight="innerHeightLine"
+        :innerHeight="lineChartInnerHeight"
         :hoveredScatterplotPoint="hoveredScatterplotPoint"
         @line-hovered="handleLineHovered"
       />
@@ -89,9 +89,9 @@
   const snrThreshold = ref(0);
 
   const xAccessor = d => d.date;
-  const yAccessor = d => d.G_7_linear;
+  const scatterplotYAccessor = d => d.G_7_linear;
   const locationAccessor = d => d.label;
-  const yAccessorLine = d => d.Prevalence_7_percentage;
+  const lineChartYAccessor = d => d.Prevalence_7_percentage;
 
   const firstDay = computed(() => props.data.map(xAccessor).sort()[0]);
   const lastDay = computed(() => props.data.map(xAccessor).sort()[props.data.length - 1]);
@@ -102,8 +102,8 @@
   const hoveredScatterplotPoint = ref(null);
   const hoveredLinePoint = ref(null);
 
-  let height = 250;
-  let heightLine = 85;
+  let scatterplotHeight = 250;
+  let lineChartHeight = 85;
 
   onMounted(() => {
     window.addEventListener('resize', handleResize);
@@ -149,23 +149,23 @@
 
   const selectedLocations = computed(() => Array.from(new Set(props.data.map(locationAccessor))).sort());
 
-  const margin = {
+  const scatterplotMargin = {
     top: 30,
     right: 125,
     bottom: 5,
     left: 45,
   };
 
-  const marginLine = {
+  const lineChartMargin = {
     top: 30,
     right: 125,
     bottom: 25,
     left: 45,
   };
 
-  const innerWidth = computed(() => width.value - margin.left - margin.right);
-  let innerHeight = height - margin.top - margin.bottom;
-  let innerHeightLine = heightLine - marginLine.top - marginLine.bottom;
+  const innerWidth = computed(() => width.value - scatterplotMargin.left - scatterplotMargin.right);
+  let scatterplotInnerHeight = scatterplotHeight - scatterplotMargin.top - scatterplotMargin.bottom;
+  let lineChartInnerHeight = lineChartHeight - lineChartMargin.top - lineChartMargin.bottom;
 
   const padExtent = ([min, max], paddingFactor) => {
     const delta = Math.abs(max - min);
@@ -193,21 +193,21 @@
     .padding(0)
   );
 
-  const yScale = computed(() => scaleLinear()
+  const scatterplotYScale = computed(() => scaleLinear()
     .domain(
       padExtent(
-        [min(props.data, yAccessor), max(props.data, yAccessor)],
+        [min(props.data,scatterplotYAccessor), max(props.data, scatterplotYAccessor)],
         0.07,
       )
     )
-    .range([innerHeight, 0])
+    .range([scatterplotInnerHeight, 0])
     .nice()
   );
 
   const interpolator = t => interpolateRdYlBu(1 - t);
 
-  const extremeValue = computed(() => Math.max(Math.abs(min(props.data, yAccessor)),
-    Math.abs(max(props.data, yAccessor))));  
+  const extremeValue = computed(() => Math.max(Math.abs(min(props.data, scatterplotYAccessor)),
+    Math.abs(max(props.data, scatterplotYAccessor))));  
 
   const colorScale = computed(() => scaleDiverging(
     [-Math.ceil(extremeValue.value), 0, Math.ceil(extremeValue.value)],
@@ -218,7 +218,7 @@
 </script>
 
 <style scoped>
-  .gr-charts {
+  .gr-visualizations {
     display: flex;
     flex-direction: column;
     max-width: 1000px;
@@ -226,7 +226,7 @@
     text-align: left;
     margin-top: 25px;
   }
-  .chart-info {
+  .visualization-info {
     display: flex; 
     flex-flow: row wrap;
     margin-left: 50px;
@@ -244,7 +244,7 @@
   .switch-container {
     flex: 1 1 auto; 
   }
-  .chart-wrapper {
+  .visualization-wrapper {
     position: relative;
     width: 100%;
     max-width: 1000px;

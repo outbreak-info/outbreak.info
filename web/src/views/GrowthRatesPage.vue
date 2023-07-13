@@ -6,7 +6,7 @@
         <GrForm 
           @query-button-clicked="handleQueryButtonClick"
         />
-        <GrChart
+        <GrVisualizations
           v-if="filteredData.length > 0"
           :data="filteredData"
         />
@@ -36,11 +36,10 @@
   import { NConfigProvider, NNotificationProvider, NBackTop } from 'naive-ui';
   import { lazyLoad } from '@/js/lazy-load';
   import { themeOverrides } from '@/assets/growth-rates/naiveThemeVariables.js';
-import { from } from 'rxjs';
 
   const GrHeader = lazyLoad('GrHeader');
   const GrForm = lazyLoad('GrForm');
-  const GrChart = lazyLoad('GrCharts');
+  const GrVisualizations = lazyLoad('GrVisualizations');
   const GrWarning = lazyLoad('GrWarning');
   const GrNotes = lazyLoad('GrNotes');
   const GrAcknowledgements = lazyLoad('GrAcknowledgements');
