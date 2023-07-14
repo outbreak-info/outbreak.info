@@ -27,6 +27,7 @@
   
   const allTicks = computed(() => props.xScale.domain());
 
+  // use width to determine the number of ticks rendered 
   const filterTicks = (width) => {
     if (width > 700)
       return allTicks.value.filter((d, i) => !(i % 7));

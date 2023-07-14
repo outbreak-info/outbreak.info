@@ -59,6 +59,7 @@
           stroke="#ffffff"
           stroke-width="2px"
         />
+        <!-- circle rendered when visitor hovers over scatterplot -->
         <circle 
           v-if="hoveredScatterplotPoint && hoveredScatterplotPoint.label == loc"
           :r="(xScale.bandwidth() / 2)"

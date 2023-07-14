@@ -206,6 +206,7 @@
 
   const interpolator = t => interpolateRdYlBu(1 - t);
 
+  // color scale endpoints
   const extremeValue = computed(() => Math.max(Math.abs(min(props.data, scatterplotYAccessor)),
     Math.abs(max(props.data, scatterplotYAccessor))));  
 

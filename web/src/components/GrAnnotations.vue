@@ -34,6 +34,7 @@
   
   const formatPrevalence = format(',.1f');
   
+  // first and last line points
   const startPoint = computed(() => props.data[0]);
   const endPoint = computed(() => props.data[props.data.length - 1]);
 </script>

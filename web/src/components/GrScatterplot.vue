@@ -52,6 +52,7 @@
           stroke="#2c3e50"
           stroke-width="2px"
         />
+        <!-- circle rendered when visitor hovers over line chart -->
         <circle
           v-if="hoveredLinePoint && hoveredLinePoint.label == loc"
           :r="(xScale.bandwidth() / 2) + 3"
@@ -78,6 +79,7 @@
     :minGrowthRate="minGrowthRate"
     :maxGrowthRate="maxGrowthRate"
   />
+  <!-- tooltip rendered when visitor hovers over line chart -->
   <GrTooltip
     v-if="hoveredLinePoint && hoveredLinePoint.label == loc"
     :loc="loc"
@@ -128,6 +130,7 @@
   const xAccessorScaled = computed(() => d => props.xScale(props.xAccessor(d)));
   const yAccessorScaled = computed(() => d => props.yScale(props.yAccessor(d)));
   
+  // create a quadtree to improve the user experience when visitor interacts with scatterplot points
   const quadtreeInstance = computed (() => quadtree()
     .x(d => props.xScale(props.xAccessor(d)))
     .y(d => props.yScale(props.yAccessor(d)))

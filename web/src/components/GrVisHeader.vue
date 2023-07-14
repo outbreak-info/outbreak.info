@@ -100,6 +100,7 @@
 
   const ticks = computed(() => legendXScale.value.domain());
 
+  // component will not be rendered if ticks include NaN
   const nanInArray = computed(() => ticks.value.includes(NaN));
 
   const ariaLabel = computed(() => `Legend for the growth rate color scale. The color scale varies from dark blue (${ticks.value[0]}%) to dark red (${ticks.value[1]}%).`)
