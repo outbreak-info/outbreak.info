@@ -67,7 +67,7 @@
         <n-anchor-link title="Read about growth rates" @click="scrollTo('#notes')" />
       </n-anchor>
       <hr class="divider" />
-   </div> 
+    </div> 
   </div>
 </template>
   

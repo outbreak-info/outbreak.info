@@ -16,11 +16,11 @@
             rel="noreferrer"
             target="_blank"
           >
-          <img
-            src="@/assets/resources/gisaid.png"
-            class="gisaid-small"
-            alt="GISAID Initiative"
-          />
+            <img
+              src="@/assets/resources/gisaid.png"
+              class="gisaid-small"
+              alt="GISAID Initiative"
+            />
           </a>
         </p>
       </div>

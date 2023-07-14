@@ -12,7 +12,7 @@
         :max="5"
         :step="0.25" 
       />
-   </n-form-item>
+    </n-form-item>
 </div>
 </template>
 
