@@ -66,6 +66,7 @@
       <n-anchor ref="anchorRef">
         <n-anchor-link title="Read about growth rates" @click="scrollTo('#notes')" />
       </n-anchor>
+      <hr class="divider" />
    </div> 
   </div>
 </template>
@@ -229,5 +230,10 @@
     margin-left: 50px;
     margin-right: 50px;
   }
+  .divider {
+    border-top: 1px solid rgba(209, 59, 98, 0.2);
+    border-bottom: 1px solid rgba(209, 59, 98, 0.5);
+    margin-top: 25px;
+    margin-bottom: 0px;
+  }
 </style>
-  
