@@ -26,10 +26,10 @@
     altText: String,
   });
 
-  const retinaLarge = computed(() => `/src/assets/growth-rates/${props.image}@2x.png`);
-  const regularLarge = computed(() => `/src/assets/growth-rates/${props.image}.png`);
-  const retinaSmall = computed(() => `/src/assets/growth-rates/${props.image}_small@2x.png`);
-  const regularSmall = computed(() => `/src/assets/growth-rates/${props.image}_small.png`);
+  const retinaLarge = computed(() => `/assets/growth-rates/${props.image}@2x.png`);
+  const regularLarge = computed(() => `/assets/growth-rates/${props.image}.png`);
+  const retinaSmall = computed(() => `/assets/growth-rates/${props.image}_small@2x.png`);
+  const regularSmall = computed(() => `/assets/growth-rates/${props.image}_small.png`);
 </script>
 
 <style>

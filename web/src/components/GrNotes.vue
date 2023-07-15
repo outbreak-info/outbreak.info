@@ -11,7 +11,7 @@
       </p>
       <p>
         <a 
-          href="/src/assets/growth-rates/growth_rates.pdf"
+          href="/assets/growth-rates/growth_rates.pdf"
           target="_blank"
         >
           Detailed information on growth rate calculations
