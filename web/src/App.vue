@@ -182,6 +182,17 @@
                   data-toggle="collapse"
                   data-target=".navbar-collapse"
                   class="nav-link"
+                  :to="{ name: 'GrowthRatesPage' }"
+                  :class="{
+                    active: $route.name === 'GrowthRatesPage',
+                  }"
+                >
+                  Growth Rates
+                </router-link>
+                <router-link
+                  data-toggle="collapse"
+                  data-target=".navbar-collapse"
+                  class="nav-link"
                   :to="{ name: 'SituationReportCaveats' }"
                   :class="{ active: $route.name === 'SituationReportCaveats' }"
                 >
@@ -477,6 +488,17 @@
                 :class="{ active: $route.name === 'SituationReportComparison' }"
               >
                 Lineage Comparison
+              </router-link>
+            </li>
+            <li class="nav-item px-0 py-1">
+              <router-link
+                data-toggle="collapse"
+                data-target=".navbar-collapse"
+                class="nav-link p-0"
+                :to="{ name: 'GrowthRatesPage' }"
+                :class="{ active: $route.name === 'GrowthRatesPage' }"
+              >
+                Growth Rates
               </router-link>
             </li>
             <li class="nav-item px-0 py-1">

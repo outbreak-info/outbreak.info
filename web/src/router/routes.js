@@ -286,6 +286,15 @@ export default [
     component: () => import('../views/SituationReportComparison.vue'),
   },
   {
+    path: '/growth-rates',
+    name: 'GrowthRatesPage',
+    props: (route) => ({
+      lin: route.query.lin,
+      loc: route.query.loc,
+    }),
+    component: () => import('../views/GrowthRatesPage.vue'),
+  },
+  {
     path: '/situation-reports/caveats',
     name: 'SituationReportCaveats',
     component: () => import('../views/SituationReportsCaveats.vue'),
