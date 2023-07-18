@@ -1957,13 +1957,8 @@ export const getLocationTable = (
 
   const variantQueries = mutations.map((d) => d.query);
 
-  return forkJoin([
-    getCumPrevalence(apiurl, pangoQuery, location, totalThreshold),
-    getCumPrevalenceQueryLoop(apiurl, variantQueries, location, totalThreshold),
-  ]).pipe(
-    map(([lineages, variants]) => {
-      let results = lineages.concat(variants);
-      // add in the labels and the type (VOC, VOI, etc.)
+  return getCumPrevalenceQueryLoop(apiurl, variantQueries, location, totalThreshold).pipe(
+    map(results => {
       results.forEach((d) => {
         const filtered = mutations.filter(
           (mut) =>
