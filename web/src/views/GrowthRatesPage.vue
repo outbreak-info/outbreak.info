@@ -36,6 +36,8 @@
   import { lazyLoad } from '@/js/lazy-load';
   import { themeOverrides } from '@/assets/growth-rates/naiveThemeVariables.js';
   import { getGrowthRatesByLocation } from '@/api/growth-rates.js';
+  import { useMetadataStore } from '@/stores/metadataStore';
+  import { useSeoMeta } from 'unhead';
 
   const GrHeader = lazyLoad('GrHeader');
   const GrForm = lazyLoad('GrForm');
@@ -92,6 +94,10 @@
     changeUrl();
     chosenLineage.value = null;
     chosenLocations.value = [];
+
+    const metadataStore = useMetadataStore();
+    const metadata = metadataStore.defaultMetadata;
+    useSeoMeta(metadata);
   });
 
   const handleQueryButtonClick = ({ lineage, locations, locationsInfo }) => {
