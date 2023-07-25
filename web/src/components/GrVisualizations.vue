@@ -19,6 +19,17 @@
     <GrSlider 
       @slider-value-updated="handleSnrUpdate"
     />
+    <GrOverview
+      v-if="data.length > 0"
+      :lineage="selectedLineage"
+      :locations="selectedLocations"
+      :data="data.filter(element => element.snr >= snrThreshold)"
+      :xAccessor="xAccessor"
+      :yAccessor="lineChartYAccessor"
+      :xScaleDomain="xScaleDomain"
+      :colorScale="colorScale"
+      :width="width"
+    />
     <div 
       class="visualization-wrapper" 
       :style="{ 'width': width + 'px' }"
@@ -79,6 +90,7 @@
   const GrScatterplot = lazyLoad('GrScatterplot');
   const GrLineChart = lazyLoad('GrLineChart');
   const GrSlider = lazyLoad('GrSlider');
+  const GrOverview = lazyLoad('GrOverview');
 
   const props = defineProps({
     data: Array,
