@@ -2621,6 +2621,7 @@
       - DV.6.2
       - DV.7
       - DV.7.1
+      - DV.7.2
       - DV.8
       - DW.1
       - DY.1
@@ -5125,6 +5126,7 @@
       - DV.6.2
       - DV.7
       - DV.7.1
+      - DV.7.2
       - DV.8
       - DW.1
       - DY.1
@@ -6691,6 +6693,7 @@
       - DV.6.2
       - DV.7
       - DV.7.1
+      - DV.7.2
       - DV.8
       - DW.1
       - DY.1
@@ -10731,6 +10734,7 @@
       - DV.6.2
       - DV.7
       - DV.7.1
+      - DV.7.2
       - DV.8
       - DW.1
       - DY.1
@@ -11527,6 +11531,7 @@
       - DV.6.2
       - DV.7
       - DV.7.1
+      - DV.7.2
       - DV.8
       - EJ.1
       - EJ.2
@@ -12675,6 +12680,7 @@
       - DV.6.2
       - DV.7
       - DV.7.1
+      - DV.7.2
       - DV.8
       - EJ.1
       - EJ.2
@@ -12921,6 +12927,7 @@
       - DV.6.2
       - DV.7
       - DV.7.1
+      - DV.7.2
       - DV.8
       - EP.1
       - EP.2
@@ -13159,6 +13166,7 @@
       - DV.6.2
       - DV.7
       - DV.7.1
+      - DV.7.2
       - DV.8
       - FJ.1
       - FK.1
@@ -13233,6 +13241,7 @@
       - DV.6.2
       - DV.7
       - DV.7.1
+      - DV.7.2
       - DV.8
       - FJ.1
       - FK.1
@@ -13306,6 +13315,7 @@
       - DV.6.2
       - DV.7
       - DV.7.1
+      - DV.7.2
       - DV.8
       - FJ.1
       - FK.1
@@ -13375,6 +13385,7 @@
       - DV.6.2
       - DV.7
       - DV.7.1
+      - DV.7.2
       - DV.8
       - FJ.1
       - FK.1
@@ -13443,6 +13454,7 @@
       - DV.6.2
       - DV.7
       - DV.7.1
+      - DV.7.2
       - DV.8
       - FJ.1
       - FK.1
@@ -13481,6 +13493,7 @@
       - DV.6.2
       - DV.7
       - DV.7.1
+      - DV.7.2
       - DV.8
   parent: CH.1.1
 - name: DV.1
@@ -13542,11 +13555,17 @@
   children:
       - DV.7
       - DV.7.1
+      - DV.7.2
   parent: CH.1.1.1
 - name: DV.7.1
   alias: B.1.1.529.2.75.3.4.1.1.1.1.1.7.1
   children:
       - DV.7.1
+  parent: DV.7
+- name: DV.7.2
+  alias: B.1.1.529.2.75.3.4.1.1.1.1.1.7.2
+  children:
+      - DV.7.2
   parent: DV.7
 - name: DV.8
   alias: B.1.1.529.2.75.3.4.1.1.1.1.1.8
@@ -26312,6 +26331,9 @@
       - EG.5.1.5
       - EG.5.1.6
       - EG.5.2
+      - EG.5.2.1
+      - EG.5.2.2
+      - EG.5.2.3
       - EG.6
       - EG.6.1
       - EG.7
@@ -26635,6 +26657,8 @@
       - XBB.1.5.95
       - XBB.1.5.96
       - XBB.1.5.97
+      - XBB.1.5.98
+      - XBB.1.5.99
       - XBB.1.6
       - XBB.1.7
       - XBB.1.8
@@ -26675,6 +26699,11 @@
       - XBB.1.16.15
       - XBB.1.16.16
       - XBB.1.16.17
+      - XBB.1.16.18
+      - XBB.1.16.19
+      - XBB.1.16.20
+      - XBB.1.16.21
+      - XBB.1.16.22
       - XBB.1.17
       - XBB.1.17.1
       - XBB.1.17.2
@@ -26811,6 +26840,9 @@
       - EG.5.1.5
       - EG.5.1.6
       - EG.5.2
+      - EG.5.2.1
+      - EG.5.2.2
+      - EG.5.2.3
       - EG.6
       - EG.6.1
       - EG.7
@@ -27118,6 +27150,8 @@
       - XBB.1.5.95
       - XBB.1.5.96
       - XBB.1.5.97
+      - XBB.1.5.98
+      - XBB.1.5.99
       - XBB.1.6
       - XBB.1.7
       - XBB.1.8
@@ -27158,6 +27192,11 @@
       - XBB.1.16.15
       - XBB.1.16.16
       - XBB.1.16.17
+      - XBB.1.16.18
+      - XBB.1.16.19
+      - XBB.1.16.20
+      - XBB.1.16.21
+      - XBB.1.16.22
       - XBB.1.17
       - XBB.1.17.1
       - XBB.1.17.2
@@ -27407,6 +27446,8 @@
       - XBB.1.5.95
       - XBB.1.5.96
       - XBB.1.5.97
+      - XBB.1.5.98
+      - XBB.1.5.99
   parent: XBB.1
 - name: XBB.1.5.1
   alias: XBB.1.5.1
@@ -28259,6 +28300,16 @@
   children:
       - XBB.1.5.97
   parent: XBB.1.5
+- name: XBB.1.5.98
+  alias: XBB.1.5.98
+  children:
+      - XBB.1.5.98
+  parent: XBB.1.5
+- name: XBB.1.5.99
+  alias: XBB.1.5.99
+  children:
+      - XBB.1.5.99
+  parent: XBB.1.5
 - name: XBB.1.6
   alias: XBB.1.6
   children:
@@ -28304,6 +28355,9 @@
       - EG.5.1.5
       - EG.5.1.6
       - EG.5.2
+      - EG.5.2.1
+      - EG.5.2.2
+      - EG.5.2.3
       - EG.6
       - EG.6.1
       - EG.7
@@ -28896,6 +28950,9 @@
       - EG.5.1.5
       - EG.5.1.6
       - EG.5.2
+      - EG.5.2.1
+      - EG.5.2.2
+      - EG.5.2.3
       - EG.6
       - EG.6.1
       - EG.7
@@ -29028,6 +29085,9 @@
       - EG.5.1.5
       - EG.5.1.6
       - EG.5.2
+      - EG.5.2.1
+      - EG.5.2.2
+      - EG.5.2.3
       - HK.1
       - HK.2
       - HK.3
@@ -29114,7 +29174,25 @@
   alias: XBB.1.9.2.5.2
   children:
       - EG.5.2
+      - EG.5.2.1
+      - EG.5.2.2
+      - EG.5.2.3
   parent: EG.5
+- name: EG.5.2.1
+  alias: XBB.1.9.2.5.2.1
+  children:
+      - EG.5.2.1
+  parent: EG.5.2
+- name: EG.5.2.2
+  alias: XBB.1.9.2.5.2.2
+  children:
+      - EG.5.2.2
+  parent: EG.5.2
+- name: EG.5.2.3
+  alias: XBB.1.9.2.5.2.3
+  children:
+      - EG.5.2.3
+  parent: EG.5.2
 - name: EG.6
   alias: XBB.1.9.2.6
   children:
@@ -29333,6 +29411,11 @@
       - XBB.1.16.15
       - XBB.1.16.16
       - XBB.1.16.17
+      - XBB.1.16.18
+      - XBB.1.16.19
+      - XBB.1.16.20
+      - XBB.1.16.21
+      - XBB.1.16.22
   parent: XBB.1
 - name: XBB.1.16.1
   alias: XBB.1.16.1
@@ -29511,6 +29594,31 @@
   alias: XBB.1.16.17
   children:
       - XBB.1.16.17
+  parent: XBB.1.16
+- name: XBB.1.16.18
+  alias: XBB.1.16.18
+  children:
+      - XBB.1.16.18
+  parent: XBB.1.16
+- name: XBB.1.16.19
+  alias: XBB.1.16.19
+  children:
+      - XBB.1.16.19
+  parent: XBB.1.16
+- name: XBB.1.16.20
+  alias: XBB.1.16.20
+  children:
+      - XBB.1.16.20
+  parent: XBB.1.16
+- name: XBB.1.16.21
+  alias: XBB.1.16.21
+  children:
+      - XBB.1.16.21
+  parent: XBB.1.16
+- name: XBB.1.16.22
+  alias: XBB.1.16.22
+  children:
+      - XBB.1.16.22
   parent: XBB.1.16
 - name: XBB.1.17
   alias: XBB.1.17
