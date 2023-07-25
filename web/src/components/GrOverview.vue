@@ -46,8 +46,11 @@
             :margin="miniChartMargin"
           />
         </div>
-      </div>
+      </div>      
     </div>
+    <GrLegend
+      :colorScale="colorScale" 
+    />
   </div>
 </template>
     
@@ -58,6 +61,7 @@
 
   const GrStripeCell = lazyLoad('GrStripeCell');
   const GrLineCell = lazyLoad('GrLineCell');
+  const GrLegend = lazyLoad('GrLegend');
 
   const props = defineProps({
     lineage: String,
@@ -119,6 +123,7 @@
   .table {
     display: flex;
     flex-wrap: wrap;
+    margin-bottom: 0px;
     border-bottom: 2px solid #dee2e6;
   }
   .table-row {  
