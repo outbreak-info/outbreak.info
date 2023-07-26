@@ -4,6 +4,7 @@
     v-if="width >= 500"
     :style="{ 'width': width + 'px' }"
   >
+    <h3>Overview</h3>
     <div class="table">
       <div class="table-row">
         <div class="table-cell location-cell column-heading">Location</div>
@@ -108,7 +109,7 @@
     width: 100%;
     max-width: 1000px;
     padding: 0 50px 0 50px;
-    margin: 30px auto;
+    margin: 0px auto 35px;
   }
   .wrapper h3 {
     color: #2c3e50;
@@ -131,13 +132,12 @@
     display: flex;
     flex-wrap: wrap;
     margin-bottom: 0px;
-    border-bottom: 2px solid #dee2e6;
   }
   .table-row {  
     display: flex;
     align-items: flex-start;
     width: 100%; 
-    margin-bottom: 8px; 
+    margin-bottom: 5px; 
   }
   .table-cell {
     box-sizing: border-box;
@@ -152,8 +152,7 @@
     color: #2c3e50;
     font-size: 16px;
     font-weight: 700;
-    padding: 12px 0px 12px 10px;
-    border-top: 2px solid #dee2e6;
+    padding: 10px 0px 5px 10px;
     border-bottom: 2px solid #dee2e6;
   }
 </style>
