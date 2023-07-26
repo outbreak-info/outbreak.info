@@ -1,5 +1,5 @@
 <template>
-  <div class="vis-header" v-if="!nanInArray">
+  <div :id="idString" class="vis-header" v-if="!nanInArray">
     <div class="location-name">
       <h3>{{ loc }}</h3>
     </div>
@@ -100,6 +100,8 @@
   );
 
   const ticks = computed(() => legendXScale.value.domain());
+
+  const idString = props.loc.replace(/\s+/g, '-').toLowerCase();
 
   // component will not be rendered if ticks include NaN
   const nanInArray = computed(() => ticks.value.includes(NaN));

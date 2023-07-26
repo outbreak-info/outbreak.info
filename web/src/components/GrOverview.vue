@@ -15,7 +15,11 @@
         v-for="location in locations" :key="location"
       >
         <div class="table-cell location-cell">
-          {{ location }}
+          <a 
+            :href="`#${location.replace(/\s+/g, '-').toLowerCase()}`"
+          >
+            {{ location }}
+          </a>
         </div>
         <div class="table-cell growth-rate-cell">
           <GrStripeCell 
@@ -114,6 +118,9 @@
   .location-cell {
     width: 25%;
   }  
+  .location-cell a {
+    color: #d13b62;
+  }
   .growth-rate-cell {
     width: 37.5%;
   }  
