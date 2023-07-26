@@ -26520,6 +26520,7 @@
       - GW.2
       - GW.3
       - GW.4
+      - GW.5
       - GY.1
       - GY.2
       - GY.2.1
@@ -26718,6 +26719,7 @@
       - XBB.1.18.1
       - XBB.1.19
       - XBB.1.19.1
+      - XBB.1.19.2
       - XBB.1.20
       - XBB.1.21
       - XBB.1.22
@@ -27026,6 +27028,7 @@
       - GW.2
       - GW.3
       - GW.4
+      - GW.5
       - GY.1
       - GY.2
       - GY.2.1
@@ -27218,6 +27221,7 @@
       - XBB.1.18.1
       - XBB.1.19
       - XBB.1.19.1
+      - XBB.1.19.2
       - XBB.1.20
       - XBB.1.21
       - XBB.1.22
@@ -29838,8 +29842,10 @@
       - GW.2
       - GW.3
       - GW.4
+      - GW.5
       - XBB.1.19
       - XBB.1.19.1
+      - XBB.1.19.2
   parent: XBB.1
 - name: XBB.1.19.1
   alias: XBB.1.19.1
@@ -29848,6 +29854,7 @@
       - GW.2
       - GW.3
       - GW.4
+      - GW.5
       - XBB.1.19.1
   parent: XBB.1.19
 - name: GW.1
@@ -29870,6 +29877,16 @@
   children:
       - GW.4
   parent: XBB.1.19.1
+- name: GW.5
+  alias: XBB.1.19.1.5
+  children:
+      - GW.5
+  parent: XBB.1.19.1
+- name: XBB.1.19.2
+  alias: XBB.1.19.2
+  children:
+      - XBB.1.19.2
+  parent: XBB.1.19
 - name: XBB.1.20
   alias: XBB.1.20
   children:
