@@ -1,7 +1,7 @@
 <template>
   <svg 
     role="img"
-    class="chart"
+    :aria-label="ariaLabel" 
     :width="width" 
     :height="height"
   >
@@ -33,6 +33,7 @@
 
   const props = defineProps({
     location: String,
+    lineage: String,
     data: Array,
     xScale: Function,
     xAccessorScaled: Function,
@@ -63,4 +64,6 @@
   );
 
   const prevalenceLine = computed(() => lineGenerator.value(props.data));
+
+  const ariaLabel = computed(() => `Line chart of ${props.lineage} prevalence in ${props.location}`);
 </script>

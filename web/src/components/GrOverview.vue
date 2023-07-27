@@ -25,6 +25,7 @@
         <div class="table-cell growth-rate-cell">
           <GrStripeCell 
             :location="location"
+            :lineage="lineage"
             :data="data.filter(element => element.label == location)"
             :xScale="xScale"
             :xAccessorScaled="xAccessorScaled"
@@ -39,6 +40,7 @@
         <div class="table-cell prevalence-cell">
           <GrLineCell
             :location="location"
+            :lineage="lineage"
             :data="data.filter(element => element.label == location)"
             :xScale="xScale"
             :xAccessorScaled="xAccessorScaled"

@@ -1,5 +1,7 @@
 <template>
   <svg 
+    role="img"
+    :aria-label="ariaLabel" 
     :width="width" 
     :height="height"
   >
@@ -23,12 +25,14 @@
 </template>
 
 <script setup>
+  import { computed } from 'vue';
   import { lazyLoad } from '@/js/lazy-load';
 
   const GrCellAxis = lazyLoad('GrCellAxis');
   
   const props = defineProps({
     location: String,
+    lineage: String,
     data: Array,
     xScale: Function,
     xAccessorScaled: Function,
@@ -39,4 +43,6 @@
     innerHeight: Number,
     margin: Object,
   });
+
+  const ariaLabel = computed(() => `Stripe chart of ${props.lineage} growth rates in ${props.location}`);
 </script>
