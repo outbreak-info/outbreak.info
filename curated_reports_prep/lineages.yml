@@ -26565,6 +26565,8 @@
       - HS.1
       - HT.1
       - HT.2
+      - HU.1
+      - HU.2
       - XBB
       - XBB.1
       - XBB.1.1
@@ -27074,6 +27076,8 @@
       - HS.1
       - HT.1
       - HT.2
+      - HU.1
+      - HU.2
       - XBB.1
       - XBB.1.1
       - XBB.1.2
@@ -29974,6 +29978,8 @@
       - FY.5
       - FY.6
       - FY.7
+      - HU.1
+      - HU.2
       - XBB.1.22
       - XBB.1.22.1
       - XBB.1.22.2
@@ -30078,8 +30084,20 @@
 - name: XBB.1.22.2
   alias: XBB.1.22.2
   children:
+      - HU.1
+      - HU.2
       - XBB.1.22.2
   parent: XBB.1.22
+- name: HU.1
+  alias: XBB.1.22.2.1
+  children:
+      - HU.1
+  parent: XBB.1.22.2
+- name: HU.2
+  alias: XBB.1.22.2.2
+  children:
+      - HU.2
+  parent: XBB.1.22.2
 - name: XBB.1.23
   alias: XBB.1.23
   children:
