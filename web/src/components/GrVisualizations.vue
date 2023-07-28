@@ -35,11 +35,7 @@
       class="visualization-wrapper" 
       v-for="loc in selectedLocations" :key="loc"
     >
-      <GrVisHeader 
-        :loc="loc" 
-        :colorScale="colorScale"
-        :legendPointer="legendPointer"
-      />
+      <h3>{{ loc }}</h3>
       <GrScatterplot
         :loc="loc" 
         :lineage="selectedLineage"
@@ -74,6 +70,11 @@
         :hoveredScatterplotPoint="hoveredScatterplotPoint"
         @line-hovered="handleLineHovered"
       />
+      <GrLegendWithPointer 
+        :loc="loc" 
+        :colorScale="colorScale"
+        :legendPointer="legendPointer"
+      />
     </div>
   </div>
 </template>
@@ -86,11 +87,11 @@
   import { interpolateRdYlBu } from 'd3-scale-chromatic';
   import { lazyLoad } from '@/js/lazy-load';
 
-  const GrVisHeader = lazyLoad('GrVisHeader');
-  const GrScatterplot = lazyLoad('GrScatterplot');
-  const GrLineChart = lazyLoad('GrLineChart');
   const GrSlider = lazyLoad('GrSlider');
   const GrOverview = lazyLoad('GrOverview');
+  const GrScatterplot = lazyLoad('GrScatterplot');
+  const GrLineChart = lazyLoad('GrLineChart');
+  const GrLegendWithPointer = lazyLoad('GrLegendWithPointer');
 
   const props = defineProps({
     data: Array,
@@ -262,5 +263,10 @@
     margin-left: 50px;
     margin-right: 50px;
     margin-bottom: 50px;
+  }
+  .visualization-wrapper h3 {
+    color: #2c3e50;
+    font-size: 18px;
+    font-weight: 700;
   }
 </style>
