@@ -31,8 +31,8 @@
       :width="width"
     />
     <div 
+      :id="loc.replace(/\s+/g, '-').toLowerCase()"
       class="visualization-wrapper" 
-      :style="{ 'width': width + 'px' }"
       v-for="loc in selectedLocations" :key="loc"
     >
       <GrVisHeader 
@@ -259,8 +259,6 @@
   }
   .visualization-wrapper {
     position: relative;
-    width: 100%;
-    max-width: 1000px;
     margin-left: 50px;
     margin-right: 50px;
     margin-bottom: 50px;
