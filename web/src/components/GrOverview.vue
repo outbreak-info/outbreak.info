@@ -6,13 +6,13 @@
   >
     <h3>Overview</h3>
     <div class="table">
-      <div class="table-row">
+      <div class="table-row row-heading">
         <div class="table-cell location-cell column-heading">Location</div>
         <div class="table-cell growth-rate-cell column-heading">Growth rates</div>
          <div class="table-cell prevalence-cell column-heading">Prevalence</div>
       </div>
       <div 
-        class="table-row"
+        class="table-row row-content"
         v-for="location in locations" :key="location"
       >
         <div class="table-cell location-cell">
@@ -137,9 +137,10 @@
   }
   .table-row {  
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     width: 100%; 
-    margin-bottom: 5px; 
+    padding-top: 5px;
+    padding-bottom: 5px;
   }
   .table-cell {
     box-sizing: border-box;
@@ -147,15 +148,17 @@
     color: #2c3e50;
     font-size: 14px;
     padding-left: 10px;
-    overflow: hidden;
-    list-style: none;
   }
   .column-heading {
     color: #2c3e50;
     font-size: 16px;
     font-weight: 700;
-    padding: 10px 0px 5px 10px;
-    border-bottom: 2px solid #dee2e6;
+  }
+  .row-heading {
+    border-bottom: 1px solid rgb(44, 62, 80, 0.4);
+  }
+  .row-content {
+    border-bottom: 1px solid rgb(44, 62, 80, 0.1);
   }
 </style>
     
