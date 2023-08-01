@@ -150,7 +150,7 @@
 <style>
   .line-chart {
     margin-top: 0px;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
   } 
 </style>
   

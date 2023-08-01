@@ -19,16 +19,23 @@
     <GrSlider 
       @slider-value-updated="handleSnrUpdate"
     />
+    <GrOverview
+      v-if="data.length > 0"
+      :lineage="selectedLineage"
+      :locations="selectedLocations"
+      :data="data.filter(element => element.snr >= snrThreshold)"
+      :xAccessor="xAccessor"
+      :yAccessor="lineChartYAccessor"
+      :xScaleDomain="xScaleDomain"
+      :colorScale="colorScale"
+      :width="width"
+    />
     <div 
+      :id="loc.replace(/\s+/g, '-').toLowerCase()"
       class="visualization-wrapper" 
-      :style="{ 'width': width + 'px' }"
       v-for="loc in selectedLocations" :key="loc"
     >
-      <GrVisHeader 
-        :loc="loc" 
-        :colorScale="colorScale"
-        :legendPointer="legendPointer"
-      />
+      <h3>{{ loc }}</h3>
       <GrScatterplot
         :loc="loc" 
         :lineage="selectedLineage"
@@ -63,6 +70,11 @@
         :hoveredScatterplotPoint="hoveredScatterplotPoint"
         @line-hovered="handleLineHovered"
       />
+      <GrLegendWithPointer 
+        :loc="loc" 
+        :colorScale="colorScale"
+        :legendPointer="legendPointer"
+      />
     </div>
   </div>
 </template>
@@ -75,10 +87,11 @@
   import { interpolateRdYlBu } from 'd3-scale-chromatic';
   import { lazyLoad } from '@/js/lazy-load';
 
-  const GrVisHeader = lazyLoad('GrVisHeader');
+  const GrSlider = lazyLoad('GrSlider');
+  const GrOverview = lazyLoad('GrOverview');
   const GrScatterplot = lazyLoad('GrScatterplot');
   const GrLineChart = lazyLoad('GrLineChart');
-  const GrSlider = lazyLoad('GrSlider');
+  const GrLegendWithPointer = lazyLoad('GrLegendWithPointer');
 
   const props = defineProps({
     data: Array,
@@ -247,10 +260,13 @@
   }
   .visualization-wrapper {
     position: relative;
-    width: 100%;
-    max-width: 1000px;
     margin-left: 50px;
     margin-right: 50px;
     margin-bottom: 50px;
+  }
+  .visualization-wrapper h3 {
+    color: #2c3e50;
+    font-size: 18px;
+    font-weight: 700;
   }
 </style>
