@@ -35,7 +35,7 @@
       },
       {
         "q": "How do I find if a lineage is growing or shrinking compared to the background in one or more locations?",
-        "a": "Go to Outbreak.info’s <a href='https://outbreak.info/growth-rates'>Growth Rates</a> page. Select a lineage and one or more locations to generate visualizations. The table provides an overview of the lineage dynamics in the selected location(s). Stripe charts and sparklines convey information on growth rates and prevalence, respectively. For each lineage-location pair, an interactive visualization composed of a scatterplot and a line-stripe chart displays growth rate and prevalence information. Scatterplots present growth rates, whereas line-stripe charts show growth rates and prevalence over time."
+        "a": "Go to Outbreak.info’s <a href='https://outbreak.info/growth-rates'>Growth Rates</a> page. Select a lineage and one or more locations to generate visualizations. The table provides an overview of the lineage dynamics in the selected location(s). Stripe charts and sparklines convey information on growth rates and prevalence, respectively. <img class='d-flex align-items-center w-75 mb-4' src='/faqs/growth-rates-1.png' alt='Overview table with scatterplots and sparklines'>For each lineage-location pair, an interactive visualization composed of a scatterplot and a line-stripe chart displays growth rate and prevalence information. Scatterplots present growth rates, whereas line-stripe charts show growth rates and prevalence over time.<img class='d-flex align-items-center w-75 mb-4' src='/faqs/growth-rates-2.png' alt='Visualization comprising a scatterplot and a line-stripe chart'>"
       },
       {
         "q": "Can I see if a particular GISAID sequence is included in a Variant Report?",
