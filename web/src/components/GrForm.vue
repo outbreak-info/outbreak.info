@@ -52,16 +52,9 @@
         </n-button>
       </div>
     </div>
-    <div class="suggestion-container">
-      <span>Suggested lineages</span>
-      <n-button 
-        type="tertiary"
-        v-for="lin in significantLineages.sort()" :key="lin"
-        @click="handleSuggestionButtonClick(lin)"
-      >
-        {{ lin }}
-      </n-button>
-    </div>
+    <GrSuggestedLineages 
+      @suggestion-selected="handleSuggestionSelected"
+    />
     <div class="anchor-container">
       <n-anchor ref="anchorRef">
         <n-anchor-link title="Read about growth rates" @click="scrollTo('#notes')" />
@@ -76,6 +69,9 @@
   import _ from 'lodash';
   import { NFormItem, NSelect, NButton, NAnchor, NAnchorLink} from 'naive-ui'
   import { findPangolin, findLocation } from '@/api/genomics.js';
+  import { lazyLoad } from '@/js/lazy-load';
+
+  const GrSuggestedLineages = lazyLoad('GrSuggestedLineages');
     
   const emit = defineEmits(['query-button-clicked']);
 
@@ -94,8 +90,6 @@
   const locationLoading = ref(false);
   const locationQuerySubscription = ref(null);  
   const locationMatches = ref([]);
-
-  const significantLineages = ['XBB.1.5', 'XBB.1.9.1', 'XBB.1.16', 'XBB.1.16.2', 'XBB.2.3', 'EG.1', 'FL.4', 'FU.1'];
 
   const genomicsApiUrl = "https://api.outbreak.info/genomics/";
 
@@ -171,7 +165,7 @@
     });
   }
 
-  const handleSuggestionButtonClick = (suggestion) => {
+  const handleSuggestionSelected = (suggestion) => {
     selectedLineage.value = suggestion;
   }
 
@@ -212,18 +206,6 @@
   .query-buttons {
     display: flex; 
     gap: 5px;
-  }
-  .suggestion-container {
-    display: flex; 
-    flex-flow: row wrap;
-    margin-left: 50px;
-    margin-right: 50px;
-    gap: 5px;
-    font-size: 14px;
-  }
-  .suggestion-container span {
-    margin-top: 7px;
-    margin-right: 10px;
   }
   .anchor-container {
     margin-top: 15px;
