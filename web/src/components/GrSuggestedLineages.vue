@@ -34,6 +34,7 @@
   const selectedSuggestion = ref(null);
 
   const handpickedLocations = ['CAN', 'GBR', 'JPN', 'KOR', 'CHE', 'USA', 'ZAF']; 
+  
   const lineagesPerHandpickedLocation = 5;
   const numberOfSuggestions = 5;
 
@@ -44,12 +45,12 @@
   const getData = async () => {
     const apiData = await getHighestSignificanceLineages(handpickedLocations, lineagesPerHandpickedLocation);
 
-    // create array with lineage and significance columns only
-    const lineageSignificanceArray = apiData.map(element => {
-      return {
-        lin: element.lin,
-        sig: +element.sig,
-      }
+    // remove B-lineage records and create array with lineage and significance columns only
+    const lineageSignificanceArray = apiData.filter(element => element.lin !== 'B').map(element => { 
+        return {
+          lin:element.lin,
+          sig: +element.sig,
+        }
     });
 
     // add up lineage significances
