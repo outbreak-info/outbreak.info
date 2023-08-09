@@ -1,16 +1,24 @@
 <template>
-  <div 
-    v-if="suggestedLineages.length > 0" 
-    class="suggestion-container"
-  >
-    <span>Suggested lineages</span>
-    <n-button 
-      type="tertiary"
-      v-for="lin in suggestedLineages.sort()" :key="lin"
-      @click="handleSuggestionButtonClick(lin)"
+  <div>
+    <div 
+      v-if="suggestedLineages.length > 0" 
+      class="suggestion-container"
     >
-      {{ lin }}
-    </n-button>
+      <span>Suggested lineages</span>
+      <n-button 
+        type="tertiary"
+        v-for="lin in suggestedLineages.sort()" :key="lin"
+        @click="handleSuggestionButtonClick(lin)"
+      >
+        {{ lin }}
+      </n-button>
+    </div>
+    <div v-else class="spinner-container">
+      <font-awesome-icon
+        class="fa-pulse fa-2x text-highlight"
+        :icon="['fas', 'spinner']"
+      />
+    </div>
   </div>
 </template>
 
@@ -77,5 +85,9 @@
   .suggestion-container span {
     margin-top: 7px;
     margin-right: 10px;
+  }
+  .spinner-container {
+    display: flex;
+    justify-content: center;
   }
 </style>
