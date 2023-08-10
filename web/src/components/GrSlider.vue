@@ -9,8 +9,8 @@
         @update:value="handleSnrUpdate"
         :marks="sliderMarks"
         :min="0"
-        :max="5"
-        :step="0.25" 
+        :max="2"
+        :step="0.1" 
       />
     </n-form-item>
 </div>
@@ -28,9 +28,6 @@
     0: '0',
     1: '1',
     2: '2',
-    3: '3',
-    4: '4',
-    5: '5',
   }
 
   const handleSnrUpdate = () => {
@@ -40,7 +37,7 @@
 
 <style>
   .slider-container {
-    max-width: 345px;
+    max-width: 300px;
     margin-left: 50px;
     margin-right: 30px;
     margin-bottom: 20px;
