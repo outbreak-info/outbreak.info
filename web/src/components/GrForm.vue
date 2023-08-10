@@ -63,9 +63,6 @@
       </n-button>
     </div>
     <div class="anchor-container">
-      <n-anchor ref="anchorRef">
-        <n-anchor-link title="Read about growth rates" @click="scrollTo('#notes')" />
-      </n-anchor>
       <hr class="divider" />
     </div> 
   </div>
@@ -74,12 +71,10 @@
 <script setup>
   import { ref, computed } from 'vue';
   import _ from 'lodash';
-  import { NFormItem, NSelect, NButton, NAnchor, NAnchorLink} from 'naive-ui'
+  import { NFormItem, NSelect, NButton } from 'naive-ui'
   import { findPangolin, findLocation } from '@/api/genomics.js';
     
   const emit = defineEmits(['query-button-clicked']);
-
-  const anchorRef = ref(null);
 
   const selectedLineage = ref(null);
   const selectedLocations = ref([]);
@@ -178,10 +173,6 @@
   const handleLocationUpdate = (ids, countryInfo) => {
     selectedCountryInfo.value = countryInfo;
   }
-
-  const scrollTo = (href) => {
-    anchorRef.value?.scrollTo(href);
-  };
 </script>
 
 <style scoped>
