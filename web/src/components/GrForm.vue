@@ -62,9 +62,6 @@
         {{ lin }}
       </n-button>
     </div>
-    <div class="anchor-container">
-      <hr class="divider" />
-    </div> 
   </div>
 </template>
   
@@ -182,7 +179,6 @@
     max-width: 1000px;
     width: 100%;
     text-align: left;
-    margin-bottom: 10px;
   }
   .selector-container {
     display: flex; 
@@ -211,20 +207,11 @@
     margin-right: 50px;
     gap: 5px;
     font-size: 14px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(209, 59, 98, 0.5);
   }
   .suggestion-container span {
     margin-top: 7px;
     margin-right: 10px;
-  }
-  .anchor-container {
-    margin-top: 15px;
-    margin-left: 50px;
-    margin-right: 50px;
-  }
-  .divider {
-    border-top: 1px solid rgba(209, 59, 98, 0.2);
-    border-bottom: 1px solid rgba(209, 59, 98, 0.5);
-    margin-top: 25px;
-    margin-bottom: 0px;
   }
 </style>
