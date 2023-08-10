@@ -3,6 +3,7 @@
     <n-notification-provider>
       <div class="page-wrapper">
         <GrHeader />
+        <GrIntro />
         <GrForm 
           @query-button-clicked="handleQueryButtonClick"
         />
@@ -40,6 +41,7 @@
   import { useSeoMeta } from 'unhead';
 
   const GrHeader = lazyLoad('GrHeader');
+  const GrIntro = lazyLoad('GrIntro');
   const GrForm = lazyLoad('GrForm');
   const GrVisualizations = lazyLoad('GrVisualizations');
   const GrWarning = lazyLoad('GrWarning');
