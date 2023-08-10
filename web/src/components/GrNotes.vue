@@ -2,9 +2,6 @@
   <div id="notes" class="notes">
     <div class="notes-copy">
       <h2>About growth rates</h2>
-      <p>
-        The relative <span class="bold"> growth rate </span> of a lineage shows if said lineage is growing or shrinking compared to the background in a location, averaged over seven days. A positive relative growth rate indicates that a lineage may have a competitive advantage, and could eventually become a variant of interest.
-      </p>
       <h3>How growth rates are calculated</h3>
       <p>
         Growth rates are calculated by comparing the number of sequences lineage detected in a location to the number of sequences of other lineages, and to the same quantities from the previous week. Simple models are used to correct for local variation in reporting conditions based on population and reported case and death counts, and to estimate the uncertainty in our growth-rates measurements.
