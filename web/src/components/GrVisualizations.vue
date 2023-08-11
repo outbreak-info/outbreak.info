@@ -1,20 +1,7 @@
 <template>
   <div class="gr-visualizations">
-    <div class="visualization-info">
-      <div class="title-container">
-        <h2>{{ title }}</h2>
-      </div>
-      <n-form-item
-        label="show 95% confidence intervals"
-        label-placement="left"
-        class="switch-container"
-      >
-        <n-switch
-          v-model:value="isCIShown"
-          @update:value="handleSwitchChange" 
-          size="small"
-         />
-      </n-form-item>
+    <div class="visualization-title">
+      <h2>{{ title }}</h2>
     </div>
     <GrSlider 
       @slider-value-updated="handleSnrUpdate"
@@ -30,12 +17,28 @@
       :colorScale="colorScale"
       :width="width"
     />
+    <div class="ci-switch">
+      <div class="title-container">
+        <h3>Growth rates in selected locations</h3>
+      </div>
+      <n-form-item
+        label="show 95% confidence intervals"
+        label-placement="left"
+        class="switch-container"
+      >
+        <n-switch
+          v-model:value="isCIShown"
+          @update:value="handleSwitchChange" 
+          size="small"
+         />
+      </n-form-item>
+    </div>
     <div 
       :id="loc.replace(/\s+/g, '-').toLowerCase()"
       class="visualization-wrapper" 
       v-for="loc in selectedLocations" :key="loc"
     >
-      <h3>{{ loc }}</h3>
+      <h4>{{ loc }}</h4>
       <GrScatterplot
         :loc="loc" 
         :lineage="selectedLineage"
@@ -239,20 +242,33 @@
     width: 100%;
     text-align: left;
     margin-top: 25px;
+    color: #2c3e50;
   }
-  .visualization-info {
+  .visualization-title {
     display: flex; 
     flex-flow: row wrap;
     margin-left: 50px;
     margin-right: 50px;
+  }
+  .visualization-title h2 {
+    font-size: 24px;
+    font-weight: 700;
+  }
+  .ci-switch {
+    display: flex; 
+    flex-flow: row wrap;
+    margin-left: 50px;
+    margin-right: 50px;
+    margin-bottom: 15px;
+    align-items: center;
     gap: 10px;
   }
   .title-container {
     flex: 200 1 auto; 
     text-align: left;
   }
-  .title-container h2 {
-    font-size: 24px;
+  .title-container h3 {
+    font-size: 18px;
     font-weight: 700;
   }
   .switch-container {
@@ -264,9 +280,8 @@
     margin-right: 50px;
     margin-bottom: 50px;
   }
-  .visualization-wrapper h3 {
-    color: #2c3e50;
-    font-size: 18px;
+  .visualization-wrapper h4 {
+    font-size: 16px;
     font-weight: 700;
   }
 </style>
