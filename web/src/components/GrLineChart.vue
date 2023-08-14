@@ -59,7 +59,16 @@
           stroke="#ffffff"
           stroke-width="2px"
         />
-        <!-- circle rendered when visitor hovers over scatterplot -->
+        <circle 
+          v-if="hoveredPoint"
+          :r="(xScale.bandwidth() / 2) + 3"
+          :cx="xAccessorScaled(hoveredPoint)"
+          :cy="yAccessorScaled(hoveredPoint)"
+          fill="none"
+          stroke="#2c3e50"
+          stroke-width="2px"
+        />
+        <!-- circles rendered when visitor hovers over scatterplot -->
         <circle 
           v-if="hoveredScatterplotPoint && hoveredScatterplotPoint.label == loc"
           :r="(xScale.bandwidth() / 2)"
@@ -67,6 +76,15 @@
           :cy="yAccessorScaled(hoveredScatterplotPoint)"
           fill="#2c3e50"
           stroke="#ffffff"
+          stroke-width="2px"  
+        />
+        <circle 
+          v-if="hoveredScatterplotPoint && hoveredScatterplotPoint.label == loc"
+          :r="(xScale.bandwidth() / 2) + 3"
+          :cx="xAccessorScaled(hoveredScatterplotPoint)"
+          :cy="yAccessorScaled(hoveredScatterplotPoint)"
+          fill="none"
+          stroke="#2c3e50"
           stroke-width="2px"  
         />
       </g>
