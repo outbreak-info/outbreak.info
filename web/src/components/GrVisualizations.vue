@@ -39,6 +39,9 @@
       v-for="loc in selectedLocations" :key="loc"
     >
       <h4>{{ loc }}</h4>
+      <GrDownloadButton 
+        :loc="loc"
+        :data="data.filter(element => element.label == loc && element.snr >= snrThreshold)" />
       <GrScatterplot
         :loc="loc" 
         :lineage="selectedLineage"
@@ -92,6 +95,7 @@
 
   const GrSlider = lazyLoad('GrSlider');
   const GrOverview = lazyLoad('GrOverview');
+  const GrDownloadButton = lazyLoad('GrDownloadButton');
   const GrScatterplot = lazyLoad('GrScatterplot');
   const GrLineChart = lazyLoad('GrLineChart');
   const GrLegendWithPointer = lazyLoad('GrLegendWithPointer');
