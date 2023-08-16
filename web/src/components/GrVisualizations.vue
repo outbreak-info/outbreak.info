@@ -38,10 +38,10 @@
       class="visualization-wrapper" 
       v-for="loc in selectedLocations" :key="loc"
     >
-      <h4>{{ loc }}</h4>
-      <GrDownloadButton 
+      <GrVisInfo 
         :loc="loc"
-        :data="data.filter(element => element.label == loc && element.snr >= snrThreshold)" />
+        :data="data.filter(element => element.label == loc && element.snr >= snrThreshold)" 
+      />
       <GrScatterplot
         :loc="loc" 
         :lineage="selectedLineage"
@@ -95,7 +95,7 @@
 
   const GrSlider = lazyLoad('GrSlider');
   const GrOverview = lazyLoad('GrOverview');
-  const GrDownloadButton = lazyLoad('GrDownloadButton');
+  const GrVisInfo = lazyLoad('GrVisInfo');
   const GrScatterplot = lazyLoad('GrScatterplot');
   const GrLineChart = lazyLoad('GrLineChart');
   const GrLegendWithPointer = lazyLoad('GrLegendWithPointer');
@@ -283,9 +283,5 @@
     margin-left: 50px;
     margin-right: 50px;
     margin-bottom: 50px;
-  }
-  .visualization-wrapper h4 {
-    font-size: 16px;
-    font-weight: 700;
   }
 </style>
