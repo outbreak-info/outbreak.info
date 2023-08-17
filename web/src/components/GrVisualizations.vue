@@ -1,8 +1,9 @@
 <template>
   <div class="gr-visualizations">
-    <div class="visualization-title">
-      <h2>{{ title }}</h2>
-    </div>
+    <GrVisHeader
+      :title="title"
+      :dates="xScaleDomain"
+    />
     <GrSlider 
       @slider-value-updated="handleSnrUpdate"
     />
@@ -93,6 +94,7 @@
   import { interpolateRdYlBu } from 'd3-scale-chromatic';
   import { lazyLoad } from '@/js/lazy-load';
 
+  const GrVisHeader = lazyLoad('GrVisHeader');
   const GrSlider = lazyLoad('GrSlider');
   const GrOverview = lazyLoad('GrOverview');
   const GrVisInfo = lazyLoad('GrVisInfo');
@@ -247,16 +249,6 @@
     text-align: left;
     margin-top: 25px;
     color: #2c3e50;
-  }
-  .visualization-title {
-    display: flex; 
-    flex-flow: row wrap;
-    margin-left: 50px;
-    margin-right: 50px;
-  }
-  .visualization-title h2 {
-    font-size: 24px;
-    font-weight: 700;
   }
   .ci-switch {
     display: flex; 
