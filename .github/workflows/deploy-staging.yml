@@ -1,4 +1,4 @@
-name: Deploy Outbreak.info Webapp to Staging S3
+name: Deploy Outbreak.info to Staging
 
 on:
   push:

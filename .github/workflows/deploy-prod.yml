@@ -1,4 +1,4 @@
-name: Deploy Outbreak.info Webapp to S3
+name: Deploy Outbreak.info to Prod
 
 on:
   push:
