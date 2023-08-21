@@ -43,12 +43,12 @@
           fill="none"
           stroke-linecap="round"
         />
-        <GrAnnotations 
+        <GrAnnotations
           :data="data"
-          :xAccessor="xAccessor"
+          :xAccessorScaled="xAccessorScaled"
+          :yAccessorScaled="yAccessorScaled"
           :yAccessor="yAccessor"
-          :xScale="xScale"
-          :yScale="yScale"
+          :AreAnnotationsSmall="false"
         />
         <circle 
           v-if="hoveredPoint"
