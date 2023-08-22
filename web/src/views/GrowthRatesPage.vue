@@ -89,6 +89,8 @@
   const lowPercentile = 0.1;
   const highPercentile = 0.9;
 
+  const snrThreshold = 0.1;
+
   onMounted(() => {
     const locationString = `(${initialLocations.map(obj => obj.value).join(' OR ')})`
     const url = `${growthRateApiUrl}query?q=lineage:${chosenLineage.value} AND location:${locationString}`;
@@ -138,7 +140,7 @@
     const upperBound = quantile(flatArray, highPercentile, d => d.G_7_linear);
 
     const filteredArray = flatArray.filter(
-      d => d.G_7_linear >= lowerBound && d.G_7_linear <= upperBound,
+      d => d.G_7_linear >= lowerBound && d.G_7_linear <= upperBound && d.snr >= snrThreshold,
     );
 
     locationsWithData.value = [...new Set(filteredArray.map(obj => obj.label)) ];

@@ -34,7 +34,7 @@
     justify-content: space-between;
     align-items: center;
     gap: 10px;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
   }
   .vis-title h2 {
     font-size: 24px;

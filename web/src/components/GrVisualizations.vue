@@ -4,14 +4,11 @@
       :title="title"
       :dates="xScaleDomain"
     />
-    <GrSlider 
-      @slider-value-updated="handleSnrUpdate"
-    />
     <GrOverview
       v-if="data.length > 0"
       :lineage="selectedLineage"
       :locations="selectedLocations"
-      :data="data.filter(element => element.snr >= snrThreshold)"
+      :data="data"
       :xAccessor="xAccessor"
       :yAccessor="lineChartYAccessor"
       :xScaleDomain="xScaleDomain"
@@ -41,13 +38,13 @@
     >
       <GrVisInfo 
         :loc="loc"
-        :data="data.filter(element => element.label == loc && element.snr >= snrThreshold)" 
+        :data="data.filter(element => element.label == loc)" 
       />
       <GrScatterplot
         :loc="loc" 
         :lineage="selectedLineage"
         :isCIShown="isCIShown"
-        :data="data.filter(element => element.label == loc && element.snr >= snrThreshold)"
+        :data="data.filter(element => element.label == loc)"
         :xAccessor="xAccessor"
         :yAccessor="scatterplotYAccessor"
         :xScale="xScale"
@@ -64,7 +61,7 @@
       <GrLineChart
         :loc="loc"
         :lineage="selectedLineage"
-        :data="data.filter(element => element.label == loc && element.snr >= snrThreshold)"
+        :data="data.filter(element => element.label == loc)"
         :xAccessor="xAccessor"
         :yAccessor="lineChartYAccessor"
         :xScale="xScale"
@@ -95,7 +92,6 @@
   import { lazyLoad } from '@/js/lazy-load';
 
   const GrVisHeader = lazyLoad('GrVisHeader');
-  const GrSlider = lazyLoad('GrSlider');
   const GrOverview = lazyLoad('GrOverview');
   const GrVisInfo = lazyLoad('GrVisInfo');
   const GrScatterplot = lazyLoad('GrScatterplot');
@@ -107,8 +103,6 @@
   });
 
   const isCIShown = ref(true);
-
-  const snrThreshold = ref(0);
 
   const xAccessor = d => d.date;
   const scatterplotYAccessor = d => d.G_7_linear;
@@ -159,10 +153,6 @@
     hoveredLinePoint.value = point;
     if (hoveredLinePoint.value) 
       legendPointer.value = hoveredLinePoint.value;
-  }
-
-  const handleSnrUpdate = (threshold) => {
-    snrThreshold.value = threshold;
   }
 
   const selectedLineage = computed(() => props.data[0].lineage);
