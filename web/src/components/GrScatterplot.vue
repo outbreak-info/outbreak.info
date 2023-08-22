@@ -41,6 +41,7 @@
             :fill="colorScale(dataPoint.G_7_linear)"
             stroke="#2c3e50"
             stroke-width="1px"
+            @click.left="handleLeftClick(dataPoint)"
           />
         </g>
         <circle
@@ -147,6 +148,11 @@
   const handleMouseLeave = () => {
     hoveredPoint.value = null;
     emit('scatterplot-hovered', null);
+  }
+
+  const handleLeftClick = (d) => {
+    hoveredPoint.value = d;
+    emit('scatterplot-hovered', hoveredPoint.value);
   }
   
   const minGrowthRate = computed(() => props.yScale.domain()[0]);
