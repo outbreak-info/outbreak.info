@@ -47,5 +47,6 @@
   .annotation {
     fill: "#2c3e50";
     font-size: v-bind(fontSize);
+    font-weight: 700;
   }
 </style>
