@@ -21,7 +21,8 @@
           />  
         </g>  
         <text
-          x="0"
+          class="title"
+          x="5"
           :y="yMax - 40"
           text-anchor="middle"
           fill="#2c3e50"
@@ -165,10 +166,13 @@
   const ariaLabel = computed(() => `Line chart of ${props.lineage} prevalence in ${props.loc}`);
 </script>
   
-<style>
+<style scoped>
   .line-chart {
     margin-top: 0px;
     margin-bottom: 10px;
   } 
+  .title {
+    font-weight: 700;
+  }
 </style>
   
