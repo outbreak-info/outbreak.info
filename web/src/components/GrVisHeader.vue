@@ -35,6 +35,8 @@
     align-items: center;
     gap: 10px;
     margin-bottom: 20px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(209, 59, 98, 0.5);
   }
   .vis-title h2 {
     font-size: 24px;

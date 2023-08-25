@@ -52,24 +52,20 @@
         </n-button>
       </div>
     </div>
-    <div class="suggestion-container">
-      <span>Suggested lineages</span>
-      <n-button 
-        type="tertiary"
-        v-for="lin in significantLineages.sort()" :key="lin"
-        @click="handleSuggestionButtonClick(lin)"
-      >
-        {{ lin }}
-      </n-button>
-    </div>
+    <GrSuggestedLineages 
+      @suggestion-selected="handleSuggestionSelected"
+    />
   </div>
 </template>
   
 <script setup>
   import { ref, computed } from 'vue';
   import _ from 'lodash';
-  import { NFormItem, NSelect, NButton } from 'naive-ui'
+  import { NFormItem, NSelect, NButton } from 'naive-ui' 
   import { findPangolin, findLocation } from '@/api/genomics.js';
+  import { lazyLoad } from '@/js/lazy-load';
+
+  const GrSuggestedLineages = lazyLoad('GrSuggestedLineages');
     
   const emit = defineEmits(['query-button-clicked']);
 
@@ -86,8 +82,6 @@
   const locationLoading = ref(false);
   const locationQuerySubscription = ref(null);  
   const locationMatches = ref([]);
-
-  const significantLineages = ['XBB.1.5', 'XBB.1.9.1', 'XBB.1.16', 'XBB.1.16.2', 'XBB.2.3', 'EG.1', 'FL.4', 'FU.1'];
 
   const genomicsApiUrl = "https://api.outbreak.info/genomics/";
 
@@ -163,7 +157,7 @@
     });
   }
 
-  const handleSuggestionButtonClick = (suggestion) => {
+  const handleSuggestionSelected = (suggestion) => {
     selectedLineage.value = suggestion;
   }
 
@@ -199,19 +193,5 @@
   .query-buttons {
     display: flex; 
     gap: 5px;
-  }
-  .suggestion-container {
-    display: flex; 
-    flex-flow: row wrap;
-    margin-left: 50px;
-    margin-right: 50px;
-    gap: 5px;
-    font-size: 14px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid rgba(209, 59, 98, 0.5);
-  }
-  .suggestion-container span {
-    margin-top: 7px;
-    margin-right: 10px;
   }
 </style>
