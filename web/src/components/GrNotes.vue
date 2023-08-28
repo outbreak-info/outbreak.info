@@ -82,6 +82,8 @@
   }
   .notes-copy {
     margin: 0px 50px 0px 50px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(209, 59, 98, 0.5);
   }
   .bold {
     font-weight: 700;

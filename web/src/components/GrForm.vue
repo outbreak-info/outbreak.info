@@ -173,6 +173,7 @@
     max-width: 1000px;
     width: 100%;
     text-align: left;
+    margin-bottom: 20px;
   }
   .selector-container {
     display: flex; 

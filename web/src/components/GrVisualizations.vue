@@ -237,7 +237,6 @@
     max-width: 1000px;
     width: 100%;
     text-align: left;
-    margin-top: 25px;
     color: #2c3e50;
   }
   .ci-switch {

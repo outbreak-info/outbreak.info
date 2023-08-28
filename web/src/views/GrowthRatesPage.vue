@@ -51,30 +51,19 @@
   const props = defineProps({
     lin: {
       type: String,
-      default: 'XBB.1.5.15',
+      default: '',
     },
     loc: {
       type: Array,
-      default: () => ['CAN', 'USA'],
+      default: () => [],
     },
   });
 
   const router = useRouter();
 
-  const initialLocations = [
-    {
-      label: 'Canada',
-      value: 'CAN',
-    },
-    {
-      label: 'United States',
-      value: 'USA'
-    }
-  ];
-
   const chosenLineage = ref(props.lin);
   const chosenLocations = ref(props.loc);
-  const chosenLocationInfo = ref(initialLocations);
+  const chosenLocationInfo = ref([]);
     
   const growthRateApiUrl = "https://api.outbreak.info/growth_rate/";
    
@@ -92,13 +81,6 @@
   const snrThreshold = 0.1;
 
   onMounted(() => {
-    const locationString = `(${initialLocations.map(obj => obj.value).join(' OR ')})`
-    const url = `${growthRateApiUrl}query?q=lineage:${chosenLineage.value} AND location:${locationString}`;
-    getData(url);
-    changeUrl();
-    chosenLineage.value = null;
-    chosenLocations.value = [];
-
     const metadataStore = useMetadataStore();
     const metadata = metadataStore.defaultMetadata;
     useSeoMeta(metadata);
