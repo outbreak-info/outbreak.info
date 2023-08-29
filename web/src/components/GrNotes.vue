@@ -48,6 +48,9 @@
         Growth rates are only calculated when a lineage is detected in sequence data from a location consistently over a one-week interval; as a result of limitations in sequencing coverage, gaps may exist in our growth-rates data estimates, especially for low-prevalence lineages. It is appropriate to assume that lineage growth rates vary continuously over time, and tend towards zero during sequencing gaps. 
       </p>
       <p>
+        Furthermore, only data points for which the absolute value of the ratio between the growth rate and the associated uncertainty is at least 0.1 are shown.
+      </p>
+      <p>
         Gaps may also result from design choices as we remove outliers to keep the y-scale of the scatterplots constant and make growth rate variations over time more noticeable.
       </p>
     </div>
