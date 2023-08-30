@@ -18,6 +18,13 @@
         :innerWidth="innerWidth"
         :innerHeight="innerHeight"
       />
+      <GrAnnotations
+        :data="data"
+        :xAccessorScaled="xAccessorScaled"
+        :yAccessorScaled="yAccessorScaled"
+        :yAccessor="yAccessor"
+        :AreAnnotationsSmall="true"
+      />
     </g>
   </svg>
 </template>
@@ -30,6 +37,8 @@
   import { lazyLoad } from '@/js/lazy-load';
 
   const GrCellAxis = lazyLoad('GrCellAxis');
+  // const GrCellAnnotations = lazyLoad('GrCellAnnotations');
+  const GrAnnotations = lazyLoad('GrAnnotations');
 
   const props = defineProps({
     location: String,

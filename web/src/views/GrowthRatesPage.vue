@@ -3,6 +3,7 @@
     <n-notification-provider>
       <div class="page-wrapper">
         <GrHeader />
+        <GrIntro />
         <GrForm 
           @query-button-clicked="handleQueryButtonClick"
         />
@@ -40,6 +41,7 @@
   import { useSeoMeta } from 'unhead';
 
   const GrHeader = lazyLoad('GrHeader');
+  const GrIntro = lazyLoad('GrIntro');
   const GrForm = lazyLoad('GrForm');
   const GrVisualizations = lazyLoad('GrVisualizations');
   const GrWarning = lazyLoad('GrWarning');
@@ -49,30 +51,19 @@
   const props = defineProps({
     lin: {
       type: String,
-      default: 'XBB.1.5.15',
+      default: '',
     },
     loc: {
       type: Array,
-      default: () => ['CAN', 'USA'],
+      default: () => [],
     },
   });
 
   const router = useRouter();
 
-  const initialLocations = [
-    {
-      label: 'Canada',
-      value: 'CAN',
-    },
-    {
-      label: 'United States',
-      value: 'USA'
-    }
-  ];
-
   const chosenLineage = ref(props.lin);
   const chosenLocations = ref(props.loc);
-  const chosenLocationInfo = ref(initialLocations);
+  const chosenLocationInfo = ref([]);
     
   const growthRateApiUrl = "https://api.outbreak.info/growth_rate/";
    
@@ -87,14 +78,9 @@
   const lowPercentile = 0.1;
   const highPercentile = 0.9;
 
-  onMounted(() => {
-    const locationString = `(${initialLocations.map(obj => obj.value).join(' OR ')})`
-    const url = `${growthRateApiUrl}query?q=lineage:${chosenLineage.value} AND location:${locationString}`;
-    getData(url);
-    changeUrl();
-    chosenLineage.value = null;
-    chosenLocations.value = [];
+  const snrThreshold = 0.1;
 
+  onMounted(() => {
     const metadataStore = useMetadataStore();
     const metadata = metadataStore.defaultMetadata;
     useSeoMeta(metadata);
@@ -136,7 +122,7 @@
     const upperBound = quantile(flatArray, highPercentile, d => d.G_7_linear);
 
     const filteredArray = flatArray.filter(
-      d => d.G_7_linear >= lowerBound && d.G_7_linear <= upperBound,
+      d => d.G_7_linear >= lowerBound && d.G_7_linear <= upperBound && d.snr >= snrThreshold,
     );
 
     locationsWithData.value = [...new Set(filteredArray.map(obj => obj.label)) ];
