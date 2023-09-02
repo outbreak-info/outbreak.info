@@ -2709,7 +2709,6 @@
       - GQ.1
       - GQ.1.1
       - JH.1
-      - JH.1
       - JH.2
       - K.1
       - K.2
@@ -5218,7 +5217,6 @@
       - GQ.1
       - GQ.1.1
       - JH.1
-      - JH.1
       - JH.2
       - K.1
       - K.2
@@ -6788,7 +6786,6 @@
       - GP.3
       - GQ.1
       - GQ.1.1
-      - JH.1
       - JH.1
       - JH.2
       - K.1
@@ -10834,7 +10831,6 @@
       - GP.3
       - GQ.1
       - GQ.1.1
-      - JH.1
       - JH.1
       - JH.2
   parent: B.1.1
@@ -15299,7 +15295,6 @@
       - FN.1
       - FQ.1
       - JH.1
-      - JH.1
       - JH.2
   parent: B.1.1.529
 - name: BA.5.1
@@ -17491,7 +17486,6 @@
       - FN.1
       - FQ.1
       - JH.1
-      - JH.1
       - JH.2
   parent: BA.5
 - name: BA.5.3.1
@@ -17723,7 +17717,6 @@
       - FN.1
       - FQ.1
       - JH.1
-      - JH.1
       - JH.2
   parent: BA.5.3
 - name: BE.1
@@ -17936,7 +17929,6 @@
       - FN.1
       - FQ.1
       - JH.1
-      - JH.1
       - JH.2
   parent: BA.5.3.1
 - name: BE.1.1
@@ -18139,7 +18131,6 @@
       - FN.1
       - FQ.1
       - JH.1
-      - JH.1
       - JH.2
   parent: BE.1
 - name: BE.1.1.1
@@ -18339,7 +18330,6 @@
       - FN.1
       - FQ.1
       - JH.1
-      - JH.1
       - JH.2
   parent: BE.1.1
 - name: BQ.1
@@ -18536,7 +18526,6 @@
       - FM.2
       - FN.1
       - FQ.1
-      - JH.1
       - JH.1
       - JH.2
   parent: BE.1.1.1
@@ -19442,7 +19431,6 @@
       - FB.1
       - FB.2
       - JH.1
-      - JH.1
       - JH.2
   parent: BQ.1
 - name: BQ.1.2.1
@@ -19466,7 +19454,6 @@
   alias: B.1.1.529.5.3.1.1.1.1.1.2.2
   children:
       - BQ.1.2.2
-      - JH.1
       - JH.1
       - JH.2
   parent: BQ.1.2
@@ -26677,6 +26664,7 @@
       - HQ.1
       - HR.1
       - HS.1
+      - HS.1.1
       - HT.1
       - HT.2
       - HU.1
@@ -26700,6 +26688,7 @@
       - JF.2
       - JG.1
       - JJ.1
+      - JK.1
       - XBB
       - XBB.1
       - XBB.1.1
@@ -27255,6 +27244,7 @@
       - HQ.1
       - HR.1
       - HS.1
+      - HS.1.1
       - HT.1
       - HT.2
       - HU.1
@@ -27276,6 +27266,7 @@
       - JF.2
       - JG.1
       - JJ.1
+      - JK.1
       - XBB.1
       - XBB.1.1
       - XBB.1.2
@@ -27601,6 +27592,7 @@
       - HQ.1
       - HR.1
       - HS.1
+      - HS.1.1
       - HT.1
       - HT.2
       - HY.1
@@ -27613,6 +27605,7 @@
       - JD.1
       - JD.1.1
       - JD.1.2
+      - JK.1
       - XBB.1.5
       - XBB.1.5.1
       - XBB.1.5.2
@@ -27739,8 +27732,14 @@
 - name: XBB.1.5.3
   alias: XBB.1.5.3
   children:
+      - JK.1
       - XBB.1.5.3
   parent: XBB.1.5
+- name: JK.1
+  alias: XBB.1.5.3.1
+  children:
+      - JK.1
+  parent: XBB.1.5.3
 - name: XBB.1.5.4
   alias: XBB.1.5.4
   children:
@@ -28682,13 +28681,20 @@
   alias: XBB.1.5.95
   children:
       - HS.1
+      - HS.1.1
       - XBB.1.5.95
   parent: XBB.1.5
 - name: HS.1
   alias: XBB.1.5.95.1
   children:
       - HS.1
+      - HS.1.1
   parent: XBB.1.5.95
+- name: HS.1.1
+  alias: XBB.1.5.95.1.1
+  children:
+      - HS.1.1
+  parent: HS.1
 - name: XBB.1.5.96
   alias: XBB.1.5.96
   children:
