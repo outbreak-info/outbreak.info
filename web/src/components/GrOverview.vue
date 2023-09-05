@@ -84,9 +84,9 @@
 
   const miniChartMargin = {
     top: 5,
-    right: 25,
+    right: 30,
     bottom: 25,
-    left: 25,
+    left: 30,
   };
 
   const miniChartWidth = computed(() => props.width * 0.3);
