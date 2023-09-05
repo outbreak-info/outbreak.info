@@ -30,7 +30,7 @@
         altText="Growth rate chart in which the color scale is highlighted"
       />
       <p>
-        For each location and lineage, the <span class="bold">scatterplot</span> presents growth rates over time. Its dots are filled according to the color scale. Growth rates measurements are statistical estimates and their precision varies with data conditions. <span class="bold">95% confidence intervals (CIs)</span>, depicted as grey vertical bars in the scatterplot, present information on the uncertainty associated with said measurements. <span class="bold">Horizontal dark grey lines</span> indicate that the CI bar has been cut off. 
+        For each location and lineage, the <span class="bold">scatterplot</span> presents growth rates over time. Its dots are filled according to the color scale. Growth rates measurements are statistical estimates and their precision varies with data conditions. <span class="bold">95% confidence intervals (CIs)</span>, depicted as grey vertical bars in the scatterplot, present information on the uncertainty associated with said measurements. <span class="bold">Horizontal dark grey lines</span> indicate that CI bars have been cut off. 
       </p>
       <GrImage 
           image="scatterplot"
