@@ -926,7 +926,7 @@ export const getCharacteristicMutations = (
   }
 
   // convert + to AND to specify lineages + mutations
-  const url = `${apiurl}lineage-mutations?pangolin_lineage=${lineage.replace(
+  const url = `${apiurl}lineage-mutations?lineages=${lineage.replace(
     /\+/g,
     'AND',
   )}&frequency=${prevalenceThreshold}&gene=${genes}`;
