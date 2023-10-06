@@ -41,7 +41,11 @@ curated_data = yaml.load(open(curated_filename), Loader=yaml.BaseLoader)
 
 # Append the Variant of Concern / Interest tag to the lineages
 # VOCs / VOIs are nested within the yaml to avoid having to type this every time.
-vocs = pd.DataFrame(curated_data["VOC"])
+try:
+    vocs = pd.DataFrame(curated_data["VOC"])
+except:
+    print("No Variants of Concern found")
+    vocs = pd.DataFrame()
 
 try:
     vois = pd.DataFrame(curated_data["VOI"])
