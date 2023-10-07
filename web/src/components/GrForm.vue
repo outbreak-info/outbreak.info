@@ -10,11 +10,8 @@
           filterable
           placeholder="Type to search"
           :options="lineageOptions"
-          :loading="lineageLoading"
           clearable
-          remote
           :clear-filter-after-select="true"
-          @search="handleLineageSearch"
         />
       </n-form-item>
       <n-form-item 
@@ -28,11 +25,8 @@
           multiple
           placeholder="Type to search"
           :options="locationOptions"
-          :loading="locationLoading"
           clearable
-          remote
           :clear-filter-after-select="true"
-          @search="handleLocationSearch"
         />
       </n-form-item>
       <div class="query-buttons">
@@ -59,10 +53,10 @@
 </template>
   
 <script setup>
-  import { ref, computed } from 'vue';
+  import { ref, computed, onMounted } from 'vue';
   import _ from 'lodash';
-  import { NFormItem, NSelect, NButton } from 'naive-ui' 
-  import { findPangolin, findLocation } from '@/api/genomics.js';
+  import { NFormItem, NSelect, NButton } from 'naive-ui'; 
+  import { getAllLineageNames, getAllLocationNames } from '@/api/lineage-and-location-names.js';
   import { lazyLoad } from '@/js/lazy-load';
 
   const GrSuggestedLineages = lazyLoad('GrSuggestedLineages');
@@ -74,61 +68,56 @@
   const selectedCountryInfo = ref([]);
 
   const lineageOptions = ref([]);
-  const lineageLoading = ref(false);
-  const lineageQuerySubscription = ref(null);  
-  const lineageMatches = ref([]);
-
   const locationOptions = ref([]);
-  const locationLoading = ref(false);
-  const locationQuerySubscription = ref(null);  
-  const locationMatches = ref([]);
 
   const genomicsApiUrl = "https://api.outbreak.info/genomics/";
 
   const isClearButtonActive = computed(() => setClearButtonStatus(selectedLineage.value, selectedLocations.value));
   const isQueryButtonActive = computed(() => setQueryButtonStatus(selectedLineage.value, selectedLocations.value));
-   
-  const handleLineageSearch = (query) => {
-    if (!query.length) {
-      lineageOptions.value = [];
-      return;
-    }
-    lineageLoading.value = true;
-    window.setTimeout(() => {
-      lineageQuerySubscription.value = 
-      findPangolin(genomicsApiUrl, query).subscribe((results) => {
-        lineageMatches.value = results;
-        lineageOptions.value = lineageMatches.value.map(obj => {
-          return {
-            label: obj.name,
-            value: obj.name              
-          }
-        })       
-        lineageLoading.value = false;
-      }, 1e3);
-    });           
-  }
 
-  const handleLocationSearch = (query) => {
-    if (!query.length) {
-      locationOptions.value = [];
-      return;
-    }
-    locationLoading.value = true;
-    window.setTimeout(() => {
-      locationQuerySubscription.value = 
-      findLocation(genomicsApiUrl, query).subscribe((results) => {
-        locationMatches.value = results.filter(obj => obj.admin_level == 0);  
-        locationOptions.value = locationMatches.value.map(obj => {
-          return {
-            label: obj.country,
-            value: obj.country_id              
-          }
-        })     
-        locationLoading.value = false;
-      }, 1e3);
-    });           
-  }
+  onMounted(() => {
+    getAllLineageNames(genomicsApiUrl).subscribe((results) => {
+      lineageOptions.value = generateLineageNamesArray(results);
+    }) 
+    getAllLocationNames(genomicsApiUrl).subscribe((results) => {
+      locationOptions.value = generateLocationNamesArray(results);
+    })
+  });
+
+  const generateLineageNamesArray = (resultsArray) => {
+    const filteredArray = resultsArray.filter(a => !a.includes('*') && a != '');
+    const filteredArrayCopy = Array.from(filteredArray);
+    const aggregationNamesArray = filteredArrayCopy.map(i => `${i}+`);
+    
+    filteredArray.push(...aggregationNamesArray);
+    filteredArray.sort();
+
+    const lineageNamesArray = filteredArray.map(element => {
+      return {
+        label: element,
+        value: element,
+      }
+    })
+   
+    return lineageNamesArray;
+  };
+
+  const generateLocationNamesArray = (resultsArray) => {
+    const filteredArray = resultsArray.filter(obj => obj.admin_level == 0);
+
+    const countryNamesArray = filteredArray.map(obj => {
+      return {
+        label: obj.country,
+        value: obj.country_id              
+      }
+    }) 
+
+    countryNamesArray.sort((a, b) => a.label.localeCompare(b.label));
+
+    countryNamesArray.unshift({label: 'Global', value: 'Global'});
+    
+    return countryNamesArray;
+  };
 
   const setClearButtonStatus = (lineage, locations) => {
     if (lineage || locations.length > 0) {
