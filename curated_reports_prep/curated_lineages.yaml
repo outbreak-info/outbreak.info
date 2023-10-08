@@ -182,83 +182,11 @@ VUM:
           variantType: VUM
 
 deescalated:
- - who_name: "XBB.1.9* [Omicron (XBB.1.9.X)]"
-    short_name: "XBB.1.9*"
-    pangolin_lineage: XBB.1.9
-    include_recombinants: True
-    dateModified: 2023-04-17
-    variantType: Variant of Concern
-    classifications:
-        - author: WHO
-          dateModified: 2023-09-21
-          url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
-          variantType: VOC
-        - author: CDC
-          dateModified: 2021-12-01
-          url: https://www.cdc.gov/coronavirus/2019-ncov/variants/variant-info.html
-          variantType: VOC
-        - author: PHE
-          dateModified: 2021-12-03
-          url: https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/1038404/Technical_Briefing_30.pdf
-          variantType: VOC
-        - author: ECDC
-          dateModified: 2021-11-26
-          url: https://www.ecdc.europa.eu/en/covid-19/variants-concern
-          variantType: VOC
-
-  - who_name: "XBB.2.3* [Omicron (XBB.2.3.X)]"
-    short_name: "XBB.2.3*"
-    pangolin_lineage: XBB.2.3
-    include_recombinants: True
-    dateModified: 2023-04-17
-    variantType: Variant of Concern
-    classifications:
-        - author: WHO
-          dateModified: 2021-11-26
-          url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
-          variantType: VOC
-        - author: CDC
-          dateModified: 2021-12-01
-          url: https://www.cdc.gov/coronavirus/2019-ncov/variants/variant-info.html
-          variantType: VOC
-        - author: PHE
-          dateModified: 2021-12-03
-          url: https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/1038404/Technical_Briefing_30.pdf
-          variantType: VOC
-        - author: ECDC
-          dateModified: 2021-11-26
-          url: https://www.ecdc.europa.eu/en/covid-19/variants-concern
-          variantType: VOC
-
   - who_name: "CH.1.1* [Omicron (CH.1.1.X)]"
     short_name: CH.1.1*
     pangolin_lineage: CH.1.1
     include_recombinants: True
     dateModified: 2023-02-22
-    variantType: Variant of Concern
-    classifications:
-        - author: WHO
-          dateModified: 2021-11-26
-          url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
-          variantType: VOC
-        - author: CDC
-          dateModified: 2021-12-01
-          url: https://www.cdc.gov/coronavirus/2019-ncov/variants/variant-info.html
-          variantType: VOC
-        - author: PHE
-          dateModified: 2021-12-03
-          url: https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/1038404/Technical_Briefing_30.pdf
-          variantType: VOC
-        - author: ECDC
-          dateModified: 2021-11-26
-          url: https://www.ecdc.europa.eu/en/covid-19/variants-concern
-          variantType: VOC
-
-  - who_name: "XBB* (XBB.X)"
-    short_name: XBB*
-    pangolin_lineage: XBB
-    include_sublineages: True
-    dateModified: 2023-04-17
     variantType: Variant of Concern
     classifications:
         - author: WHO
