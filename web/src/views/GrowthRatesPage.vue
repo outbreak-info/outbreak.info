@@ -65,7 +65,7 @@
   const chosenLocations = ref(props.loc);
   const chosenLocationInfo = ref([]);
     
-  const growthRateApiUrl = "https://api.outbreak.info/growth_rate/";
+  const growthRateApiUrl = "https://api.outbreak.info/growth_rate/query";
    
   const apiData = ref([]);
   const apiDataWithLabels = ref([]);
@@ -91,14 +91,15 @@
     chosenLocations.value = locations;
     chosenLocationInfo.value = locationsInfo;
     locationsWithoutData.value = [];
-    const locationString = `(${chosenLocations.value.join(' OR ')})`;
-    const url = `${growthRateApiUrl}query?q=lineage:${chosenLineage.value} AND location:${locationString}`;
-    getData(url);
+  
+    const lineageAndLocationsString = `lineage:${chosenLineage.value} AND location:(${chosenLocations.value.join(' OR ')})`
+   
+    getData(growthRateApiUrl, lineageAndLocationsString);
     changeUrl();
   }
 
-  const getData = (url) => {
-    getGrowthRatesByLocation(url)
+  const getData = (url, selections) => {
+    getGrowthRatesByLocation(url, selections)
       .then((response) => {
         apiData.value = response.data.hits;
         filteredData.value = flattenandFilterArray(apiData.value);
