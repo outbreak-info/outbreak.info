@@ -210,7 +210,6 @@ def formatClassifications(row):
                     label = datetime.strptime(classification["dateModified"], "%Y-%m-%d").strftime("%d %b %Y")
                 else:
                     label = "report"
-
             if(classification["variantType"] == "VOC"):
                 variantType = "Variant of Concern"
             elif(classification["variantType"] == "VOI"):
@@ -243,7 +242,8 @@ curated.drop(["dateModified", "dateModifiedFormatted"], axis = 1, inplace=True)
 
 # --- EXPORT ---
 curated.to_json(output_file, orient="records")
-vocs[["who_name", "pangolin_lineage", "short_name"]].to_json(output_file_examples, orient="records")
+if vocs.shape[0] >0:
+    vocs[["who_name", "pangolin_lineage", "short_name"]].to_json(output_file_examples, orient="records")
 
 # --- Write to log file ---
 def getName(row):
