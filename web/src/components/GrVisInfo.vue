@@ -41,7 +41,7 @@
       ...props.data.map(element => [
         element.date,
         element.label,
-        element.lineage,
+        element.lineageLabel,
         element.G_7_linear,
         element.confidenceInterval95,
         element.N_7,

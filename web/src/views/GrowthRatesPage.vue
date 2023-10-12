@@ -80,6 +80,8 @@
 
   const snrThreshold = 0.1;
 
+  const isDataAggregated = ref(false);
+
   onMounted(() => {
     const metadataStore = useMetadataStore();
     const metadata = metadataStore.defaultMetadata;
@@ -91,6 +93,11 @@
     chosenLocations.value = locations;
     chosenLocationInfo.value = locationsInfo;
     locationsWithoutData.value = [];
+
+    if (chosenLineage.value.includes('*')) {
+      chosenLineage.value = chosenLineage.value.replace('*', '+');
+      isDataAggregated.value = true;
+    }
   
     const lineageAndLocationsString = `lineage:${chosenLineage.value} AND location:(${chosenLocations.value.join(' OR ')})`
    
@@ -112,12 +119,18 @@
   }
 
   const flattenandFilterArray = (nestedArray) => {
-    apiDataWithLabels.value = nestedArray.map(x => {
-      return { ...x, label: chosenLocationInfo.value.find(y => x.location === y.value)?.label }
-    });
-    
-    const flatArray = _.flatMap(apiDataWithLabels.value, ({ _id, _score, lineage, location, label, values }) =>
-      _.map(values, value => ({ _id, _score, lineage, location, label, ...value })));  
+    if (isDataAggregated.value) {
+      apiDataWithLabels.value = nestedArray.map(x => {
+        return { ...x, label: chosenLocationInfo.value.find(y => x.location === y.value)?.label, lineageLabel: x.lineage.replace('+', '*') }
+      });
+    } else {
+      apiDataWithLabels.value = nestedArray.map(x => {
+        return { ...x, label: chosenLocationInfo.value.find(y => x.location === y.value)?.label, lineageLabel: x.lineage }
+      });
+    }
+
+    const flatArray = _.flatMap(apiDataWithLabels.value, ({ _id, _score, lineage, location, lineageLabel, label, values }) =>
+        _.map(values, value => ({ _id, _score, lineage, location, lineageLabel, label, ...value })));  
 
     const lowerBound = quantile(flatArray, lowPercentile, d => d.G_7_linear);
     const upperBound = quantile(flatArray, highPercentile, d => d.G_7_linear);

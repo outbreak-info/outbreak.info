@@ -87,7 +87,7 @@
   const generateLineageNamesArray = (resultsArray) => {
     const filteredArray = resultsArray.filter(a => !a.includes('*') && a != '');
     const filteredArrayCopy = Array.from(filteredArray);
-    const aggregationNamesArray = filteredArrayCopy.map(i => `${i}+`);
+    const aggregationNamesArray = filteredArrayCopy.map(i => `${i}*`);
     
     filteredArray.push(...aggregationNamesArray);
     filteredArray.sort();
