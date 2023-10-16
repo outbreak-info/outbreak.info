@@ -3,13 +3,15 @@
 </template>
 
 <script setup>
-  import { onMounted, ref } from 'vue';
+  import { onMounted, ref, computed } from 'vue';
   import { useNotification } from "naive-ui";
 
   const props = defineProps({
     lineage: String,
     data: Array,
   });
+
+  const lineageWithNoData = computed(() => props.lineage.replace('+', '*'));
 
   const notification = useNotification();
 
@@ -21,7 +23,7 @@
     `${props.data.slice(0,-1).join(', ')} and ${props.data.slice(-1)}`
     : props.data.toString();
 
-  const contentString = `${props.lineage} growth rates visualizations for ${locationNamesString} could not be built. Please refer to the growth rates page for further information.`
+  const contentString = `${lineageWithNoData.value} growth rates visualizations for ${locationNamesString} could not be built. Please refer to the growth rates page for further information.`
  
   onMounted(() => {
     showMessage();
