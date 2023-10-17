@@ -4,7 +4,7 @@
       v-if="suggestedLineages.length > 0" 
       class="suggestion-container"
     >
-      <span>Suggested lineages</span>
+      <span>High-growth lineages in the world</span>
       <n-button 
         type="tertiary"
         v-for="lin in suggestedLineages" :key="lin"

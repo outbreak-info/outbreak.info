@@ -10,7 +10,7 @@
           </a>
       </p>
       <p>
-        Choose a lineage and one or more locations to build growth rate visualizations. Suggested lineages present high growth rate estimates and low associated uncertainties.
+        Choose a lineage and one or more locations to build growth rate visualizations. 
       </p>
     </div>
   </div>
