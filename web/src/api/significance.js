@@ -15,6 +15,6 @@ axios.interceptors.request.use(
 // provide highest significance lineages for selected location
 export const getHighestSignificanceLineagesByLocation = async (location, lineagesPerLocation) => {     
   const baseUrl = "https://api.outbreak.info/significance/";
-  const url =`${baseUrl}query?q=loc:${location}&sort=-sig&size=${lineagesPerLocation}`;
+  const url =`${baseUrl}query?q=loc:${location} AND growing:true&sort=-sig&size=${lineagesPerLocation}`;
   return await axios.get(url); 
 }
