@@ -48,6 +48,7 @@
     </div>
     <GrSuggestedLineages 
       @suggestion-selected="handleSuggestionSelected"
+      @initial-suggestion-selected="handleInitialSuggestionSelected"
     />
   </div>
 </template>
@@ -64,8 +65,9 @@
   const emit = defineEmits(['query-button-clicked']);
 
   const selectedLineage = ref(null);
-  const selectedLocations = ref([]);
-  const selectedCountryInfo = ref([]);
+  const selectedLocations = ref(['Global', 'USA']);
+  const selectedCountryInfo = ref([ {label: 'Global', value: 'Global'}, 
+    {label: 'United States', value: 'USA'} ]);
 
   const lineageOptions = ref([]);
   const locationOptions = ref([]);
@@ -148,6 +150,11 @@
 
   const handleSuggestionSelected = (suggestion) => {
     selectedLineage.value = suggestion;
+  }
+
+  const handleInitialSuggestionSelected = (suggestion) => {
+    selectedLineage.value = suggestion;
+    handleQueryButtonClick();
   }
 
   const handleLocationUpdate = (ids, countryInfo) => {

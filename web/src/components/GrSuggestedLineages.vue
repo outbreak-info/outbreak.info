@@ -27,7 +27,7 @@
   import { NButton } from 'naive-ui';
   import { getHighestSignificanceLineagesByLocation } from '@/api/significance.js';
 
-  const emit = defineEmits(['suggestion-selected']);
+  const emit = defineEmits(['suggestion-selected','initial-suggestion-selected']);
 
   const location = 'Global';
   const numberOfLineages = 5;
@@ -44,6 +44,8 @@
       .then((response) => {
         const apiData = response.data.hits;
         suggestedLineages.value = apiData.map(element => element.lin);
+        const initialLineageSelection = suggestedLineages.value[0];
+        emit('initial-suggestion-selected', initialLineageSelection);
       })
       .catch((e) => {
         console.log(`%c Error in getting ${location} significance data!`, 'color: red');
