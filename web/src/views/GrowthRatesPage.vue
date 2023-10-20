@@ -65,7 +65,7 @@
   const chosenLocations = ref(props.loc);
   const chosenLocationInfo = ref([]);
     
-  const growthRateApiUrl = "https://api.outbreak.info/growth_rate/";
+  const growthRateApiUrl = "https://api.outbreak.info/growth_rate/query";
    
   const apiData = ref([]);
   const apiDataWithLabels = ref([]);
@@ -80,6 +80,8 @@
 
   const snrThreshold = 0.1;
 
+  const isDataAggregated = ref(false);
+
   onMounted(() => {
     const metadataStore = useMetadataStore();
     const metadata = metadataStore.defaultMetadata;
@@ -91,14 +93,20 @@
     chosenLocations.value = locations;
     chosenLocationInfo.value = locationsInfo;
     locationsWithoutData.value = [];
-    const locationString = `(${chosenLocations.value.join(' OR ')})`;
-    const url = `${growthRateApiUrl}query?q=lineage:${chosenLineage.value} AND location:${locationString}`;
-    getData(url);
+
+    if (chosenLineage.value.includes('*')) {
+      chosenLineage.value = chosenLineage.value.replace('*', '+');
+      isDataAggregated.value = true;
+    }
+  
+    const lineageAndLocationsString = `lineage:${chosenLineage.value} AND location:(${chosenLocations.value.join(' OR ')})`
+   
+    getData(growthRateApiUrl, lineageAndLocationsString);
     changeUrl();
   }
 
-  const getData = (url) => {
-    getGrowthRatesByLocation(url)
+  const getData = (url, selections) => {
+    getGrowthRatesByLocation(url, selections)
       .then((response) => {
         apiData.value = response.data.hits;
         filteredData.value = flattenandFilterArray(apiData.value);
@@ -111,12 +119,18 @@
   }
 
   const flattenandFilterArray = (nestedArray) => {
-    apiDataWithLabels.value = nestedArray.map(x => {
-      return { ...x, label: chosenLocationInfo.value.find(y => x.location === y.value)?.label }
-    });
-    
-    const flatArray = _.flatMap(apiDataWithLabels.value, ({ _id, _score, lineage, location, label, values }) =>
-      _.map(values, value => ({ _id, _score, lineage, location, label, ...value })));  
+    if (isDataAggregated.value) {
+      apiDataWithLabels.value = nestedArray.map(x => {
+        return { ...x, label: chosenLocationInfo.value.find(y => x.location === y.value)?.label, lineageLabel: x.lineage.replace('+', '*') }
+      });
+    } else {
+      apiDataWithLabels.value = nestedArray.map(x => {
+        return { ...x, label: chosenLocationInfo.value.find(y => x.location === y.value)?.label, lineageLabel: x.lineage }
+      });
+    }
+
+    const flatArray = _.flatMap(apiDataWithLabels.value, ({ _id, _score, lineage, location, lineageLabel, label, values }) =>
+        _.map(values, value => ({ _id, _score, lineage, location, lineageLabel, label, ...value })));  
 
     const lowerBound = quantile(flatArray, lowPercentile, d => d.G_7_linear);
     const upperBound = quantile(flatArray, highPercentile, d => d.G_7_linear);

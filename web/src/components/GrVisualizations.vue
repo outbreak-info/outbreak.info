@@ -155,7 +155,7 @@
       legendPointer.value = hoveredLinePoint.value;
   }
 
-  const selectedLineage = computed(() => props.data[0].lineage);
+  const selectedLineage = computed(() => props.data[0].lineageLabel);
 
   const title = computed(() => `${selectedLineage.value} growth rates`);
 

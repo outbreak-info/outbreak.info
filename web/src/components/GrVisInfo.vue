@@ -1,8 +1,8 @@
 <template>
   <div class="vis-info">
     <div class="location-info">
-      <h4>{{  loc  }}</h4>
-      <p>{{ `${dataPoints} data points` }}</p>
+      <h4>{{ loc }}</h4>
+      <p>{{ dataPointsInfo }}</p>
     </div>
     <div class="download-button">
       <n-button 
@@ -26,6 +26,8 @@
 
   const dataPoints = computed(() => props.data.length);
 
+  const dataPointsInfo = computed(() => dataPoints.value == 1 ? `${dataPoints.value} data point` : `${dataPoints.value} data points`); 
+
   const handleDownloadButtonClick = () => {
     const tsvString = [
       [
@@ -41,7 +43,7 @@
       ...props.data.map(element => [
         element.date,
         element.label,
-        element.lineage,
+        element.lineageLabel,
         element.G_7_linear,
         element.confidenceInterval95,
         element.N_7,

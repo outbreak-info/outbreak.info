@@ -4,10 +4,10 @@
       v-if="suggestedLineages.length > 0" 
       class="suggestion-container"
     >
-      <span>Suggested lineages</span>
+      <span>High-growth lineages in the world</span>
       <n-button 
         type="tertiary"
-        v-for="lin in suggestedLineages.sort()" :key="lin"
+        v-for="lin in suggestedLineages" :key="lin"
         @click="handleSuggestionButtonClick(lin)"
       >
         {{ lin }}
@@ -25,47 +25,32 @@
 <script setup>
   import { ref, onMounted } from 'vue';
   import { NButton } from 'naive-ui';
-  import { getHighestSignificanceLineages } from '@/api/significance.js';
-  import _ from 'lodash';
+  import { getHighestSignificanceLineagesByLocation } from '@/api/significance.js';
 
-  const emit = defineEmits(['suggestion-selected']);
+  const emit = defineEmits(['suggestion-selected','initial-suggestion-selected']);
+
+  const location = 'Global';
+  const numberOfLineages = 5;
 
   const suggestedLineages = ref([]);
   const selectedSuggestion = ref(null);
 
-  const handpickedLocations = ['CAN', 'GBR', 'JPN', 'KOR', 'CHE', 'USA', 'ZAF']; 
-  
-  const lineagesPerHandpickedLocation = 5;
-  const numberOfSuggestions = 5;
-
   onMounted(() => {
-    getData();
+    getLineages();
   });
 
-  const getData = async () => {
-    const apiData = await getHighestSignificanceLineages(handpickedLocations, lineagesPerHandpickedLocation);
-
-    // remove B-lineage records and create array with lineage and significance columns only
-    const lineageSignificanceArray = apiData.filter(element => element.lin !== 'B').map(element => { 
-        return {
-          lin:element.lin,
-          sig: +element.sig,
-        }
-    });
-
-    // add up lineage significances
-    const aggregatedArray = _(lineageSignificanceArray)
-      .groupBy('lin')
-      .map((objs, key) => ({
-        'lin': key,
-        'sig': _.sumBy(objs, 'sig'), 
-      }))
-      .value();
-
-    // select lineages with highest significances
-    const topLineageSignificancePairs = aggregatedArray.sort((a, b) => b.sig - a.sig).slice(0, numberOfSuggestions);
-
-    suggestedLineages.value = topLineageSignificancePairs.map(element => { return element.lin; });
+  const getLineages = () => {
+    getHighestSignificanceLineagesByLocation(location, numberOfLineages)
+      .then((response) => {
+        const apiData = response.data.hits;
+        suggestedLineages.value = apiData.map(element => element.lin);
+        const initialLineageSelection = suggestedLineages.value[0];
+        emit('initial-suggestion-selected', initialLineageSelection);
+      })
+      .catch((e) => {
+        console.log(`%c Error in getting ${location} significance data!`, 'color: red');
+        console.log(e);
+      });
   }
 
   const handleSuggestionButtonClick = (suggestion) => {

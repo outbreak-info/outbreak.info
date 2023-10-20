@@ -13,6 +13,10 @@ axios.interceptors.request.use(
 );
 
 // provide lineage growth rates for selected locations
-export const getGrowthRatesByLocation = (url) => {
-  return axios.get(url);
+export const getGrowthRatesByLocation = (url, selectedLineageAndLocations) => {
+  return axios.get(url, {
+    params: {
+      'q': selectedLineageAndLocations 
+    }
+  });
 }

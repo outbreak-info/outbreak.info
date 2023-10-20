@@ -12,26 +12,9 @@ axios.interceptors.request.use(
   },
 );
 
-// provide highest significance lineages for selected locations
-export const getHighestSignificanceLineages = async (locations, lineagesPerLocation) => {      
+// provide highest significance lineages for selected location
+export const getHighestSignificanceLineagesByLocation = async (location, lineagesPerLocation) => {     
   const baseUrl = "https://api.outbreak.info/significance/";
-  let significanceArray = [];
-  let locationSigData = [];
-
-  for (let i = 0; i < locations.length; i++) {
-    const url =`${baseUrl}query?q=loc:${locations[i]}&sort=-sig&size=${lineagesPerLocation}`;
-    significanceArray = significanceArray.concat(
-      await axios.get(url)
-        .then((response) => {
-          locationSigData = response.data.hits;
-          return locationSigData;
-        })
-        .catch((e) => {
-          console.log(`%c Error in getting ${locations[i]} significance data!`, 'color: red');
-          console.log(e);
-        })
-    )
-  }
-  return significanceArray;
-};
- 
+  const url =`${baseUrl}query?q=loc:${location} AND growing:true&sort=-sig&size=${lineagesPerLocation}`;
+  return await axios.get(url); 
+}

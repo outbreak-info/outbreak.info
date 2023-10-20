@@ -10,7 +10,7 @@
     <div 
       class="title"
     >
-      {{ hoveredPoint.lineage }}  &#183; {{ hoveredPoint.label }}
+      {{ hoveredPoint.lineageLabel }}  &#183; {{ hoveredPoint.label }}
     </div>
     <div class="date">
       {{ formatTime(parseTime(hoveredPoint.date)) }}
@@ -27,7 +27,7 @@
       <span class="data">
         {{ `${formatGrowthRate(hoveredPoint.Prevalence_7_percentage)}%` }}
       </span>
-      <span>{{ `${hoveredPoint.lineage} sequences` }}</span>
+      <span>{{ `${hoveredPoint.lineageLabel} sequences` }}</span>
       <span class="data">{{ formatSequence(hoveredPoint.N_7) }}</span>
       <span>Total sequences</span>
       <span class="data end-block">{{ formatSequence(hoveredPoint.deltaN_7) }}</span>
