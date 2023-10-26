@@ -170,7 +170,6 @@
     align-items: center;
     height: 100%;
     width: 100%;
-    user-select: none;
   }
   .back-top {
     width: 150px;
