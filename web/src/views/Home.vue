@@ -405,12 +405,12 @@
         </button>
       </router-link>
 
-      <router-link
+      <!-- <router-link
         :to="{ name: 'About', hash: '#jobs' }"
         class="no-underline m-4"
       >
         <button class="btn btn-main">We're hiring!</button>
-      </router-link>
+      </router-link> -->
     </div>
 
     <div id="collapsedFeatures" class="collapse">
