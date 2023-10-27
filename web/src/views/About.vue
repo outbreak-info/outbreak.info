@@ -204,12 +204,12 @@
         </div>
       </div>
 
-      <div class="bg-light d-flex justify-content-center align-items-center">
+      <!-- <div class="bg-light d-flex justify-content-center align-items-center">
         <div id="jobs" class="bg-light border-top pt-3 pb-5">
           <h4 class="mb-4">Open positions</h4>
           <Jobs />
         </div>
-      </div>
+      </div> -->
 
       <div class="d-flex justify-content-center w-100 border-top py-5 mx-auto">
         <a
