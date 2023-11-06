@@ -102,6 +102,8 @@
 <script setup>
   import { computed, ref } from 'vue';
   import { quadtree } from 'd3-quadtree';
+  import { scaleLinear } from 'd3-scale';
+  import { min, max } from 'd3-array';
   import { lazyLoad } from '@/js/lazy-load';
 
   const GrYAxis = lazyLoad('GrYAxis');
@@ -116,7 +118,6 @@
     xAccessor: Function,
     yAccessor: Function,
     xScale: Function,
-    yScale: Function,
     colorScale: Function,
     margin: Object,
     width: Number,
@@ -129,14 +130,31 @@
   const emit = defineEmits(['scatterplot-hovered']);
   
   const hoveredPoint = ref(null);
+
+  const padExtent = ([min, max], paddingFactor) => {
+    const delta = Math.abs(max - min);
+    const padding = delta * paddingFactor;
+    return [min - padding, max + padding];
+  };
+
+  const yScale = computed(() => scaleLinear()
+    .domain(
+      padExtent(
+        [min(props.data, props.yAccessor), max(props.data, props.yAccessor)],
+        0.55,
+      )
+    )
+    .range([props.innerHeight, 0])
+    .nice()
+  );
    
   const xAccessorScaled = computed(() => d => props.xScale(props.xAccessor(d)));
-  const yAccessorScaled = computed(() => d => props.yScale(props.yAccessor(d)));
+  const yAccessorScaled = computed(() => d => yScale.value(props.yAccessor(d)));
   
   // create a quadtree to improve the user experience when visitor interacts with scatterplot points
   const quadtreeInstance = computed (() => quadtree()
     .x(d => props.xScale(props.xAccessor(d)))
-    .y(d => props.yScale(props.yAccessor(d)))
+    .y(d => yScale.value(props.yAccessor(d)))
     .addAll(props.data)
   );
   
@@ -157,8 +175,8 @@
     emit('scatterplot-hovered', hoveredPoint.value);
   }
   
-  const minGrowthRate = computed(() => props.yScale.domain()[0]);
-  const maxGrowthRate = computed(() => props.yScale.domain()[1]);
+  const minGrowthRate = computed(() => yScale.value.domain()[0]);
+  const maxGrowthRate = computed(() => yScale.value.domain()[1]);
   
   const ariaLabel = computed(() => `Scatterplot of ${props.lineage} growth rates in ${props.loc}`);
 </script>

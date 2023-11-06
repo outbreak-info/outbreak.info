@@ -48,7 +48,6 @@
         :xAccessor="xAccessor"
         :yAccessor="scatterplotYAccessor"
         :xScale="xScale"
-        :yScale="scatterplotYScale"
         :colorScale="colorScale"
         :margin="scatterplotMargin"
         :width="width"
