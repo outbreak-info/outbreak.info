@@ -29,7 +29,7 @@
       </span>
       <span>{{ `${hoveredPoint.lineageLabel} sequences` }}</span>
       <span class="data">{{ formatSequence(hoveredPoint.N_7) }}</span>
-      <span>Total sequences</span>
+      <span>Background sequences</span>
       <span class="data end-block">{{ formatSequence(hoveredPoint.deltaN_7) }}</span>
       <span>Ratio over background</span>
       <span class="data">{{ ratioOverBackground }}</span>
@@ -88,9 +88,7 @@
     (props.hoveredPoint.deltaN_7 - props.hoveredPoint.N_7) / props.hoveredPoint.N_7, 
   ));
 
-  const ratioOverBackground = computed(() =>
-    ratio.value !== ratio.value ? 'N/A' : `1 : ${formatSequence(ratio.value)}`
-  );
+  const ratioOverBackground = computed(() => createRatioOverBackgroundString(ratio.value));
   
   const ci95 = computed(() => props.hoveredPoint.confidenceInterval95);
   
@@ -103,6 +101,20 @@
   
   const xPosition = computed(() => setXPosition());
   const yPosition = computed(() => y.value - yNudge);
+
+  const createRatioOverBackgroundString = (ratioValue) => {
+    let ratioOverBackgroundString;
+    // check if ratioValue = NaN
+    if (ratioValue !== ratioValue) {
+      ratioOverBackgroundString = 'N/A';
+    // check if ratioValue = Infinity
+    } else if (!isFinite(ratioValue)) {
+      ratioOverBackgroundString = '0 : 1';
+    } else {
+      ratioOverBackgroundString = `1 : ${formatSequence(ratio.value)}`;
+    }
+    return ratioOverBackgroundString;
+  }
 
   const setXPosition = () => {
     let xPos;
