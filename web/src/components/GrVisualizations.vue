@@ -209,7 +209,7 @@
     .domain(
       padExtent(
         [min(props.data,scatterplotYAccessor), max(props.data, scatterplotYAccessor)],
-        0.07,
+        0.55,
       )
     )
     .range([scatterplotInnerHeight, 0])

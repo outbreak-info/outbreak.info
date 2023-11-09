@@ -75,10 +75,10 @@
   const locationsWithData = ref([]);
   const locationsWithoutData = ref([]);
  
-  const lowPercentile = 0.1;
-  const highPercentile = 0.9;
+  const lowPercentile = 0.0;
+  const highPercentile = 1.0;
 
-  const snrThreshold = 0.1;
+  const snrThreshold = 0.0;
 
   const isDataAggregated = ref(false);
 
