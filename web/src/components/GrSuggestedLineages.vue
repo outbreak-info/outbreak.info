@@ -43,7 +43,10 @@
     getHighestSignificanceLineagesByLocation(location, numberOfLineages)
       .then((response) => {
         const apiData = response.data.hits;
-        suggestedLineages.value = apiData.map(element => element.lin);
+        suggestedLineages.value = apiData.map((element) => {
+          return element.lin.includes('+') ? (element.lin.replace('+', '*')) :
+           element.lin;
+        });
         const initialLineageSelection = suggestedLineages.value[0];
         emit('initial-suggestion-selected', initialLineageSelection);
       })
