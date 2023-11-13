@@ -805,7 +805,7 @@ export const getMutationsByLineage = (
 ) => {
   if (!mutationArr) return of([]);
 
-  const queryStr = andLogic ? mutationArr.join(' AND ') : mutationArr.join(',');
+  const queryStr = andLogic ? mutationArr.join(',') : mutationArr.join(' AND ');
 
   const url = `${apiurl}mutations-by-lineage?mutations=${queryStr}&frequency=${proportionThreshold}`;
   return from(
@@ -926,7 +926,7 @@ export const getCharacteristicMutations = (
   }
 
   // convert + to AND to specify lineages + mutations
-  const url = `${apiurl}lineage-mutations?pangolin_lineage=${lineage.replace(
+  const url = `${apiurl}lineage-mutations?lineages=${lineage.replace(
     /\+/g,
     'AND',
   )}&frequency=${prevalenceThreshold}&gene=${genes}`;
