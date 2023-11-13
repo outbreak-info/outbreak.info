@@ -1,8 +1,23 @@
 <template>
   <div class="gr-visualizations">
-    <div class="visualization-info">
+    <GrVisHeader
+      :title="title"
+      :dates="xScaleDomain"
+    />
+    <GrOverview
+      v-if="data.length > 0"
+      :lineage="selectedLineage"
+      :locations="selectedLocations"
+      :data="data"
+      :xAccessor="xAccessor"
+      :yAccessor="lineChartYAccessor"
+      :xScaleDomain="xScaleDomain"
+      :colorScale="colorScale"
+      :width="width"
+    />
+    <div class="ci-switch">
       <div class="title-container">
-        <h2>{{ title }}</h2>
+        <h3>Growth rates in selected locations</h3>
       </div>
       <n-form-item
         label="show 95% confidence intervals"
@@ -16,31 +31,20 @@
          />
       </n-form-item>
     </div>
-    <GrSlider 
-      @slider-value-updated="handleSnrUpdate"
-    />
-    <GrOverview
-      v-if="data.length > 0"
-      :lineage="selectedLineage"
-      :locations="selectedLocations"
-      :data="data.filter(element => element.snr >= snrThreshold)"
-      :xAccessor="xAccessor"
-      :yAccessor="lineChartYAccessor"
-      :xScaleDomain="xScaleDomain"
-      :colorScale="colorScale"
-      :width="width"
-    />
     <div 
       :id="loc.replace(/\s+/g, '-').toLowerCase()"
       class="visualization-wrapper" 
       v-for="loc in selectedLocations" :key="loc"
     >
-      <h3>{{ loc }}</h3>
+      <GrVisInfo 
+        :loc="loc"
+        :data="data.filter(element => element.label == loc)" 
+      />
       <GrScatterplot
         :loc="loc" 
         :lineage="selectedLineage"
         :isCIShown="isCIShown"
-        :data="data.filter(element => element.label == loc && element.snr >= snrThreshold)"
+        :data="data.filter(element => element.label == loc)"
         :xAccessor="xAccessor"
         :yAccessor="scatterplotYAccessor"
         :xScale="xScale"
@@ -57,7 +61,7 @@
       <GrLineChart
         :loc="loc"
         :lineage="selectedLineage"
-        :data="data.filter(element => element.label == loc && element.snr >= snrThreshold)"
+        :data="data.filter(element => element.label == loc)"
         :xAccessor="xAccessor"
         :yAccessor="lineChartYAccessor"
         :xScale="xScale"
@@ -87,8 +91,9 @@
   import { interpolateRdYlBu } from 'd3-scale-chromatic';
   import { lazyLoad } from '@/js/lazy-load';
 
-  const GrSlider = lazyLoad('GrSlider');
+  const GrVisHeader = lazyLoad('GrVisHeader');
   const GrOverview = lazyLoad('GrOverview');
+  const GrVisInfo = lazyLoad('GrVisInfo');
   const GrScatterplot = lazyLoad('GrScatterplot');
   const GrLineChart = lazyLoad('GrLineChart');
   const GrLegendWithPointer = lazyLoad('GrLegendWithPointer');
@@ -98,8 +103,6 @@
   });
 
   const isCIShown = ref(true);
-
-  const snrThreshold = ref(0);
 
   const xAccessor = d => d.date;
   const scatterplotYAccessor = d => d.G_7_linear;
@@ -152,11 +155,7 @@
       legendPointer.value = hoveredLinePoint.value;
   }
 
-  const handleSnrUpdate = (threshold) => {
-    snrThreshold.value = threshold;
-  }
-
-  const selectedLineage = computed(() => props.data[0].lineage);
+  const selectedLineage = computed(() => props.data[0].lineageLabel);
 
   const title = computed(() => `${selectedLineage.value} growth rates`);
 
@@ -210,7 +209,7 @@
     .domain(
       padExtent(
         [min(props.data,scatterplotYAccessor), max(props.data, scatterplotYAccessor)],
-        0.07,
+        0.55,
       )
     )
     .range([scatterplotInnerHeight, 0])
@@ -238,21 +237,23 @@
     max-width: 1000px;
     width: 100%;
     text-align: left;
-    margin-top: 25px;
+    color: #2c3e50;
   }
-  .visualization-info {
+  .ci-switch {
     display: flex; 
     flex-flow: row wrap;
     margin-left: 50px;
     margin-right: 50px;
+    margin-bottom: 15px;
+    align-items: center;
     gap: 10px;
   }
   .title-container {
     flex: 200 1 auto; 
     text-align: left;
   }
-  .title-container h2 {
-    font-size: 24px;
+  .title-container h3 {
+    font-size: 18px;
     font-weight: 700;
   }
   .switch-container {
@@ -263,10 +264,5 @@
     margin-left: 50px;
     margin-right: 50px;
     margin-bottom: 50px;
-  }
-  .visualization-wrapper h3 {
-    color: #2c3e50;
-    font-size: 18px;
-    font-weight: 700;
   }
 </style>

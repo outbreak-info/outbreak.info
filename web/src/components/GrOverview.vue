@@ -8,8 +8,12 @@
     <div class="table">
       <div class="table-row row-heading">
         <div class="table-cell location-cell column-heading">Location</div>
-        <div class="table-cell growth-rate-cell column-heading">Growth rates</div>
-         <div class="table-cell prevalence-cell column-heading">Prevalence</div>
+        <div class="table-cell growth-rate-cell column-heading">Growth rate (%)
+          <GrTableLegend
+            :colorScale="colorScale" 
+          />
+        </div>
+        <div class="table-cell prevalence-cell column-heading">Prevalence (%)</div>
       </div>
       <div 
         class="table-row row-content"
@@ -55,9 +59,6 @@
         </div>
       </div>      
     </div>
-    <GrLegend
-      :colorScale="colorScale" 
-    />
   </div>
 </template>
     
@@ -68,7 +69,7 @@
 
   const GrStripeCell = lazyLoad('GrStripeCell');
   const GrLineCell = lazyLoad('GrLineCell');
-  const GrLegend = lazyLoad('GrLegend');
+  const GrTableLegend = lazyLoad('GrTableLegend');
 
   const props = defineProps({
     lineage: String,
@@ -83,9 +84,9 @@
 
   const miniChartMargin = {
     top: 5,
-    right: 25,
+    right: 30,
     bottom: 25,
-    left: 25,
+    left: 30,
   };
 
   const miniChartWidth = computed(() => props.width * 0.3);
@@ -133,7 +134,7 @@
   .table {
     display: flex;
     flex-wrap: wrap;
-    margin-bottom: 0px;
+    margin-bottom: 20px;
   }
   .table-row {  
     display: flex;
@@ -151,10 +152,12 @@
   }
   .column-heading {
     color: #2c3e50;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 700;
+    text-transform: uppercase;
   }
   .row-heading {
+    align-items: start;
     border-bottom: 1px solid rgb(44, 62, 80, 0.4);
   }
   .row-content {

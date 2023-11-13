@@ -2,8 +2,8 @@
   <text 
     class="annotation"
     v-if="data.length > 1"
-    :x="xScale(xAccessor(startPoint)) - 10"
-    :y="yScale(yAccessor(startPoint))"
+    :x="xAccessorScaled(startPoint) - nudge"
+    :y="yAccessorScaled(startPoint)"
     text-anchor="end"
     dy="0.34em"
   >
@@ -11,8 +11,8 @@
   </text>
   <text
     class="annotation"
-    :x="xScale(xAccessor(endPoint)) + 10"
-    :y="yScale(yAccessor(endPoint))"
+    :x="xAccessorScaled(endPoint) + nudge"
+    :y="yAccessorScaled(endPoint)"
     text-anchor="start"
     dy="0.34em"
   >
@@ -26,10 +26,10 @@
   
   const props = defineProps({
     data: Array,
-    xAccessor: Function,
+    xAccessorScaled: Function,
+    yAccessorScaled: Function,
     yAccessor: Function,
-    xScale: Function,
-    yScale: Function,
+    AreAnnotationsSmall: Boolean,
   });
   
   const formatPrevalence = format(',.1f');
@@ -37,11 +37,16 @@
   // first and last line points
   const startPoint = computed(() => props.data[0]);
   const endPoint = computed(() => props.data[props.data.length - 1]);
+
+  const nudge = computed(() => props.AreAnnotationsSmall === true ? 5 : 12);
+
+  const fontSize = computed(() => props.AreAnnotationsSmall === true ? 12 + 'px' : 13 + 'px');
 </script>
   
-<style>
+<style scoped>
   .annotation {
     fill: "#2c3e50";
-    font-size: 13px;
+    font-size: v-bind(fontSize);
+    font-weight: 700;
   }
 </style>

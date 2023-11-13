@@ -2,7 +2,8 @@
   <g :transform="`translate(${-xScale.bandwidth() / 2}, 0)`">
     <line class="axis__line" :x1="0" :x2="0" :y1="yMin" :y2="yMax" />
     <text
-      :x="5"
+      class="axis__title"
+      :x="10"
       :y="yMax - 15"
       text-anchor="middle"
       fill="#2c3e50"
@@ -57,13 +58,15 @@
   const ticks = computed(() => props.yScale.ticks(numberOfTicks(yMax.value - yMin.value)));
 </script>
   
-<style>
+<style scoped>
   .axis__tick {
     stroke: #999999;
   }
-  
   .axis__line {
     stroke: #999999;
+  }
+  .axis__title {
+    font-weight: 700;
   }
 </style>
   

@@ -3,6 +3,7 @@
     <n-notification-provider>
       <div class="page-wrapper">
         <GrHeader />
+        <GrIntro />
         <GrForm 
           @query-button-clicked="handleQueryButtonClick"
         />
@@ -40,6 +41,7 @@
   import { useSeoMeta } from 'unhead';
 
   const GrHeader = lazyLoad('GrHeader');
+  const GrIntro = lazyLoad('GrIntro');
   const GrForm = lazyLoad('GrForm');
   const GrVisualizations = lazyLoad('GrVisualizations');
   const GrWarning = lazyLoad('GrWarning');
@@ -49,32 +51,21 @@
   const props = defineProps({
     lin: {
       type: String,
-      default: 'XBB.1.5.15',
+      default: '',
     },
     loc: {
       type: Array,
-      default: () => ['CAN', 'USA'],
+      default: () => [],
     },
   });
 
   const router = useRouter();
 
-  const initialLocations = [
-    {
-      label: 'Canada',
-      value: 'CAN',
-    },
-    {
-      label: 'United States',
-      value: 'USA'
-    }
-  ];
-
   const chosenLineage = ref(props.lin);
   const chosenLocations = ref(props.loc);
-  const chosenLocationInfo = ref(initialLocations);
+  const chosenLocationInfo = ref([]);
     
-  const growthRateApiUrl = "https://api.outbreak.info/growth_rate/";
+  const growthRateApiUrl = "https://api.outbreak.info/growth_rate/query";
    
   const apiData = ref([]);
   const apiDataWithLabels = ref([]);
@@ -84,17 +75,14 @@
   const locationsWithData = ref([]);
   const locationsWithoutData = ref([]);
  
-  const lowPercentile = 0.1;
-  const highPercentile = 0.9;
+  const lowPercentile = 0.0;
+  const highPercentile = 1.0;
+
+  const snrThreshold = 0.0;
+
+  const isDataAggregated = ref(false);
 
   onMounted(() => {
-    const locationString = `(${initialLocations.map(obj => obj.value).join(' OR ')})`
-    const url = `${growthRateApiUrl}query?q=lineage:${chosenLineage.value} AND location:${locationString}`;
-    getData(url);
-    changeUrl();
-    chosenLineage.value = null;
-    chosenLocations.value = [];
-
     const metadataStore = useMetadataStore();
     const metadata = metadataStore.defaultMetadata;
     useSeoMeta(metadata);
@@ -105,14 +93,20 @@
     chosenLocations.value = locations;
     chosenLocationInfo.value = locationsInfo;
     locationsWithoutData.value = [];
-    const locationString = `(${chosenLocations.value.join(' OR ')})`;
-    const url = `${growthRateApiUrl}query?q=lineage:${chosenLineage.value} AND location:${locationString}`;
-    getData(url);
+
+    if (chosenLineage.value.includes('*')) {
+      chosenLineage.value = chosenLineage.value.replace('*', '+');
+      isDataAggregated.value = true;
+    }
+  
+    const lineageAndLocationsString = `lineage:${chosenLineage.value} AND location:(${chosenLocations.value.join(' OR ')})`
+   
+    getData(growthRateApiUrl, lineageAndLocationsString);
     changeUrl();
   }
 
-  const getData = (url) => {
-    getGrowthRatesByLocation(url)
+  const getData = (url, selections) => {
+    getGrowthRatesByLocation(url, selections)
       .then((response) => {
         apiData.value = response.data.hits;
         filteredData.value = flattenandFilterArray(apiData.value);
@@ -125,18 +119,24 @@
   }
 
   const flattenandFilterArray = (nestedArray) => {
-    apiDataWithLabels.value = nestedArray.map(x => {
-      return { ...x, label: chosenLocationInfo.value.find(y => x.location === y.value)?.label }
-    });
-    
-    const flatArray = _.flatMap(apiDataWithLabels.value, ({ _id, _score, lineage, location, label, values }) =>
-      _.map(values, value => ({ _id, _score, lineage, location, label, ...value })));  
+    if (isDataAggregated.value) {
+      apiDataWithLabels.value = nestedArray.map(x => {
+        return { ...x, label: chosenLocationInfo.value.find(y => x.location === y.value)?.label, lineageLabel: x.lineage.replace('+', '*') }
+      });
+    } else {
+      apiDataWithLabels.value = nestedArray.map(x => {
+        return { ...x, label: chosenLocationInfo.value.find(y => x.location === y.value)?.label, lineageLabel: x.lineage }
+      });
+    }
+
+    const flatArray = _.flatMap(apiDataWithLabels.value, ({ _id, _score, lineage, location, lineageLabel, label, values }) =>
+        _.map(values, value => ({ _id, _score, lineage, location, lineageLabel, label, ...value })));  
 
     const lowerBound = quantile(flatArray, lowPercentile, d => d.G_7_linear);
     const upperBound = quantile(flatArray, highPercentile, d => d.G_7_linear);
 
     const filteredArray = flatArray.filter(
-      d => d.G_7_linear >= lowerBound && d.G_7_linear <= upperBound,
+      d => d.G_7_linear >= lowerBound && d.G_7_linear <= upperBound && d.snr >= snrThreshold,
     );
 
     locationsWithData.value = [...new Set(filteredArray.map(obj => obj.label)) ];
@@ -170,7 +170,6 @@
     align-items: center;
     height: 100%;
     width: 100%;
-    user-select: none;
   }
   .back-top {
     width: 150px;

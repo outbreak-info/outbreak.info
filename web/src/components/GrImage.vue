@@ -2,7 +2,7 @@
   <div class="image-container">
     <picture>
       <source 
-        media="(min-width: 600px)" 
+        media="(min-width: 650px)" 
         :srcset="`${retinaLarge} 2x, ${regularLarge} 1x`"
       >
       <source 

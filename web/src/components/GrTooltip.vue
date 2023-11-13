@@ -10,7 +10,7 @@
     <div 
       class="title"
     >
-      {{ hoveredPoint.lineage }}  &#183; {{ hoveredPoint.label }}
+      {{ hoveredPoint.lineageLabel }}  &#183; {{ hoveredPoint.label }}
     </div>
     <div class="date">
       {{ formatTime(parseTime(hoveredPoint.date)) }}
@@ -27,14 +27,12 @@
       <span class="data">
         {{ `${formatGrowthRate(hoveredPoint.Prevalence_7_percentage)}%` }}
       </span>
-      <span>{{ `${hoveredPoint.lineage} sequences` }}</span>
+      <span>{{ `${hoveredPoint.lineageLabel} sequences` }}</span>
       <span class="data">{{ formatSequence(hoveredPoint.N_7) }}</span>
-      <span>Total sequences</span>
+      <span>Background sequences</span>
       <span class="data end-block">{{ formatSequence(hoveredPoint.deltaN_7) }}</span>
       <span>Ratio over background</span>
       <span class="data">{{ ratioOverBackground }}</span>
-      <span>Gr-uncertainty ratio</span>
-      <span class="data">{{ formatSnr(hoveredPoint.snr) }}</span>
       <span 
         class="ci-alert"
         v-if="isCIClipped"
@@ -65,6 +63,7 @@
     yScale: Function,
     colorScale: Function,
     margin: Object,
+    width: Number,
     innerWidth: Number,
     minGrowthRate: Number,
     maxGrowthRate: Number,
@@ -74,12 +73,12 @@
   const parseTime = timeParse('%Y-%m-%d');
   const formatGrowthRate = format(',.2f');
   const formatSequence = format(',.0f');
-  const formatSnr = format(',.1f');
-  
-  const tooltipWidth = 240;
-  
-  const rightNudge = 60;
-  const leftNudge = 110;
+
+  const tooltipWidth = computed(() => props.width >= 500 ? 245 : 230);
+
+  const fontSize = computed(() => props.width >= 500 ? 14 + 'px' : 13 + 'px');
+
+  const xNudge = 50;
   const yNudge = 205;
       
   const x = computed(() => props.xScale(props.xAccessor(props.hoveredPoint))); 
@@ -89,9 +88,7 @@
     (props.hoveredPoint.deltaN_7 - props.hoveredPoint.N_7) / props.hoveredPoint.N_7, 
   ));
 
-  const ratioOverBackground = computed(() =>
-    ratio.value !== ratio.value ? 'N/A' : `1 : ${formatSequence(ratio.value)}`
-  );
+  const ratioOverBackground = computed(() => createRatioOverBackgroundString(ratio.value));
   
   const ci95 = computed(() => props.hoveredPoint.confidenceInterval95);
   
@@ -102,8 +99,33 @@
       props.hoveredPoint.G_7_linear - ci95.value < props.minGrowthRate)
   );
   
-  const xPosition = computed(() => (x.value + tooltipWidth) >= props.innerWidth ? x.value - leftNudge : x.value + rightNudge);
+  const xPosition = computed(() => setXPosition());
   const yPosition = computed(() => y.value - yNudge);
+
+  const createRatioOverBackgroundString = (ratioValue) => {
+    let ratioOverBackgroundString;
+    // check if ratioValue = NaN
+    if (ratioValue !== ratioValue) {
+      ratioOverBackgroundString = 'N/A';
+    // check if ratioValue = Infinity
+    } else if (!isFinite(ratioValue)) {
+      ratioOverBackgroundString = '0 : 1';
+    } else {
+      ratioOverBackgroundString = `1 : ${formatSequence(ratio.value)}`;
+    }
+    return ratioOverBackgroundString;
+  }
+
+  const setXPosition = () => {
+    let xPos;
+    if (props.width < 500) {
+      xPos = 0;
+    }
+    else {
+      xPos = (x.value + tooltipWidth.value) >= props.width ? x.value - tooltipWidth.value - xNudge : x.value - xNudge;
+    }
+    return xPos;
+  };
 </script>
     
 <style scoped>
@@ -115,7 +137,7 @@
     padding: 0.8em;
     pointer-events: none;
     text-align: left;
-    font-size: 14px;
+    font-size: v-bind(fontSize);
     line-height: 18px;
     z-index: 1;    
   }
@@ -137,7 +159,7 @@
   .grid {
     display: grid;
     grid-template-columns: 1fr auto;
-    column-gap: 20px;
+    column-gap: 15px;
     font-weight: 400;
   }
   .data {

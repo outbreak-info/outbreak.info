@@ -21,7 +21,8 @@
           />  
         </g>  
         <text
-          x="0"
+          class="title"
+          x="5"
           :y="yMax - 40"
           text-anchor="middle"
           fill="#2c3e50"
@@ -43,12 +44,12 @@
           fill="none"
           stroke-linecap="round"
         />
-        <GrAnnotations 
+        <GrAnnotations
           :data="data"
-          :xAccessor="xAccessor"
+          :xAccessorScaled="xAccessorScaled"
+          :yAccessorScaled="yAccessorScaled"
           :yAccessor="yAccessor"
-          :xScale="xScale"
-          :yScale="yScale"
+          :AreAnnotationsSmall="false"
         />
         <circle 
           v-if="hoveredPoint"
@@ -59,7 +60,16 @@
           stroke="#ffffff"
           stroke-width="2px"
         />
-        <!-- circle rendered when visitor hovers over scatterplot -->
+        <circle 
+          v-if="hoveredPoint"
+          :r="(xScale.bandwidth() / 2) + 3"
+          :cx="xAccessorScaled(hoveredPoint)"
+          :cy="yAccessorScaled(hoveredPoint)"
+          fill="none"
+          stroke="#2c3e50"
+          stroke-width="2px"
+        />
+        <!-- circles rendered when visitor hovers over scatterplot -->
         <circle 
           v-if="hoveredScatterplotPoint && hoveredScatterplotPoint.label == loc"
           :r="(xScale.bandwidth() / 2)"
@@ -67,6 +77,15 @@
           :cy="yAccessorScaled(hoveredScatterplotPoint)"
           fill="#2c3e50"
           stroke="#ffffff"
+          stroke-width="2px"  
+        />
+        <circle 
+          v-if="hoveredScatterplotPoint && hoveredScatterplotPoint.label == loc"
+          :r="(xScale.bandwidth() / 2) + 3"
+          :cx="xAccessorScaled(hoveredScatterplotPoint)"
+          :cy="yAccessorScaled(hoveredScatterplotPoint)"
+          fill="none"
+          stroke="#2c3e50"
           stroke-width="2px"  
         />
       </g>
@@ -147,10 +166,13 @@
   const ariaLabel = computed(() => `Line chart of ${props.lineage} prevalence in ${props.loc}`);
 </script>
   
-<style>
+<style scoped>
   .line-chart {
     margin-top: 0px;
     margin-bottom: 10px;
   } 
+  .title {
+    font-weight: 700;
+  }
 </style>
   
