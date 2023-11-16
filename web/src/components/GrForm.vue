@@ -11,7 +11,7 @@
           placeholder="Type to search"
           :options="lineageOptions"
           clearable
-          :clear-filter-after-select="true"
+          :reset-menu-on-options-change=false
         />
       </n-form-item>
       <n-form-item 
@@ -26,7 +26,7 @@
           placeholder="Type to search"
           :options="locationOptions"
           clearable
-          :clear-filter-after-select="true"
+          :reset-menu-on-options-change=false
         />
       </n-form-item>
       <div class="query-buttons">
