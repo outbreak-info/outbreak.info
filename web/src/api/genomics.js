@@ -1497,7 +1497,7 @@ export const findLocation = (apiurl, queryString, size = 10) => {
   );
 };
 
-export const findPangolin = (apiurl, queryString, size = 10) => {
+export const findPangolin = (apiurl, queryString, size = 15) => {
   const url = `${apiurl}lineage?name=*${queryString}*&size=${size}`;
 
   const vocs = CURATED.filter((d) => d.who_name).map((d) => ({
@@ -1522,6 +1522,8 @@ export const findPangolin = (apiurl, queryString, size = 10) => {
         d.name.toLowerCase().includes(queryString.toLowerCase()),
       );
       results = results.concat(filteredVocs);
+
+      if (results.length > 0) results.sort((a, b) => a.name.localeCompare(b.name));
 
       return results;
     }),
