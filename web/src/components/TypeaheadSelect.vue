@@ -121,8 +121,8 @@ const change = () => {
     querySubscription.value = props
       .queryFunction(props.apiUrl, selected.value)
       .subscribe((results) => {
-        if (results.length > 10) {
-          matches.value = results.slice(0, 10);
+        if (results.length > 15) {
+          matches.value = results.slice(0, 15);
         } else {
           matches.value = results;
         }
