@@ -47,7 +47,7 @@
         altText="Growth rate chart in which the color scale and the line-stripe chart are highlighted"
       />
       <p>
-        Hovering over charts causes <span class="bold">tooltips</span> to appear. Each tooltip presents information about the associated data point, namely growth rate and 95% CI, prevalence, number of lineage sequences, number of total sequences and ratio over background. The background is the difference between the number of total sequences and the number of lineage sequences divided by the number of lineage sequences.
+        Hovering over charts causes <span class="bold">tooltips</span> to appear. Each tooltip presents information about the associated data point, namely growth rate and 95% CI, prevalence, number of lineage sequences, number of background sequences and ratio over background. The background is the difference between the number of total sequences and the number of lineage sequences divided by the number of lineage sequences.
       </p>
       <h3>Data gaps</h3>
       <p>
