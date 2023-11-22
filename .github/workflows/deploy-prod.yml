@@ -3,7 +3,7 @@ name: Deploy Outbreak.info to Prod
 on:
   push:
     branches:
-    - fix-github-action
+    - master
 
 jobs:
   build_and_deploy:
@@ -19,25 +19,22 @@ jobs:
       env:
         VITE_APP_API_ACCESS: ${{ secrets.VITE_APP_API_ACCESS }}
       run: npm --prefix web/ run build
-    # - name: sync s3
-    #   uses: jakejarvis/s3-sync-action@master
-    #   with:
-    #     args: --acl public-read --follow-symlinks --delete
-    #   env:
-    #     AWS_S3_BUCKET: ${{ secrets.OUTBREAK_S3_BUCKET }}
-    #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-    #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    #     AWS_REGION: ${{ secrets.AWS_REGION }}
-    #     SOURCE_DIR: './web/dist'
-    #     DEST_DIR: 'master'
-    # - name: invalidate cloudfront
-    #   uses: chetan/invalidate-cloudfront-action@v2
-    #   env:
-    #     PATHS: "/*"
-    #     AWS_REGION: ${{ secrets.AWS_REGION }}
-    #     DISTRIBUTION: ${{ secrets.CLOUDFRONT_DISTRIBUTION }}
-    #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-    #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    - name: Setup tmate debug session on failure
-      if: ${{ failure() }}
-      uses: mxschmitt/action-tmate@v3
+    - name: sync s3
+      uses: jakejarvis/s3-sync-action@master
+      with:
+        args: --acl public-read --follow-symlinks --delete
+      env:
+        AWS_S3_BUCKET: ${{ secrets.OUTBREAK_S3_BUCKET }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: ${{ secrets.AWS_REGION }}
+        SOURCE_DIR: './web/dist'
+        DEST_DIR: 'master'
+    - name: invalidate cloudfront
+      uses: chetan/invalidate-cloudfront-action@v2
+      env:
+        PATHS: "/*"
+        AWS_REGION: ${{ secrets.AWS_REGION }}
+        DISTRIBUTION: ${{ secrets.CLOUDFRONT_DISTRIBUTION }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
