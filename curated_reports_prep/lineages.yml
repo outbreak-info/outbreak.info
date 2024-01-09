@@ -2738,6 +2738,7 @@
       - JN.1.1.1
       - JN.1.2
       - JN.1.3
+      - JN.1.4
       - JN.2
       - JN.2.1
       - JN.3
@@ -5293,6 +5294,7 @@
       - JN.1.1.1
       - JN.1.2
       - JN.1.3
+      - JN.1.4
       - JN.2
       - JN.2.1
       - JN.3
@@ -6910,6 +6912,7 @@
       - JN.1.1.1
       - JN.1.2
       - JN.1.3
+      - JN.1.4
       - JN.2
       - JN.2.1
       - JN.3
@@ -11002,6 +11005,7 @@
       - JN.1.1.1
       - JN.1.2
       - JN.1.3
+      - JN.1.4
       - JN.2
       - JN.2.1
       - JN.3
@@ -11795,6 +11799,7 @@
       - JN.1.1.1
       - JN.1.2
       - JN.1.3
+      - JN.1.4
       - JN.2
       - JN.2.1
       - JN.3
@@ -15117,6 +15122,7 @@
       - JN.1.1.1
       - JN.1.2
       - JN.1.3
+      - JN.1.4
       - JN.2
       - JN.2.1
       - JN.3
@@ -15140,6 +15146,7 @@
       - JN.1.1.1
       - JN.1.2
       - JN.1.3
+      - JN.1.4
       - JN.2
       - JN.2.1
       - JN.3
@@ -15161,6 +15168,7 @@
       - JN.1.1.1
       - JN.1.2
       - JN.1.3
+      - JN.1.4
   parent: BA.2.86.1
 - name: JN.1.1
   alias: B.1.1.529.2.86.1.1.1
@@ -15182,6 +15190,11 @@
   alias: B.1.1.529.2.86.1.1.3
   children:
       - JN.1.3
+  parent: JN.1
+- name: JN.1.4
+  alias: B.1.1.529.2.86.1.1.4
+  children:
+      - JN.1.4
   parent: JN.1
 - name: JN.2
   alias: B.1.1.529.2.86.1.2
@@ -35799,7 +35812,6 @@
       - KD.2
       - KD.3
       - KD.4
-      - KD.5
       - XBC
       - XBC.1
       - XBC.1.1
@@ -35837,7 +35849,6 @@
       - KD.2
       - KD.3
       - KD.4
-      - KD.5
       - XBC.1
       - XBC.1.1
       - XBC.1.1.1
@@ -35894,7 +35905,6 @@
       - KD.2
       - KD.3
       - KD.4
-      - KD.5
       - XBC.1.3
       - XBC.1.3.1
   parent: XBC.1
@@ -35905,7 +35915,6 @@
       - KD.2
       - KD.3
       - KD.4
-      - KD.5
       - XBC.1.3.1
   parent: XBC.1.3
 - name: KD.1
@@ -35927,11 +35936,6 @@
   alias: XBC.1.3.1.4
   children:
       - KD.4
-  parent: XBC.1.3.1
-- name: KD.5
-  alias: XBC.1.3.1.5
-  children:
-      - KD.5
   parent: XBC.1.3.1
 - name: XBC.1.4
   alias: XBC.1.4
@@ -36501,3 +36505,8 @@
   children:
       - XDK
   recombinant_parents: XBB.1.16.11,JN.1.1.1
+- name: XDL
+  alias: XDL
+  children:
+      - XDL
+  recombinant_parents: EG.5.1.1,XBB*
