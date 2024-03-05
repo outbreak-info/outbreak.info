@@ -2801,6 +2801,7 @@
       - JP.1
       - JP.1.1
       - JQ.1
+      - JQ.2
       - JV.1
       - JV.2
       - K.1
@@ -5409,6 +5410,7 @@
       - JP.1
       - JP.1.1
       - JQ.1
+      - JQ.2
       - JV.1
       - JV.2
       - K.1
@@ -7079,6 +7081,7 @@
       - JP.1
       - JP.1.1
       - JQ.1
+      - JQ.2
       - JV.1
       - JV.2
       - K.1
@@ -11224,6 +11227,7 @@
       - JP.1
       - JP.1.1
       - JQ.1
+      - JQ.2
       - JV.1
       - JV.2
       - KG.1
@@ -12070,6 +12074,7 @@
       - JP.1
       - JP.1.1
       - JQ.1
+      - JQ.2
       - JV.1
       - JV.2
       - KG.1
@@ -15441,6 +15446,7 @@
       - JN.11
       - JN.12
       - JQ.1
+      - JQ.2
       - KP.1
       - KP.1.1
       - KP.2
@@ -15955,11 +15961,17 @@
   children:
       - BA.2.86.3
       - JQ.1
+      - JQ.2
   parent: BA.2.86
 - name: JQ.1
   alias: B.1.1.529.2.86.3.1
   children:
       - JQ.1
+  parent: BA.2.86.3
+- name: JQ.2
+  alias: B.1.1.529.2.86.3.2
+  children:
+      - JQ.2
   parent: BA.2.86.3
 - name: BA.2.86.4
   alias: B.1.1.529.2.86.4
@@ -37453,7 +37465,13 @@
   alias: XDQ
   children:
       - XDQ
+      - XDQ.1
   recombinant_parents: BA.2.86.1,FL.15.1.1
+- name: XDQ.1
+  alias: XDQ.1
+  children:
+      - XDQ.1
+  parent: XDQ
 - name: XDR
   alias: XDR
   children:
