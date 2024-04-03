@@ -2866,6 +2866,7 @@
       - KV.1
       - KV.2
       - KW.1
+      - KW.1.1
       - KY.1
       - L.1
       - L.2
@@ -5528,6 +5529,7 @@
       - KV.1
       - KV.2
       - KW.1
+      - KW.1.1
       - KY.1
       - L.1
       - L.2
@@ -7252,6 +7254,7 @@
       - KV.1
       - KV.2
       - KW.1
+      - KW.1.1
       - KY.1
       - L.1
       - L.2
@@ -11448,6 +11451,7 @@
       - KV.1
       - KV.2
       - KW.1
+      - KW.1.1
       - KY.1
   parent: B.1.1
 - name: BA.1
@@ -12348,6 +12352,7 @@
       - KV.1
       - KV.2
       - KW.1
+      - KW.1.1
       - KY.1
   parent: B.1.1.529
 - name: BA.2.1
@@ -15769,6 +15774,7 @@
       - KV.1
       - KV.2
       - KW.1
+      - KW.1.1
       - KY.1
   parent: BA.2
 - name: BA.2.86.1
@@ -15894,6 +15900,7 @@
       - KV.1
       - KV.2
       - KW.1
+      - KW.1.1
       - KY.1
   parent: BA.2.86
 - name: JN.1
@@ -15994,6 +16001,7 @@
       - KV.1
       - KV.2
       - KW.1
+      - KW.1.1
       - KY.1
   parent: BA.2.86.1
 - name: JN.1.1
@@ -16401,18 +16409,26 @@
       - JN.1.28
       - JN.1.28.1
       - KW.1
+      - KW.1.1
   parent: JN.1
 - name: JN.1.28.1
   alias: B.1.1.529.2.86.1.1.28.1
   children:
       - JN.1.28.1
       - KW.1
+      - KW.1.1
   parent: JN.1.28
 - name: KW.1
   alias: B.1.1.529.2.86.1.1.28.1.1
   children:
       - KW.1
+      - KW.1.1
   parent: JN.1.28.1
+- name: KW.1.1
+  alias: B.1.1.529.2.86.1.1.28.1.1.1
+  children:
+      - KW.1.1
+  parent: KW.1
 - name: JN.1.29
   alias: B.1.1.529.2.86.1.1.29
   children:
