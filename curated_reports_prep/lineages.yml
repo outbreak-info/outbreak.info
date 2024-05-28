@@ -2846,6 +2846,10 @@
       - JN.1.51
       - JN.1.51.1
       - JN.1.52
+      - JN.1.53
+      - JN.1.53.1
+      - JN.1.54
+      - JN.1.54.1
       - JN.2
       - JN.2.1
       - JN.2.2
@@ -2926,6 +2930,7 @@
       - KQ.1
       - KR.1
       - KS.1
+      - KS.1.1
       - KU.1
       - KU.2
       - KV.1
@@ -2960,6 +2965,10 @@
       - LH.2
       - LJ.1
       - LK.1
+      - LL.1
+      - LM.1
+      - LN.1
+      - LN.1.1
       - M.1
       - M.2
       - M.3
@@ -5597,6 +5606,10 @@
       - JN.1.51
       - JN.1.51.1
       - JN.1.52
+      - JN.1.53
+      - JN.1.53.1
+      - JN.1.54
+      - JN.1.54.1
       - JN.2
       - JN.2.1
       - JN.2.2
@@ -5677,6 +5690,7 @@
       - KQ.1
       - KR.1
       - KS.1
+      - KS.1.1
       - KU.1
       - KU.2
       - KV.1
@@ -5711,6 +5725,10 @@
       - LH.2
       - LJ.1
       - LK.1
+      - LL.1
+      - LM.1
+      - LN.1
+      - LN.1.1
       - M.1
       - M.2
       - M.3
@@ -7410,6 +7428,10 @@
       - JN.1.51
       - JN.1.51.1
       - JN.1.52
+      - JN.1.53
+      - JN.1.53.1
+      - JN.1.54
+      - JN.1.54.1
       - JN.2
       - JN.2.1
       - JN.2.2
@@ -7490,6 +7512,7 @@
       - KQ.1
       - KR.1
       - KS.1
+      - KS.1.1
       - KU.1
       - KU.2
       - KV.1
@@ -7524,6 +7547,10 @@
       - LH.2
       - LJ.1
       - LK.1
+      - LL.1
+      - LM.1
+      - LN.1
+      - LN.1.1
       - M.1
       - M.2
       - M.3
@@ -11698,6 +11725,10 @@
       - JN.1.51
       - JN.1.51.1
       - JN.1.52
+      - JN.1.53
+      - JN.1.53.1
+      - JN.1.54
+      - JN.1.54.1
       - JN.2
       - JN.2.1
       - JN.2.2
@@ -11775,6 +11806,7 @@
       - KQ.1
       - KR.1
       - KS.1
+      - KS.1.1
       - KU.1
       - KU.2
       - KV.1
@@ -11805,6 +11837,10 @@
       - LH.2
       - LJ.1
       - LK.1
+      - LL.1
+      - LM.1
+      - LN.1
+      - LN.1.1
   parent: B.1.1
 - name: BA.1
   alias: B.1.1.529.1
@@ -12687,6 +12723,10 @@
       - JN.1.51
       - JN.1.51.1
       - JN.1.52
+      - JN.1.53
+      - JN.1.53.1
+      - JN.1.54
+      - JN.1.54.1
       - JN.2
       - JN.2.1
       - JN.2.2
@@ -12764,6 +12804,7 @@
       - KQ.1
       - KR.1
       - KS.1
+      - KS.1.1
       - KU.1
       - KU.2
       - KV.1
@@ -12794,6 +12835,10 @@
       - LH.2
       - LJ.1
       - LK.1
+      - LL.1
+      - LM.1
+      - LN.1
+      - LN.1.1
   parent: B.1.1.529
 - name: BA.2.1
   alias: B.1.1.529.2.1
@@ -16203,6 +16248,10 @@
       - JN.1.51
       - JN.1.51.1
       - JN.1.52
+      - JN.1.53
+      - JN.1.53.1
+      - JN.1.54
+      - JN.1.54.1
       - JN.2
       - JN.2.1
       - JN.2.2
@@ -16274,6 +16323,7 @@
       - KQ.1
       - KR.1
       - KS.1
+      - KS.1.1
       - KU.1
       - KU.2
       - KV.1
@@ -16304,6 +16354,10 @@
       - LH.2
       - LJ.1
       - LK.1
+      - LL.1
+      - LM.1
+      - LN.1
+      - LN.1.1
   parent: BA.2
 - name: BA.2.86.1
   alias: B.1.1.529.2.86.1
@@ -16419,6 +16473,10 @@
       - JN.1.51
       - JN.1.51.1
       - JN.1.52
+      - JN.1.53
+      - JN.1.53.1
+      - JN.1.54
+      - JN.1.54.1
       - JN.2
       - JN.2.1
       - JN.2.2
@@ -16486,6 +16544,7 @@
       - KQ.1
       - KR.1
       - KS.1
+      - KS.1.1
       - KU.1
       - KU.2
       - KV.1
@@ -16516,6 +16575,10 @@
       - LH.2
       - LJ.1
       - LK.1
+      - LL.1
+      - LM.1
+      - LN.1
+      - LN.1.1
   parent: BA.2.86
 - name: JN.1
   alias: B.1.1.529.2.86.1.1
@@ -16630,6 +16693,10 @@
       - JN.1.51
       - JN.1.51.1
       - JN.1.52
+      - JN.1.53
+      - JN.1.53.1
+      - JN.1.54
+      - JN.1.54.1
       - KP.1
       - KP.1.1
       - KP.1.1.1
@@ -16666,6 +16733,7 @@
       - KQ.1
       - KR.1
       - KS.1
+      - KS.1.1
       - KU.1
       - KU.2
       - KV.1
@@ -16696,6 +16764,10 @@
       - LH.2
       - LJ.1
       - LK.1
+      - LL.1
+      - LM.1
+      - LN.1
+      - LN.1.1
   parent: BA.2.86.1
 - name: JN.1.1
   alias: B.1.1.529.2.86.1.1.1
@@ -16822,6 +16894,7 @@
       - LE.1.1
       - LE.1.2
       - LE.2
+      - LL.1
   parent: JN.1
 - name: JN.1.4.1
   alias: B.1.1.529.2.86.1.1.4.1
@@ -16832,7 +16905,13 @@
   alias: B.1.1.529.2.86.1.1.4.2
   children:
       - JN.1.4.2
+      - LL.1
   parent: JN.1.4
+- name: LL.1
+  alias: B.1.1.529.2.86.1.1.4.2.1
+  children:
+      - LL.1
+  parent: JN.1.4.2
 - name: JN.1.4.3
   alias: B.1.1.529.2.86.1.1.4.3
   children:
@@ -17313,18 +17392,26 @@
       - JN.1.13
       - JN.1.13.1
       - KS.1
+      - KS.1.1
   parent: JN.1
 - name: JN.1.13.1
   alias: B.1.1.529.2.86.1.1.13.1
   children:
       - JN.1.13.1
       - KS.1
+      - KS.1.1
   parent: JN.1.13
 - name: KS.1
   alias: B.1.1.529.2.86.1.1.13.1.1
   children:
       - KS.1
+      - KS.1.1
   parent: JN.1.13.1
+- name: KS.1.1
+  alias: B.1.1.529.2.86.1.1.13.1.1.1
+  children:
+      - KS.1.1
+  parent: KS.1
 - name: JN.1.14
   alias: B.1.1.529.2.86.1.1.14
   children:
@@ -17490,12 +17577,19 @@
   children:
       - JN.1.25
       - JN.1.25.1
+      - LM.1
   parent: JN.1
 - name: JN.1.25.1
   alias: B.1.1.529.2.86.1.1.25.1
   children:
       - JN.1.25.1
+      - LM.1
   parent: JN.1.25
+- name: LM.1
+  alias: B.1.1.529.2.86.1.1.25.1.1
+  children:
+      - LM.1
+  parent: JN.1.25.1
 - name: JN.1.26
   alias: B.1.1.529.2.86.1.1.26
   children:
@@ -17810,6 +17904,43 @@
   children:
       - JN.1.52
   parent: JN.1
+- name: JN.1.53
+  alias: B.1.1.529.2.86.1.1.53
+  children:
+      - JN.1.53
+      - JN.1.53.1
+      - LN.1
+      - LN.1.1
+  parent: JN.1
+- name: JN.1.53.1
+  alias: B.1.1.529.2.86.1.1.53.1
+  children:
+      - JN.1.53.1
+      - LN.1
+      - LN.1.1
+  parent: JN.1.53
+- name: JN.1.54
+  alias: B.1.1.529.2.86.1.1.54
+  children:
+      - JN.1.54
+      - JN.1.54.1
+  parent: JN.1
+- name: JN.1.54.1
+  alias: B.1.1.529.2.86.1.1.54.1
+  children:
+      - JN.1.54.1
+  parent: JN.1.54
+- name: LN.1
+  alias: B.1.1.529.2.86.1.1.53.1.1
+  children:
+      - LN.1
+      - LN.1.1
+  parent: JN.1.53.1
+- name: LN.1.1
+  alias: B.1.1.529.2.86.1.1.53.1.1.1
+  children:
+      - LN.1.1
+  parent: LN.1
 - name: JN.2
   alias: B.1.1.529.2.86.1.2
   children:
@@ -39548,6 +39679,7 @@
       - XDK.4
       - XDK.4.1
       - XDK.5
+      - XDK.6
   recombinant_parents: XBB.1.16.11,JN.1.1.1
 - name: XDK.1
   alias: XDK.1
@@ -39591,6 +39723,11 @@
   alias: XDK.5
   children:
       - XDK.5
+  parent: XDK
+- name: XDK.6
+  alias: XDK.6
+  children:
+      - XDK.6
   parent: XDK
 - name: XDL
   alias: XDL
