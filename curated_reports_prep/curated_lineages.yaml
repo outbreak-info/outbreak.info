@@ -1,187 +1,87 @@
 VOI:
-    - who_name: "XBB.1.16* [Omicron (XBB.1.16.X)]"
-      short_name: "XBB.1.16*"
-      pangolin_lineage: XBB.1.16
-      include_recombinants: True
-      dateModified: 2023-10-04
-      variantType: Variant Under Monitoring
+    - who_name: "JN.1* (JN.1.X)"
+      short_name: "JN.1*"
+      pangolin_lineage: BA.2.86
+      include_sublineages: True
+      dateModified: 2023-11-23
+      variantType: Variant of Interest
+      classifications:
+          - author: WHO
+            dateModified: 2023-11-23
+            url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
+            variantType: VOI
+
+    - who_name: "BA.2.86* (BA.2.86.X)"
+      short_name: "BA.2.86*"
+      pangolin_lineage: BA.2.86
+      include_sublineages: True
+      dateModified: 2023-09-21
+      variantType: Variant of Interest
       classifications:
           - author: WHO
             dateModified: 2023-09-21
             url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
-            variantType: VUM
-          - author: CDC
-            dateModified: 2023-09-01
-            url: https://www.cdc.gov/coronavirus/2019-ncov/variants/variant-classifications.html
-            variantType: VUM
-          - author: ECDC
-            dateModified: 2023-09-07
-            url: https://www.ecdc.europa.eu/en/covid-19/variants-concern
-            variantType: VOC
+            variantType: VOI
 
     - who_name: "EG.5* [Omicron (EG.5.X)]"
       short_name: "EG.5*"
       pangolin_lineage: EG.5
       include_recombinants: True
-      dateModified: 2023-10-04
+      dateModified: 2023-08-09
       variantType: Variant of Interest
       classifications:
           - author: WHO
-            dateModified: 2021-09-21
+            dateModified: 2023-08-09
             url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
-            variantType: VOI
-          - author: CDC
-            dateModified: 2023-09-01
-            url: https://www.cdc.gov/coronavirus/2019-ncov/variants/variant-info.html
-            variantType: VOI
-
-    - who_name: "XBB.1.5* [Omicron (XBB.1.5.X)]"
-      short_name: "XBB.1.5*"
-      pangolin_lineage: XBB.1.5
-      include_recombinants: True
-      dateModified: 2023-10-04
-      variantType: Variant of Interest
-      classifications:
-          - author: WHO
-            dateModified: 2023-09-21
-            url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
-            variantType: VUM
-          - author: CDC
-            dateModified: 2023-09-21
-            url: https://www.cdc.gov/coronavirus/2019-ncov/variants/variant-info.html
-            variantType: VOI
-          - author: ECDC
-            dateModified: 2023-09-21
-            url: https://www.ecdc.europa.eu/en/covid-19/variants-concern
             variantType: VOI
 
 VUM:
-    - who_name: "BA.2.75* [Omicron (BA.2.75.X)]"
-      short_name: "BA.2.75*"
-      pangolin_lineage: BA.2.75
-      include_recombinants: True
-      dateModified: 2023-10-04
-      variantType: Variant of Interest
-      classifications:
-          - author: WHO
-            dateModified: 2023-09-21
-            url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
-            variantType: VOI
-          - author: CDC
-            dateModified: 2023-09-21 
-            url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
-            variantType: VOI 
-          - author: ECDC
-            dateModified: 2023-09-21
-            url: https://www.ecdc.europa.eu/en/covid-19/variants-concern
-            variantType: VOI
-
-    - who_name: "XBB.2.3* (XBB.2.3X)"
-      short_name: "XBB.2.3*"
-      pangolin_lineage: XBB.2.3
+    - who_name: "JN.1.7* (JN.1.7.X)"
+      short_name: "JN.1.7*"
+      pangolin_lineage: JN.1.7
       include_sublineages: True
-      dateModified: 2023-10-04
+      dateModified: 2023-05-03
       variantType: Variant Under Monitoring
       classifications:
           - author: WHO
-            dateModified: 2023-09-21
+            dateModified: 2023-05-03
             url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
             variantType: VUM
-          - author: CDC
-            dateModified: 2023-09-21
-            url: https://www.cdc.gov/coronavirus/2019-ncov/variants/variant-info.html
-            variantType: VUM
-          - author: ECDC
-            dateModified: 2023-09-21
-            url: https://www.ecdc.europa.eu/en/covid-19/variants-concern
-            variantType: VUM
 
-    - who_name: "BA.2.86* (BA.2.86X)"
-      short_name: "BA.2.86*"
-      pangolin_lineage: BA.2.86
+    - who_name: "KP.2* (KP.2.X)"
+      short_name: "KP.2*"
+      pangolin_lineage: KP.2
       include_sublineages: True
-      dateModified: 2023-10-04
+      dateModified: 2023-05-03
       variantType: Variant Under Monitoring
       classifications:
           - author: WHO
-            dateModified: 2023-09-21
+            dateModified: 2023-05-03
             url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
             variantType: VUM
-          - author: CDC
-            dateModified: 2023-09-01
-            url: https://www.cdc.gov/coronavirus/2019-ncov/variants/variant-info.html
-            variantType: VUM
-          - author: ECDC
-            dateModified: 2023-09-21
-            url: https://www.ecdc.europa.eu/en/covid-19/variants-concern
-            variantType: VUM
 
-    - who_name: "CH.1.1* [Omicron (CH.1.1.X)]"
-      short_name: "CH.1.1*"
-      pangolin_lineage: CH.1.1
-      include_recombinants: True
-      dateModified: 2023-10-04
-      variantType: Variant Under Monitoring
-      classifications:
-          - author: WHO
-            dateModified: 2023-09-21
-            url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
-            variantType: VUM
-          - author: CDC
-            dateModified: 2023-09-01
-            url: https://www.cdc.gov/coronavirus/2019-ncov/variants/variant-info.html
-            variantType: VUM
-          - author: ECDC
-            dateModified: 2023-09-21
-            url: https://www.ecdc.europa.eu/en/covid-19/variants-concern
-            variantType: VUM
-
-    - who_name: "XBB* (XBB.X)"
-      short_name: "XBB*"
-      pangolin_lineage: XBB
+    - who_name: "KP.3* (KP.3.X)"
+      short_name: "KP.3*"
+      pangolin_lineage: KP.3
       include_sublineages: True
-      dateModified: 2023-10-04
+      dateModified: 2023-05-03
       variantType: Variant Under Monitoring
       classifications:
           - author: WHO
-            dateModified: 2023-09-21
+            dateModified: 2023-05-03
             url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
             variantType: VUM
 
-    - who_name: "XBB.1.9.1* [Omicron (XBB.1.9.1.X)]"
-      short_name: "XBB.1.9.1*"
-      pangolin_lineage: XBB.1.9.1
-      include_recombinants: True
-      dateModified: 2023-04-17
+    - who_name: "JN.1.18* (JN.1.18.X)"
+      short_name: "JN.1.18*"
+      pangolin_lineage: JN.1.18
+      include_sublineages: True
+      dateModified: 2023-05-03
       variantType: Variant Under Monitoring
       classifications:
           - author: WHO
-            dateModified: 2021-11-26
+            dateModified: 2023-05-03
             url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
-            variantType: VUM
-          - author: CDC
-            dateModified: 2021-12-01
-            url: https://www.cdc.gov/coronavirus/2019-ncov/variants/variant-info.html
-            variantType: VUM
-          - author: ECDC
-            dateModified: 2021-11-26
-            url: https://www.ecdc.europa.eu/en/covid-19/variants-concern
-            variantType: VUM
-
-    - who_name: "XBB.1.9.2* [Omicron (XBB.1.9.2.X)]"
-      short_name: "XBB.1.9.2*"
-      pangolin_lineage: XBB.1.9.2
-      include_recombinants: True
-      dateModified: 2023-04-17
-      variantType: Variant Under Monitoring
-      classifications:
-          - author: WHO
-            dateModified: 2023-03-30
-            url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
-            variantType: VUM
-          - author: CDC
-            dateModified: 2023-09-01
-            url: https://www.cdc.gov/coronavirus/2019-ncov/variants/variant-info.html
             variantType: VUM
 
 previous_voc:
@@ -351,6 +251,157 @@ previous_voc:
 
 
 deescalated:
+    - who_name: "XBB.1.16* [Omicron (XBB.1.16.X)]"
+      short_name: "XBB.1.16*"
+      pangolin_lineage: XBB.1.16
+      include_recombinants: True
+      dateModified: 2023-10-04
+      variantType: Variant Under Monitoring
+      classifications:
+          - author: CDC
+            dateModified: 2023-09-01
+            url: https://www.cdc.gov/coronavirus/2019-ncov/variants/variant-classifications.html
+            variantType: VUM
+
+    - who_name: "EG.5* [Omicron (EG.5.X)]"
+      short_name: "EG.5*"
+      pangolin_lineage: EG.5
+      include_recombinants: True
+      dateModified: 2023-10-04
+      variantType: Variant of Interest
+      classifications:
+          - author: WHO
+            dateModified: 2021-09-21
+            url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
+            variantType: VOI
+
+    - who_name: "XBB.1.5* [Omicron (XBB.1.5.X)]"
+      short_name: "XBB.1.5*"
+      pangolin_lineage: XBB.1.5
+      include_recombinants: True
+      dateModified: 2023-10-04
+      variantType: Variant of Interest
+      classifications:
+          - author: WHO
+            dateModified: 2023-09-21
+            url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
+            variantType: VUM
+          - author: CDC
+            dateModified: 2023-09-21
+            url: https://www.cdc.gov/coronavirus/2019-ncov/variants/variant-info.html
+            variantType: VOI
+          - author: ECDC
+            dateModified: 2023-09-21
+            url: https://www.ecdc.europa.eu/en/covid-19/variants-concern
+            variantType: VOI
+    - who_name: "BA.2.75* [Omicron (BA.2.75.X)]"
+      short_name: "BA.2.75*"
+      pangolin_lineage: BA.2.75
+      include_recombinants: True
+      dateModified: 2023-10-04
+      variantType: Variant of Interest
+      classifications:
+          - author: WHO
+            dateModified: 2023-09-21
+            url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
+            variantType: VOI
+          - author: CDC
+            dateModified: 2023-09-21 
+            url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
+            variantType: VOI 
+          - author: ECDC
+            dateModified: 2023-09-21
+            url: https://www.ecdc.europa.eu/en/covid-19/variants-concern
+            variantType: VOI
+
+    - who_name: "XBB.2.3* (XBB.2.3X)"
+      short_name: "XBB.2.3*"
+      pangolin_lineage: XBB.2.3
+      include_sublineages: True
+      dateModified: 2023-10-04
+      variantType: Variant Under Monitoring
+      classifications:
+          - author: WHO
+            dateModified: 2023-09-21
+            url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
+            variantType: VUM
+          - author: CDC
+            dateModified: 2023-09-21
+            url: https://www.cdc.gov/coronavirus/2019-ncov/variants/variant-info.html
+            variantType: VUM
+          - author: ECDC
+            dateModified: 2023-09-21
+            url: https://www.ecdc.europa.eu/en/covid-19/variants-concern
+            variantType: VUM
+
+    - who_name: "CH.1.1* [Omicron (CH.1.1.X)]"
+      short_name: "CH.1.1*"
+      pangolin_lineage: CH.1.1
+      include_recombinants: True
+      dateModified: 2023-10-04
+      variantType: Variant Under Monitoring
+      classifications:
+          - author: WHO
+            dateModified: 2023-09-21
+            url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
+            variantType: VUM
+          - author: CDC
+            dateModified: 2023-09-01
+            url: https://www.cdc.gov/coronavirus/2019-ncov/variants/variant-info.html
+            variantType: VUM
+          - author: ECDC
+            dateModified: 2023-09-21
+            url: https://www.ecdc.europa.eu/en/covid-19/variants-concern
+            variantType: VUM
+
+    - who_name: "XBB* (XBB.X)"
+      short_name: "XBB*"
+      pangolin_lineage: XBB
+      include_sublineages: True
+      dateModified: 2023-10-04
+      variantType: Variant Under Monitoring
+      classifications:
+          - author: WHO
+            dateModified: 2023-09-21
+            url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
+            variantType: VUM
+
+    - who_name: "XBB.1.9.1* [Omicron (XBB.1.9.1.X)]"
+      short_name: "XBB.1.9.1*"
+      pangolin_lineage: XBB.1.9.1
+      include_recombinants: True
+      dateModified: 2023-04-17
+      variantType: Variant Under Monitoring
+      classifications:
+          - author: WHO
+            dateModified: 2021-11-26
+            url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
+            variantType: VUM
+          - author: CDC
+            dateModified: 2021-12-01
+            url: https://www.cdc.gov/coronavirus/2019-ncov/variants/variant-info.html
+            variantType: VUM
+          - author: ECDC
+            dateModified: 2021-11-26
+            url: https://www.ecdc.europa.eu/en/covid-19/variants-concern
+            variantType: VUM
+
+    - who_name: "XBB.1.9.2* [Omicron (XBB.1.9.2.X)]"
+      short_name: "XBB.1.9.2*"
+      pangolin_lineage: XBB.1.9.2
+      include_recombinants: True
+      dateModified: 2023-04-17
+      variantType: Variant Under Monitoring
+      classifications:
+          - author: WHO
+            dateModified: 2023-03-30
+            url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
+            variantType: VUM
+          - author: CDC
+            dateModified: 2023-09-01
+            url: https://www.cdc.gov/coronavirus/2019-ncov/variants/variant-info.html
+            variantType: VUM
+
   - who_name: "CH.1.1* [Omicron (CH.1.1.X)]"
     short_name: CH.1.1*
     pangolin_lineage: CH.1.1
