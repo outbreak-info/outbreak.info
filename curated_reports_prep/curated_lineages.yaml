@@ -23,28 +23,16 @@ VOI:
             url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
             variantType: VOI
 
-    - who_name: "EG.5* [Omicron (EG.5.X)]"
-      short_name: "EG.5*"
-      pangolin_lineage: EG.5
-      include_recombinants: True
-      dateModified: 2023-08-09
-      variantType: Variant of Interest
-      classifications:
-          - author: WHO
-            dateModified: 2023-08-09
-            url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
-            variantType: VOI
-
 VUM:
     - who_name: "JN.1.7* (JN.1.7.X)"
       short_name: "JN.1.7*"
       pangolin_lineage: JN.1.7
       include_sublineages: True
-      dateModified: 2023-05-03
+      dateModified: 2024-05-03
       variantType: Variant Under Monitoring
       classifications:
           - author: WHO
-            dateModified: 2023-05-03
+            dateModified: 2024-05-03
             url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
             variantType: VUM
 
@@ -52,11 +40,11 @@ VUM:
       short_name: "KP.2*"
       pangolin_lineage: KP.2
       include_sublineages: True
-      dateModified: 2023-05-03
+      dateModified: 2024-05-03
       variantType: Variant Under Monitoring
       classifications:
           - author: WHO
-            dateModified: 2023-05-03
+            dateModified: 2024-05-03
             url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
             variantType: VUM
 
@@ -68,7 +56,7 @@ VUM:
       variantType: Variant Under Monitoring
       classifications:
           - author: WHO
-            dateModified: 2023-05-03
+            dateModified: 2024-05-03
             url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
             variantType: VUM
 
@@ -80,7 +68,19 @@ VUM:
       variantType: Variant Under Monitoring
       classifications:
           - author: WHO
-            dateModified: 2023-05-03
+            dateModified: 2024-05-03
+            url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
+            variantType: VUM
+            
+    - who_name: "LB.1* (LB.1.X)"
+      short_name: "LB.1*"
+      pangolin_lineage: LB.1
+      include_sublineages: True
+      dateModified: 2024-06-28
+      variantType: Variant Under Monitoring
+      classifications:
+          - author: WHO
+            dateModified: 2024-06-28
             url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
             variantType: VUM
 
