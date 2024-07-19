@@ -24,6 +24,19 @@ VOI:
             variantType: VOI
 
 VUM:
+    - who_name: "KP.3.1.1* (KP.3.1.1.X)"
+      short_name: "KP.3.1.1*"
+      pangolin_lineage: KP.3.1.1
+      include_sublineages: True
+      dateModified: 2024-07-19
+      variantType: Variant Under Monitoring
+      classifications:
+          - author: WHO
+            dateModified: 2024-07-19
+            url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
+            variantType: VUM
+
+
     - who_name: "JN.1.7* (JN.1.7.X)"
       short_name: "JN.1.7*"
       pangolin_lineage: JN.1.7
