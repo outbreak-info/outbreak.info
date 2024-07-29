@@ -328,7 +328,7 @@ deescalated:
           url: https://www.ecdc.europa.eu/en/covid-19/variants-concern
           variantType: VOI
 
-  - who_name: "XBB.2.3* (XBB.2.3X)"
+  - who_name: "XBB.2.3* (XBB.2.3.X)"
     short_name: "XBB.2.3*"
     pangolin_lineage: XBB.2.3
     include_sublineages: True
