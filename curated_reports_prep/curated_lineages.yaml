@@ -24,6 +24,19 @@ VOI:
             variantType: VOI
 
 VUM:
+    - who_name: "XEC* (XEC.X)"
+      short_name: "XEC*"
+      pangolin_lineage: XEC
+      include_sublineages: True
+      dateModified: 2024-09-24
+      variantType: Variant Under Monitoring
+      classifications:
+          - author: WHO
+            dateModified: 2024-09-24
+            url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
+            variantType: VUM
+
+            
     - who_name: "KP.3.1.1* (KP.3.1.1.X)"
       short_name: "KP.3.1.1*"
       pangolin_lineage: KP.3.1.1
