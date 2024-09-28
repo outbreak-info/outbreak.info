@@ -43654,3 +43654,13 @@
   children:
       - XEG
   recombinant_parents: JN.3.2.1,GJ.1.2,JN.3.2.1,GJ.1.2
+- name: XEH
+  alias: XEH
+  children:
+      - XEH
+  recombinant_parents: KP.1.1.3,KP.3
+- name: XEJ
+  alias: XEJ
+  children:
+      - XEJ
+  recombinant_parents: JN.1,LF.1.1.1
