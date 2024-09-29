@@ -43628,11 +43628,17 @@
   children:
       - XEC
       - XEC.1
+      - XEC.2
   recombinant_parents: KS.1.1,KP.3.3
 - name: XEC.1
   alias: XEC.1
   children:
       - XEC.1
+  parent: XEC
+- name: XEC.2
+  alias: XEC.2
+  children:
+      - XEC.2
   parent: XEC
 - name: XED
   alias: XED
@@ -43664,3 +43670,8 @@
   children:
       - XEJ
   recombinant_parents: JN.1,LF.1.1.1
+- name: XEK
+  alias: XEK
+  children:
+      - XEK
+  recombinant_parents: KP.2.3,XEC
