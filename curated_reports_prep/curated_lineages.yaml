@@ -24,6 +24,18 @@ VOI:
             variantType: VOI
 
 VUM:
+    - who_name: "LP.8.1* (LP.8.1.X)"
+      short_name: "LP.8.1*"
+      pangolin_lineage: LP.8.1
+      include_sublineages: True
+      dateModified: 2024-01-24
+      variantType: Variant Under Monitoring
+      classifications:
+          - author: WHO
+            dateModified: 2024-01-24
+            url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
+            variantType: VUM
+            
     - who_name: "XEC* (XEC.X)"
       short_name: "XEC*"
       pangolin_lineage: XEC
