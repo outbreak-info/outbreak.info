@@ -3270,6 +3270,7 @@
       - MC.27
       - MC.28
       - MC.28.1
+      - MC.29
       - MD.1
       - MD.1.1
       - MD.1.1.1
@@ -6429,6 +6430,7 @@
       - MC.27
       - MC.28
       - MC.28.1
+      - MC.29
       - MD.1
       - MD.1.1
       - MD.1.1.1
@@ -8650,6 +8652,7 @@
       - MC.27
       - MC.28
       - MC.28.1
+      - MC.29
       - MD.1
       - MD.1.1
       - MD.1.1.1
@@ -13336,6 +13339,7 @@
       - MC.27
       - MC.28
       - MC.28.1
+      - MC.29
       - MD.1
       - MD.1.1
       - MD.1.1.1
@@ -14733,6 +14737,7 @@
       - MC.27
       - MC.28
       - MC.28.1
+      - MC.29
       - MD.1
       - MD.1.1
       - MD.1.1.1
@@ -18651,6 +18656,7 @@
       - MC.27
       - MC.28
       - MC.28.1
+      - MC.29
       - MD.1
       - MD.1.1
       - MD.1.1.1
@@ -19267,6 +19273,7 @@
       - MC.27
       - MC.28
       - MC.28.1
+      - MC.29
       - MD.1
       - MD.1.1
       - MD.1.1.1
@@ -19849,6 +19856,7 @@
       - MC.27
       - MC.28
       - MC.28.1
+      - MC.29
       - MD.1
       - MD.1.1
       - MD.1.1.1
@@ -20906,6 +20914,7 @@
       - MC.27
       - MC.28
       - MC.28.1
+      - MC.29
       - MG.1
       - MG.2
       - MG.3
@@ -21128,6 +21137,7 @@
       - MC.27
       - MC.28
       - MC.28.1
+      - MC.29
       - MG.1
       - MG.2
       - MG.3
@@ -22036,6 +22046,7 @@
       - MC.27
       - MC.28
       - MC.28.1
+      - MC.29
       - MK.1
       - MK.2
       - MK.3
@@ -22111,6 +22122,7 @@
       - MC.27
       - MC.28
       - MC.28.1
+      - MC.29
       - MK.1
       - MK.2
       - MK.3
@@ -22167,6 +22179,7 @@
       - MC.27
       - MC.28
       - MC.28.1
+      - MC.29
   parent: KP.3.1
 - name: MC.1
   alias: B.1.1.529.2.86.1.1.11.1.3.1.1.1
@@ -22405,6 +22418,11 @@
   children:
       - MC.28.1
   parent: MC.28
+- name: MC.29
+  alias: B.1.1.529.2.86.1.1.11.1.3.1.1.29
+  children:
+      - MC.29
+  parent: KP.3.1.1
 - name: KP.3.1.2
   alias: B.1.1.529.2.86.1.1.11.1.3.1.2
   children:
@@ -46648,6 +46666,8 @@
       - XEC.14
       - XEC.15
       - XEC.16
+      - XEC.17
+      - XEC.18
   recombinant_parents: KS.1.1,KP.3.3
 - name: XEC.1
   alias: XEC.1
@@ -46753,6 +46773,16 @@
   alias: XEC.16
   children:
       - XEC.16
+  parent: XEC
+- name: XEC.17
+  alias: XEC.17
+  children:
+      - XEC.17
+  parent: XEC
+- name: XEC.18
+  alias: XEC.18
+  children:
+      - XEC.18
   parent: XEC
 - name: XED
   alias: XED
@@ -46883,3 +46913,23 @@
   children:
       - XEU
   recombinant_parents: XEK,XEC.8
+- name: XEV
+  alias: XEV
+  children:
+      - XEV
+  recombinant_parents: KP.3.1.1,XEC.18
+- name: XEW
+  alias: XEW
+  children:
+      - XEW
+  recombinant_parents: KP.3.1.1,XEC.8
+- name: XEY
+  alias: XEY
+  children:
+      - XEY
+  recombinant_parents: MC.29,XEC
+- name: XEZ
+  alias: XEZ
+  children:
+      - XEZ
+  recombinant_parents: MC.6,XEC
