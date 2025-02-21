@@ -13,7 +13,16 @@
     "@fortawesome/free-regular-svg-icons": "^6.4.0",
     "@fortawesome/free-solid-svg-icons": "^6.4.0",
     "@fortawesome/vue-fontawesome": "^3.0.3",
-    "@pixi/graphics-smooth": "0.0.30",
+    "@pixi/accessibility": "^7.2.4",
+    "@pixi/app": "^7.2.4",
+    "@pixi/core": "^7.2.4",
+    "@pixi/display": "^7.2.4",
+    "@pixi/events": "^7.2.4",
+    "@pixi/extensions": "^7.2.4",
+    "@pixi/graphics": "^7.2.4",
+    "@pixi/graphics-extras": "^7.2.4",
+    "@pixi/graphics-smooth": "^1.1.0",
+    "@pixi/sprite": "^7.2.4",
     "@stdlib/stdlib": "0.0.93",
     "@unhead/vue": "^1.1.27",
     "@vueuse/rxjs": "^9.12.0",
@@ -44,7 +53,6 @@
     "lodash": "^4.17.21",
     "naive-ui": "^2.34.3",
     "pinia": "^2.0.33",
-    "pixi.js": "6.5.8",
     "rxjs": "^6.6.7",
     "tippy.js": "^6.2.5",
     "vue": "^3.2.47",
@@ -70,8 +78,7 @@
   },
   "resolutions": {
     "error-stack-parser": "2.1.4",
-    "@pixi/graphics-smooth": "0.0.30",
-    "pixi.js": "7.0.3"
+    "@pixi/graphics-smooth": "0.0.30"
   },
   "browserslist": [
     "> 1%",
