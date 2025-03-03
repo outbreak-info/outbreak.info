@@ -201,6 +201,32 @@
               </div>
             </li>
 
+            <!-- wastewater surveillance -->
+            <li class="dropdown px-3 nav-link">
+              <div
+                id="dropdownMenuButtonWastewaterSurveillance"
+                class="dropdown-toggle"
+                type="button"
+                role="button"
+                data-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="false"
+              >
+                Wastewater Surveillance
+              </div>
+              <div
+                class="dropdown-menu dropdown-menu-dark p-1"
+                aria-labelledby="dropdownMenuButtonWastewaterSurveillance"
+              >
+                <a
+                  class="nav-link"
+                  href="https://outbreak.info/wastewater/lineage-prevalence"
+                >
+                  Lineage Prevalence Tracker
+                </a>
+              </div>
+            </li>
+
             <!-- RESOURCES -->
             <li class="dropdown px-3 nav-link">
               <div
@@ -511,6 +537,18 @@
               >
                 Interpreting Reports
               </router-link>
+            </li>
+          </ul>
+        </div>
+
+        <!-- wastewater group-->
+        <div class="text-light px-4 footer-section">
+          <div class="navbar-footer-title">Wastewater Surveillance</div>
+          <ul class="navbar-nav navbar-footer">
+            <li class="nav-item px-0 py-1">
+              <a class="nav-link p-0" href="https://outbreak.info/wastewater/lineage-prevalence">
+                Lineage Prevalence Tracker
+              </a>
             </li>
           </ul>
         </div>
