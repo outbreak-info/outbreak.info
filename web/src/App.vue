@@ -340,7 +340,7 @@
       <!-- <div class="border-bottom pb-2 mb-2">
       outbreak.info will be undergoing maintenance on <b>12 January 2023</b>. Data may be inaccessible during this time.
     </div> -->
-      <b class="mr-1">
+      <!-- <b class="mr-1">
         The outbreak.info
         <a href="https://api.outbreak.info/" class="text-light" target="_blank">
           API
@@ -367,7 +367,7 @@
         aria-label="scripps edu"
       >
         Learn more
-      </a>
+      </a> -->
     </section>
 
     <router-view class="main" v-slot="{ Component }">
