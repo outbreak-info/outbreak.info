@@ -50106,7 +50106,7 @@
   alias: XFJ
   children:
       - XFJ
-  recombinant_parents: LF.7,LS.2
+  recombinant_parents: LS.2,LF.7.2,LS.2,LF.7.2
 - name: XFK
   alias: XFK
   children:
@@ -50117,3 +50117,8 @@
   children:
       - XFL
   recombinant_parents: XEU,XEC.18
+- name: XFM
+  alias: XFM
+  children:
+      - XFM
+  recombinant_parents: LF.7.6.2,LS.2
