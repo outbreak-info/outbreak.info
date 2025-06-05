@@ -75,9 +75,12 @@ for i,(lineage,complete) in enumerate(zip(all_lins,all_completes)):
     if lineage == 'A' or lineage =='B':
         lineage_info[lineage] = {'children':children_names,'alias':complete}
     elif lineage not in recomb_dict.keys():
-        split0 = complete.split('.')
-        parent_ind = all_completes.index('.'.join(split0[0:(len(split0)-1)]))
-        lineage_info[lineage] = {'children':children_names,'alias':complete, 'parent':all_lins[parent_ind]}
+        try:
+            split0 = complete.split('.')
+            parent_ind = all_completes.index('.'.join(split0[0:(len(split0)-1)]))
+            lineage_info[lineage] = {'children':children_names,'alias':complete, 'parent':all_lins[parent_ind]}
+        except:
+            print(f"{lineage} is missing in alias key.")
     else:
         lineage_info[lineage] = {'children':children_names,'alias':complete, 'recombinant_parents':recomb_dict[lineage]}
 
