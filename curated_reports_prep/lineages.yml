@@ -3254,6 +3254,8 @@
       - LR.3
       - LS.1
       - LS.2
+      - LS.2.1
+      - LS.2.1.1
       - LT.1
       - LU.1
       - LU.2
@@ -6677,6 +6679,8 @@
       - LR.3
       - LS.1
       - LS.2
+      - LS.2.1
+      - LS.2.1.1
       - LT.1
       - LU.1
       - LU.2
@@ -9162,6 +9166,8 @@
       - LR.3
       - LS.1
       - LS.2
+      - LS.2.1
+      - LS.2.1.1
       - LT.1
       - LU.1
       - LU.2
@@ -14115,6 +14121,8 @@
       - LR.3
       - LS.1
       - LS.2
+      - LS.2.1
+      - LS.2.1.1
       - LT.1
       - LU.1
       - LU.2
@@ -15773,6 +15781,8 @@
       - LR.3
       - LS.1
       - LS.2
+      - LS.2.1
+      - LS.2.1.1
       - LT.1
       - LU.1
       - LU.2
@@ -19952,6 +19962,8 @@
       - LR.3
       - LS.1
       - LS.2
+      - LS.2.1
+      - LS.2.1.1
       - LT.1
       - LU.1
       - LU.2
@@ -20831,6 +20843,8 @@
       - LR.3
       - LS.1
       - LS.2
+      - LS.2.1
+      - LS.2.1.1
       - LT.1
       - LU.1
       - LU.2
@@ -21674,6 +21688,8 @@
       - LR.3
       - LS.1
       - LS.2
+      - LS.2.1
+      - LS.2.1.1
       - LT.1
       - LU.1
       - LU.2
@@ -28118,6 +28134,8 @@
       - LQ.3
       - LS.1
       - LS.2
+      - LS.2.1
+      - LS.2.1.1
       - LY.1
       - LY.2
       - LZ.1
@@ -28309,6 +28327,8 @@
       - JN.1.18.5
       - LS.1
       - LS.2
+      - LS.2.1
+      - LS.2.1.1
   parent: JN.1.18
 - name: LS.1
   alias: B.1.1.529.2.86.1.1.18.5.1
@@ -28319,7 +28339,20 @@
   alias: B.1.1.529.2.86.1.1.18.5.2
   children:
       - LS.2
+      - LS.2.1
+      - LS.2.1.1
   parent: JN.1.18.5
+- name: LS.2.1
+  alias: B.1.1.529.2.86.1.1.18.5.2.1
+  children:
+      - LS.2.1
+      - LS.2.1.1
+  parent: LS.2
+- name: LS.2.1.1
+  alias: B.1.1.529.2.86.1.1.18.5.2.1.1
+  children:
+      - LS.2.1.1
+  parent: LS.2.1
 - name: JN.1.18.6
   alias: B.1.1.529.2.86.1.1.18.6
   children:
@@ -52804,7 +52837,7 @@
       - XFJ.2
       - XFJ.3
       - XFJ.4
-  recombinant_parents: LS.2,LF.7.2,LS.2,LF.7.2
+  recombinant_parents: LS.2.1.1,LF.7.2,LS.2.1.1,LF.7.2
 - name: XFJ.1
   alias: XFJ.1
   children:
@@ -52839,7 +52872,7 @@
   alias: XFM
   children:
       - XFM
-  recombinant_parents: LF.7.6.2,LS.2
+  recombinant_parents: LF.7.6.2,LS.2.1.1
 - name: XFN
   alias: XFN
   children:
@@ -52849,4 +52882,4 @@
   alias: XFP
   children:
       - XFP
-  recombinant_parents: LS.2,LF.7,LS.2
+  recombinant_parents: LS.2.1.1,LF.7,LS.2.1.1
