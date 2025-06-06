@@ -52798,3 +52798,8 @@
   children:
       - XFN
   recombinant_parents: XEC.25.1,LF.7,XEC.25.1
+- name: XFP
+  alias: XFP
+  children:
+      - XFP
+  recombinant_parents: LS.2,LF.7,LS.2
