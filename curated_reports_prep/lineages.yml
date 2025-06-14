@@ -3603,6 +3603,8 @@
       - NY.17
       - NY.17.1
       - NY.17.2
+      - NY.18
+      - NY.18.1
       - NZ.1
       - P.1
       - P.1.1
@@ -7077,6 +7079,8 @@
       - NY.17
       - NY.17.1
       - NY.17.2
+      - NY.18
+      - NY.18.1
       - NZ.1
       - P.1
       - P.1.1
@@ -9613,6 +9617,8 @@
       - NY.17
       - NY.17.1
       - NY.17.2
+      - NY.18
+      - NY.18.1
       - NZ.1
       - P.1
       - P.1.1
@@ -14604,6 +14610,8 @@
       - NY.17
       - NY.17.1
       - NY.17.2
+      - NY.18
+      - NY.18.1
       - NZ.1
       - PA.1
       - PA.1.1
@@ -16313,6 +16321,8 @@
       - NY.17
       - NY.17.1
       - NY.17.2
+      - NY.18
+      - NY.18.1
       - NZ.1
       - PA.1
       - PA.1.1
@@ -20543,6 +20553,8 @@
       - NY.17
       - NY.17.1
       - NY.17.2
+      - NY.18
+      - NY.18.1
       - NZ.1
       - PA.1
       - PA.1.1
@@ -21469,6 +21481,8 @@
       - NY.17
       - NY.17.1
       - NY.17.2
+      - NY.18
+      - NY.18.1
       - NZ.1
       - PA.1
       - PA.1.1
@@ -22363,6 +22377,8 @@
       - NY.17
       - NY.17.1
       - NY.17.2
+      - NY.18
+      - NY.18.1
       - NZ.1
       - PA.1
       - PA.1.1
@@ -23879,6 +23895,8 @@
       - NY.17
       - NY.17.1
       - NY.17.2
+      - NY.18
+      - NY.18.1
       - PA.1
       - PA.1.1
       - PA.1.2
@@ -24274,6 +24292,8 @@
       - NY.17
       - NY.17.1
       - NY.17.2
+      - NY.18
+      - NY.18.1
       - PA.1
       - PA.1.1
       - PA.1.2
@@ -24422,6 +24442,8 @@
       - NY.17
       - NY.17.1
       - NY.17.2
+      - NY.18
+      - NY.18.1
       - PD.1
       - PD.1.1
       - PD.1.2
@@ -24536,6 +24558,8 @@
       - NY.17
       - NY.17.1
       - NY.17.2
+      - NY.18
+      - NY.18.1
       - PD.1
       - PD.1.1
       - PD.1.2
@@ -24664,6 +24688,8 @@
       - NY.17
       - NY.17.1
       - NY.17.2
+      - NY.18
+      - NY.18.1
       - PD.1
       - PD.1.1
       - PD.1.2
@@ -24796,6 +24822,8 @@
       - NY.17
       - NY.17.1
       - NY.17.2
+      - NY.18
+      - NY.18.1
       - PD.1
       - PD.1.1
       - PD.1.2
@@ -24871,6 +24899,8 @@
       - NY.17
       - NY.17.1
       - NY.17.2
+      - NY.18
+      - NY.18.1
       - PD.1
       - PD.1.1
       - PD.1.2
@@ -24925,6 +24955,8 @@
       - NY.17
       - NY.17.1
       - NY.17.2
+      - NY.18
+      - NY.18.1
   parent: LP.8.1
 - name: NY.1
   alias: B.1.1.529.2.86.1.1.11.1.1.1.3.8.1.1.1
@@ -25091,6 +25123,17 @@
   children:
       - NY.17.2
   parent: NY.17
+- name: NY.18
+  alias: B.1.1.529.2.86.1.1.11.1.1.1.3.8.1.1.18
+  children:
+      - NY.18
+      - NY.18.1
+  parent: LP.8.1.1
+- name: NY.18.1
+  alias: B.1.1.529.2.86.1.1.11.1.1.1.3.8.1.1.18.1
+  children:
+      - NY.18.1
+  parent: NY.18
 - name: LP.8.1.2
   alias: B.1.1.529.2.86.1.1.11.1.1.1.3.8.1.2
   children:
@@ -54038,6 +54081,9 @@
       - XFG.2
       - XFG.3
       - XFG.3.1
+      - XFG.4
+      - XFG.5
+      - XFG.6
   recombinant_parents: LF.7,LP.8.1.2,LF.7
 - name: XFG.1
   alias: XFG.1
@@ -54060,6 +54106,21 @@
   children:
       - XFG.3.1
   parent: XFG.3
+- name: XFG.4
+  alias: XFG.4
+  children:
+      - XFG.4
+  parent: XFG
+- name: XFG.5
+  alias: XFG.5
+  children:
+      - XFG.5
+  parent: XFG
+- name: XFG.6
+  alias: XFG.6
+  children:
+      - XFG.6
+  parent: XFG
 - name: XFH
   alias: XFH
   children:
@@ -54130,4 +54191,10 @@
   alias: XFP
   children:
       - XFP
+      - XFP.1
   recombinant_parents: LS.2.1.1,LF.7,LS.2.1.1
+- name: XFP.1
+  alias: XFP.1
+  children:
+      - XFP.1
+  parent: XFP
