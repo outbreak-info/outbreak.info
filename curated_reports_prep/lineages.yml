@@ -52974,6 +52974,13 @@
       - XDY.5.1
       - XDY.6
       - XDY.7
+      - XDY.8
+      - XDY.9
+      - XDY.10
+      - XDY.11
+      - XDY.12
+      - XDY.12.1
+      - XDY.12.1.1
   recombinant_parents: LB.1.2.1,KP.3.2
 - name: XDY.1
   alias: XDY.1
@@ -53022,6 +53029,44 @@
   children:
       - XDY.7
   parent: XDY
+- name: XDY.8
+  alias: XDY.8
+  children:
+      - XDY.8
+  parent: XDY
+- name: XDY.9
+  alias: XDY.9
+  children:
+      - XDY.9
+  parent: XDY
+- name: XDY.10
+  alias: XDY.10
+  children:
+      - XDY.10
+  parent: XDY
+- name: XDY.11
+  alias: XDY.11
+  children:
+      - XDY.11
+  parent: XDY
+- name: XDY.12
+  alias: XDY.12
+  children:
+      - XDY.12
+      - XDY.12.1
+      - XDY.12.1.1
+  parent: XDY
+- name: XDY.12.1
+  alias: XDY.12.1
+  children:
+      - XDY.12.1
+      - XDY.12.1.1
+  parent: XDY.12
+- name: XDY.12.1.1
+  alias: XDY.12.1.1
+  children:
+      - XDY.12.1.1
+  parent: XDY.12.1
 - name: XDZ
   alias: XDZ
   children:
