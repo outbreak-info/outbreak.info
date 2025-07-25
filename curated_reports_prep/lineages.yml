@@ -55237,6 +55237,8 @@
       - XFG
       - XFG.1
       - XFG.2
+      - XFG.2.1
+      - XFG.2.2
       - XFG.3
       - XFG.3.1
       - XFG.3.2
@@ -55244,6 +55246,7 @@
       - XFG.3.4
       - XFG.3.4.1
       - XFG.3.4.2
+      - XFG.3.4.3
       - XFG.4
       - XFG.4.1
       - XFG.5
@@ -55264,6 +55267,9 @@
       - XFG.17
       - XFG.18
       - XFG.19
+      - XFG.20
+      - XFG.21
+      - XFG.22
   recombinant_parents: LF.7,LP.8.1.2,LF.7
 - name: XFG.1
   alias: XFG.1
@@ -55274,7 +55280,19 @@
   alias: XFG.2
   children:
       - XFG.2
+      - XFG.2.1
+      - XFG.2.2
   parent: XFG
+- name: XFG.2.1
+  alias: XFG.2.1
+  children:
+      - XFG.2.1
+  parent: XFG.2
+- name: XFG.2.2
+  alias: XFG.2.2
+  children:
+      - XFG.2.2
+  parent: XFG.2
 - name: XFG.3
   alias: XFG.3
   children:
@@ -55286,6 +55304,7 @@
       - XFG.3.4
       - XFG.3.4.1
       - XFG.3.4.2
+      - XFG.3.4.3
   parent: XFG
 - name: XFG.3.1
   alias: XFG.3.1
@@ -55309,6 +55328,7 @@
       - XFG.3.4
       - XFG.3.4.1
       - XFG.3.4.2
+      - XFG.3.4.3
   parent: XFG.3
 - name: XFG.3.4.1
   alias: XFG.3.4.1
@@ -55325,6 +55345,11 @@
   alias: XFG.3.4.2
   children:
       - XFG.3.4.2
+  parent: XFG.3.4
+- name: XFG.3.4.3
+  alias: XFG.3.4.3
+  children:
+      - XFG.3.4.3
   parent: XFG.3.4
 - name: XFG.4
   alias: XFG.4
@@ -55429,6 +55454,21 @@
   alias: XFG.19
   children:
       - XFG.19
+  parent: XFG
+- name: XFG.20
+  alias: XFG.20
+  children:
+      - XFG.20
+  parent: XFG
+- name: XFG.21
+  alias: XFG.21
+  children:
+      - XFG.21
+  parent: XFG
+- name: XFG.22
+  alias: XFG.22
+  children:
+      - XFG.22
   parent: XFG
 - name: XFH
   alias: XFH
