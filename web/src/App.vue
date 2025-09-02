@@ -220,6 +220,12 @@
               >
                 <a
                   class="nav-link"
+                  href="https://outbreak.info/wastewater/lineage-tracker"
+                >
+                  Lineage Tracker
+                </a>
+                <a
+                  class="nav-link"
                   href="https://outbreak.info/wastewater/location-tracker"
                 >
                   Location Tracker
@@ -545,6 +551,11 @@
         <div class="text-light px-4 footer-section">
           <div class="navbar-footer-title">Wastewater Surveillance</div>
           <ul class="navbar-nav navbar-footer">
+            <li class="nav-item px-0 py-1">
+              <a class="nav-link p-0" href="https://outbreak.info/wastewater/lineage-tracker">
+                Lineage Tracker
+              </a>
+            </li>
             <li class="nav-item px-0 py-1">
               <a class="nav-link p-0" href="https://outbreak.info/wastewater/location-tracker">
                 Location Tracker
