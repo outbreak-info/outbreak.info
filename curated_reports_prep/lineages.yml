@@ -58319,6 +58319,8 @@
       - XFG.3.27.1
       - XFG.3.27.2
       - XFG.3.28
+      - XFG.3.28
+      - XFG.3.29
       - XFG.3.29
       - XFG.3.30
       - XFG.3.30.1
@@ -58560,6 +58562,8 @@
       - XFG.3.27.1
       - XFG.3.27.2
       - XFG.3.28
+      - XFG.3.28
+      - XFG.3.29
       - XFG.3.29
       - XFG.3.30
       - XFG.3.30.1
@@ -60014,7 +60018,7 @@
   alias: XGA
   children:
       - XGA
-  recombinant_parents: XFJ.4,PY.1,XFG.6.2
+  recombinant_parents: XFJ.4.1,PY.1,XFG.6.2
 - name: XGB
   alias: XGB
   children:
@@ -60024,4 +60028,4 @@
   alias: XGC
   children:
       - XGC
-  recombinant_parents: PY.2,XFG.4,PY.2
+  recombinant_parents: PY.2,XFG.4
