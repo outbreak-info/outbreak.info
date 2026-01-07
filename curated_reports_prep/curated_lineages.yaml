@@ -11,19 +11,19 @@ VOI:
             url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
             variantType: VOI
 
-    - who_name: "BA.2.86* (BA.2.86.X)"
-      short_name: "BA.2.86*"
-      pangolin_lineage: BA.2.86
+VUM:
+    - who_name: "BA.3.2* (BA.3.2.X)"
+      short_name: "BA.3.2*"
+      pangolin_lineage: BA.3.2
       include_sublineages: True
-      dateModified: 2023-09-21
-      variantType: Variant of Interest
+      dateModified: 2025-12-05
+      variantType: Variant Under Monitoring
       classifications:
           - author: WHO
-            dateModified: 2023-09-21
+            dateModified: 2025-12-05
             url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
-            variantType: VOI
+            variantType: VUM
 
-VUM:
     - who_name: "XFG* (XFG.X)"
       short_name: "XFG*"
       pangolin_lineage: XFG
@@ -263,6 +263,18 @@ previous_voc:
 
 
 deescalated:
+    - who_name: "BA.2.86* (BA.2.86.X)"
+      short_name: "BA.2.86*"
+      pangolin_lineage: BA.2.86
+      include_sublineages: True
+      dateModified: 2023-09-21
+      variantType: Variant of Interest
+      classifications:
+          - author: WHO
+            dateModified: 2023-09-21
+            url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
+            variantType: VOI
+
   - who_name: "XBB.1.16* [Omicron (XBB.1.16.X)]"
     short_name: "XBB.1.16*"
     pangolin_lineage: XBB.1.16
