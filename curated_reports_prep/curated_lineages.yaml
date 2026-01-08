@@ -263,17 +263,17 @@ previous_voc:
 
 
 deescalated:
-    - who_name: "BA.2.86* (BA.2.86.X)"
-      short_name: "BA.2.86*"
-      pangolin_lineage: BA.2.86
-      include_sublineages: True
-      dateModified: 2023-09-21
-      variantType: Variant of Interest
-      classifications:
-          - author: WHO
-            dateModified: 2023-09-21
-            url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
-            variantType: VOI
+  - who_name: "BA.2.86* (BA.2.86.X)"
+    short_name: "BA.2.86*"
+    pangolin_lineage: BA.2.86
+    include_sublineages: True
+    dateModified: 2023-09-21
+    variantType: Variant of Interest
+    classifications:
+        - author: WHO
+          dateModified: 2023-09-21
+          url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
+          variantType: VOI
 
   - who_name: "XBB.1.16* [Omicron (XBB.1.16.X)]"
     short_name: "XBB.1.16*"
