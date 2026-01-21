@@ -148,7 +148,8 @@ import { select, selectAll } from 'd3-selection';
 import { timeDay } from 'd3-time';
 import { timeFormat, timeParse } from 'd3-time-format';
 import cloneDeep from 'lodash/cloneDeep';
-import { Application, Rectangle } from 'pixi.js';
+import { Application } from '@pixi/app';
+import { Rectangle } from '@pixi/core';
 import { SmoothGraphics } from '@pixi/graphics-smooth';
 
 const props = defineProps({
@@ -602,8 +603,6 @@ const drawBarchart = () => {
 
         barchart.endFill();
         if (props.includeTooltips) {
-          bar.interactive = true;
-
           bar.on('pointerover', (event) => {
             const ttip = selectAll(`.${props.tooltipIdx}`)
               .selectAll('.tooltip')
@@ -614,7 +613,6 @@ const drawBarchart = () => {
               )
               .style('left', event.data.global.x + 'px')
               .style('opacity', 1);
-
             ttip.select('.country-name').text(d.name);
             ttip.select('.date').text(timeFormat('%d %b %Y')(d.date));
             ttip
@@ -635,7 +633,6 @@ const drawBarchart = () => {
                   )}`,
                 );
             }
-
             hoverLine.alpha = 1;
             hoverLine.position.set(
               x.value(d.date),
@@ -644,7 +641,6 @@ const drawBarchart = () => {
             hoverLine.height =
               y.value(yMin.value) -
               y.value(d[variable.value.replace('_numIncrease', '_rolling')]);
-
             hoverCircle.alpha = 1;
             let circ_x = x.value(d.date) + x.value.bandwidth() / 2;
             hoverCircle.position.set(
