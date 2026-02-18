@@ -28,7 +28,7 @@
     >
       <div class="row m-0 w-100 d-flex justify-content-center">
         <!-- EPI INTRO -->
-        <div
+        <!-- <div
           class="col-sm-12 col-md-4 px-5 py-3 d-flex flex-column justify-content-between epi-intro"
         >
           <div class="mb-3">
@@ -92,11 +92,11 @@
               </router-link>
             </small>
           </div>
-        </div>
+        </div> -->
 
         <!-- VARIANTS -->
         <div
-          class="col-sm-12 col-md-4 px-5 py-3 d-flex flex-column justify-content-between variants-intro"
+          class="col-sm-12 col-md-6 px-5 py-3 d-flex flex-column justify-content-between variants-intro"
         >
           <div class="mb-3">
             <div
@@ -155,7 +155,7 @@
                 />
               </div>
             </form>
-            <small
+            <!-- <small
               id="sBar-example-variant-lineage"
               class="form-text d-block text-left ml-5"
             >
@@ -190,7 +190,7 @@
                   </router-link>
                 </template>
               </span>
-            </small>
+            </small> -->
           </div>
 
           <div id="search-variant-location" class="mt-3">
@@ -275,7 +275,7 @@
 
         <!-- resources -->
         <div
-          class="col-sm-12 col-md-4 px-5 py-3 d-flex flex-column justify-content-between resources-intro"
+          class="col-sm-12 col-md-6 px-5 py-3 d-flex flex-column justify-content-between resources-intro"
         >
           <div class="mb-3">
             <router-link :to="{ name: 'Resource Summary' }" class="text-light">
@@ -907,12 +907,12 @@ const updatePangolin = (selected) => {
 <style lang="scss" scoped>
 .resources-intro {
   background: #507192;
-  border-left: 3px solid white;
+// border-left: 3px solid white;
 }
 
 .variants-intro {
   background: $secondary-color;
-  border-left: 3px solid white;
+ // border-left: 3px solid white;
 }
 
 .epi-intro {
