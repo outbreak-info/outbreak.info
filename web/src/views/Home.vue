@@ -337,7 +337,7 @@
     </section>
 
     <!-- INTRO + VIDEO -->
-    <div class="col-sm-12 p-0 bg-grey__lightest">
+    <div class="col-sm-12 p-0">
       <div class="d-flex p-3">
         <div
           class="mx-lg-5 mx-sm-0 d-flex flex-column align-items-center justify-content-center px-4 large"
@@ -384,7 +384,7 @@
       </div>
     </div>
 
-    <div
+    <!-- <div
       id="features"
       class="d-flex flex-wrap align-items-center justify-content-center py-5 my-5"
     >
@@ -404,19 +404,11 @@
           What's new at outbreak.info?
         </button>
       </router-link>
-
-      <!-- <router-link
-        :to="{ name: 'About', hash: '#jobs' }"
-        class="no-underline m-4"
-      >
-        <button class="btn btn-main">We're hiring!</button>
-      </router-link> -->
     </div>
 
     <div id="collapsedFeatures" class="collapse">
       <h1 class="text-center">What can I do with outbreak.info?</h1>
 
-      <!-- EPI EXAMPLES -->
       <section id="epi-examples" class="container my-3">
         <h3 class="mb-1">Explore cases &amp; deaths</h3>
         <p class="text-muted">
@@ -473,7 +465,6 @@
             </div>
           </div>
 
-          <!-- EPI CURVE SUMMARIES -->
           <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
             <section id="regional-epi-curves" class="w-100 p-3 card">
               <router-link
@@ -512,7 +503,6 @@
         </div>
       </section>
 
-      <!-- GENOMICS -->
       <section id="epi-examples" class="container my-3">
         <h3 class="mb-1">View SARS-CoV-2 Variant Reports</h3>
         <p class="text-muted">
@@ -708,7 +698,6 @@
         </div>
       </section>
 
-      <!-- RESOURCE EXAMPLES -->
       <section id="resource-examples" class="container my-3">
         <h3 class="mb-1">Search COVID-19 research library</h3>
         <p class="text-muted">
@@ -780,7 +769,6 @@
         </div>
       </section>
 
-      <!-- ACCESS DATA -->
       <section id="epi-examples" class="container my-3">
         <h3 class="mb-1">Access data</h3>
         <p class="text-muted">
@@ -823,7 +811,7 @@
           </div>
         </div>
       </section>
-    </div>
+    </div> -->
   </div>
 </template>
 <script setup>
