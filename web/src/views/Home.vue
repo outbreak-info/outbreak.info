@@ -336,7 +336,7 @@
       </div>
     </section>
 
-    <!-- INTRO + VIDEO -->
+    <!-- INTRO  -->
     <div class="col-sm-12 p-0">
       <div class="d-flex p-3">
         <div
@@ -344,34 +344,12 @@
         >
           <p>
             Outbreak.info is a project from the
-            <a
-              href="https://www.scripps.edu/faculty/hughes/"
-              rel="noreferrer"
-              target="_blank"
-              aria-label="scripps edu hughes"
-            >
-              Hughes
-            </a>
-            ,
-            <a href="http://sulab.org/" target="_blank" aria-label="sulab">
-              Su
-            </a>
-            ,
-            <a href="https://wulab.io/" target="_blank" aria-label="wulab">
-              Wu
-            </a>
-            , and
-
-            <a
-              href="https://andersen-lab.com/"
-              target="_blank"
-              aria-label="andersen-lab"
-            >
-              Andersen
-            </a>
-            labs at Scripps Research to unify COVID-19 and SARS-CoV-2
-            epidemiology and genomic data, published research, and other
-            resources.
+              <template v-for="lab in formattedLabs" :key="lab.name">
+                <a :href="lab.url" target="_blank" rel="noreferrer">
+                  {{ lab.name }}
+                </a>{{ lab.suffix }}
+              </template>
+            labs at Scripps Research to unify COVID-19 and SARS-CoV-2 epidemiology and genomic data, published research, and other resources.
           </p>
 
           <p>
@@ -815,7 +793,7 @@
   </div>
 </template>
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
 
@@ -890,6 +868,25 @@ const updatePangolin = (selected) => {
     });
   }
 };
+
+const labs = [
+  // { name: "Hughes", url: "https://www.scripps.edu/faculty/hughes/" },
+  { name: "Su", url: "http://sulab.org/" },
+  { name: "Wu", url: "https://wulab.io/" },
+  { name: "Andersen", url: "https://andersen-lab.com/" }
+];
+
+const formattedLabs = computed(() =>
+  labs.map((lab, index) => ({
+    ...lab,
+    suffix:
+      index < labs.length - 2
+        ? ", "
+        : index === labs.length - 2
+        ? ", and "
+        : ""
+  }))
+);
 </script>
 
 <style lang="scss" scoped>
