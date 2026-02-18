@@ -26,7 +26,7 @@
           />
         </a>
       </div>
-      <div
+      <!-- <div
         class="col-sm-2 d-flex justify-content-center align-items-center picBox"
       >
         <a href="https://www.scripps.edu/" rel="noreferrer" target="_blank">
@@ -36,7 +36,7 @@
             alt="Scripps Research"
           />
         </a>
-      </div>
+      </div> -->
       <div
         class="col-sm-2 d-flex justify-content-center align-items-center picBox"
       >
@@ -44,7 +44,7 @@
           <img src="@/assets/cvisb-logo.png" class="w-100" alt="CVISB" />
         </a>
       </div>
-      <div
+      <!-- <div
         class="col-sm-2 d-flex justify-content-center align-items-center picBox"
       >
         <a
@@ -54,8 +54,8 @@
         >
           <img src="@/assets/global-logo.png" class="w-100" alt="SDCGH" />
         </a>
-      </div>
-      <div
+      </div> -->
+      <!-- <div
         class="col-sm-2 d-flex justify-content-center align-items-center picBox"
       >
         <a href="https://searchcovid.info/" rel="noreferrer" target="_blank">
@@ -65,7 +65,7 @@
             alt="SEARCH Alliance"
           />
         </a>
-      </div>
+      </div> -->
 
       <div
         class="col-sm-3 d-flex flex-column justify-content-center p-0 z pl-3 border-left"
