@@ -14,7 +14,7 @@
             />
             <p class="text-light my-1 mx-3">
               Tools to explore COVID-19 and SARS-CoV-2 data with variant
-              surveillance reports, data on cases and deaths, and a
+              surveillance reports, and a
               standardized, searchable research library
             </p>
           </div>
@@ -28,7 +28,7 @@
     >
       <div class="row m-0 w-100 d-flex justify-content-center">
         <!-- EPI INTRO -->
-        <div
+        <!-- <div
           class="col-sm-12 col-md-4 px-5 py-3 d-flex flex-column justify-content-between epi-intro"
         >
           <div class="mb-3">
@@ -92,11 +92,11 @@
               </router-link>
             </small>
           </div>
-        </div>
+        </div> -->
 
         <!-- VARIANTS -->
         <div
-          class="col-sm-12 col-md-4 px-5 py-3 d-flex flex-column justify-content-between variants-intro"
+          class="col-sm-12 col-md-6 px-5 py-3 d-flex flex-column justify-content-between variants-intro"
         >
           <div class="mb-3">
             <div
@@ -155,7 +155,7 @@
                 />
               </div>
             </form>
-            <small
+            <!-- <small
               id="sBar-example-variant-lineage"
               class="form-text d-block text-left ml-5"
             >
@@ -190,7 +190,7 @@
                   </router-link>
                 </template>
               </span>
-            </small>
+            </small> -->
           </div>
 
           <div id="search-variant-location" class="mt-3">
@@ -275,7 +275,7 @@
 
         <!-- resources -->
         <div
-          class="col-sm-12 col-md-4 px-5 py-3 d-flex flex-column justify-content-between resources-intro"
+          class="col-sm-12 col-md-6 px-5 py-3 d-flex flex-column justify-content-between resources-intro"
         >
           <div class="mb-3">
             <router-link :to="{ name: 'Resource Summary' }" class="text-light">
@@ -336,42 +336,20 @@
       </div>
     </section>
 
-    <!-- INTRO + VIDEO -->
-    <div class="col-sm-12 p-0 bg-grey__lightest">
+    <!-- INTRO  -->
+    <div class="col-sm-12 p-0">
       <div class="d-flex p-3">
         <div
           class="mx-lg-5 mx-sm-0 d-flex flex-column align-items-center justify-content-center px-4 large"
         >
           <p>
             Outbreak.info is a project from the
-            <a
-              href="https://www.scripps.edu/faculty/hughes/"
-              rel="noreferrer"
-              target="_blank"
-              aria-label="scripps edu hughes"
-            >
-              Hughes
-            </a>
-            ,
-            <a href="http://sulab.org/" target="_blank" aria-label="sulab">
-              Su
-            </a>
-            ,
-            <a href="https://wulab.io/" target="_blank" aria-label="wulab">
-              Wu
-            </a>
-            , and
-
-            <a
-              href="https://andersen-lab.com/"
-              target="_blank"
-              aria-label="andersen-lab"
-            >
-              Andersen
-            </a>
-            labs at Scripps Research to unify COVID-19 and SARS-CoV-2
-            epidemiology and genomic data, published research, and other
-            resources.
+              <template v-for="lab in formattedLabs" :key="lab.name">
+                <a :href="lab.url" target="_blank" rel="noreferrer">
+                  {{ lab.name }}
+                </a>{{ lab.suffix }}
+              </template>
+            labs at Scripps Research to unify COVID-19 and SARS-CoV-2 epidemiology and genomic data, published research, and other resources.
           </p>
 
           <p>
@@ -384,7 +362,7 @@
       </div>
     </div>
 
-    <div
+    <!-- <div
       id="features"
       class="d-flex flex-wrap align-items-center justify-content-center py-5 my-5"
     >
@@ -404,19 +382,11 @@
           What's new at outbreak.info?
         </button>
       </router-link>
-
-      <!-- <router-link
-        :to="{ name: 'About', hash: '#jobs' }"
-        class="no-underline m-4"
-      >
-        <button class="btn btn-main">We're hiring!</button>
-      </router-link> -->
     </div>
 
     <div id="collapsedFeatures" class="collapse">
       <h1 class="text-center">What can I do with outbreak.info?</h1>
 
-      <!-- EPI EXAMPLES -->
       <section id="epi-examples" class="container my-3">
         <h3 class="mb-1">Explore cases &amp; deaths</h3>
         <p class="text-muted">
@@ -473,7 +443,6 @@
             </div>
           </div>
 
-          <!-- EPI CURVE SUMMARIES -->
           <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
             <section id="regional-epi-curves" class="w-100 p-3 card">
               <router-link
@@ -512,7 +481,6 @@
         </div>
       </section>
 
-      <!-- GENOMICS -->
       <section id="epi-examples" class="container my-3">
         <h3 class="mb-1">View SARS-CoV-2 Variant Reports</h3>
         <p class="text-muted">
@@ -708,7 +676,6 @@
         </div>
       </section>
 
-      <!-- RESOURCE EXAMPLES -->
       <section id="resource-examples" class="container my-3">
         <h3 class="mb-1">Search COVID-19 research library</h3>
         <p class="text-muted">
@@ -780,7 +747,6 @@
         </div>
       </section>
 
-      <!-- ACCESS DATA -->
       <section id="epi-examples" class="container my-3">
         <h3 class="mb-1">Access data</h3>
         <p class="text-muted">
@@ -823,11 +789,11 @@
           </div>
         </div>
       </section>
-    </div>
+    </div> -->
   </div>
 </template>
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
 
@@ -902,17 +868,36 @@ const updatePangolin = (selected) => {
     });
   }
 };
+
+const labs = [
+  // { name: "Hughes", url: "https://www.scripps.edu/faculty/hughes/" },
+  { name: "Su", url: "http://sulab.org/" },
+  { name: "Wu", url: "https://wulab.io/" },
+  { name: "Andersen", url: "https://andersen-lab.com/" }
+];
+
+const formattedLabs = computed(() =>
+  labs.map((lab, index) => ({
+    ...lab,
+    suffix:
+      index < labs.length - 2
+        ? ", "
+        : index === labs.length - 2
+        ? ", and "
+        : ""
+  }))
+);
 </script>
 
 <style lang="scss" scoped>
 .resources-intro {
   background: #507192;
-  border-left: 3px solid white;
+// border-left: 3px solid white;
 }
 
 .variants-intro {
   background: $secondary-color;
-  border-left: 3px solid white;
+ // border-left: 3px solid white;
 }
 
 .epi-intro {

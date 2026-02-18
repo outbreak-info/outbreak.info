@@ -57,7 +57,7 @@
         >
           <ul class="navbar-nav nav-link">
             <!-- EPIDEMIOLOGY -->
-            <li class="dropdown px-3 nav-link">
+            <!-- <li class="dropdown px-3 nav-link">
               <div
                 id="dropdownMenuButtonCasesDeaths"
                 class="dropdown-toggle"
@@ -130,7 +130,7 @@
                   Access data tables
                 </router-link>
               </div>
-            </li>
+            </li> -->
 
             <!-- Genomics -->
             <li class="dropdown px-3 nav-link">
@@ -178,7 +178,7 @@
                 >
                   Lineage Comparison
                 </router-link>
-                <router-link
+                <!-- <router-link
                   data-toggle="collapse"
                   data-target=".navbar-collapse"
                   class="nav-link"
@@ -188,8 +188,8 @@
                   }"
                 >
                   Growth Rates
-                </router-link>
-                <router-link
+                </router-link> -->
+                <!-- <router-link
                   data-toggle="collapse"
                   data-target=".navbar-collapse"
                   class="nav-link"
@@ -197,7 +197,7 @@
                   :class="{ active: $route.name === 'SituationReportCaveats' }"
                 >
                   Interpreting Reports
-                </router-link>
+                </router-link> -->
               </div>
             </li>
 
@@ -309,9 +309,9 @@
                   to="/about"
                   :class="{ active: $route.name === 'About' }"
                 >
-                  About
+                  About us
                 </router-link>
-                <router-link
+                <!-- <router-link
                   data-toggle="collapse"
                   data-target=".navbar-collapse"
                   class="nav-link"
@@ -319,7 +319,7 @@
                   :class="{ active: $route.name === 'Sources' }"
                 >
                   Data sources
-                </router-link>
+                </router-link> -->
                 <a class="nav-link" href="https://blog.outbreak.info">Blog</a>
                 <router-link
                   data-toggle="collapse"
@@ -330,7 +330,7 @@
                 >
                   FAQ
                 </router-link>
-                <router-link
+                <!-- <router-link
                   data-toggle="collapse"
                   data-target=".navbar-collapse"
                   class="nav-link"
@@ -338,7 +338,7 @@
                   :class="{ active: $route.name === 'Latest' }"
                 >
                   Latest changes
-                </router-link>
+                </router-link> -->
                 <router-link
                   data-toggle="collapse"
                   data-target=".navbar-collapse"
@@ -349,7 +349,7 @@
                   How to cite
                 </router-link>
                 <!-- <router-link data-toggle="collapse" data-target=".navbar-collapse" class="nav-link" :class="{ active: $route.name == 'Videos' }" :to="{name: 'Videos'}">Video demos</router-link> -->
-                <router-link
+                <!-- <router-link
                   data-toggle="collapse"
                   data-target=".navbar-collapse"
                   class="nav-link"
@@ -357,7 +357,7 @@
                   :to="{ name: 'Press' }"
                 >
                   In the media
-                </router-link>
+                </router-link> -->
               </div>
             </li>
           </ul>
@@ -416,7 +416,7 @@
         class="bg-main__darker w-100 d-flex justify-content-between text-left text-muted row border-bottom navbar-dark m-0 px-3 pb-3 pt-4"
       >
         <!-- epi group -->
-        <div class="text-light px-4 footer-section">
+        <!-- <div class="text-light px-4 footer-section">
           <div class="navbar-footer-title">COVID-19 Cases &amp; Deaths</div>
           <ul class="navbar-nav navbar-footer">
             <li class="nav-item px-0 py-1">
@@ -483,7 +483,7 @@
               </router-link>
             </li>
           </ul>
-        </div>
+        </div> -->
 
         <!-- genomics group -->
         <div class="text-light px-4 footer-section">
@@ -522,7 +522,7 @@
                 Lineage Comparison
               </router-link>
             </li>
-            <li class="nav-item px-0 py-1">
+            <!-- <li class="nav-item px-0 py-1">
               <router-link
                 data-toggle="collapse"
                 data-target=".navbar-collapse"
@@ -543,7 +543,7 @@
               >
                 Interpreting Reports
               </router-link>
-            </li>
+            </li> -->
           </ul>
         </div>
 
@@ -620,7 +620,7 @@
               </router-link>
             </li>
 
-            <li class="nav-item px-0 py-1">
+            <!-- <li class="nav-item px-0 py-1">
               <router-link
                 data-toggle="collapse"
                 data-target=".navbar-collapse"
@@ -630,7 +630,7 @@
               >
                 Data sources
               </router-link>
-            </li>
+            </li> -->
 
             <li class="nav-item px-0 py-1">
               <a class="nav-link p-0" href="https://blog.outbreak.info">Blog</a>
@@ -648,7 +648,7 @@
               </router-link>
             </li>
 
-            <li class="nav-item px-0 py-1">
+            <!-- <li class="nav-item px-0 py-1">
               <router-link
                 data-toggle="collapse"
                 data-target=".navbar-collapse"
@@ -658,7 +658,7 @@
               >
                 Latest changes
               </router-link>
-            </li>
+            </li> -->
 
             <li class="nav-item px-0 py-1">
               <router-link class="nav-link p-0" :to="{ name: 'Citation' }">
@@ -670,11 +670,11 @@
             <router-link class="nav-link p-0" :to="{ name: 'Videos' }">Video demos</router-link>
           </li> -->
 
-            <li class="nav-item px-0 py-1">
+            <!-- <li class="nav-item px-0 py-1">
               <router-link class="nav-link p-0" :to="{ name: 'Press' }">
                 In the media
               </router-link>
-            </li>
+            </li> -->
           </ul>
         </div>
 
@@ -702,7 +702,7 @@
                 Submit an issue on Github
               </a>
             </li>
-            <EmailSubscription :isFooter="true" />
+            <!-- <EmailSubscription :isFooter="true" /> -->
           </ul>
         </div>
       </div>
@@ -742,14 +742,14 @@
             </li>
             <li class="d-inline m-3">
               All content copyright
-              <a
+              <!-- <a
                 href="https://scripps.edu/faculty/hughes"
                 target="_blank"
                 rel="noreferrer"
                 class="mx-1 white-underline"
               >
                 Hughes lab
-              </a>
+              </a> -->
               &copy;
               <span v-text="year" />
             </li>
