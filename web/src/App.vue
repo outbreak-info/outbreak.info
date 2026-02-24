@@ -369,9 +369,9 @@
       id="notices"
       class="bg-highlight py-2 px-3 text-light text-center fa-sm"
     >
-      <!-- <div class="border-bottom pb-2 mb-2">
+    <!-- <div class="border-bottom pb-2 mb-2">
       outbreak.info will be undergoing maintenance on <b>12 January 2023</b>. Data may be inaccessible during this time.
-    </div> -->
+    </div>  -->
       <!-- <b class="mr-1">
         The outbreak.info
         <a href="https://api.outbreak.info/" class="text-light" target="_blank">
@@ -388,9 +388,9 @@
           R package
         </a>
         is now live!
-      </b>
+      </b> -->
 
-      Access all SARS-CoV-2 variant data, Research Library metadata, and cases
+      <!-- Access all SARS-CoV-2 variant data, Research Library metadata, and cases
       &amp; deaths data from outbreak.info.
       <a
         href="https://www.scripps.edu/news-and-events/press-room/2022/20220606-hughes-gisaid.html"
@@ -400,6 +400,18 @@
       >
         Learn more
       </a> -->
+     <div class="pb-1 mb-1">
+       <b>In January 2025, GISAID terminated our SARS-CoV-2 data feed, halting updates to outbreak.info.</b>
+     </div>
+     We have shared
+       <a
+          href="https://blog.outbreak.info/joint-response-gisaid"
+          target="_blank"
+          class="text-light"
+          style="text-decoration: underline;"
+        >
+          a response with additional context on the termination and the 20 January 2026 statement from GISAID.
+        </a>
     </section>
 
     <router-view class="main" v-slot="{ Component }">
