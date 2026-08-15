@@ -12,6 +12,19 @@ VOI:
             variantType: VOI
 
 VUM:
+    - who_name: "PQ.16.1.1* (PQ.16.1.1.X)"
+      short_name: "PQ.16.1.1*"
+      pangolin_lineage: PQ.16.1.1
+      include_sublineages: True
+      dateModified: 2026-07-27
+      variantType: Variant Under Monitoring
+      classifications:
+          - author: WHO
+            dateModified: 2026-07-27
+            url: https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
+            variantType: VUM
+
+    
     - who_name: "BA.3.2* (BA.3.2.X)"
       short_name: "BA.3.2*"
       pangolin_lineage: BA.3.2
